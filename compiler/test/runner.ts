@@ -283,7 +283,7 @@ async function initProject(folder: string, block: CodeBlock) {
 
   Deno.chdir(COMPILER_DIR + "/..");
 
-  const cmd = ["./init-project.sh", folder];
+  const cmd = ["./init-project", folder];
   const { code, err, output } = await runShell(cmd);
 
   if (code > 0) {
