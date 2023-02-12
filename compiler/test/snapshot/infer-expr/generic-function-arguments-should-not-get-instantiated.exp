@@ -1,0 +1,21 @@
+Generic function arguments should not get instantiated
+
+SOURCE:
+{
+  fn foo<T>(x: T) -> Int {
+    x as T;
+    match x {
+      1 => 1
+    }
+  }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    T
+Got:
+    Int
+
+5|        1 => 1
+          ^

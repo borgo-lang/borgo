@@ -1,0 +1,108 @@
+Blocks get the type of the last expression.
+
+SOURCE:
+{ fn foo() {} }
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [],
+            "bounds": [],
+            "args": [],
+            "ret": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [],
+                "ty": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 11
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 13
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1,
+              "col": 2
+            },
+            "end": {
+              "line": 1,
+              "col": 13
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Fun": {
+        "args": [],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 15
+      }
+    }
+  }
+}

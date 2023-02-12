@@ -1,0 +1,14 @@
+Sanity check, can't make up types out of thin air
+
+SOURCE:
+{
+  fn foo<T>(x: Y) -> Int {
+    1
+  }
+}
+
+OUTPUT:
+Type not found: Y
+
+2|    fn foo<T>(x: Y) -> Int {
+      ^--

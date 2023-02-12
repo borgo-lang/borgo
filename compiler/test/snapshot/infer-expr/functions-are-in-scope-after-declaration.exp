@@ -1,0 +1,378 @@
+Functions are in scope after declaration.
+
+SOURCE:
+{
+  fn foo(a: Int) -> Int { sum(a, 4) }
+  foo(1)
+}
+
+OUTPUT:
+Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [],
+            "bounds": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "a",
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 2,
+                        "col": 9
+                      },
+                      "end": {
+                        "line": 2,
+                        "col": 10
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Call": {
+                      "func": {
+                        "Var": {
+                          "value": "sum",
+                          "decl": {
+                            "file_id": {
+                              "package": "builtin",
+                              "filename": ""
+                            },
+                            "span": {
+                              "start": {
+                                "line": 0,
+                                "col": 0
+                              },
+                              "end": {
+                                "line": 0,
+                                "col": 0
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Fun": {
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "Int",
+                                    "args": []
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "name": "Int",
+                                    "args": []
+                                  }
+                                }
+                              ],
+                              "bounds": [],
+                              "ret": {
+                                "Con": {
+                                  "name": "Int",
+                                  "args": []
+                                }
+                              },
+                              "fx": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 2,
+                              "col": 26
+                            },
+                            "end": {
+                              "line": 2,
+                              "col": 29
+                            }
+                          }
+                        }
+                      },
+                      "args": [
+                        {
+                          "Var": {
+                            "value": "a",
+                            "decl": {
+                              "file_id": {
+                                "package": "dummy",
+                                "filename": "dummy"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 2,
+                                  "col": 9
+                                },
+                                "end": {
+                                  "line": 2,
+                                  "col": 10
+                                }
+                              }
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "Int",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 30
+                              },
+                              "end": {
+                                "line": 2,
+                                "col": 31
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "Literal": {
+                            "lit": {
+                              "Int": 4
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "Int",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 33
+                              },
+                              "end": {
+                                "line": 2,
+                                "col": 34
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 26
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 35
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 24
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 37
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 37
+            }
+          }
+        }
+      },
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "foo",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 2
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 37
+                  }
+                }
+              },
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "fx": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 3,
+                  "col": 2
+                },
+                "end": {
+                  "line": 3,
+                  "col": 5
+                }
+              }
+            }
+          },
+          "args": [
+            {
+              "Literal": {
+                "lit": {
+                  "Int": 1
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 7
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 8
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 4,
+        "col": 1
+      }
+    }
+  }
+}

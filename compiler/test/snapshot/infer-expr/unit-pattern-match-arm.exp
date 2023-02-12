@@ -1,0 +1,89 @@
+Unit pattern match arm
+
+SOURCE:
+match () {
+  () => 1,
+}
+
+OUTPUT:
+Int
+---
+No errors.
+---
+[]
+---
+{
+  "Match": {
+    "subject": {
+      "Unit": {
+        "span": {
+          "start": {
+            "line": 1,
+            "col": 6
+          },
+          "end": {
+            "line": 1,
+            "col": 8
+          }
+        }
+      }
+    },
+    "arms": [
+      {
+        "pat": {
+          "Unit": {
+            "span": {
+              "start": {
+                "line": 2,
+                "col": 2
+              },
+              "end": {
+                "line": 2,
+                "col": 4
+              }
+            }
+          }
+        },
+        "expr": {
+          "Literal": {
+            "lit": {
+              "Int": 1
+            },
+            "ty": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 2,
+                "col": 8
+              },
+              "end": {
+                "line": 2,
+                "col": 9
+              }
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 3,
+        "col": 1
+      }
+    }
+  }
+}

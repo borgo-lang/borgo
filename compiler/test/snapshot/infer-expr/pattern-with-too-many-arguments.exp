@@ -1,0 +1,17 @@
+Pattern with too many arguments
+
+SOURCE:
+{
+  fn foo((x, y, z): (Bool, Bool)) -> Bool { x }
+  foo((false, false))
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    (Bool, Bool)
+Got:
+    (A, B, C)
+
+2|    fn foo((x, y, z): (Bool, Bool)) -> Bool { x }
+             ^^^^^^^^^

@@ -1,0 +1,14 @@
+Wrong param type
+
+SOURCE:
+{ sum("asdf", 1) }
+
+OUTPUT:
+Type mismatch
+Expected:
+    Int
+Got:
+    String
+
+1|  { sum("asdf", 1) }
+          ^^^^^^

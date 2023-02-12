@@ -1,0 +1,605 @@
+Nested updates.
+
+SOURCE:
+{
+  struct Foo { a: Int, b: String }
+  struct Bar { a: Int, b: String, f: Foo }
+
+  let x = Foo { a: 1, b: "foo" };
+  let y = Bar { a: 1, b: "bar", f: x };
+  Bar { a: 2, b: "baz", f: Foo { a: 4, ..x } }
+}
+
+OUTPUT:
+Bar
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "StructDef": {
+          "def": {
+            "name": "Foo",
+            "generics": [],
+            "fields": [
+              {
+                "name": "a",
+                "ann": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              },
+              {
+                "name": "b",
+                "ann": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                }
+              }
+            ]
+          },
+          "is_trait": false,
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 34
+            }
+          }
+        }
+      },
+      {
+        "StructDef": {
+          "def": {
+            "name": "Bar",
+            "generics": [],
+            "fields": [
+              {
+                "name": "a",
+                "ann": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              },
+              {
+                "name": "b",
+                "ann": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                }
+              },
+              {
+                "name": "f",
+                "ann": {
+                  "Con": {
+                    "name": "Foo",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Foo",
+                    "args": []
+                  }
+                }
+              }
+            ]
+          },
+          "is_trait": false,
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 42
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 5,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 5,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Foo",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "StructCall": {
+              "name": "Foo",
+              "fields": [
+                {
+                  "name": "a",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 1
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 5,
+                          "col": 19
+                        },
+                        "end": {
+                          "line": 5,
+                          "col": 20
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "b",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "String": "foo"
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "String",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 5,
+                          "col": 25
+                        },
+                        "end": {
+                          "line": 5,
+                          "col": 30
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "rest": null,
+              "ty": {
+                "Con": {
+                  "name": "Foo",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 5,
+                  "col": 10
+                },
+                "end": {
+                  "line": 5,
+                  "col": 32
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Foo",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 5,
+              "col": 2
+            },
+            "end": {
+              "line": 5,
+              "col": 33
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "y",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 6,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 6,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Bar",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "StructCall": {
+              "name": "Bar",
+              "fields": [
+                {
+                  "name": "a",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 1
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 6,
+                          "col": 19
+                        },
+                        "end": {
+                          "line": 6,
+                          "col": 20
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "b",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "String": "bar"
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "String",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 6,
+                          "col": 25
+                        },
+                        "end": {
+                          "line": 6,
+                          "col": 30
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "f",
+                  "value": {
+                    "Var": {
+                      "value": "x",
+                      "decl": {
+                        "file_id": {
+                          "package": "dummy",
+                          "filename": "dummy"
+                        },
+                        "span": {
+                          "start": {
+                            "line": 5,
+                            "col": 6
+                          },
+                          "end": {
+                            "line": 5,
+                            "col": 7
+                          }
+                        }
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Foo",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 6,
+                          "col": 35
+                        },
+                        "end": {
+                          "line": 6,
+                          "col": 36
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "rest": null,
+              "ty": {
+                "Con": {
+                  "name": "Bar",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 6,
+                  "col": 10
+                },
+                "end": {
+                  "line": 6,
+                  "col": 38
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Bar",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 6,
+              "col": 2
+            },
+            "end": {
+              "line": 6,
+              "col": 39
+            }
+          }
+        }
+      },
+      {
+        "StructCall": {
+          "name": "Bar",
+          "fields": [
+            {
+              "name": "a",
+              "value": {
+                "Literal": {
+                  "lit": {
+                    "Int": 2
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 11
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 12
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "b",
+              "value": {
+                "Literal": {
+                  "lit": {
+                    "String": "baz"
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "String",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 17
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 22
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "f",
+              "value": {
+                "StructCall": {
+                  "name": "Foo",
+                  "fields": [
+                    {
+                      "name": "a",
+                      "value": {
+                        "Literal": {
+                          "lit": {
+                            "Int": 4
+                          },
+                          "ty": {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 7,
+                              "col": 36
+                            },
+                            "end": {
+                              "line": 7,
+                              "col": 37
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "rest": {
+                    "Var": {
+                      "value": "x",
+                      "decl": {
+                        "file_id": {
+                          "package": "dummy",
+                          "filename": "dummy"
+                        },
+                        "span": {
+                          "start": {
+                            "line": 5,
+                            "col": 6
+                          },
+                          "end": {
+                            "line": 5,
+                            "col": 7
+                          }
+                        }
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Foo",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 7,
+                          "col": 41
+                        },
+                        "end": {
+                          "line": 7,
+                          "col": 42
+                        }
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 27
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 44
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "rest": null,
+          "ty": {
+            "Con": {
+              "name": "Bar",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 7,
+              "col": 2
+            },
+            "end": {
+              "line": 7,
+              "col": 46
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Bar",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 8,
+        "col": 1
+      }
+    }
+  }
+}

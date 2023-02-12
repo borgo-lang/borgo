@@ -1,0 +1,98 @@
+Enums should introduce a new type in the environment.
+
+SOURCE:
+{
+  enum Color { Red }
+  Color::Red
+}
+
+OUTPUT:
+Color
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "EnumDef": {
+          "def": {
+            "name": "Color",
+            "generics": [],
+            "cons": [
+              {
+                "name": "Red",
+                "fields": []
+              }
+            ]
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 20
+            }
+          }
+        }
+      },
+      {
+        "Var": {
+          "value": "Color::Red",
+          "decl": {
+            "file_id": {
+              "package": "dummy",
+              "filename": "dummy"
+            },
+            "span": {
+              "start": {
+                "line": 2,
+                "col": 2
+              },
+              "end": {
+                "line": 2,
+                "col": 20
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Color",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 12
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Color",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 4,
+        "col": 1
+      }
+    }
+  }
+}

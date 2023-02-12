@@ -1,0 +1,13 @@
+Inference of numeric operators
+
+SOURCE:
+fn borgo_main() -> Int {
+  false > true;
+  1
+}
+
+OUTPUT:
+Was expecting Int or Float, got Bool
+
+2|    false > true;
+      ^^^^^

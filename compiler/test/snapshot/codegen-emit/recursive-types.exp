@@ -1,0 +1,128 @@
+Recursive types
+
+SOURCE:
+enum Expr {
+  Add(Expr, Expr),
+  Number(Int),
+}
+
+struct Foo {
+  n: String,
+  f: Option<Foo>,
+}
+
+fn borgo_main() {
+  let one = Expr::Number(1);
+  let two = Expr::Number(2);
+  let e = Expr::Add(one, two);
+  e.inspect();
+
+  let f = Foo { n: "a", f: None };
+  let ok = Foo { n: "b", f: Some(f) };
+  ok.inspect();
+  ()
+}
+
+OUTPUT:
+Expr::Add(Expr::Number(1), Expr::Number(2))
+Foo { n: "b", f: Option::Some(Foo { n: "a", f: Option::None }) }
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Expr_Add(arg_0 any, arg_1 any) any {
+	return Expr_Add{arg_0, arg_1}
+}
+
+func make_Expr_Number(arg_0 any) any {
+	return Expr_Number{arg_0}
+}
+func make_Foo(arg_0 any, arg_1 any) any {
+	return Foo{arg_0, arg_1}
+}
+
+type Expr_Add struct {
+	Field0 any
+	Field1 any
+}
+type Expr_Number struct {
+	Field0 any
+}
+type Expr any
+type Foo struct {
+	N any
+	F any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := make_Expr_Number
+		var4 := var3(var2)
+		var5 := var4
+		var6 := borgo.Unit
+		_ = var6
+		var7 := 2
+		var8 := make_Expr_Number
+		var9 := var8(var7)
+		var10 := var9
+		var11 := borgo.Unit
+		_ = var11
+		var12 := var5
+		var13 := var10
+		var14 := make_Expr_Add
+		var15 := var14(var12, var13)
+		var16 := var15
+		var17 := borgo.Unit
+		_ = var17
+		var18 := var16
+		var19 := Debug_inspect(var18)
+		_ = var19
+		var20 := "a"
+		var21 := make_Option_None
+		var22 := func(base any) any {
+			data := base.(Foo)
+			data.N = var20
+			data.F = var21
+			return data
+		}(Foo{})
+		var23 := var22
+		var24 := borgo.Unit
+		_ = var24
+		var25 := "b"
+		var26 := var23
+		var27 := make_Option_Some
+		var28 := var27(var26)
+		var29 := func(base any) any {
+			data := base.(Foo)
+			data.N = var25
+			data.F = var28
+			return data
+		}(Foo{})
+		var30 := var29
+		var31 := borgo.Unit
+		_ = var31
+		var32 := var30
+		var33 := Debug_inspect(var32)
+		_ = var33
+		var34 := borgo.Unit
+		var1_block = var34
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterTypeConstructor("Expr::Add", "Expr_Add")
+	borgo.RegisterMakeFunction("Expr::Add", make_Expr_Add)
+	borgo.RegisterTypeConstructor("Expr::Number", "Expr_Number")
+	borgo.RegisterMakeFunction("Expr::Number", make_Expr_Number)
+	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

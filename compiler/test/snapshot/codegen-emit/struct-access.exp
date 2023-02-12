@@ -1,0 +1,95 @@
+Struct access
+
+SOURCE:
+struct Foo {
+  a: Int,
+  b: String,
+  c: Bool,
+}
+
+fn borgo_main() {
+  let x = Foo { a: 1, b: "hi", c: true };
+  x.a.assert_eq(1);
+  let y = Foo { a: 5, c: false, ..x };
+  y.a.assert_eq(5);
+  x.a.assert_eq(1);
+  ()
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo(arg_0 any, arg_1 any, arg_2 any) any {
+	return Foo{arg_0, arg_1, arg_2}
+}
+
+type Foo struct {
+	A any
+	B any
+	C any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := "hi"
+		var4 := true
+		var5 := func(base any) any {
+			data := base.(Foo)
+			data.A = var2
+			data.B = var3
+			data.C = var4
+			return data
+		}(Foo{})
+		var6 := var5
+		var7 := borgo.Unit
+		_ = var7
+		var8 := var6
+		var9 := var8.(Foo).A
+		var10 := 1
+		var11 := Debug_assert_eq
+		var12 := var11(var9, var10)
+		_ = var12
+		var13 := var6
+		var14 := 5
+		var15 := false
+		var16 := func(base any) any {
+			data := base.(Foo)
+			data.A = var14
+			data.C = var15
+			return data
+		}(var13)
+		var17 := var16
+		var18 := borgo.Unit
+		_ = var18
+		var19 := var17
+		var20 := var19.(Foo).A
+		var21 := 5
+		var22 := Debug_assert_eq
+		var23 := var22(var20, var21)
+		_ = var23
+		var24 := var6
+		var25 := var24.(Foo).A
+		var26 := 1
+		var27 := Debug_assert_eq
+		var28 := var27(var25, var26)
+		_ = var28
+		var29 := borgo.Unit
+		var1_block = var29
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

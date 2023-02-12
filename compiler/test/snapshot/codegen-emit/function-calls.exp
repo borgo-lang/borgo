@@ -1,0 +1,97 @@
+Function calls
+
+SOURCE:
+fn foo(b: Bool, x: Int) -> Bool { b }
+fn bar(x: Int) -> Int { x }
+
+fn borgo_main() {
+  foo(match 1 {
+    1 => true,
+    _ => false,
+  }, bar(5))
+  .assert_eq(true);
+
+  ()
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func foo(b any, x any) any {
+
+	var var1_block any
+	{
+		var2 := b
+		var1_block = var2
+	}
+	return var1_block
+}
+
+func bar(x any) any {
+
+	var var1_block any
+	{
+		var2 := x
+		var1_block = var2
+	}
+	return var1_block
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var var3_result any
+		var4_subject := var2
+
+		for var5_pattern := 0; var5_pattern < 2; var5_pattern++ {
+
+			if var5_pattern == 0 {
+				var6 := 1
+				if !borgo.Ops.Eq(var6, var4_subject).(bool) {
+					continue
+				}
+				_ = var4_subject
+
+				var7 := true
+				var3_result = var7
+				break
+			}
+
+			if var5_pattern == 1 {
+				// wildcard
+				_ = var4_subject
+
+				var8 := false
+				var3_result = var8
+				break
+			}
+
+		}
+		var9 := 5
+		var10 := bar
+		var11 := var10(var9)
+		var12 := foo
+		var13 := var12(var3_result, var11)
+		var14 := true
+		var15 := Debug_assert_eq
+		var16 := var15(var13, var14)
+		_ = var16
+		var17 := borgo.Unit
+		var1_block = var17
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("foo", foo)
+	borgo.RegisterGlobalFunction("bar", bar)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

@@ -1,0 +1,513 @@
+Pattern matching works on enums.
+
+SOURCE:
+{
+  enum Color { Red, Blue(String) }
+
+  let x = Color::Blue("foo");
+  match x {
+    Color::Red => "bar",
+    Color::Blue(c) => str_concat(c, "!"),
+  }
+}
+
+OUTPUT:
+String
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "EnumDef": {
+          "def": {
+            "name": "Color",
+            "generics": [],
+            "cons": [
+              {
+                "name": "Red",
+                "fields": []
+              },
+              {
+                "name": "Blue",
+                "fields": [
+                  {
+                    "name": "field0",
+                    "ann": {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 34
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Color",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Call": {
+              "func": {
+                "Var": {
+                  "value": "Color::Blue",
+                  "decl": {
+                    "file_id": {
+                      "package": "dummy",
+                      "filename": "dummy"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 2,
+                        "col": 2
+                      },
+                      "end": {
+                        "line": 2,
+                        "col": 34
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Fun": {
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "String",
+                            "args": []
+                          }
+                        }
+                      ],
+                      "bounds": [],
+                      "ret": {
+                        "Con": {
+                          "name": "Color",
+                          "args": []
+                        }
+                      },
+                      "fx": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 10
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 21
+                    }
+                  }
+                }
+              },
+              "args": [
+                {
+                  "Literal": {
+                    "lit": {
+                      "String": "foo"
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    },
+                    "span": {
+                      "start": {
+                        "line": 4,
+                        "col": 22
+                      },
+                      "end": {
+                        "line": 4,
+                        "col": 27
+                      }
+                    }
+                  }
+                }
+              ],
+              "ty": {
+                "Con": {
+                  "name": "Color",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 4,
+                  "col": 10
+                },
+                "end": {
+                  "line": 4,
+                  "col": 28
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Color",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 29
+            }
+          }
+        }
+      },
+      {
+        "Match": {
+          "subject": {
+            "Var": {
+              "value": "x",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 7
+                  }
+                }
+              },
+              "ty": {
+                "Con": {
+                  "name": "Color",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 5,
+                  "col": 8
+                },
+                "end": {
+                  "line": 5,
+                  "col": 9
+                }
+              }
+            }
+          },
+          "arms": [
+            {
+              "pat": {
+                "Pat": {
+                  "ident": "Color::Red",
+                  "elems": [],
+                  "ty": {
+                    "Con": {
+                      "name": "Color",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 6,
+                      "col": 4
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 14
+                    }
+                  }
+                }
+              },
+              "expr": {
+                "Literal": {
+                  "lit": {
+                    "String": "bar"
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "String",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 6,
+                      "col": 18
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 23
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "pat": {
+                "Pat": {
+                  "ident": "Color::Blue",
+                  "elems": [
+                    {
+                      "Type": {
+                        "ident": "c",
+                        "ann": "Unknown",
+                        "span": {
+                          "start": {
+                            "line": 7,
+                            "col": 16
+                          },
+                          "end": {
+                            "line": 7,
+                            "col": 17
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Color",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 4
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 18
+                    }
+                  }
+                }
+              },
+              "expr": {
+                "Call": {
+                  "func": {
+                    "Var": {
+                      "value": "str_concat",
+                      "decl": {
+                        "file_id": {
+                          "package": "builtin",
+                          "filename": ""
+                        },
+                        "span": {
+                          "start": {
+                            "line": 0,
+                            "col": 0
+                          },
+                          "end": {
+                            "line": 0,
+                            "col": 0
+                          }
+                        }
+                      },
+                      "ty": {
+                        "Fun": {
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "String",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "String",
+                                "args": []
+                              }
+                            }
+                          ],
+                          "bounds": [],
+                          "ret": {
+                            "Con": {
+                              "name": "String",
+                              "args": []
+                            }
+                          },
+                          "fx": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 7,
+                          "col": 22
+                        },
+                        "end": {
+                          "line": 7,
+                          "col": 32
+                        }
+                      }
+                    }
+                  },
+                  "args": [
+                    {
+                      "Var": {
+                        "value": "c",
+                        "decl": {
+                          "file_id": {
+                            "package": "dummy",
+                            "filename": "dummy"
+                          },
+                          "span": {
+                            "start": {
+                              "line": 7,
+                              "col": 16
+                            },
+                            "end": {
+                              "line": 7,
+                              "col": 17
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "String",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 7,
+                            "col": 33
+                          },
+                          "end": {
+                            "line": 7,
+                            "col": 34
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Literal": {
+                        "lit": {
+                          "String": "!"
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "String",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 7,
+                            "col": 36
+                          },
+                          "end": {
+                            "line": 7,
+                            "col": 39
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "String",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 22
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 40
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "String",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 5,
+              "col": 2
+            },
+            "end": {
+              "line": 8,
+              "col": 3
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "String",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 9,
+        "col": 1
+      }
+    }
+  }
+}

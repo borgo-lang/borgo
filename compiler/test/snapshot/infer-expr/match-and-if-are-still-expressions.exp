@@ -1,0 +1,723 @@
+Match and If are still expressions.
+
+SOURCE:
+{
+  let x = "foo";
+
+  let a = match x {
+    "foo" => 1,
+    _ => 99,
+  };
+
+  let cond = false;
+
+  let b = if cond {
+    0
+  } else {
+    1
+  };
+
+  sum(a, b)
+}
+
+OUTPUT:
+Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "String",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "String": "foo"
+              },
+              "ty": {
+                "Con": {
+                  "name": "String",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 10
+                },
+                "end": {
+                  "line": 2,
+                  "col": 15
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "String",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 16
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "a",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Match": {
+              "subject": {
+                "Var": {
+                  "value": "x",
+                  "decl": {
+                    "file_id": {
+                      "package": "dummy",
+                      "filename": "dummy"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 2,
+                        "col": 6
+                      },
+                      "end": {
+                        "line": 2,
+                        "col": 7
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "String",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 17
+                    }
+                  }
+                }
+              },
+              "arms": [
+                {
+                  "pat": {
+                    "Lit": {
+                      "lit": {
+                        "String": "foo"
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "String",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 5,
+                          "col": 4
+                        },
+                        "end": {
+                          "line": 5,
+                          "col": 9
+                        }
+                      }
+                    }
+                  },
+                  "expr": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 1
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 5,
+                          "col": 13
+                        },
+                        "end": {
+                          "line": 5,
+                          "col": 14
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "pat": {
+                    "Wild": {
+                      "span": {
+                        "start": {
+                          "line": 6,
+                          "col": 4
+                        },
+                        "end": {
+                          "line": 6,
+                          "col": 5
+                        }
+                      }
+                    }
+                  },
+                  "expr": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 99
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 6,
+                          "col": 9
+                        },
+                        "end": {
+                          "line": 6,
+                          "col": 11
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 4,
+                  "col": 10
+                },
+                "end": {
+                  "line": 7,
+                  "col": 3
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 7,
+              "col": 4
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "cond",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 9,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 9,
+                    "col": 10
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Bool",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Bool": false
+              },
+              "ty": {
+                "Con": {
+                  "name": "Bool",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 9,
+                  "col": 13
+                },
+                "end": {
+                  "line": 9,
+                  "col": 18
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 9,
+              "col": 2
+            },
+            "end": {
+              "line": 9,
+              "col": 19
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "b",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 11,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 11,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "If": {
+              "cond": {
+                "Var": {
+                  "value": "cond",
+                  "decl": {
+                    "file_id": {
+                      "package": "dummy",
+                      "filename": "dummy"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 9,
+                        "col": 6
+                      },
+                      "end": {
+                        "line": 9,
+                        "col": 10
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "col": 13
+                    },
+                    "end": {
+                      "line": 11,
+                      "col": 17
+                    }
+                  }
+                }
+              },
+              "then": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Literal": {
+                        "lit": {
+                          "Int": 0
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 12,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 12,
+                            "col": 5
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "col": 18
+                    },
+                    "end": {
+                      "line": 13,
+                      "col": 3
+                    }
+                  }
+                }
+              },
+              "els": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Literal": {
+                        "lit": {
+                          "Int": 1
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 14,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 14,
+                            "col": 5
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 13,
+                      "col": 9
+                    },
+                    "end": {
+                      "line": 15,
+                      "col": 3
+                    }
+                  }
+                }
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 11,
+                  "col": 10
+                },
+                "end": {
+                  "line": 15,
+                  "col": 3
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 11,
+              "col": 2
+            },
+            "end": {
+              "line": 15,
+              "col": 4
+            }
+          }
+        }
+      },
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "sum",
+              "decl": {
+                "file_id": {
+                  "package": "builtin",
+                  "filename": ""
+                },
+                "span": {
+                  "start": {
+                    "line": 0,
+                    "col": 0
+                  },
+                  "end": {
+                    "line": 0,
+                    "col": 0
+                  }
+                }
+              },
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "fx": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 17,
+                  "col": 2
+                },
+                "end": {
+                  "line": 17,
+                  "col": 5
+                }
+              }
+            }
+          },
+          "args": [
+            {
+              "Var": {
+                "value": "a",
+                "decl": {
+                  "file_id": {
+                    "package": "dummy",
+                    "filename": "dummy"
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 6
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 7
+                    }
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 17,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 17,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            {
+              "Var": {
+                "value": "b",
+                "decl": {
+                  "file_id": {
+                    "package": "dummy",
+                    "filename": "dummy"
+                  },
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "col": 6
+                    },
+                    "end": {
+                      "line": 11,
+                      "col": 7
+                    }
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 17,
+                    "col": 9
+                  },
+                  "end": {
+                    "line": 17,
+                    "col": 10
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 17,
+              "col": 2
+            },
+            "end": {
+              "line": 17,
+              "col": 11
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 18,
+        "col": 1
+      }
+    }
+  }
+}

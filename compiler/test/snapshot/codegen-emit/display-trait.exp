@@ -1,0 +1,245 @@
+Display trait
+
+SOURCE:
+struct Foo { a: Int, b: String }
+struct Bar { baz: fn () -> Int }
+enum Color { Blue, Red }
+
+fn borgo_main() {
+  Display::to_string(1).inspect();
+  Display::to_string(false).inspect();
+  Display::to_string("yo").inspect();
+  Display::to_string('a').inspect();
+
+  let x = Foo { a: 1, b: "yo" };
+  Display::to_string(x).inspect();
+
+  Display::to_string([1,2,3]).inspect();
+  Display::to_string(Ok(Color::Red)).inspect();
+  Display::to_string((1, 2.3)).inspect();
+  Display::to_string(()).inspect();
+
+  let m = Map::new()
+    .insert("a", Color::Blue)
+    .insert("b", Color::Red);
+  Display::to_string(m).inspect();
+
+  Display::to_string(5.to_ref()).inspect();
+
+  Display::to_string(Bar { baz: || 1 }).inspect();
+
+  Display::to_string([1,2,3].seq()).inspect();
+
+  let s = Seq::infinite(0, |x| x + 1);
+  Display::to_string(s).inspect();
+
+  ()
+}
+
+OUTPUT:
+"1"
+"false"
+""yo""
+"'a'"
+"Foo { a: 1, b: "yo" }"
+"[1, 2, 3]"
+"Result::Ok(Color::Red)"
+"(1, 2.30)"
+"()"
+"{ "a" => Color::Blue, "b" => Color::Red }"
+"<ref>"
+"Bar { baz: <function> }"
+"[1, 2, 3]"
+"[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]"
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo(arg_0 any, arg_1 any) any {
+	return Foo{arg_0, arg_1}
+}
+func make_Bar(arg_0 any) any {
+	return Bar{arg_0.(func() any)}
+}
+
+var make_Color_Blue = Color_Blue{}
+var make_Color_Red = Color_Red{}
+
+type Foo struct {
+	A any
+	B any
+}
+type Bar struct {
+	Baz func() any
+}
+type Color_Blue struct {
+}
+type Color_Red struct {
+}
+type Color any
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := Display_to_string
+		var4 := var3(var2)
+		var5 := Debug_inspect(var4)
+		_ = var5
+		var6 := false
+		var7 := Display_to_string
+		var8 := var7(var6)
+		var9 := Debug_inspect(var8)
+		_ = var9
+		var10 := "yo"
+		var11 := Display_to_string
+		var12 := var11(var10)
+		var13 := Debug_inspect(var12)
+		_ = var13
+		var14 := 'a'
+		var15 := Display_to_string
+		var16 := var15(var14)
+		var17 := Debug_inspect(var16)
+		_ = var17
+		var18 := 1
+		var19 := "yo"
+		var20 := func(base any) any {
+			data := base.(Foo)
+			data.A = var18
+			data.B = var19
+			return data
+		}(Foo{})
+		var21 := var20
+		var22 := borgo.Unit
+		_ = var22
+		var23 := var21
+		var24 := Display_to_string
+		var25 := var24(var23)
+		var26 := Debug_inspect(var25)
+		_ = var26
+		var27 := 1
+		var28 := 2
+		var29 := 3
+		var30 := borgo.List(var27, var28, var29)
+		var31 := Display_to_string
+		var32 := var31(var30)
+		var33 := Debug_inspect(var32)
+		_ = var33
+		var34 := make_Color_Red
+		var35 := make_Result_Ok
+		var36 := var35(var34)
+		var37 := Display_to_string
+		var38 := var37(var36)
+		var39 := Debug_inspect(var38)
+		_ = var39
+		var40 := 1
+		var41 := 2.3
+		var42 := func(base any) any {
+			data := base.(Tuple2)
+			data.First = var40
+			data.Second = var41
+			return data
+		}(Tuple2{})
+		var43 := Display_to_string
+		var44 := var43(var42)
+		var45 := Debug_inspect(var44)
+		_ = var45
+		var46 := borgo.Unit
+		var47 := Display_to_string
+		var48 := var47(var46)
+		var49 := Debug_inspect(var48)
+		_ = var49
+		var50 := Map_new
+		var51 := var50()
+		var52 := "a"
+		var53 := make_Color_Blue
+		var54 := Map_insert
+		var55 := var54(var51, var52, var53)
+		var56 := "b"
+		var57 := make_Color_Red
+		var58 := Map_insert
+		var59 := var58(var55, var56, var57)
+		var60 := var59
+		var61 := borgo.Unit
+		_ = var61
+		var62 := var60
+		var63 := Display_to_string
+		var64 := var63(var62)
+		var65 := Debug_inspect(var64)
+		_ = var65
+		var66 := 5
+		var67 := Ref_to_ref
+		var68 := var67(var66)
+		var69 := Display_to_string
+		var70 := var69(var68)
+		var71 := Debug_inspect(var70)
+		_ = var71
+		var73 := func() any {
+
+			var72 := 1
+			return var72
+		}
+
+		var74 := var73
+		var75 := func(base any) any {
+			data := base.(Bar)
+			data.Baz = var74
+			return data
+		}(Bar{})
+		var76 := Display_to_string
+		var77 := var76(var75)
+		var78 := Debug_inspect(var77)
+		_ = var78
+		var79 := 1
+		var80 := 2
+		var81 := 3
+		var82 := borgo.List(var79, var80, var81)
+		var83 := List_seq
+		var84 := var83(var82)
+		var85 := Display_to_string
+		var86 := var85(var84)
+		var87 := Debug_inspect(var86)
+		_ = var87
+		var88 := 0
+		var93 := func(x any) any {
+
+			var89 := x
+			var90 := 1
+			var91 := borgo.Ops.IAdd
+			var92 := var91(var89, var90)
+			return var92
+		}
+
+		var94 := var93
+		var95 := Seq_infinite
+		var96 := var95(var88, var94)
+		var97 := var96
+		var98 := borgo.Unit
+		_ = var98
+		var99 := var97
+		var100 := Display_to_string
+		var101 := var100(var99)
+		var102 := Debug_inspect(var101)
+		_ = var102
+		var103 := borgo.Unit
+		var1_block = var103
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterStruct("Bar", "Bar")
+	borgo.RegisterMakeFunction("Bar", make_Bar)
+	borgo.RegisterTypeConstructor("Color::Blue", "Color_Blue")
+	borgo.RegisterMakeFunction("Color::Blue", make_Color_Blue)
+	borgo.RegisterTypeConstructor("Color::Red", "Color_Red")
+	borgo.RegisterMakeFunction("Color::Red", make_Color_Red)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

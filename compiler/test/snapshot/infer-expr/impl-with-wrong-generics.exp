@@ -1,0 +1,18 @@
+Impl with wrong generics
+
+SOURCE:
+{
+    enum Foo<T, Y> { Bar }
+    impl<T, Y> Foo<T> { }
+}
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    (A, A)
+Got:
+    (T)
+
+3|      impl<T, Y> Foo<T> { }
+                   ^^^^^^

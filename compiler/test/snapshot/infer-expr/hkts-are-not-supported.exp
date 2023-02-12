@@ -1,0 +1,15 @@
+HKTs are not supported.
+
+SOURCE:
+{ fn foo<T>(foo: T<Bool>) {} }
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    ()
+Got:
+    (Bool)
+
+1|  { fn foo<T>(foo: T<Bool>) {} }
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^

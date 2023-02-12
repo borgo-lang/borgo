@@ -1,0 +1,14 @@
+Wrong type in operands
+
+SOURCE:
+{ 1 + false }
+
+OUTPUT:
+Type mismatch
+Expected:
+    Int
+Got:
+    Bool
+
+1|  { 1 + false }
+      ^^^^^^^^^

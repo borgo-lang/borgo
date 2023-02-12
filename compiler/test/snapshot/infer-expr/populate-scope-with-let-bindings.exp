@@ -1,0 +1,142 @@
+Populate scope with let bindings.
+
+SOURCE:
+{
+  let x = 5;
+  x
+}
+
+OUTPUT:
+Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 5
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 10
+                },
+                "end": {
+                  "line": 2,
+                  "col": 11
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 12
+            }
+          }
+        }
+      },
+      {
+        "Var": {
+          "value": "x",
+          "decl": {
+            "file_id": {
+              "package": "dummy",
+              "filename": "dummy"
+            },
+            "span": {
+              "start": {
+                "line": 2,
+                "col": 6
+              },
+              "end": {
+                "line": 2,
+                "col": 7
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 3
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 4,
+        "col": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,138 @@
+Multiple files
+
+SOURCE:
+file: foo.brg
+enum Foo {
+  X(Bar),
+}
+
+file: bar.brg
+enum Bar {
+  A(Int),
+}
+
+fn with_foo(f: Foo, m: Int) -> Int {
+  match f {
+    Foo::X(b) => match b {
+      Bar::A(n) => n + m
+    }
+  }
+}
+
+file: main.brg
+fn borgo_main() {
+  let bar = Bar::A(2);
+  with_foo(Foo::X(bar), 3).assert_eq(5);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Bar_A(arg_0 any) any {
+	return Bar_A{arg_0}
+}
+
+func make_Foo_X(arg_0 any) any {
+	return Foo_X{arg_0}
+}
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 2
+		var3 := make_Bar_A
+		var4 := var3(var2)
+		var5 := var4
+		var6 := borgo.Unit
+		_ = var6
+		var7 := var5
+		var8 := make_Foo_X
+		var9 := var8(var7)
+		var10 := 3
+		var11 := with_foo
+		var12 := var11(var9, var10)
+		var13 := 5
+		var14 := Debug_assert_eq
+		var15 := var14(var12, var13)
+		var1_block = var15
+	}
+	return var1_block
+}
+
+type Bar_A struct {
+	Field0 any
+}
+type Bar any
+
+func with_foo(f any, m any) any {
+
+	var var1_block any
+	{
+		var2 := f
+		var var3_result any
+		var4_subject := var2
+
+		for var5_pattern := 0; var5_pattern < 1; var5_pattern++ {
+
+			if var5_pattern == 0 {
+				var6_pat, ok := var4_subject.(Foo_X)
+				_ = var6_pat
+				if !ok {
+					continue
+				}
+				var7 := var6_pat.Field0
+				_ = var4_subject
+
+				var8 := var7
+				var var9_result any
+				var10_subject := var8
+
+				for var11_pattern := 0; var11_pattern < 1; var11_pattern++ {
+
+					if var11_pattern == 0 {
+						var12_pat, ok := var10_subject.(Bar_A)
+						_ = var12_pat
+						if !ok {
+							continue
+						}
+						var13 := var12_pat.Field0
+						_ = var10_subject
+
+						var14 := var13
+						var15 := m
+						var16 := borgo.Ops.IAdd
+						var17 := var16(var14, var15)
+						var9_result = var17
+						break
+					}
+
+				}
+				var3_result = var9_result
+				break
+			}
+
+		}
+		var1_block = var3_result
+	}
+	return var1_block
+}
+
+type Foo_X struct {
+	Field0 any
+}
+type Foo any
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	borgo.RegisterTypeConstructor("Bar::A", "Bar_A")
+	borgo.RegisterMakeFunction("Bar::A", make_Bar_A)
+	borgo.RegisterGlobalFunction("with_foo", with_foo)
+	borgo.RegisterTypeConstructor("Foo::X", "Foo_X")
+	borgo.RegisterMakeFunction("Foo::X", make_Foo_X)
+}

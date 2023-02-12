@@ -1,0 +1,277 @@
+Traits bring functions in scope
+
+SOURCE:
+fn foo() -> Int {
+  let x = Eq::equals;
+  1
+}
+
+OUTPUT:
+fn () -> Int
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "foo",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Let": {
+                        "binding": {
+                          "pat": {
+                            "Type": {
+                              "ident": "x",
+                              "ann": "Unknown",
+                              "span": {
+                                "start": {
+                                  "line": 2,
+                                  "col": 6
+                                },
+                                "end": {
+                                  "line": 2,
+                                  "col": 7
+                                }
+                              }
+                            }
+                          },
+                          "ann": "Unknown",
+                          "ty": {
+                            "Fun": {
+                              "args": [
+                                {
+                                  "Var": 99
+                                },
+                                {
+                                  "Var": 99
+                                }
+                              ],
+                              "bounds": [
+                                {
+                                  "Con": {
+                                    "name": "Eq",
+                                    "args": [
+                                      {
+                                        "Var": 99
+                                      }
+                                    ]
+                                  }
+                                }
+                              ],
+                              "ret": {
+                                "Con": {
+                                  "name": "Bool",
+                                  "args": []
+                                }
+                              },
+                              "fx": []
+                            }
+                          }
+                        },
+                        "value": {
+                          "Var": {
+                            "value": "Eq::equals",
+                            "decl": {
+                              "file_id": {
+                                "package": "builtin",
+                                "filename": ""
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 0,
+                                  "col": 0
+                                },
+                                "end": {
+                                  "line": 0,
+                                  "col": 0
+                                }
+                              }
+                            },
+                            "ty": {
+                              "Fun": {
+                                "args": [
+                                  {
+                                    "Var": 99
+                                  },
+                                  {
+                                    "Var": 99
+                                  }
+                                ],
+                                "bounds": [
+                                  {
+                                    "Con": {
+                                      "name": "Eq",
+                                      "args": [
+                                        {
+                                          "Var": 99
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ],
+                                "ret": {
+                                  "Con": {
+                                    "name": "Bool",
+                                    "args": []
+                                  }
+                                },
+                                "fx": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 10
+                              },
+                              "end": {
+                                "line": 2,
+                                "col": 20
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Fun": {
+                            "args": [
+                              {
+                                "Var": 99
+                              },
+                              {
+                                "Var": 99
+                              }
+                            ],
+                            "bounds": [
+                              {
+                                "Con": {
+                                  "name": "Eq",
+                                  "args": [
+                                    {
+                                      "Var": 99
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "Con": {
+                                "name": "Bool",
+                                "args": []
+                              }
+                            },
+                            "fx": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 2,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 2,
+                            "col": 21
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Literal": {
+                        "lit": {
+                          "Int": 1
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 3,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 3,
+                            "col": 3
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 1,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 1
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "fx": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 4,
+                "col": 1
+              }
+            }
+          }
+        }
+      ],
+      "source": "fn foo() -> Int {\n  let x = Eq::equals;\n  1\n}"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}

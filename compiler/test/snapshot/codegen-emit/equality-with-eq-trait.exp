@@ -1,0 +1,87 @@
+Equality with Eq trait
+
+SOURCE:
+struct Foo { a: Int, b: String }
+
+fn borgo_main() {
+  let x = Foo { a: 1, b: "yo" };
+  let y = Foo { a: 1, b: "yo" };
+  Eq::equals(x, y).assert_eq(true);
+  Eq::equals(x, Foo { a: 2, ..y}).assert_eq(false);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo(arg_0 any, arg_1 any) any {
+	return Foo{arg_0, arg_1}
+}
+
+type Foo struct {
+	A any
+	B any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := "yo"
+		var4 := func(base any) any {
+			data := base.(Foo)
+			data.A = var2
+			data.B = var3
+			return data
+		}(Foo{})
+		var5 := var4
+		var6 := borgo.Unit
+		_ = var6
+		var7 := 1
+		var8 := "yo"
+		var9 := func(base any) any {
+			data := base.(Foo)
+			data.A = var7
+			data.B = var8
+			return data
+		}(Foo{})
+		var10 := var9
+		var11 := borgo.Unit
+		_ = var11
+		var12 := var5
+		var13 := var10
+		var14 := Eq_equals
+		var15 := var14(var12, var13)
+		var16 := true
+		var17 := Debug_assert_eq
+		var18 := var17(var15, var16)
+		_ = var18
+		var19 := var5
+		var20 := var10
+		var21 := 2
+		var22 := func(base any) any {
+			data := base.(Foo)
+			data.A = var21
+			return data
+		}(var20)
+		var23 := Eq_equals
+		var24 := var23(var19, var22)
+		var25 := false
+		var26 := Debug_assert_eq
+		var27 := var26(var24, var25)
+		var1_block = var27
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

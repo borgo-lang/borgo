@@ -1,0 +1,712 @@
+Enums can be returned from functions.
+
+SOURCE:
+{
+  enum Maybe<T> { Just(T), None }
+
+  fn ok<T>(v: T) -> Maybe<T> {
+    Maybe::Just(v)
+  }
+
+  ok(1) as Maybe<Int>;
+  ok("foo") as Maybe<String>;
+
+  ok
+}
+
+OUTPUT:
+fn <A>(A) -> Maybe<A>
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "EnumDef": {
+          "def": {
+            "name": "Maybe",
+            "generics": [
+              "T"
+            ],
+            "cons": [
+              {
+                "name": "Just",
+                "fields": [
+                  {
+                    "name": "field0",
+                    "ann": {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "None",
+                "fields": []
+              }
+            ]
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 33
+            }
+          }
+        }
+      },
+      {
+        "Closure": {
+          "fun": {
+            "name": "ok",
+            "generics": [
+              "T"
+            ],
+            "bounds": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "v",
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 4,
+                        "col": 11
+                      },
+                      "end": {
+                        "line": 4,
+                        "col": 12
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Con": {
+                "name": "Maybe",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "T",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Maybe",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "T",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Call": {
+                      "func": {
+                        "Var": {
+                          "value": "Maybe::Just",
+                          "decl": {
+                            "file_id": {
+                              "package": "dummy",
+                              "filename": "dummy"
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 2
+                              },
+                              "end": {
+                                "line": 2,
+                                "col": 33
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Fun": {
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "T",
+                                    "args": []
+                                  }
+                                }
+                              ],
+                              "bounds": [],
+                              "ret": {
+                                "Con": {
+                                  "name": "Maybe",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "T",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "fx": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 5,
+                              "col": 4
+                            },
+                            "end": {
+                              "line": 5,
+                              "col": 15
+                            }
+                          }
+                        }
+                      },
+                      "args": [
+                        {
+                          "Var": {
+                            "value": "v",
+                            "decl": {
+                              "file_id": {
+                                "package": "dummy",
+                                "filename": "dummy"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 4,
+                                  "col": 11
+                                },
+                                "end": {
+                                  "line": 4,
+                                  "col": 12
+                                }
+                              }
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "T",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 16
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 17
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "name": "Maybe",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "T",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 5,
+                          "col": 4
+                        },
+                        "end": {
+                          "line": 5,
+                          "col": 18
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Maybe",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "T",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 29
+                  },
+                  "end": {
+                    "line": 6,
+                    "col": 3
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Var": 99
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Maybe",
+                  "args": [
+                    {
+                      "Var": 99
+                    }
+                  ]
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 6,
+              "col": 3
+            }
+          }
+        }
+      },
+      {
+        "CheckType": {
+          "expr": {
+            "Call": {
+              "func": {
+                "Var": {
+                  "value": "ok",
+                  "decl": {
+                    "file_id": {
+                      "package": "dummy",
+                      "filename": "dummy"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 4,
+                        "col": 2
+                      },
+                      "end": {
+                        "line": 6,
+                        "col": 3
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Fun": {
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        }
+                      ],
+                      "bounds": [],
+                      "ret": {
+                        "Con": {
+                          "name": "Maybe",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "Int",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "fx": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 8,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 8,
+                      "col": 4
+                    }
+                  }
+                }
+              },
+              "args": [
+                {
+                  "Literal": {
+                    "lit": {
+                      "Int": 1
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    "span": {
+                      "start": {
+                        "line": 8,
+                        "col": 5
+                      },
+                      "end": {
+                        "line": 8,
+                        "col": 6
+                      }
+                    }
+                  }
+                }
+              ],
+              "ty": {
+                "Con": {
+                  "name": "Maybe",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 8,
+                  "col": 2
+                },
+                "end": {
+                  "line": 8,
+                  "col": 7
+                }
+              }
+            }
+          },
+          "ann": {
+            "Con": {
+              "name": "Maybe",
+              "args": [
+                {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Maybe",
+              "args": [
+                {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 8,
+              "col": 2
+            },
+            "end": {
+              "line": 8,
+              "col": 21
+            }
+          }
+        }
+      },
+      {
+        "CheckType": {
+          "expr": {
+            "Call": {
+              "func": {
+                "Var": {
+                  "value": "ok",
+                  "decl": {
+                    "file_id": {
+                      "package": "dummy",
+                      "filename": "dummy"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 4,
+                        "col": 2
+                      },
+                      "end": {
+                        "line": 6,
+                        "col": 3
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Fun": {
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "String",
+                            "args": []
+                          }
+                        }
+                      ],
+                      "bounds": [],
+                      "ret": {
+                        "Con": {
+                          "name": "Maybe",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "String",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "fx": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 9,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 9,
+                      "col": 4
+                    }
+                  }
+                }
+              },
+              "args": [
+                {
+                  "Literal": {
+                    "lit": {
+                      "String": "foo"
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    },
+                    "span": {
+                      "start": {
+                        "line": 9,
+                        "col": 5
+                      },
+                      "end": {
+                        "line": 9,
+                        "col": 10
+                      }
+                    }
+                  }
+                }
+              ],
+              "ty": {
+                "Con": {
+                  "name": "Maybe",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 9,
+                  "col": 2
+                },
+                "end": {
+                  "line": 9,
+                  "col": 11
+                }
+              }
+            }
+          },
+          "ann": {
+            "Con": {
+              "name": "Maybe",
+              "args": [
+                {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Maybe",
+              "args": [
+                {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 9,
+              "col": 2
+            },
+            "end": {
+              "line": 9,
+              "col": 28
+            }
+          }
+        }
+      },
+      {
+        "Var": {
+          "value": "ok",
+          "decl": {
+            "file_id": {
+              "package": "dummy",
+              "filename": "dummy"
+            },
+            "span": {
+              "start": {
+                "line": 4,
+                "col": 2
+              },
+              "end": {
+                "line": 6,
+                "col": 3
+              }
+            }
+          },
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Var": 99
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Maybe",
+                  "args": [
+                    {
+                      "Var": 99
+                    }
+                  ]
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 11,
+              "col": 2
+            },
+            "end": {
+              "line": 11,
+              "col": 4
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Fun": {
+        "args": [
+          {
+            "Var": 99
+          }
+        ],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "Maybe",
+            "args": [
+              {
+                "Var": 99
+              }
+            ]
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 12,
+        "col": 1
+      }
+    }
+  }
+}

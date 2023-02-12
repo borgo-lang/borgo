@@ -1,0 +1,268 @@
+Tuple fields
+
+SOURCE:
+{
+  let a = (1, "a");
+  a.0
+}
+
+OUTPUT:
+Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "a",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Tuple2",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "name": "String",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "value": {
+            "StructCall": {
+              "name": "Tuple2",
+              "fields": [
+                {
+                  "name": "first",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 1
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 11
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 12
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "second",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "String": "a"
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "String",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 14
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 17
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "rest": null,
+              "ty": {
+                "Con": {
+                  "name": "Tuple2",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 10
+                },
+                "end": {
+                  "line": 2,
+                  "col": 18
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Tuple2",
+              "args": [
+                {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 19
+            }
+          }
+        }
+      },
+      {
+        "StructAccess": {
+          "expr": {
+            "Var": {
+              "value": "a",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 7
+                  }
+                }
+              },
+              "ty": {
+                "Con": {
+                  "name": "Tuple2",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 3,
+                  "col": 2
+                },
+                "end": {
+                  "line": 3,
+                  "col": 3
+                }
+              }
+            }
+          },
+          "field": "first",
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 5
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 4,
+        "col": 1
+      }
+    }
+  }
+}

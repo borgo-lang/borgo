@@ -1,0 +1,56 @@
+Negate expressions
+
+SOURCE:
+!false
+
+OUTPUT:
+Bool
+---
+No errors.
+---
+[]
+---
+{
+  "Unary": {
+    "op": "Not",
+    "expr": {
+      "Literal": {
+        "lit": {
+          "Bool": false
+        },
+        "ty": {
+          "Con": {
+            "name": "Bool",
+            "args": []
+          }
+        },
+        "span": {
+          "start": {
+            "line": 1,
+            "col": 1
+          },
+          "end": {
+            "line": 1,
+            "col": 6
+          }
+        }
+      }
+    },
+    "ty": {
+      "Con": {
+        "name": "Bool",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 6
+      }
+    }
+  }
+}

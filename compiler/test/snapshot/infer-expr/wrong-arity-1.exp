@@ -1,0 +1,15 @@
+Wrong arity #1
+
+SOURCE:
+{ hello(1) }
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    ()
+Got:
+    (Int)
+
+1|  { hello(1) }
+      ^^^^^^^^

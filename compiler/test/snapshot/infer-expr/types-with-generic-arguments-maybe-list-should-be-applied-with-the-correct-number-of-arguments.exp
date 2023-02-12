@@ -1,0 +1,16 @@
+Types with generic arguments (Maybe, List) should be applied with the correct
+number of arguments.
+
+SOURCE:
+{ fn foo(foo: List<Int, Bool>) {} }
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    (A)
+Got:
+    (Int, Bool)
+
+1|  { fn foo(foo: List<Int, Bool>) {} }
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

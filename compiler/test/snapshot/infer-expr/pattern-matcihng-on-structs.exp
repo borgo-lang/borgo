@@ -1,0 +1,553 @@
+Pattern matcihng on structs
+
+SOURCE:
+{
+  struct Foo { x: Int, y: String }
+
+  let f = Foo{ x: 34, y: "yo" };
+  match f {
+    Foo { x, y: "bar" } => false,
+    Foo { x: 34, y: "bar" } => false,
+    Foo { x, y } => true,
+  }
+}
+
+OUTPUT:
+Bool
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "StructDef": {
+          "def": {
+            "name": "Foo",
+            "generics": [],
+            "fields": [
+              {
+                "name": "x",
+                "ann": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              },
+              {
+                "name": "y",
+                "ann": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                }
+              }
+            ]
+          },
+          "is_trait": false,
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 34
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "f",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Foo",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "StructCall": {
+              "name": "Foo",
+              "fields": [
+                {
+                  "name": "x",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 34
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 18
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 20
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "y",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "String": "yo"
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "String",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 25
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 29
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "rest": null,
+              "ty": {
+                "Con": {
+                  "name": "Foo",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 4,
+                  "col": 10
+                },
+                "end": {
+                  "line": 4,
+                  "col": 31
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Foo",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 32
+            }
+          }
+        }
+      },
+      {
+        "Match": {
+          "subject": {
+            "Var": {
+              "value": "f",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 7
+                  }
+                }
+              },
+              "ty": {
+                "Con": {
+                  "name": "Foo",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 5,
+                  "col": 8
+                },
+                "end": {
+                  "line": 5,
+                  "col": 9
+                }
+              }
+            }
+          },
+          "arms": [
+            {
+              "pat": {
+                "Struct": {
+                  "ident": "Foo",
+                  "fields": [
+                    {
+                      "name": "x",
+                      "value": {
+                        "Type": {
+                          "ident": "x",
+                          "ann": "Unknown",
+                          "span": {
+                            "start": {
+                              "line": 6,
+                              "col": 10
+                            },
+                            "end": {
+                              "line": 6,
+                              "col": 11
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "name": "y",
+                      "value": {
+                        "Lit": {
+                          "lit": {
+                            "String": "bar"
+                          },
+                          "ty": {
+                            "Con": {
+                              "name": "String",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 6,
+                              "col": 16
+                            },
+                            "end": {
+                              "line": 6,
+                              "col": 21
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 6,
+                      "col": 4
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 23
+                    }
+                  }
+                }
+              },
+              "expr": {
+                "Literal": {
+                  "lit": {
+                    "Bool": false
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 6,
+                      "col": 27
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 32
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "pat": {
+                "Struct": {
+                  "ident": "Foo",
+                  "fields": [
+                    {
+                      "name": "x",
+                      "value": {
+                        "Lit": {
+                          "lit": {
+                            "Int": 34
+                          },
+                          "ty": {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 7,
+                              "col": 13
+                            },
+                            "end": {
+                              "line": 7,
+                              "col": 15
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "name": "y",
+                      "value": {
+                        "Lit": {
+                          "lit": {
+                            "String": "bar"
+                          },
+                          "ty": {
+                            "Con": {
+                              "name": "String",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 7,
+                              "col": 20
+                            },
+                            "end": {
+                              "line": 7,
+                              "col": 25
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 4
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 27
+                    }
+                  }
+                }
+              },
+              "expr": {
+                "Literal": {
+                  "lit": {
+                    "Bool": false
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 31
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 36
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "pat": {
+                "Struct": {
+                  "ident": "Foo",
+                  "fields": [
+                    {
+                      "name": "x",
+                      "value": {
+                        "Type": {
+                          "ident": "x",
+                          "ann": "Unknown",
+                          "span": {
+                            "start": {
+                              "line": 8,
+                              "col": 10
+                            },
+                            "end": {
+                              "line": 8,
+                              "col": 11
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "name": "y",
+                      "value": {
+                        "Type": {
+                          "ident": "y",
+                          "ann": "Unknown",
+                          "span": {
+                            "start": {
+                              "line": 8,
+                              "col": 13
+                            },
+                            "end": {
+                              "line": 8,
+                              "col": 14
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 8,
+                      "col": 4
+                    },
+                    "end": {
+                      "line": 8,
+                      "col": 16
+                    }
+                  }
+                }
+              },
+              "expr": {
+                "Literal": {
+                  "lit": {
+                    "Bool": true
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 8,
+                      "col": 20
+                    },
+                    "end": {
+                      "line": 8,
+                      "col": 24
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 5,
+              "col": 2
+            },
+            "end": {
+              "line": 9,
+              "col": 3
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Bool",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 10,
+        "col": 1
+      }
+    }
+  }
+}

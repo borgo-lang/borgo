@@ -1,0 +1,54 @@
+String parsing
+
+SOURCE:
+fn borgo_main() {
+  "2".parse_int().assert_eq(Some(2));
+  "abc".parse_int().assert_eq(None);
+  "3.4".parse_float().assert_eq(Some(3.4));
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := "2"
+		var3 := String_parse_int
+		var4 := var3(var2)
+		var5 := 2
+		var6 := make_Option_Some
+		var7 := var6(var5)
+		var8 := Debug_assert_eq
+		var9 := var8(var4, var7)
+		_ = var9
+		var10 := "abc"
+		var11 := String_parse_int
+		var12 := var11(var10)
+		var13 := make_Option_None
+		var14 := Debug_assert_eq
+		var15 := var14(var12, var13)
+		_ = var15
+		var16 := "3.4"
+		var17 := String_parse_float
+		var18 := var17(var16)
+		var19 := 3.4
+		var20 := make_Option_Some
+		var21 := var20(var19)
+		var22 := Debug_assert_eq
+		var23 := var22(var18, var21)
+		var1_block = var23
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

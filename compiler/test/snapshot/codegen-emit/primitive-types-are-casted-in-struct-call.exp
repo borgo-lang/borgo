@@ -1,0 +1,62 @@
+Primitive types are casted in struct call
+
+SOURCE:
+struct Foo {
+  bar: Int
+}
+
+fn borgo_main() {
+  let x = 1;
+  let y = Foo { bar: x };
+  y.bar.assert_eq(1);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo(arg_0 any) any {
+	return Foo{arg_0}
+}
+
+type Foo struct {
+	Bar any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := var2
+		var4 := borgo.Unit
+		_ = var4
+		var5 := var3
+		var6 := func(base any) any {
+			data := base.(Foo)
+			data.Bar = var5
+			return data
+		}(Foo{})
+		var7 := var6
+		var8 := borgo.Unit
+		_ = var8
+		var9 := var7
+		var10 := var9.(Foo).Bar
+		var11 := 1
+		var12 := Debug_assert_eq
+		var13 := var12(var10, var11)
+		var1_block = var13
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

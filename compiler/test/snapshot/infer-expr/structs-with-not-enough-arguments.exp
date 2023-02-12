@@ -1,0 +1,18 @@
+Structs with not enough arguments.
+
+SOURCE:
+{
+  struct Foo { a: Int, b: Int }
+
+  Foo { a: 1 }
+}
+
+OUTPUT:
+Wrong arguments 
+Missing fields:
+[
+    "b",
+]
+
+4|    Foo { a: 1 }
+      ^^^^^^^^^^^^

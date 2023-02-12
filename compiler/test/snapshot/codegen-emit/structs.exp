@@ -1,0 +1,66 @@
+Structs
+
+SOURCE:
+struct Bar<T> {
+  name: String,
+  age: Int,
+  v: T,
+}
+
+fn borgo_main() {
+  let x = Bar { name: "yo", age: 99, v: false };
+  x.inspect();
+  ()
+}
+
+OUTPUT:
+Bar { name: "yo", age: 99, v: false }
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Bar(arg_0 any, arg_1 any, arg_2 any) any {
+	return Bar{arg_0, arg_1, arg_2}
+}
+
+type Bar struct {
+	Name any
+	Age  any
+	V    any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := "yo"
+		var3 := 99
+		var4 := false
+		var5 := func(base any) any {
+			data := base.(Bar)
+			data.Name = var2
+			data.Age = var3
+			data.V = var4
+			return data
+		}(Bar{})
+		var6 := var5
+		var7 := borgo.Unit
+		_ = var7
+		var8 := var6
+		var9 := Debug_inspect(var8)
+		_ = var9
+		var10 := borgo.Unit
+		var1_block = var10
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterStruct("Bar", "Bar")
+	borgo.RegisterMakeFunction("Bar", make_Bar)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

@@ -1,0 +1,213 @@
+Trait bounds
+
+SOURCE:
+{
+  fn foo<T: Eq>(x: T) -> Bool {
+    true
+  }
+}
+
+OUTPUT:
+fn <A: Eq>(A) -> Bool
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [
+              "T"
+            ],
+            "bounds": [
+              {
+                "Con": {
+                  "name": "Eq",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "x",
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 2,
+                        "col": 16
+                      },
+                      "end": {
+                        "line": 2,
+                        "col": 17
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Con": {
+                "name": "Bool",
+                "args": []
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Bool",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Literal": {
+                      "lit": {
+                        "Bool": true
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Bool",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 3,
+                          "col": 4
+                        },
+                        "end": {
+                          "line": 3,
+                          "col": 8
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Bool",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 30
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 3
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Var": 99
+                }
+              ],
+              "bounds": [
+                {
+                  "Con": {
+                    "name": "Eq",
+                    "args": [
+                      {
+                        "Var": 99
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ret": {
+                "Con": {
+                  "name": "Bool",
+                  "args": []
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 3
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Fun": {
+        "args": [
+          {
+            "Var": 99
+          }
+        ],
+        "bounds": [
+          {
+            "Con": {
+              "name": "Eq",
+              "args": [
+                {
+                  "Var": 99
+                }
+              ]
+            }
+          }
+        ],
+        "ret": {
+          "Con": {
+            "name": "Bool",
+            "args": []
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 5,
+        "col": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,232 @@
+Can shadow vars in block
+
+SOURCE:
+{
+  let a = "mutable";
+  {
+    let a = "block";
+  }
+  a
+}
+
+OUTPUT:
+String
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "a",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "String",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "String": "mutable"
+              },
+              "ty": {
+                "Con": {
+                  "name": "String",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 10
+                },
+                "end": {
+                  "line": 2,
+                  "col": 19
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "String",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 20
+            }
+          }
+        }
+      },
+      {
+        "Block": {
+          "stmts": [
+            {
+              "Let": {
+                "binding": {
+                  "pat": {
+                    "Type": {
+                      "ident": "a",
+                      "ann": "Unknown",
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 8
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 9
+                        }
+                      }
+                    }
+                  },
+                  "ann": "Unknown",
+                  "ty": {
+                    "Con": {
+                      "name": "String",
+                      "args": []
+                    }
+                  }
+                },
+                "value": {
+                  "Literal": {
+                    "lit": {
+                      "String": "block"
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    },
+                    "span": {
+                      "start": {
+                        "line": 4,
+                        "col": 12
+                      },
+                      "end": {
+                        "line": 4,
+                        "col": 19
+                      }
+                    }
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 4
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 20
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Var": 99
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 5,
+              "col": 3
+            }
+          }
+        }
+      },
+      {
+        "Var": {
+          "value": "a",
+          "decl": {
+            "file_id": {
+              "package": "dummy",
+              "filename": "dummy"
+            },
+            "span": {
+              "start": {
+                "line": 4,
+                "col": 8
+              },
+              "end": {
+                "line": 4,
+                "col": 9
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "String",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 6,
+              "col": 2
+            },
+            "end": {
+              "line": 6,
+              "col": 3
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "String",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 7,
+        "col": 1
+      }
+    }
+  }
+}

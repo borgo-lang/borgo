@@ -1,0 +1,70 @@
+Exhaustiveness checking on bools
+
+SOURCE:
+fn borgo_main() {
+  let x = match false {
+    true => unreachable!(),
+    false => 2,
+  };
+  x.assert_eq(2);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := false
+		var var3_result any
+		var4_subject := var2
+
+		for var5_pattern := 0; var5_pattern < 2; var5_pattern++ {
+
+			if var5_pattern == 0 {
+				var6 := true
+				if !borgo.Ops.Eq(var6, var4_subject).(bool) {
+					continue
+				}
+				_ = var4_subject
+
+				var7 := Debug_unreachable()
+				var3_result = var7
+				break
+			}
+
+			if var5_pattern == 1 {
+				var8 := false
+				if !borgo.Ops.Eq(var8, var4_subject).(bool) {
+					continue
+				}
+				_ = var4_subject
+
+				var9 := 2
+				var3_result = var9
+				break
+			}
+
+		}
+		var10 := var3_result
+		var11 := borgo.Unit
+		_ = var11
+		var12 := var10
+		var13 := 2
+		var14 := Debug_assert_eq
+		var15 := var14(var12, var13)
+		var1_block = var15
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

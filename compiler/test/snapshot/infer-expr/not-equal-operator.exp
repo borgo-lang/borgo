@@ -1,0 +1,103 @@
+Not equal operator
+
+SOURCE:
+{
+  1 != 2
+}
+
+OUTPUT:
+Bool
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Binary": {
+          "op": "Ne",
+          "left": {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 2
+                },
+                "end": {
+                  "line": 2,
+                  "col": 3
+                }
+              }
+            }
+          },
+          "right": {
+            "Literal": {
+              "lit": {
+                "Int": 2
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 7
+                },
+                "end": {
+                  "line": 2,
+                  "col": 8
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 8
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Bool",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 3,
+        "col": 1
+      }
+    }
+  }
+}

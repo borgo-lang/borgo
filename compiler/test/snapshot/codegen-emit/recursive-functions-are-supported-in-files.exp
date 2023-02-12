@@ -1,0 +1,81 @@
+Recursive functions are supported in files.
+
+SOURCE:
+file: main.brg
+
+fn foo(n: Int) -> Int {
+  if n != 5 {
+    return foo(n + 1)
+  }
+
+  n
+}
+
+fn borgo_main() {
+  foo(1).assert_eq(5)
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func foo(n any) any {
+
+	var var1_block any
+	{
+		var3 := n
+		var4 := 5
+		var5 := borgo.Ops.Ne
+		var6 := var5(var3, var4)
+		var var2_result any
+
+		if borgo.Ops.Eq(var6, true).(bool) {
+			var var7_block any
+			{
+				var8 := n
+				var9 := 1
+				var10 := borgo.Ops.IAdd
+				var11 := var10(var8, var9)
+				var12 := foo
+				var13 := var12(var11)
+				return var13
+				var14 := borgo.Unit
+				var7_block = var14
+			}
+			var2_result = var7_block
+		} else {
+			var15 := borgo.Unit
+			var2_result = var15
+		}
+		var16 := var2_result
+		_ = var16
+		var17 := n
+		var1_block = var17
+	}
+	return var1_block
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := foo
+		var4 := var3(var2)
+		var5 := 5
+		var6 := Debug_assert_eq
+		var7 := var6(var4, var5)
+		var1_block = var7
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("foo", foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

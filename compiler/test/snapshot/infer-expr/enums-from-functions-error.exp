@@ -1,0 +1,20 @@
+Enums from functions (error).
+
+SOURCE:
+{
+  enum Maybe<T> { Just(T), None }
+
+  fn foo(b: Int) -> Maybe<String> {
+    Maybe::Just(b)
+  }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Maybe<String>
+Got:
+    Maybe<Int>
+
+5|      Maybe::Just(b)
+        ^^^^^^^^^^^^^^

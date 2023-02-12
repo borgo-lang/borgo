@@ -1,0 +1,53 @@
+Newlines in strings
+
+SOURCE:
+fn borgo_main() {
+  let s = "a
+b
+c";
+
+  let s = s.split("\n");
+  s.to_list().assert_eq(["a", "b", "c"]);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := "a\nb\nc"
+		var3 := var2
+		var4 := borgo.Unit
+		_ = var4
+		var5 := var3
+		var6 := "\n"
+		var7 := String_split
+		var8 := var7(var5, var6)
+		var9 := var8
+		var10 := borgo.Unit
+		_ = var10
+		var11 := var9
+		var12 := Seq_to_list
+		var13 := var12(var11)
+		var14 := "a"
+		var15 := "b"
+		var16 := "c"
+		var17 := borgo.List(var14, var15, var16)
+		var18 := Debug_assert_eq
+		var19 := var18(var13, var17)
+		var1_block = var19
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

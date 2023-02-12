@@ -1,0 +1,235 @@
+Generic structs with multiple params.
+
+SOURCE:
+{
+  struct Foo<T, Y> { a: T, b: Y, c: T }
+
+  Foo { a: 1, b: false, c: 3 }
+}
+
+OUTPUT:
+Foo<Int, Bool>
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "StructDef": {
+          "def": {
+            "name": "Foo",
+            "generics": [
+              "T",
+              "Y"
+            ],
+            "fields": [
+              {
+                "name": "a",
+                "ann": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                }
+              },
+              {
+                "name": "b",
+                "ann": {
+                  "Con": {
+                    "name": "Y",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Y",
+                    "args": []
+                  }
+                }
+              },
+              {
+                "name": "c",
+                "ann": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                }
+              }
+            ]
+          },
+          "is_trait": false,
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 39
+            }
+          }
+        }
+      },
+      {
+        "StructCall": {
+          "name": "Foo",
+          "fields": [
+            {
+              "name": "a",
+              "value": {
+                "Literal": {
+                  "lit": {
+                    "Int": 1
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 11
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 12
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "b",
+              "value": {
+                "Literal": {
+                  "lit": {
+                    "Bool": false
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 17
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 22
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "c",
+              "value": {
+                "Literal": {
+                  "lit": {
+                    "Int": 3
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 27
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 28
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "rest": null,
+          "ty": {
+            "Con": {
+              "name": "Foo",
+              "args": [
+                {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                {
+                  "Con": {
+                    "name": "Bool",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 30
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Foo",
+        "args": [
+          {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          }
+        ]
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 5,
+        "col": 1
+      }
+    }
+  }
+}

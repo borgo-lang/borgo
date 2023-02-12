@@ -1,0 +1,14 @@
+Structs with too many arguments.
+
+SOURCE:
+{
+  struct Foo { a: Int, b: Int }
+
+  Foo { a: 1, b: 2, c: 3 }
+}
+
+OUTPUT:
+field not found: `c`
+
+4|    Foo { a: 1, b: 2, c: 3 }
+      ^^^^^^^^^^^^^^^^^^^^^^^^

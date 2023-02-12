@@ -1,0 +1,17 @@
+Patterns in a match arm should unify with subject.
+
+SOURCE:
+match 1 {
+  1 => "foo",
+  false => "foo",
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Int
+Got:
+    Bool
+
+3|    false => "foo",
+      ^^^^^

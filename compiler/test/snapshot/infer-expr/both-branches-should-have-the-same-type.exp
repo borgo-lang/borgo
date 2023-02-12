@@ -1,0 +1,18 @@
+Both branches should have the same type.
+
+SOURCE:
+if true {
+  1
+} else {
+  "hello"
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Int
+Got:
+    String
+
+4|    "hello"
+      ^^^^^^^

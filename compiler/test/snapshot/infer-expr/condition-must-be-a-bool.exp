@@ -1,0 +1,16 @@
+Condition must be a Bool.
+
+SOURCE:
+if 12 {
+  1
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Bool
+Got:
+    Int
+
+1|  if 12 {
+       ^^

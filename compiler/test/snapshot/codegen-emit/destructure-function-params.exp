@@ -1,0 +1,60 @@
+Destructure function params
+
+SOURCE:
+fn foo((_, b): (Int, String)) -> String {
+  b
+}
+
+fn borgo_main() {
+  foo((1, "yo")).assert_eq("yo");
+  ()
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func foo(arg_0 any) any {
+	// wildcard
+	var1 := arg_0.(Tuple2).Second
+	var var2_block any
+	{
+		var3 := var1
+		var2_block = var3
+	}
+	return var2_block
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := "yo"
+		var4 := func(base any) any {
+			data := base.(Tuple2)
+			data.First = var2
+			data.Second = var3
+			return data
+		}(Tuple2{})
+		var5 := foo
+		var6 := var5(var4)
+		var7 := "yo"
+		var8 := Debug_assert_eq
+		var9 := var8(var6, var7)
+		_ = var9
+		var10 := borgo.Unit
+		var1_block = var10
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("foo", foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

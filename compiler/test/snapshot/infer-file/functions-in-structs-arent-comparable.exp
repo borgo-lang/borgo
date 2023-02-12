@@ -1,0 +1,19 @@
+Functions in structs aren't comparable
+
+SOURCE:
+struct Foo {
+  bar: fn (Int) -> Int
+}
+
+fn borgo_main() {
+  let foo = Foo { bar: |x: Int| x + 2 };
+  let bar = Foo { bar: |x: Int| x + 2 };
+  foo == bar;
+  ()
+}
+
+OUTPUT:
+Functions can't be compared
+
+8|    foo == bar;
+      ^^^^^^^^^^

@@ -1,0 +1,17 @@
+Extern declarations with non existing generics
+
+SOURCE:
+struct Foo {}
+extern "native/Foo" {
+  fn bar<T>(x: T, k: K);
+}
+
+fn borgo_main() {
+  1.assert_eq(2)
+}
+
+OUTPUT:
+Type not found: K
+
+3|    fn bar<T>(x: T, k: K);
+      ^^^^^^^^^^^^^^^^^^^^^^

@@ -1,0 +1,41 @@
+Const expressions are global
+
+SOURCE:
+file: main.brg
+
+const a: Int = 1;
+
+fn borgo_main() -> Int { a + 5 }
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+var a any
+
+func init_const_a() any {
+	var1 := 1
+	return var1
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := a
+		var3 := 5
+		var4 := borgo.Ops.IAdd
+		var5 := var4(var2, var3)
+		var1_block = var5
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	a = init_const_a()
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

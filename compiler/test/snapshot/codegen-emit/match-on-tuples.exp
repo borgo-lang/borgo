@@ -1,0 +1,137 @@
+Match on tuples
+
+SOURCE:
+fn borgo_main() {
+    let res = match (1, "foo") {
+        (3, _) => 5,
+        (1, "bar") => 6,
+        (x, "foo") => x,
+        _ => unreachable!(),
+    };
+
+    res.assert_eq(1);
+
+    let res = match () {
+      () => 2,
+    };
+
+    res.assert_eq(2);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := "foo"
+		var4 := func(base any) any {
+			data := base.(Tuple2)
+			data.First = var2
+			data.Second = var3
+			return data
+		}(Tuple2{})
+		var var5_result any
+		var6_subject := var4
+
+		for var7_pattern := 0; var7_pattern < 4; var7_pattern++ {
+
+			if var7_pattern == 0 {
+				var8 := 3
+				if !borgo.Ops.Eq(var8, var6_subject.(Tuple2).First).(bool) {
+					continue
+				}
+				// wildcard
+				_ = var6_subject
+
+				var9 := 5
+				var5_result = var9
+				break
+			}
+
+			if var7_pattern == 1 {
+				var10 := 1
+				if !borgo.Ops.Eq(var10, var6_subject.(Tuple2).First).(bool) {
+					continue
+				}
+				var11 := "bar"
+				if !borgo.Ops.Eq(var11, var6_subject.(Tuple2).Second).(bool) {
+					continue
+				}
+				_ = var6_subject
+
+				var12 := 6
+				var5_result = var12
+				break
+			}
+
+			if var7_pattern == 2 {
+				var13 := var6_subject.(Tuple2).First
+				var14 := "foo"
+				if !borgo.Ops.Eq(var14, var6_subject.(Tuple2).Second).(bool) {
+					continue
+				}
+				_ = var6_subject
+
+				var15 := var13
+				var5_result = var15
+				break
+			}
+
+			if var7_pattern == 3 {
+				// wildcard
+				_ = var6_subject
+
+				var16 := Debug_unreachable()
+				var5_result = var16
+				break
+			}
+
+		}
+		var17 := var5_result
+		var18 := borgo.Unit
+		_ = var18
+		var19 := var17
+		var20 := 1
+		var21 := Debug_assert_eq
+		var22 := var21(var19, var20)
+		_ = var22
+		var23 := borgo.Unit
+		var var24_result any
+		var25_subject := var23
+
+		for var26_pattern := 0; var26_pattern < 1; var26_pattern++ {
+
+			if var26_pattern == 0 {
+				// unit
+				_ = var25_subject
+
+				var27 := 2
+				var24_result = var27
+				break
+			}
+
+		}
+		var28 := var24_result
+		var29 := borgo.Unit
+		_ = var29
+		var30 := var28
+		var31 := 2
+		var32 := Debug_assert_eq
+		var33 := var32(var30, var31)
+		var1_block = var33
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

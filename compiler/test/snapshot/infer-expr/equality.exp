@@ -1,0 +1,269 @@
+Equality
+
+SOURCE:
+{
+  let a = 1;
+  let b = 2;
+  a == b
+}
+
+OUTPUT:
+Bool
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "a",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 10
+                },
+                "end": {
+                  "line": 2,
+                  "col": 11
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 12
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "b",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 2
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 3,
+                  "col": 10
+                },
+                "end": {
+                  "line": 3,
+                  "col": 11
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 12
+            }
+          }
+        }
+      },
+      {
+        "Binary": {
+          "op": "Eq",
+          "left": {
+            "Var": {
+              "value": "a",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 7
+                  }
+                }
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 4,
+                  "col": 2
+                },
+                "end": {
+                  "line": 4,
+                  "col": 3
+                }
+              }
+            }
+          },
+          "right": {
+            "Var": {
+              "value": "b",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 7
+                  }
+                }
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 4,
+                  "col": 7
+                },
+                "end": {
+                  "line": 4,
+                  "col": 8
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 8
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Bool",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 5,
+        "col": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,103 @@
+Match on structs
+
+SOURCE:
+struct Foo { a: Int }
+
+fn borgo_main() {
+    let x = Foo { a: 1 };
+    let res = match x {
+        Foo { a: 2 } => false,
+        Foo { a: 1 } => true,
+        Foo { a: _ } => false,
+    };
+
+    res.assert_eq(true);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo(arg_0 any) any {
+	return Foo{arg_0}
+}
+
+type Foo struct {
+	A any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := func(base any) any {
+			data := base.(Foo)
+			data.A = var2
+			return data
+		}(Foo{})
+		var4 := var3
+		var5 := borgo.Unit
+		_ = var5
+		var6 := var4
+		var var7_result any
+		var8_subject := var6
+
+		for var9_pattern := 0; var9_pattern < 3; var9_pattern++ {
+
+			if var9_pattern == 0 {
+				var10 := 2
+				if !borgo.Ops.Eq(var10, var8_subject.(Foo).A).(bool) {
+					continue
+				}
+				_ = var8_subject
+
+				var11 := false
+				var7_result = var11
+				break
+			}
+
+			if var9_pattern == 1 {
+				var12 := 1
+				if !borgo.Ops.Eq(var12, var8_subject.(Foo).A).(bool) {
+					continue
+				}
+				_ = var8_subject
+
+				var13 := true
+				var7_result = var13
+				break
+			}
+
+			if var9_pattern == 2 {
+				// wildcard
+				_ = var8_subject
+
+				var14 := false
+				var7_result = var14
+				break
+			}
+
+		}
+		var15 := var7_result
+		var16 := borgo.Unit
+		_ = var16
+		var17 := var15
+		var18 := true
+		var19 := Debug_assert_eq
+		var20 := var19(var17, var18)
+		var1_block = var20
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

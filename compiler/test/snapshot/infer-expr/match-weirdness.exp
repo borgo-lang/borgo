@@ -1,0 +1,301 @@
+Match weirdness
+
+SOURCE:
+{
+    match false {
+        true => print("asdf"),
+    };
+
+    match 1 {
+        1 => false,
+    }
+}
+
+OUTPUT:
+Bool
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Match": {
+          "subject": {
+            "Literal": {
+              "lit": {
+                "Bool": false
+              },
+              "ty": {
+                "Con": {
+                  "name": "Bool",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 10
+                },
+                "end": {
+                  "line": 2,
+                  "col": 15
+                }
+              }
+            }
+          },
+          "arms": [
+            {
+              "pat": {
+                "Lit": {
+                  "lit": {
+                    "Bool": true
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 8
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 12
+                    }
+                  }
+                }
+              },
+              "expr": {
+                "Call": {
+                  "func": {
+                    "Var": {
+                      "value": "print",
+                      "decl": {
+                        "file_id": {
+                          "package": "builtin",
+                          "filename": ""
+                        },
+                        "span": {
+                          "start": {
+                            "line": 0,
+                            "col": 0
+                          },
+                          "end": {
+                            "line": 0,
+                            "col": 0
+                          }
+                        }
+                      },
+                      "ty": {
+                        "Fun": {
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "String",
+                                "args": []
+                              }
+                            }
+                          ],
+                          "bounds": [],
+                          "ret": {
+                            "Con": {
+                              "name": "Unit",
+                              "args": []
+                            }
+                          },
+                          "fx": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 3,
+                          "col": 16
+                        },
+                        "end": {
+                          "line": 3,
+                          "col": 21
+                        }
+                      }
+                    }
+                  },
+                  "args": [
+                    {
+                      "Literal": {
+                        "lit": {
+                          "String": "asdf"
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "String",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 3,
+                            "col": 22
+                          },
+                          "end": {
+                            "line": 3,
+                            "col": 28
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Unit",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 29
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Unit",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 4
+            },
+            "end": {
+              "line": 4,
+              "col": 5
+            }
+          }
+        }
+      },
+      {
+        "Match": {
+          "subject": {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              },
+              "ty": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 6,
+                  "col": 10
+                },
+                "end": {
+                  "line": 6,
+                  "col": 11
+                }
+              }
+            }
+          },
+          "arms": [
+            {
+              "pat": {
+                "Lit": {
+                  "lit": {
+                    "Int": 1
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 8
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 9
+                    }
+                  }
+                }
+              },
+              "expr": {
+                "Literal": {
+                  "lit": {
+                    "Bool": false
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 13
+                    },
+                    "end": {
+                      "line": 7,
+                      "col": 18
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 6,
+              "col": 4
+            },
+            "end": {
+              "line": 8,
+              "col": 5
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Bool",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 9,
+        "col": 1
+      }
+    }
+  }
+}

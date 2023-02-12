@@ -1,0 +1,135 @@
+Select statement
+
+SOURCE:
+fn foo(x: Sender<Int>) {
+  x.send(3)
+}
+
+fn borgo_main() {
+  let (x_send, x_recv) = Channel::new();
+  let (_, y_recv) = Channel::new();
+
+  spawn!((|| { x_send.send(5) })());
+
+  let val = x_recv.recv();
+  val.unwrap().assert_eq(5);
+
+  spawn!(foo(x_send));
+
+  match select!() {
+    ChannelOp::Recv(x_recv, val) => val.unwrap().assert_eq(3),
+    ChannelOp::Recv(y_recv, _) => unreachable!(),
+  };
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func foo(x any) any {
+
+	var var1_block any
+	{
+		var2 := x
+		var3 := 3
+		var4 := Sender_send
+		var5 := var4(var2, var3)
+		var1_block = var5
+	}
+	return var1_block
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := Channel_new
+		var3 := var2()
+		var4 := var3
+		var5 := var4.(Tuple2).First
+		var6 := var4.(Tuple2).Second
+		var7 := borgo.Unit
+		_ = var7
+		var8 := Channel_new
+		var9 := var8()
+		var10 := var9
+		// wildcard
+		var11 := var10.(Tuple2).Second
+		var12 := borgo.Unit
+		_ = var12
+		var18 := func() any {
+
+			var var13_block any
+			{
+				var14 := var5
+				var15 := 5
+				var16 := Sender_send
+				var17 := var16(var14, var15)
+				var13_block = var17
+			}
+			return var13_block
+		}
+
+		var19 := var18
+		var20 := (var19)
+		go var20()
+		var21 := borgo.Unit
+		_ = var21
+		var22 := var6
+		var23 := Receiver_recv
+		var24 := var23(var22)
+		var25 := var24
+		var26 := borgo.Unit
+		_ = var26
+		var27 := var25
+		var28 := Option_unwrap
+		var29 := var28(var27)
+		var30 := 5
+		var31 := Debug_assert_eq
+		var32 := var31(var29, var30)
+		_ = var32
+		var33 := var5
+		var34 := foo
+		go var34(var33)
+		var35 := borgo.Unit
+		_ = var35
+		select {
+		case var36_value, var37_more := <-var6.(chan any):
+			var val any
+			if var37_more {
+				val = make_Option_Some(var36_value)
+			} else {
+				val = make_Option_None
+			}
+			var38 := val
+			var39 := Option_unwrap
+			var40 := var39(var38)
+			var41 := 3
+			var42 := Debug_assert_eq
+			var43 := var42(var40, var41)
+			_ = var43
+		case var44_value, var45_more := <-var11.(chan any):
+
+			if var45_more {
+				_ = make_Option_Some(var44_value)
+			} else {
+				_ = make_Option_None
+			}
+			var46 := Debug_unreachable()
+			_ = var46
+		}
+		var47 := borgo.Unit
+		var1_block = var47
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("foo", foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

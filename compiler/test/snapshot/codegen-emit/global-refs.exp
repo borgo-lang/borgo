@@ -1,0 +1,75 @@
+Global refs
+
+SOURCE:
+file: main.brg
+
+const state: Ref<Int> = 5.to_ref();
+
+fn foo() {
+  state.mutate(|x| x + 80);
+}
+
+fn borgo_main() -> Int {
+  foo();
+  state.get()
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+var state any
+
+func init_const_state() any {
+	var1 := 5
+	var2 := Ref_to_ref
+	var3 := var2(var1)
+	return var3
+}
+
+func foo() any {
+
+	var var1_block any
+	{
+		var2 := state
+		var7 := func(x any) any {
+
+			var3 := x
+			var4 := 80
+			var5 := borgo.Ops.IAdd
+			var6 := var5(var3, var4)
+			return var6
+		}
+
+		var8 := var7
+		var9 := Ref_mutate
+		var10 := var9(var2, var8)
+		var1_block = var10
+	}
+	return var1_block
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := foo
+		var3 := var2()
+		_ = var3
+		var4 := state
+		var5 := Ref_get
+		var6 := var5(var4)
+		var1_block = var6
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	state = init_const_state()
+	borgo.RegisterGlobalFunction("foo", foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

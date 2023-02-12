@@ -1,0 +1,65 @@
+Enums
+
+SOURCE:
+enum Foo {
+  Bar(Int, Bool),
+  Baz,
+}
+
+fn borgo_main() {
+  Foo::Bar(2, false).inspect();
+  Foo::Baz.inspect();
+  ()
+}
+
+OUTPUT:
+Foo::Bar(2, false)
+Foo::Baz
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo_Bar(arg_0 any, arg_1 any) any {
+	return Foo_Bar{arg_0, arg_1}
+}
+
+var make_Foo_Baz = Foo_Baz{}
+
+type Foo_Bar struct {
+	Field0 any
+	Field1 any
+}
+type Foo_Baz struct {
+}
+type Foo any
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 2
+		var3 := false
+		var4 := make_Foo_Bar
+		var5 := var4(var2, var3)
+		var6 := Debug_inspect(var5)
+		_ = var6
+		var7 := make_Foo_Baz
+		var8 := Debug_inspect(var7)
+		_ = var8
+		var9 := borgo.Unit
+		var1_block = var9
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterTypeConstructor("Foo::Bar", "Foo_Bar")
+	borgo.RegisterMakeFunction("Foo::Bar", make_Foo_Bar)
+	borgo.RegisterTypeConstructor("Foo::Baz", "Foo_Baz")
+	borgo.RegisterMakeFunction("Foo::Baz", make_Foo_Baz)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

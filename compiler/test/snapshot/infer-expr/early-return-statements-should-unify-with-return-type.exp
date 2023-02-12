@@ -1,0 +1,22 @@
+Early return statements should unify with return type.
+
+SOURCE:
+{
+  fn foo() -> Int {
+    if true {
+      return "foo"
+    }
+
+    return 1
+  }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Int
+Got:
+    String
+
+4|        return "foo"
+                 ^^^^^

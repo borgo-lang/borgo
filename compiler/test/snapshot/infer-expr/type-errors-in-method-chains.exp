@@ -1,0 +1,25 @@
+Type errors in method chains
+
+SOURCE:
+{
+  fn foo(x: Int) -> Int { 1 }
+  fn bar(x: String) -> String { x }
+  fn baz(x: String) -> String { x }
+
+  let input = "yo";
+
+  input
+  .bar()
+  .baz()
+  .foo()
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Int
+Got:
+    String
+
+11|    .foo()
+        ^^^

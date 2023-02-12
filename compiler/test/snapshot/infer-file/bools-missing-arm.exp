@@ -1,0 +1,14 @@
+Bools missing arm
+
+SOURCE:
+fn borgo_main() {
+  match false {
+    false => (),
+  };
+}
+
+OUTPUT:
+Pattern match is not exhaustive, missing case: "true"
+
+2|    match false {
+      ^--

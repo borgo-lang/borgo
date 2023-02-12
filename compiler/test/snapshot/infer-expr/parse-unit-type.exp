@@ -1,0 +1,170 @@
+Parse unit type
+
+SOURCE:
+{
+  fn foo(x: ()) { () }
+}
+
+OUTPUT:
+fn (()) -> ()
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [],
+            "bounds": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "x",
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 2,
+                        "col": 9
+                      },
+                      "end": {
+                        "line": 2,
+                        "col": 10
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Unit": {
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 18
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 20
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 16
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 22
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 22
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Fun": {
+        "args": [
+          {
+            "Con": {
+              "name": "Unit",
+              "args": []
+            }
+          }
+        ],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 3,
+        "col": 1
+      }
+    }
+  }
+}

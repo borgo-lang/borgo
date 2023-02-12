@@ -1,0 +1,117 @@
+Simple check
+
+SOURCE:
+fn foo() -> Int { 1 }
+
+OUTPUT:
+fn () -> Int
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "foo",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Literal": {
+                        "lit": {
+                          "Int": 1
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 1,
+                            "col": 18
+                          },
+                          "end": {
+                            "line": 1,
+                            "col": 19
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 1,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 1,
+                      "col": 21
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "fx": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 1,
+                "col": 21
+              }
+            }
+          }
+        }
+      ],
+      "source": "fn foo() -> Int { 1 }"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}

@@ -1,0 +1,10 @@
+Neg only works with numbers
+
+SOURCE:
+-false
+
+OUTPUT:
+Was expecting Int or Float, got Bool
+
+1|  -false
+     ^^^^^

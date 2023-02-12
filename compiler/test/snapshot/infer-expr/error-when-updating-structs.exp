@@ -1,0 +1,15 @@
+Error when updating structs.
+
+SOURCE:
+{
+  struct Foo { a: Int }
+
+  let x = Foo { a: 1 };
+  x.a = "foo"
+}
+
+OUTPUT:
+updating struct fields is not supported. Re-bind instead
+
+5|    x.a = "foo"
+      ^^^^^^^^^^^

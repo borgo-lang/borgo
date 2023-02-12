@@ -1,0 +1,35 @@
+Characters
+
+SOURCE:
+'a'
+
+OUTPUT:
+Char
+---
+No errors.
+---
+[]
+---
+{
+  "Literal": {
+    "lit": {
+      "Char": "a"
+    },
+    "ty": {
+      "Con": {
+        "name": "Char",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 3
+      }
+    }
+  }
+}

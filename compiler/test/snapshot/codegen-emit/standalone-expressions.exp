@@ -1,0 +1,34 @@
+Standalone expressions
+
+SOURCE:
+fn borgo_main() {
+  4.inspect();
+  ()
+}
+
+OUTPUT:
+4
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 4
+		var3 := Debug_inspect(var2)
+		_ = var3
+		var4 := borgo.Unit
+		var1_block = var4
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

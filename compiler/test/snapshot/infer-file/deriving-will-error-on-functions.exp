@@ -1,0 +1,14 @@
+Deriving will error on functions
+
+SOURCE:
+fn bar() {}
+
+fn foo() -> Bool {
+  Eq::equals(bar, bar) as Bool;
+}
+
+OUTPUT:
+Functions can't be compared
+
+4|    Eq::equals(bar, bar) as Bool;
+      ^^^^^^^^^^^^^^^^^^^^

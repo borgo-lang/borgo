@@ -1,0 +1,17 @@
+Generics are applied correctly.
+
+SOURCE:
+{
+  let x = ["hello"];
+  list_map(x, inc)
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    fn (String) -> Int
+Got:
+    fn (Int) -> Int
+
+3|    list_map(x, inc)
+                  ^^^

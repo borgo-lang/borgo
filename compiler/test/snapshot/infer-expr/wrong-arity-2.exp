@@ -1,0 +1,15 @@
+Wrong arity #2
+
+SOURCE:
+{ sum(1) }
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    (Int, Int)
+Got:
+    (Int)
+
+1|  { sum(1) }
+      ^^^^^^

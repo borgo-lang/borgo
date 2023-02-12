@@ -1,0 +1,159 @@
+Function call with arguments
+
+SOURCE:
+{ sum(1, 4) }
+
+OUTPUT:
+Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "sum",
+              "decl": {
+                "file_id": {
+                  "package": "builtin",
+                  "filename": ""
+                },
+                "span": {
+                  "start": {
+                    "line": 0,
+                    "col": 0
+                  },
+                  "end": {
+                    "line": 0,
+                    "col": 0
+                  }
+                }
+              },
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "fx": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 1,
+                  "col": 2
+                },
+                "end": {
+                  "line": 1,
+                  "col": 5
+                }
+              }
+            }
+          },
+          "args": [
+            {
+              "Literal": {
+                "lit": {
+                  "Int": 1
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            {
+              "Literal": {
+                "lit": {
+                  "Int": 4
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 9
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 10
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1,
+              "col": 2
+            },
+            "end": {
+              "line": 1,
+              "col": 11
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 13
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+Can't have return statements outside of functions.
+
+SOURCE:
+{
+  return false
+}
+
+OUTPUT:
+return statements can only be used within functions.
+
+2|    return false
+      ^^^^^^^^^^^^

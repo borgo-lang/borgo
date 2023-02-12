@@ -1,0 +1,65 @@
+Maps in structs
+
+SOURCE:
+struct Foo {
+  bar: Map<String, Int>
+}
+
+fn borgo_main() {
+  let bar = Map::new();
+  let foo = Foo { bar };
+  foo.bar.len().assert_eq(0);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo(arg_0 any) any {
+	return Foo{arg_0}
+}
+
+type Foo struct {
+	Bar any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := Map_new
+		var3 := var2()
+		var4 := var3
+		var5 := borgo.Unit
+		_ = var5
+		var6 := var4
+		var7 := func(base any) any {
+			data := base.(Foo)
+			data.Bar = var6
+			return data
+		}(Foo{})
+		var8 := var7
+		var9 := borgo.Unit
+		_ = var9
+		var10 := var8
+		var11 := var10.(Foo).Bar
+		var12 := Map_len
+		var13 := var12(var11)
+		var14 := 0
+		var15 := Debug_assert_eq
+		var16 := var15(var13, var14)
+		var1_block = var16
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

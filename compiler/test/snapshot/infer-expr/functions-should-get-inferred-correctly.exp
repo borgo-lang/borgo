@@ -1,0 +1,85 @@
+Functions should get inferred correctly.
+
+SOURCE:
+list_map
+
+OUTPUT:
+fn <A, B>(List<A>, fn (A) -> B) -> List<B>
+---
+No errors.
+---
+[]
+---
+{
+  "Var": {
+    "value": "list_map",
+    "decl": {
+      "file_id": {
+        "package": "builtin",
+        "filename": ""
+      },
+      "span": {
+        "start": {
+          "line": 0,
+          "col": 0
+        },
+        "end": {
+          "line": 0,
+          "col": 0
+        }
+      }
+    },
+    "ty": {
+      "Fun": {
+        "args": [
+          {
+            "Con": {
+              "name": "List",
+              "args": [
+                {
+                  "Var": 99
+                }
+              ]
+            }
+          },
+          {
+            "Fun": {
+              "args": [
+                {
+                  "Var": 99
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Var": 99
+              },
+              "fx": []
+            }
+          }
+        ],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "List",
+            "args": [
+              {
+                "Var": 99
+              }
+            ]
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 8
+      }
+    }
+  }
+}

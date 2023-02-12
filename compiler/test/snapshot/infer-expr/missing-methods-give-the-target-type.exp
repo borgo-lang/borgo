@@ -1,0 +1,17 @@
+Missing methods give the target type.
+
+SOURCE:
+{
+  struct Foo<T> { x: T }
+  let f = Foo{ x: 34 };
+  f.bar();
+}
+
+OUTPUT:
+Type:
+    Foo<Int>
+has no method:
+    bar
+
+4|    f.bar();
+        ^^^

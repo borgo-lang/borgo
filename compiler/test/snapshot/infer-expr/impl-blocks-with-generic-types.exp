@@ -1,0 +1,1401 @@
+Impl blocks with generic types
+
+SOURCE:
+{
+    enum Foo<T, Y> { Bar(T), Baz(Y) }
+
+    impl<T, Y> Foo<T, Y> {
+        fn make_bar(x: T) -> Foo<T, Y> { Foo::Bar(x) }
+
+        fn do_stuff(self, y: Y) -> Y {
+            self as Foo<T, Y>;
+
+            match self {
+                Foo::Bar(x) => y,
+                Foo::Baz(yy) => yy,
+            }
+        }
+    }
+
+    let foo: Foo<Int, Bool> = Foo::make_bar(1);
+    foo.do_stuff(true)
+}
+
+OUTPUT:
+Bool
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "EnumDef": {
+          "def": {
+            "name": "Foo",
+            "generics": [
+              "T",
+              "Y"
+            ],
+            "cons": [
+              {
+                "name": "Bar",
+                "fields": [
+                  {
+                    "name": "field0",
+                    "ann": {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Baz",
+                "fields": [
+                  {
+                    "name": "field0",
+                    "ann": {
+                      "Con": {
+                        "name": "Y",
+                        "args": []
+                      }
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "Y",
+                        "args": []
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 4
+            },
+            "end": {
+              "line": 2,
+              "col": 37
+            }
+          }
+        }
+      },
+      {
+        "ImplBlock": {
+          "ann": {
+            "Con": {
+              "name": "Foo",
+              "args": [
+                {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                },
+                {
+                  "Con": {
+                    "name": "Y",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Foo",
+              "args": [
+                {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                },
+                {
+                  "Con": {
+                    "name": "Y",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "items": [
+            {
+              "Closure": {
+                "fun": {
+                  "name": "Foo::make_bar",
+                  "generics": [
+                    "T",
+                    "Y"
+                  ],
+                  "bounds": [],
+                  "args": [
+                    {
+                      "pat": {
+                        "Type": {
+                          "ident": "x",
+                          "ann": "Unknown",
+                          "span": {
+                            "start": {
+                              "line": 5,
+                              "col": 20
+                            },
+                            "end": {
+                              "line": 5,
+                              "col": 21
+                            }
+                          }
+                        }
+                      },
+                      "ann": {
+                        "Con": {
+                          "name": "T",
+                          "args": []
+                        }
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "T",
+                          "args": []
+                        }
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "T",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "Y",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "T",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "Y",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "body": {
+                    "Block": {
+                      "stmts": [
+                        {
+                          "Call": {
+                            "func": {
+                              "Var": {
+                                "value": "Foo::Bar",
+                                "decl": {
+                                  "file_id": {
+                                    "package": "dummy",
+                                    "filename": "dummy"
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 2,
+                                      "col": 4
+                                    },
+                                    "end": {
+                                      "line": 2,
+                                      "col": 37
+                                    }
+                                  }
+                                },
+                                "ty": {
+                                  "Fun": {
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "T",
+                                          "args": []
+                                        }
+                                      }
+                                    ],
+                                    "bounds": [],
+                                    "ret": {
+                                      "Con": {
+                                        "name": "Foo",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "T",
+                                              "args": []
+                                            }
+                                          },
+                                          {
+                                            "Con": {
+                                              "name": "Y",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "fx": []
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 5,
+                                    "col": 41
+                                  },
+                                  "end": {
+                                    "line": 5,
+                                    "col": 49
+                                  }
+                                }
+                              }
+                            },
+                            "args": [
+                              {
+                                "Var": {
+                                  "value": "x",
+                                  "decl": {
+                                    "file_id": {
+                                      "package": "dummy",
+                                      "filename": "dummy"
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 5,
+                                        "col": 20
+                                      },
+                                      "end": {
+                                        "line": 5,
+                                        "col": 21
+                                      }
+                                    }
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "name": "T",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 5,
+                                      "col": 50
+                                    },
+                                    "end": {
+                                      "line": 5,
+                                      "col": 51
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "ty": {
+                              "Con": {
+                                "name": "Foo",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "T",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "Y",
+                                      "args": []
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 41
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 52
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "name": "Foo",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "T",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "Y",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 5,
+                          "col": 39
+                        },
+                        "end": {
+                          "line": 5,
+                          "col": 54
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "TopLevel",
+                "ty": {
+                  "Fun": {
+                    "args": [
+                      {
+                        "Var": 99
+                      }
+                    ],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Foo",
+                        "args": [
+                          {
+                            "Var": 99
+                          },
+                          {
+                            "Var": 99
+                          }
+                        ]
+                      }
+                    },
+                    "fx": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 5,
+                    "col": 8
+                  },
+                  "end": {
+                    "line": 5,
+                    "col": 54
+                  }
+                }
+              }
+            },
+            {
+              "Closure": {
+                "fun": {
+                  "name": "Foo::do_stuff",
+                  "generics": [
+                    "T",
+                    "Y"
+                  ],
+                  "bounds": [],
+                  "args": [
+                    {
+                      "pat": {
+                        "Type": {
+                          "ident": "self",
+                          "ann": {
+                            "Con": {
+                              "name": "Foo",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "T",
+                                    "args": []
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "name": "Y",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 4,
+                              "col": 4
+                            },
+                            "end": {
+                              "line": 15,
+                              "col": 5
+                            }
+                          }
+                        }
+                      },
+                      "ann": {
+                        "Con": {
+                          "name": "Foo",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "T",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "Y",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Foo",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "T",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "Y",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "pat": {
+                        "Type": {
+                          "ident": "y",
+                          "ann": "Unknown",
+                          "span": {
+                            "start": {
+                              "line": 7,
+                              "col": 26
+                            },
+                            "end": {
+                              "line": 7,
+                              "col": 27
+                            }
+                          }
+                        }
+                      },
+                      "ann": {
+                        "Con": {
+                          "name": "Y",
+                          "args": []
+                        }
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Y",
+                          "args": []
+                        }
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "Con": {
+                      "name": "Y",
+                      "args": []
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "Y",
+                      "args": []
+                    }
+                  },
+                  "body": {
+                    "Block": {
+                      "stmts": [
+                        {
+                          "CheckType": {
+                            "expr": {
+                              "Var": {
+                                "value": "self",
+                                "decl": {
+                                  "file_id": {
+                                    "package": "dummy",
+                                    "filename": "dummy"
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 4,
+                                      "col": 4
+                                    },
+                                    "end": {
+                                      "line": 15,
+                                      "col": 5
+                                    }
+                                  }
+                                },
+                                "ty": {
+                                  "Con": {
+                                    "name": "Foo",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "T",
+                                          "args": []
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "Y",
+                                          "args": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 8,
+                                    "col": 12
+                                  },
+                                  "end": {
+                                    "line": 8,
+                                    "col": 16
+                                  }
+                                }
+                              }
+                            },
+                            "ann": {
+                              "Con": {
+                                "name": "Foo",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "T",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "Y",
+                                      "args": []
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "Foo",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "T",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "Y",
+                                      "args": []
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 8,
+                                "col": 12
+                              },
+                              "end": {
+                                "line": 8,
+                                "col": 29
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "Match": {
+                            "subject": {
+                              "Var": {
+                                "value": "self",
+                                "decl": {
+                                  "file_id": {
+                                    "package": "dummy",
+                                    "filename": "dummy"
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 4,
+                                      "col": 4
+                                    },
+                                    "end": {
+                                      "line": 15,
+                                      "col": 5
+                                    }
+                                  }
+                                },
+                                "ty": {
+                                  "Con": {
+                                    "name": "Foo",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "T",
+                                          "args": []
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "Y",
+                                          "args": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 10,
+                                    "col": 18
+                                  },
+                                  "end": {
+                                    "line": 10,
+                                    "col": 22
+                                  }
+                                }
+                              }
+                            },
+                            "arms": [
+                              {
+                                "pat": {
+                                  "Pat": {
+                                    "ident": "Foo::Bar",
+                                    "elems": [
+                                      {
+                                        "Type": {
+                                          "ident": "x",
+                                          "ann": "Unknown",
+                                          "span": {
+                                            "start": {
+                                              "line": 11,
+                                              "col": 25
+                                            },
+                                            "end": {
+                                              "line": 11,
+                                              "col": 26
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "ty": {
+                                      "Con": {
+                                        "name": "Foo",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "T",
+                                              "args": []
+                                            }
+                                          },
+                                          {
+                                            "Con": {
+                                              "name": "Y",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 11,
+                                        "col": 16
+                                      },
+                                      "end": {
+                                        "line": 11,
+                                        "col": 27
+                                      }
+                                    }
+                                  }
+                                },
+                                "expr": {
+                                  "Var": {
+                                    "value": "y",
+                                    "decl": {
+                                      "file_id": {
+                                        "package": "dummy",
+                                        "filename": "dummy"
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 7,
+                                          "col": 26
+                                        },
+                                        "end": {
+                                          "line": 7,
+                                          "col": 27
+                                        }
+                                      }
+                                    },
+                                    "ty": {
+                                      "Con": {
+                                        "name": "Y",
+                                        "args": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 11,
+                                        "col": 31
+                                      },
+                                      "end": {
+                                        "line": 11,
+                                        "col": 32
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "pat": {
+                                  "Pat": {
+                                    "ident": "Foo::Baz",
+                                    "elems": [
+                                      {
+                                        "Type": {
+                                          "ident": "yy",
+                                          "ann": "Unknown",
+                                          "span": {
+                                            "start": {
+                                              "line": 12,
+                                              "col": 25
+                                            },
+                                            "end": {
+                                              "line": 12,
+                                              "col": 27
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "ty": {
+                                      "Con": {
+                                        "name": "Foo",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "T",
+                                              "args": []
+                                            }
+                                          },
+                                          {
+                                            "Con": {
+                                              "name": "Y",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 12,
+                                        "col": 16
+                                      },
+                                      "end": {
+                                        "line": 12,
+                                        "col": 28
+                                      }
+                                    }
+                                  }
+                                },
+                                "expr": {
+                                  "Var": {
+                                    "value": "yy",
+                                    "decl": {
+                                      "file_id": {
+                                        "package": "dummy",
+                                        "filename": "dummy"
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 12,
+                                          "col": 25
+                                        },
+                                        "end": {
+                                          "line": 12,
+                                          "col": 27
+                                        }
+                                      }
+                                    },
+                                    "ty": {
+                                      "Con": {
+                                        "name": "Y",
+                                        "args": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 12,
+                                        "col": 32
+                                      },
+                                      "end": {
+                                        "line": 12,
+                                        "col": 34
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "ty": {
+                              "Con": {
+                                "name": "Y",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 10,
+                                "col": 12
+                              },
+                              "end": {
+                                "line": 13,
+                                "col": 13
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "name": "Y",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 7,
+                          "col": 37
+                        },
+                        "end": {
+                          "line": 14,
+                          "col": 9
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "TopLevel",
+                "ty": {
+                  "Fun": {
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Foo",
+                          "args": [
+                            {
+                              "Var": 99
+                            },
+                            {
+                              "Var": 99
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "Var": 99
+                      }
+                    ],
+                    "bounds": [],
+                    "ret": {
+                      "Var": 99
+                    },
+                    "fx": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 7,
+                    "col": 8
+                  },
+                  "end": {
+                    "line": 14,
+                    "col": 9
+                  }
+                }
+              }
+            }
+          ],
+          "generics": [
+            "T",
+            "Y"
+          ],
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 15
+            },
+            "end": {
+              "line": 4,
+              "col": 24
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "foo",
+                "ann": {
+                  "Con": {
+                    "name": "Foo",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      {
+                        "Con": {
+                          "name": "Bool",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 17,
+                    "col": 8
+                  },
+                  "end": {
+                    "line": 17,
+                    "col": 27
+                  }
+                }
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Foo",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "ty": {
+              "Con": {
+                "name": "Foo",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "value": {
+            "Call": {
+              "func": {
+                "Var": {
+                  "value": "Foo::make_bar",
+                  "decl": {
+                    "file_id": {
+                      "package": "dummy",
+                      "filename": "dummy"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 5,
+                        "col": 8
+                      },
+                      "end": {
+                        "line": 5,
+                        "col": 54
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Fun": {
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        }
+                      ],
+                      "bounds": [],
+                      "ret": {
+                        "Con": {
+                          "name": "Foo",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "Int",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "Bool",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "fx": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 17,
+                      "col": 30
+                    },
+                    "end": {
+                      "line": 17,
+                      "col": 43
+                    }
+                  }
+                }
+              },
+              "args": [
+                {
+                  "Literal": {
+                    "lit": {
+                      "Int": 1
+                    },
+                    "ty": {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    "span": {
+                      "start": {
+                        "line": 17,
+                        "col": 44
+                      },
+                      "end": {
+                        "line": 17,
+                        "col": 45
+                      }
+                    }
+                  }
+                }
+              ],
+              "ty": {
+                "Con": {
+                  "name": "Foo",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "Bool",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 17,
+                  "col": 30
+                },
+                "end": {
+                  "line": 17,
+                  "col": 46
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Foo",
+              "args": [
+                {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                {
+                  "Con": {
+                    "name": "Bool",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 17,
+              "col": 4
+            },
+            "end": {
+              "line": 17,
+              "col": 47
+            }
+          }
+        }
+      },
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "Foo::do_stuff",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 7,
+                    "col": 8
+                  },
+                  "end": {
+                    "line": 14,
+                    "col": 9
+                  }
+                }
+              },
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Foo",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "Bool",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "Bool",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "fx": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 18,
+                  "col": 8
+                },
+                "end": {
+                  "line": 18,
+                  "col": 16
+                }
+              }
+            }
+          },
+          "args": [
+            {
+              "Var": {
+                "value": "foo",
+                "decl": {
+                  "file_id": {
+                    "package": "dummy",
+                    "filename": "dummy"
+                  },
+                  "span": {
+                    "start": {
+                      "line": 17,
+                      "col": 8
+                    },
+                    "end": {
+                      "line": 17,
+                      "col": 27
+                    }
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Foo",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      {
+                        "Con": {
+                          "name": "Bool",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 18,
+                    "col": 8
+                  },
+                  "end": {
+                    "line": 18,
+                    "col": 16
+                  }
+                }
+              }
+            },
+            {
+              "Literal": {
+                "lit": {
+                  "Bool": true
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Bool",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 18,
+                    "col": 17
+                  },
+                  "end": {
+                    "line": 18,
+                    "col": 21
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 18,
+              "col": 8
+            },
+            "end": {
+              "line": 18,
+              "col": 16
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Bool",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 19,
+        "col": 1
+      }
+    }
+  }
+}

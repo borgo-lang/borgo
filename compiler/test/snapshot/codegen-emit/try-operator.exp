@@ -1,0 +1,129 @@
+Try operator
+
+SOURCE:
+enum Error { Foo(String) }
+
+fn foo(b: Bool) -> Result<Int> { bar("a") }
+
+fn bar(s: String) -> Result<Int> {
+  return Err(Error::Foo("boom"));
+  Ok(4)
+}
+
+fn baz() -> Result<Int> {
+  let _ = foo(false)?;
+
+  unreachable!();
+  Ok(1)
+}
+
+fn borgo_main() {
+  baz().assert_eq(Err(Error::Foo("boom")));
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Error_Foo(arg_0 any) any {
+	return Error_Foo{arg_0}
+}
+
+type Error_Foo struct {
+	Field0 any
+}
+type Error any
+
+func foo(b any) any {
+
+	var var1_block any
+	{
+		var2 := "a"
+		var3 := bar
+		var4 := var3(var2)
+		var1_block = var4
+	}
+	return var1_block
+}
+
+func bar(s any) any {
+
+	var var1_block any
+	{
+		var2 := "boom"
+		var3 := make_Error_Foo
+		var4 := var3(var2)
+		var5 := make_Result_Err
+		var6 := var5(var4)
+		return var6
+		var7 := borgo.Unit
+		_ = var7
+		var8 := 4
+		var9 := make_Result_Ok
+		var10 := var9(var8)
+		var1_block = var10
+	}
+	return var1_block
+}
+
+func baz() any {
+
+	var var1_block any
+	{
+		var2 := false
+		var3 := foo
+		var4 := var3(var2)
+		var var5_ret any
+		var6_check := var4
+
+		if ret, ok := var6_check.(Result_Ok); ok {
+			var5_ret = ret.Field0
+		} else {
+			return var6_check
+		}
+
+		var7 := var5_ret
+		_ = var7
+		var8 := borgo.Unit
+		_ = var8
+		var9 := Debug_unreachable()
+		_ = var9
+		var10 := 1
+		var11 := make_Result_Ok
+		var12 := var11(var10)
+		var1_block = var12
+	}
+	return var1_block
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := baz
+		var3 := var2()
+		var4 := "boom"
+		var5 := make_Error_Foo
+		var6 := var5(var4)
+		var7 := make_Result_Err
+		var8 := var7(var6)
+		var9 := Debug_assert_eq
+		var10 := var9(var3, var8)
+		var1_block = var10
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterTypeConstructor("Error::Foo", "Error_Foo")
+	borgo.RegisterMakeFunction("Error::Foo", make_Error_Foo)
+	borgo.RegisterGlobalFunction("foo", foo)
+	borgo.RegisterGlobalFunction("bar", bar)
+	borgo.RegisterGlobalFunction("baz", baz)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

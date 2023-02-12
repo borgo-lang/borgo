@@ -1,0 +1,18 @@
+No method found error
+
+SOURCE:
+{
+  struct Foo {}
+  let f = Foo {};
+
+  f.bar()
+}
+
+OUTPUT:
+Type:
+    Foo
+has no method:
+    bar
+
+5|    f.bar()
+        ^^^

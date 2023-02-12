@@ -1,0 +1,22 @@
+Errors must be of the same type.
+
+SOURCE:
+{
+  fn foo() -> Result<()> {
+    if true {
+      return Err(ErrFoo::A);
+    }
+
+    Err(ErrBar::X)
+  }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Result<(), ErrFoo>
+Got:
+    Result<(), ErrBar>
+
+7|      Err(ErrBar::X)
+        ^^^^^^^^^^^^^^

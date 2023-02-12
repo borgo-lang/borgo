@@ -1,0 +1,118 @@
+Enums in tuples
+
+SOURCE:
+enum Foo { Bar, Baz }
+
+fn borgo_main() {
+    let res = match (Bar, Baz) {
+        (Bar, Bar) => 0,
+        (Bar, Baz) => 2,
+        _ => unreachable!(),
+    };
+
+    res.assert_eq(2);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+var make_Foo_Bar = Foo_Bar{}
+var make_Foo_Baz = Foo_Baz{}
+
+type Foo_Bar struct {
+}
+type Foo_Baz struct {
+}
+type Foo any
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := make_Foo_Bar
+		var3 := make_Foo_Baz
+		var4 := func(base any) any {
+			data := base.(Tuple2)
+			data.First = var2
+			data.Second = var3
+			return data
+		}(Tuple2{})
+		var var5_result any
+		var6_subject := var4
+
+		for var7_pattern := 0; var7_pattern < 3; var7_pattern++ {
+
+			if var7_pattern == 0 {
+				var8_pat, ok := var6_subject.(Tuple2).First.(Foo_Bar)
+				_ = var8_pat
+				if !ok {
+					continue
+				}
+
+				var9_pat, ok := var6_subject.(Tuple2).Second.(Foo_Bar)
+				_ = var9_pat
+				if !ok {
+					continue
+				}
+
+				_ = var6_subject
+
+				var10 := 0
+				var5_result = var10
+				break
+			}
+
+			if var7_pattern == 1 {
+				var11_pat, ok := var6_subject.(Tuple2).First.(Foo_Bar)
+				_ = var11_pat
+				if !ok {
+					continue
+				}
+
+				var12_pat, ok := var6_subject.(Tuple2).Second.(Foo_Baz)
+				_ = var12_pat
+				if !ok {
+					continue
+				}
+
+				_ = var6_subject
+
+				var13 := 2
+				var5_result = var13
+				break
+			}
+
+			if var7_pattern == 2 {
+				// wildcard
+				_ = var6_subject
+
+				var14 := Debug_unreachable()
+				var5_result = var14
+				break
+			}
+
+		}
+		var15 := var5_result
+		var16 := borgo.Unit
+		_ = var16
+		var17 := var15
+		var18 := 2
+		var19 := Debug_assert_eq
+		var20 := var19(var17, var18)
+		var1_block = var20
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterTypeConstructor("Foo::Bar", "Foo_Bar")
+	borgo.RegisterMakeFunction("Foo::Bar", make_Foo_Bar)
+	borgo.RegisterTypeConstructor("Foo::Baz", "Foo_Baz")
+	borgo.RegisterMakeFunction("Foo::Baz", make_Foo_Baz)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

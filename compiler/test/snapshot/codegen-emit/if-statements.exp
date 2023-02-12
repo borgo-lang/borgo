@@ -1,0 +1,55 @@
+If statements
+
+SOURCE:
+fn borgo_main() {
+  let x = if true { 6 } else { 0 };
+  x.assert_eq(6);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var3 := true
+		var var2_result any
+
+		if borgo.Ops.Eq(var3, true).(bool) {
+			var var4_block any
+			{
+				var5 := 6
+				var4_block = var5
+			}
+			var2_result = var4_block
+		} else {
+			var var6_block any
+			{
+				var7 := 0
+				var6_block = var7
+			}
+			var2_result = var6_block
+		}
+		var8 := var2_result
+		var9 := var8
+		var10 := borgo.Unit
+		_ = var10
+		var11 := var9
+		var12 := 6
+		var13 := Debug_assert_eq
+		var14 := var13(var11, var12)
+		var1_block = var14
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

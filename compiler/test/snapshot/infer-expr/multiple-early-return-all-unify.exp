@@ -1,0 +1,26 @@
+Multiple early return all unify.
+
+SOURCE:
+{
+  fn foo() -> Int {
+    if true {
+      return 1
+    }
+
+    if true {
+      return "bar"
+    }
+
+    2
+  }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Int
+Got:
+    String
+
+8|        return "bar"
+                 ^^^^^

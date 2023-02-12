@@ -1,0 +1,15 @@
+
+
+SOURCE:
+{ fn foo(foo: Int<Bool>) {} }
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    ()
+Got:
+    (Bool)
+
+1|  { fn foo(foo: Int<Bool>) {} }
+      ^^^^^^^^^^^^^^^^^^^^^^^^^

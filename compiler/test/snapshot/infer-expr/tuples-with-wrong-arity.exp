@@ -1,0 +1,14 @@
+Tuples with wrong arity.
+
+SOURCE:
+(1, 2, 3) as (Int, Int)
+
+OUTPUT:
+Type mismatch
+Expected:
+    (Int, Int, Int)
+Got:
+    (Int, Int)
+
+1|  (1, 2, 3) as (Int, Int)
+    ^^^^^^^^^^^^^^^^^^^^^^^

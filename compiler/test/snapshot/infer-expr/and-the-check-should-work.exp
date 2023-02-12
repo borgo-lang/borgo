@@ -1,0 +1,18 @@
+And the check should work!
+
+SOURCE:
+{
+  let x = [1,2,3];
+  x as Bool;
+  1
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    List<Int>
+Got:
+    Bool
+
+3|    x as Bool;
+      ^^^^^^^^^

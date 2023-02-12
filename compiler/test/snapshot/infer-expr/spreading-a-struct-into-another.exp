@@ -1,0 +1,297 @@
+Spreading a struct into another.
+
+SOURCE:
+{
+  struct Foo { a: Int, b: String }
+
+  let x = Foo { a: 1, b: "foo" };
+  Foo { b: "bar", ..x }
+}
+
+OUTPUT:
+Foo
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "StructDef": {
+          "def": {
+            "name": "Foo",
+            "generics": [],
+            "fields": [
+              {
+                "name": "a",
+                "ann": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              },
+              {
+                "name": "b",
+                "ann": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                }
+              }
+            ]
+          },
+          "is_trait": false,
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 34
+            }
+          }
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Foo",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "StructCall": {
+              "name": "Foo",
+              "fields": [
+                {
+                  "name": "a",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 1
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 19
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 20
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "b",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "String": "foo"
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "String",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 25
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 30
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "rest": null,
+              "ty": {
+                "Con": {
+                  "name": "Foo",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 4,
+                  "col": 10
+                },
+                "end": {
+                  "line": 4,
+                  "col": 32
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Foo",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 33
+            }
+          }
+        }
+      },
+      {
+        "StructCall": {
+          "name": "Foo",
+          "fields": [
+            {
+              "name": "b",
+              "value": {
+                "Literal": {
+                  "lit": {
+                    "String": "bar"
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "String",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 5,
+                      "col": 11
+                    },
+                    "end": {
+                      "line": 5,
+                      "col": 16
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "rest": {
+            "Var": {
+              "value": "x",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 4,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 4,
+                    "col": 7
+                  }
+                }
+              },
+              "ty": {
+                "Con": {
+                  "name": "Foo",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 5,
+                  "col": 20
+                },
+                "end": {
+                  "line": 5,
+                  "col": 21
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Foo",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 5,
+              "col": 2
+            },
+            "end": {
+              "line": 5,
+              "col": 23
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Foo",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 6,
+        "col": 1
+      }
+    }
+  }
+}

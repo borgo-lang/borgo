@@ -1,0 +1,13 @@
+Error when reassign to wrong type.
+
+SOURCE:
+{
+  let x = 1;
+  x = "foo"
+}
+
+OUTPUT:
+Can't assign to variable x. Re-bind instead
+
+3|    x = "foo"
+      ^^^^^^^^^

@@ -1,0 +1,124 @@
+Defining structs.
+
+SOURCE:
+{
+  struct Foo { a: Int }
+
+  Foo { a: 1 }
+}
+
+OUTPUT:
+Foo
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "StructDef": {
+          "def": {
+            "name": "Foo",
+            "generics": [],
+            "fields": [
+              {
+                "name": "a",
+                "ann": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              }
+            ]
+          },
+          "is_trait": false,
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 23
+            }
+          }
+        }
+      },
+      {
+        "StructCall": {
+          "name": "Foo",
+          "fields": [
+            {
+              "name": "a",
+              "value": {
+                "Literal": {
+                  "lit": {
+                    "Int": 1
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 11
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 12
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "rest": null,
+          "ty": {
+            "Con": {
+              "name": "Foo",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 14
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Foo",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 5,
+        "col": 1
+      }
+    }
+  }
+}

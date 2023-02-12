@@ -1,0 +1,14 @@
+Not only works on bools
+
+SOURCE:
+!"asf"
+
+OUTPUT:
+Type mismatch
+Expected:
+    Bool
+Got:
+    String
+
+1|  !"asf"
+     ^^^^^

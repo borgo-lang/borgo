@@ -1,0 +1,292 @@
+Tuple patterns in let bindings
+
+SOURCE:
+{
+  let (x, y) = (1, "a");
+  x
+}
+
+OUTPUT:
+Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Struct": {
+                "ident": "Tuple2",
+                "fields": [
+                  {
+                    "name": "first",
+                    "value": {
+                      "Type": {
+                        "ident": "x",
+                        "ann": "Unknown",
+                        "span": {
+                          "start": {
+                            "line": 2,
+                            "col": 7
+                          },
+                          "end": {
+                            "line": 2,
+                            "col": 8
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "second",
+                    "value": {
+                      "Type": {
+                        "ident": "y",
+                        "ann": "Unknown",
+                        "span": {
+                          "start": {
+                            "line": 2,
+                            "col": 10
+                          },
+                          "end": {
+                            "line": 2,
+                            "col": 11
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Tuple2",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      {
+                        "Con": {
+                          "name": "String",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 12
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Tuple2",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "name": "String",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "value": {
+            "StructCall": {
+              "name": "Tuple2",
+              "fields": [
+                {
+                  "name": "first",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 1
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 16
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 17
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "second",
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "String": "a"
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "String",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 19
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 22
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "rest": null,
+              "ty": {
+                "Con": {
+                  "name": "Tuple2",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "String",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 15
+                },
+                "end": {
+                  "line": 2,
+                  "col": 23
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Tuple2",
+              "args": [
+                {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                {
+                  "Con": {
+                    "name": "String",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 24
+            }
+          }
+        }
+      },
+      {
+        "Var": {
+          "value": "x",
+          "decl": {
+            "file_id": {
+              "package": "dummy",
+              "filename": "dummy"
+            },
+            "span": {
+              "start": {
+                "line": 2,
+                "col": 7
+              },
+              "end": {
+                "line": 2,
+                "col": 8
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 3
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 4,
+        "col": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+Pattern matching constructor arity.
+
+SOURCE:
+{
+  enum Color { Red, Blue(String) }
+
+  match Color::Blue("foo") {
+    Color::Red => "bar",
+    Color::Blue(c, nope) => c,
+  }
+}
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    (String)
+Got:
+    (A, A)
+
+6|      Color::Blue(c, nope) => c,
+        ^^^^^^^^^^^^^^^^^^^^

@@ -1,0 +1,21 @@
+Error when spreading in different structs.
+
+SOURCE:
+{
+  struct Foo { a: Int, b: String }
+  struct Bar { a: Int, b: String }
+
+  let x = Foo { a: 1, b: "foo" };
+  let y = Bar { a: 1, b: "bar" };
+  Foo { b: "bar", ..y }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Foo
+Got:
+    Bar
+
+7|    Foo { b: "bar", ..y }
+                        ^

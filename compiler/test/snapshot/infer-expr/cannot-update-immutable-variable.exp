@@ -1,0 +1,13 @@
+Cannot update immutable variable.
+
+SOURCE:
+{
+  let x = 1;
+  x = 99
+}
+
+OUTPUT:
+Can't assign to variable x. Re-bind instead
+
+3|    x = 99
+      ^^^^^^

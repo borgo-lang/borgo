@@ -1,0 +1,15 @@
+Keys in Maps must be hashable
+
+SOURCE:
+fn foo<K: Hash>(k: K) {}
+
+fn borgo_main() {
+  foo(|| {});
+  unreachable!();
+}
+
+OUTPUT:
+Functions can't be hashed
+
+4|    foo(|| {});
+      ^^^^^^^^^^

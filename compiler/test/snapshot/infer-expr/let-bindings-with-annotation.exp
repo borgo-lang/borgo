@@ -1,0 +1,17 @@
+Let bindings with annotation.
+
+SOURCE:
+{
+  let x: List<Int> = [1,2,3];
+  let y: List<Bool> = [1,2,3];
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    List<Bool>
+Got:
+    List<Int>
+
+3|    let y: List<Bool> = [1,2,3];
+                          ^^^^^^^

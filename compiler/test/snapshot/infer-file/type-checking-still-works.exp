@@ -1,0 +1,13 @@
+Type checking still works.
+
+SOURCE:
+enum Foo { A, B, Baz }
+
+fn foo(a: Foo) -> Int { a + 1 }
+fn borgo_main() {}
+
+OUTPUT:
+Was expecting Int or Float, got Foo
+
+3|  fn foo(a: Foo) -> Int { a + 1 }
+                            ^

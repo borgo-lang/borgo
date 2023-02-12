@@ -1,0 +1,225 @@
+Closures can be inferred.
+
+SOURCE:
+|n| sum(n, 1)
+
+OUTPUT:
+fn (Int) -> Int
+---
+No errors.
+---
+[]
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "__anonymous",
+      "generics": [],
+      "bounds": [],
+      "args": [
+        {
+          "pat": {
+            "Type": {
+              "ident": "n",
+              "ann": "Unknown",
+              "span": {
+                "start": {
+                  "line": 1,
+                  "col": 1
+                },
+                "end": {
+                  "line": 1,
+                  "col": 2
+                }
+              }
+            }
+          },
+          "ann": "Unknown",
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          }
+        }
+      ],
+      "ret": {
+        "Con": {
+          "name": "Int",
+          "args": []
+        }
+      },
+      "ann": "Unknown",
+      "body": {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "sum",
+              "decl": {
+                "file_id": {
+                  "package": "builtin",
+                  "filename": ""
+                },
+                "span": {
+                  "start": {
+                    "line": 0,
+                    "col": 0
+                  },
+                  "end": {
+                    "line": 0,
+                    "col": 0
+                  }
+                }
+              },
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "fx": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 1,
+                  "col": 4
+                },
+                "end": {
+                  "line": 1,
+                  "col": 7
+                }
+              }
+            }
+          },
+          "args": [
+            {
+              "Var": {
+                "value": "n",
+                "decl": {
+                  "file_id": {
+                    "package": "dummy",
+                    "filename": "dummy"
+                  },
+                  "span": {
+                    "start": {
+                      "line": 1,
+                      "col": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "col": 2
+                    }
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 8
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 9
+                  }
+                }
+              }
+            },
+            {
+              "Literal": {
+                "lit": {
+                  "Int": 1
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 11
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 12
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1,
+              "col": 4
+            },
+            "end": {
+              "line": 1,
+              "col": 13
+            }
+          }
+        }
+      }
+    },
+    "kind": "Lambda",
+    "ty": {
+      "Fun": {
+        "args": [
+          {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          }
+        ],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "Int",
+            "args": []
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 13
+      }
+    }
+  }
+}

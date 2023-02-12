@@ -1,0 +1,17 @@
+All arms should have the same type.
+
+SOURCE:
+match 1 {
+  1 => "foo",
+  2 => false,
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    String
+Got:
+    Bool
+
+3|    2 => false,
+           ^^^^^

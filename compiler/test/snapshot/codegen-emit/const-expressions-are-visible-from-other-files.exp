@@ -1,0 +1,61 @@
+Const expressions are visible from other files
+
+SOURCE:
+file: foo.brg
+
+fn check() -> Bool {
+  foo == 2
+}
+
+file: main.brg
+
+const foo: Int = 1 + 1;
+fn borgo_main() -> Bool { check() }
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+var foo any
+
+func init_const_foo() any {
+	var1 := 1
+	var2 := 1
+	var3 := borgo.Ops.IAdd
+	var4 := var3(var1, var2)
+	return var4
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := check
+		var3 := var2()
+		var1_block = var3
+	}
+	return var1_block
+}
+
+func check() any {
+
+	var var1_block any
+	{
+		var2 := foo
+		var3 := 2
+		var4 := borgo.Ops.Eq
+		var5 := var4(var2, var3)
+		var1_block = var5
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	foo = init_const_foo()
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	borgo.RegisterGlobalFunction("check", check)
+}

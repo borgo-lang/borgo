@@ -1,0 +1,1329 @@
+Callbacks with different error types can still be passed to the same function.
+
+SOURCE:
+{
+  fn foo() -> Result<Int, ErrFoo> { Err(ErrFoo::A) }
+  fn bar() -> Result<Int, ErrBar> { Err(ErrBar::X) }
+
+  fn baz(f: fn () -> Result<Int, ErrFoo>, g: fn() -> Result<Int, ErrBar>) {
+    ()
+  }
+
+  foo as fn () -> Result<Int, ErrFoo>;
+  bar as fn () -> Result<Int, ErrBar>;
+
+  baz(foo, bar);
+  true
+}
+
+OUTPUT:
+Bool
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [],
+            "bounds": [],
+            "args": [],
+            "ret": {
+              "Con": {
+                "name": "Result",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "name": "ErrFoo",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Result",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "name": "ErrFoo",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Call": {
+                      "func": {
+                        "Var": {
+                          "value": "Err",
+                          "decl": {
+                            "file_id": {
+                              "package": "dummy",
+                              "filename": "dummy"
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 0
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 1
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Fun": {
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "ErrFoo",
+                                    "args": []
+                                  }
+                                }
+                              ],
+                              "bounds": [],
+                              "ret": {
+                                "Con": {
+                                  "name": "Result",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "Int",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "ErrFoo",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "fx": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 2,
+                              "col": 36
+                            },
+                            "end": {
+                              "line": 2,
+                              "col": 39
+                            }
+                          }
+                        }
+                      },
+                      "args": [
+                        {
+                          "Var": {
+                            "value": "ErrFoo::A",
+                            "decl": {
+                              "file_id": {
+                                "package": "dummy",
+                                "filename": "dummy"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 18,
+                                  "col": 0
+                                },
+                                "end": {
+                                  "line": 21,
+                                  "col": 1
+                                }
+                              }
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "ErrFoo",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 40
+                              },
+                              "end": {
+                                "line": 2,
+                                "col": 49
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "name": "Result",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "Int",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "ErrFoo",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 36
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 50
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Result",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      {
+                        "Con": {
+                          "name": "ErrFoo",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 34
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 52
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Result",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "ErrFoo",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 52
+            }
+          }
+        }
+      },
+      {
+        "Closure": {
+          "fun": {
+            "name": "bar",
+            "generics": [],
+            "bounds": [],
+            "args": [],
+            "ret": {
+              "Con": {
+                "name": "Result",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "name": "ErrBar",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Result",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "name": "ErrBar",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Call": {
+                      "func": {
+                        "Var": {
+                          "value": "Err",
+                          "decl": {
+                            "file_id": {
+                              "package": "dummy",
+                              "filename": "dummy"
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 0
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 1
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Fun": {
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "ErrBar",
+                                    "args": []
+                                  }
+                                }
+                              ],
+                              "bounds": [],
+                              "ret": {
+                                "Con": {
+                                  "name": "Result",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "Int",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "ErrBar",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "fx": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 3,
+                              "col": 36
+                            },
+                            "end": {
+                              "line": 3,
+                              "col": 39
+                            }
+                          }
+                        }
+                      },
+                      "args": [
+                        {
+                          "Var": {
+                            "value": "ErrBar::X",
+                            "decl": {
+                              "file_id": {
+                                "package": "dummy",
+                                "filename": "dummy"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 23,
+                                  "col": 0
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "col": 1
+                                }
+                              }
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "ErrBar",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 3,
+                                "col": 40
+                              },
+                              "end": {
+                                "line": 3,
+                                "col": 49
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "name": "Result",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "Int",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "ErrBar",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 3,
+                          "col": 36
+                        },
+                        "end": {
+                          "line": 3,
+                          "col": 50
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Result",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      {
+                        "Con": {
+                          "name": "ErrBar",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 34
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 52
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Result",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "ErrBar",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 52
+            }
+          }
+        }
+      },
+      {
+        "Closure": {
+          "fun": {
+            "name": "baz",
+            "generics": [],
+            "bounds": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "f",
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 5,
+                        "col": 9
+                      },
+                      "end": {
+                        "line": 5,
+                        "col": 10
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Fun": {
+                    "args": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "ErrFoo",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "ErrFoo",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "fx": []
+                  }
+                }
+              },
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "g",
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 5,
+                        "col": 42
+                      },
+                      "end": {
+                        "line": 5,
+                        "col": 43
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Fun": {
+                    "args": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "ErrBar",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "ErrBar",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "fx": []
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Unit": {
+                      "span": {
+                        "start": {
+                          "line": 6,
+                          "col": 4
+                        },
+                        "end": {
+                          "line": 6,
+                          "col": 6
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 5,
+                    "col": 74
+                  },
+                  "end": {
+                    "line": 7,
+                    "col": 3
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "ErrFoo",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "fx": []
+                  }
+                },
+                {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "ErrBar",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "fx": []
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 5,
+              "col": 2
+            },
+            "end": {
+              "line": 7,
+              "col": 3
+            }
+          }
+        }
+      },
+      {
+        "CheckType": {
+          "expr": {
+            "Var": {
+              "value": "foo",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 2
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 52
+                  }
+                }
+              },
+              "ty": {
+                "Fun": {
+                  "args": [],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "ErrFoo",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "fx": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 9,
+                  "col": 2
+                },
+                "end": {
+                  "line": 9,
+                  "col": 5
+                }
+              }
+            }
+          },
+          "ann": {
+            "Fun": {
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Result",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "ErrFoo",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Result",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "ErrFoo",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 9,
+              "col": 2
+            },
+            "end": {
+              "line": 9,
+              "col": 37
+            }
+          }
+        }
+      },
+      {
+        "CheckType": {
+          "expr": {
+            "Var": {
+              "value": "bar",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 2
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 52
+                  }
+                }
+              },
+              "ty": {
+                "Fun": {
+                  "args": [],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "ErrBar",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "fx": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 10,
+                  "col": 2
+                },
+                "end": {
+                  "line": 10,
+                  "col": 5
+                }
+              }
+            }
+          },
+          "ann": {
+            "Fun": {
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Result",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "ErrBar",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Result",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "ErrBar",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 10,
+              "col": 2
+            },
+            "end": {
+              "line": 10,
+              "col": 37
+            }
+          }
+        }
+      },
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "baz",
+              "decl": {
+                "file_id": {
+                  "package": "dummy",
+                  "filename": "dummy"
+                },
+                "span": {
+                  "start": {
+                    "line": 5,
+                    "col": 2
+                  },
+                  "end": {
+                    "line": 7,
+                    "col": 3
+                  }
+                }
+              },
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Fun": {
+                        "args": [],
+                        "bounds": [],
+                        "ret": {
+                          "Con": {
+                            "name": "Result",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "Int",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "ErrFoo",
+                                  "args": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "fx": []
+                      }
+                    },
+                    {
+                      "Fun": {
+                        "args": [],
+                        "bounds": [],
+                        "ret": {
+                          "Con": {
+                            "name": "Result",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "Int",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "ErrBar",
+                                  "args": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "fx": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Unit",
+                      "args": []
+                    }
+                  },
+                  "fx": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 12,
+                  "col": 2
+                },
+                "end": {
+                  "line": 12,
+                  "col": 5
+                }
+              }
+            }
+          },
+          "args": [
+            {
+              "Var": {
+                "value": "foo",
+                "decl": {
+                  "file_id": {
+                    "package": "dummy",
+                    "filename": "dummy"
+                  },
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 2,
+                      "col": 52
+                    }
+                  }
+                },
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "ErrFoo",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "fx": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 12,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 12,
+                    "col": 9
+                  }
+                }
+              }
+            },
+            {
+              "Var": {
+                "value": "bar",
+                "decl": {
+                  "file_id": {
+                    "package": "dummy",
+                    "filename": "dummy"
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 52
+                    }
+                  }
+                },
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "ErrBar",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "fx": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 12,
+                    "col": 11
+                  },
+                  "end": {
+                    "line": 12,
+                    "col": 14
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Unit",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 12,
+              "col": 2
+            },
+            "end": {
+              "line": 12,
+              "col": 15
+            }
+          }
+        }
+      },
+      {
+        "Literal": {
+          "lit": {
+            "Bool": true
+          },
+          "ty": {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 13,
+              "col": 2
+            },
+            "end": {
+              "line": 13,
+              "col": 6
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Bool",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 14,
+        "col": 1
+      }
+    }
+  }
+}

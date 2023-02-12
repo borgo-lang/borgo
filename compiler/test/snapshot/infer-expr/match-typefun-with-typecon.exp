@@ -1,0 +1,19 @@
+Match Type::Fun with Type::Con
+
+SOURCE:
+{
+  fn bar() -> Bool { false }
+  fn foo() -> Int {
+    bar
+  }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Int
+Got:
+    fn () -> Bool
+
+4|      bar
+        ^^^

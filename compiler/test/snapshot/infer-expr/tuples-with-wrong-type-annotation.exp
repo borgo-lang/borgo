@@ -1,0 +1,14 @@
+Tuples with wrong type annotation.
+
+SOURCE:
+("foo", 2) as (Bool, Int)
+
+OUTPUT:
+Type mismatch
+Expected:
+    (String, Int)
+Got:
+    (Bool, Int)
+
+1|  ("foo", 2) as (Bool, Int)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
