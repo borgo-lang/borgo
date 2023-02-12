@@ -1,0 +1,23 @@
+set -euxo pipefail
+
+cd ../runtime
+
+GOOS=js GOARCH=wasm go build -o ../playground/static/main.wasm interpreter/wasm.go
+
+cd -
+
+cd ../wasm
+
+echo "SKIP BUILDING RUST"
+# wasm-pack build --target web # --debug
+cp -R pkg ../playground/static
+
+cd -
+
+cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" "./static/go-wasm-exec.js"
+
+cp -R ../runtime/std ./static
+
+deno run -A build-examples.ts 
+
+npx esbuild --bundle wasm-index.js --outfile=static/bundle.js

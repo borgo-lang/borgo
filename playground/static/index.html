@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <style>
+    h1 { font-size: 1.2em; display: none; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    hr { border: 1px solid #eee; }
+    header { adisplay: flex; align-items: center; justify-content: space-between; }
+
+    .links a { margin: 0 0.5em 0.5em 0; }
+    .actions { margin: 0.5em 0; }
+
+    .cm-editor { height: 30em; }
+    .cm-scroller { overflow: auto; }
+    </style>
+
+  </head>
+  <body>
+    <header>
+      <h1>Borgo programming language</h1>
+    </header>
+
+    <div class="links">
+      <section id="examples">
+      </section>
+    </div>
+
+    <hr />
+
+    <div class="actions">
+      <button onclick="compile()" title="Shift + Enter">Run</button>
+    </div>
+
+    <textarea id="code" cols="80" rows="30">
+fn borgo_main() {
+  "Hello world".inspect();
+  ()
+}
+    </textarea>
+
+    <pre id="output"></pre>
+
+    <hr />
+    <pre id="errors"></pre>
+
+
+
+    <script src="go-wasm-exec.js"></script>
+    <script src="bundle.js"></script>
+    <script type="module">
+      // Rust compiler
+      import init, { compile_wasm, on_hover } from "./pkg/wasm.js";
+
+      // Go evaluator
+      function initGo() {
+        const go = new Go();
+
+        return WebAssembly
+          .instantiateStreaming(fetch("main.wasm"), go.importObject)
+          .then((result) => {
+            go.run(result.instance);
+          });
+      }
+
+
+      await Promise.all([init(), initGo()])
+
+      window.Borgo.compile = compile_wasm
+      window.Borgo.on_hover = on_hover
+
+      window.Borgo.main()
+
+      // --------------------
+
+
+    </script>
+  </body>
+</html>

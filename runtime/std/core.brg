@@ -1,0 +1,510 @@
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+extern "native/Result" {
+    fn unwrap<T, E>(self: Result<T, E>) -> T;
+}
+
+enum Option<T> {
+    Some(T),
+    None,
+}
+
+extern "native/Option" {
+    fn unwrap<T>(self: Option<T>) -> T;
+}
+
+impl<T> Option<T> {
+    fn is_some(self) -> Bool {
+        match self {
+            Some(_) => true,
+            None => false,
+        }
+    }
+
+    fn is_none(self) -> Bool {
+        !self.is_some()
+    }
+
+    fn map<Y>(self, f: fn(x: T) -> Y) -> Option<Y> {
+        match self {
+            None => None,
+            Some(x) => Some(f(x)),
+        }
+    }
+
+    fn and_then<Y>(self, f: fn(x: T) -> Option<Y>) -> Option<Y> {
+        match self {
+            None => None,
+            Some(x) => f(x),
+        }
+    }
+
+    fn unwrap_or(self, def: T) -> T {
+        match self {
+            Some(x) => x,
+            None => def,
+        }
+    }
+
+    fn unwrap_or_else(self, f: fn() -> T) -> T {
+        match self {
+            Some(x) => x,
+            None => f(),
+        }
+    }
+
+    fn ok_or<E>(self, e: E) -> Result<T, E> {
+        match self {
+            Some(x) => Ok(x),
+            None => Err(e),
+        }
+    }
+}
+
+struct Tuple2<T, Y> {
+    first: T,
+    second: Y,
+}
+
+struct Tuple3<T, Y, Z> {
+    first: T,
+    second: Y,
+    third: Z,
+}
+
+extern "native/List" {
+    fn len<T>(xs: List<T>) -> Int;
+    fn push<T>(xs: List<T>, x: T) -> List<T>;
+    fn pop<T>(xs: List<T>) -> List<T>;
+    fn get<T>(xs: List<T>, index: Int) -> Option<T>;
+    fn seq<T>(xs: List<T>) -> Seq<T>;
+}
+
+impl<T> List<T> {
+    fn is_empty(self) -> Bool {
+        self.len() == 0
+    }
+}
+
+extern "native/String" {
+    fn len(s: String) -> Int;
+    fn append(s: String, other: String) -> String;
+    fn split(s: String, sep: String) -> Seq<String>;
+    fn slice(s: String, start: Int, end: Int) -> String;
+    fn chars(s: String) -> Seq<Char>;
+    fn contains(s: String, needle: String) -> Bool;
+    fn starts_with(s: String, needle: String) -> Bool;
+    fn ends_with(s: String, needle: String) -> Bool;
+    fn index_of(s: String, needle: String) -> Option<Int>;
+    fn parse_int(s: String) -> Option<Int>;
+    fn parse_float(s: String) -> Option<Float>;
+}
+
+impl String {
+    fn is_empty(self) -> Bool {
+        self.len() == 0
+    }
+}
+
+extern "native/Debug" {
+    fn inspect<T: Display>(x: T) -> T;
+    fn unreachable();
+    fn todo();
+    fn assert_eq<T>(a: T, b: T);
+}
+
+enum Loop<State, Return> {
+    Done(Return),
+    Recur(State),
+}
+
+extern "native/Loop" {
+    fn start<State, Return>(initial: State, f: fn(state: State) -> Loop<State, Return>) -> Return;
+}
+
+enum Seq<T> {
+    Nil,
+    Cons(T, fn() -> Seq<T>),
+}
+
+impl<T> Seq<T> {
+    fn map<Y>(self, f: fn(x: T) -> Y) -> Seq<Y> {
+        match self {
+            Seq::Nil => Seq::Nil,
+            Seq::Cons(x, cont) => Seq::Cons(f(x), || Seq::map(cont(), f)),
+        }
+    }
+
+    fn filter_map<Y>(self, f: fn(x: T) -> Option<Y>) -> Seq<Y> {
+        self.reduce(Seq::Nil, |acc, item| {
+          match f(item) {
+            Some(x) => acc.append(Seq::once(x)),
+            None => acc,
+          }
+        })
+    }
+
+    fn filter(self, f: fn(x: T) -> Bool) -> Seq<T> {
+      self.filter_map(|x| if f(x) { Some(x) } else { None })
+    }
+
+    fn reduce<Y>(self, initial: Y, f: fn(acc: Y, item: T) -> Y) -> Y {
+        Loop::start((initial, self), |(acc, rest)| match rest {
+            Seq::Nil => Loop::Done(acc),
+            Seq::Cons(x, cont) => Loop::Recur((f(acc, x), cont())),
+        })
+    }
+
+    fn to_list(self) -> List<T> {
+        self.reduce([], |acc, item| acc.push(item))
+    }
+
+    fn len(self) -> Int {
+        self.reduce(0, |acc, _| acc + 1)
+    }
+
+    fn first(self) -> Option<T> {
+        match self {
+            Seq::Nil => None,
+            Seq::Cons(x, _) => Some(x),
+        }
+    }
+
+    fn last(self) -> Option<T> {
+        self.reduce(None, |_, item| Some(item))
+    }
+
+    fn get(self, n: Int) -> Option<T> {
+        self.drop(n).first()
+    }
+
+    fn cycle(self) -> Seq<T> {
+        match self {
+            Seq::Nil => Seq::Nil,
+            Seq::Cons(first, cont) => Seq::Cons(first, || Seq::append(cont(), Seq::cycle(self))),
+        }
+    }
+
+    fn append(self, other: Seq<T>) -> Seq<T> {
+        match self {
+            Seq::Nil => other,
+            Seq::Cons(first, cont) => Seq::Cons(first, || Seq::append(cont(), other)),
+        }
+    }
+
+    fn infinite(start: T, f: fn(prev: T) -> T) -> Seq<T> {
+        Seq::Cons(start, || Seq::infinite(f(start), f))
+    }
+
+    fn zip<Y>(self, other: Seq<Y>) -> Seq<(T, Y)> {
+        match (self, other) {
+            (Seq::Nil, _) => Seq::Nil,
+            (_, Seq::Nil) => Seq::Nil,
+
+            (Seq::Cons(x, cont_x), Seq::Cons(y, cont_y)) => {
+                Seq::Cons((x, y), || Seq::zip(cont_x(), cont_y()))
+            }
+        }
+    }
+
+    fn enumerate(self) -> Seq<(Int, T)> {
+        Seq::infinite(0, |n| n + 1).zip(self)
+    }
+
+    fn reverse(self) -> Seq<T> {
+        self.reduce(Seq::Nil, |acc, item| Seq::Cons(item, || acc))
+    }
+
+    fn chunks(self, n: Int) -> Seq<Seq<T>> {
+        let parts = self.split_at(n);
+
+        match parts.0 {
+            Seq::Nil => Seq::Nil,
+            Seq::Cons(_, _) => Seq::Cons(parts.0, || Seq::chunks(parts.1, n)),
+        }
+    }
+
+    // same as chunks, but elements overlap
+    fn windows(self, n: Int) -> Seq<Seq<T>> {
+        let current = self.take(n);
+
+        // if shorter than desired size, drop the last elements
+        if current.len() < n {
+            return Seq::Nil;
+        }
+
+        Seq::Cons(current, || Seq::windows(self.drop(1), n))
+    }
+
+    fn split_at(self, n: Int) -> (Seq<T>, Seq<T>) {
+        Loop::start((self, Seq::Nil, n), |(remaining, first_part, count)| {
+            if count <= 0 {
+                return Loop::Done((first_part, remaining));
+            }
+
+            match remaining {
+                Seq::Nil => Loop::Done((first_part, Seq::Nil)),
+                Seq::Cons(x, next) => {
+                    Loop::Recur((next(), first_part.chain(Seq::once(x)), count - 1))
+                }
+            }
+        })
+    }
+
+    fn take(self, n: Int) -> Seq<T> {
+        self.split_at(n).0;
+    }
+
+    fn drop(self, n: Int) -> Seq<T> {
+        // Just call split_at ?
+        // self.split_at(n).1;
+
+        Loop::start((self, n), |(seq, remaining)| {
+            if remaining <= 0 {
+                return Loop::Done(seq);
+            }
+
+            match seq {
+                Seq::Nil => Loop::Done(Seq::Nil),
+                Seq::Cons(_, cont) => Loop::Recur((cont(), remaining - 1)),
+            }
+        })
+    }
+
+    fn find_map<Y>(self, f: fn(x: T) -> Option<Y>) -> Option<Y> {
+        Loop::start(self, |seq| match seq {
+            Seq::Nil => Loop::Done(None),
+
+            Seq::Cons(x, cont) => {
+                let result = f(x);
+
+                if result.is_some() {
+                    return Loop::Done(result);
+                }
+
+                Loop::Recur(cont())
+            }
+        })
+    }
+
+    fn once(x: T) -> Seq<T> {
+        Seq::Cons(x, || Seq::Nil)
+    }
+
+    fn chain(self, other: Seq<T>) -> Seq<T> {
+        match self {
+            Seq::Nil => other,
+            Seq::Cons(x, cont) => Seq::Cons(x, || cont().chain(other)),
+        }
+    }
+
+    fn for_each(self, f: fn(x: T) -> ()) {
+        self.reduce((), |_, item| f(item))
+    }
+
+    fn max_by(self, f: fn(x: T, y: T) -> Ordering) -> Option<T> {
+        self.reduce(None, |acc, item| {
+            if acc.is_none() {
+                return Some(item);
+            }
+
+            if f(item, acc.unwrap()) == Ordering::Greater {
+                return Some(item);
+            }
+
+            return acc;
+        })
+    }
+}
+
+struct Map<K, V> {}
+
+extern "native/Map" {
+    fn new<K, V>() -> Map<K, V>;
+    fn insert<K: Hash, V>(m: Map<K, V>, key: K, value: V) -> Map<K, V>;
+    fn get<K, V>(m: Map<K, V>, key: K) -> Option<V>;
+    fn seq<K, V>(m: Map<K, V>) -> Seq<(K, V)>;
+    fn delete<K, V>(m: Map<K, V>, key: K) -> Map<K, V>;
+    fn len<K, V>(m: Map<K, V>) -> Int;
+}
+
+impl<K, V> Map<K, V> {
+    fn seq_keys(self) -> Seq<K> {
+        self.seq().map(|(k, _)| k)
+    }
+
+    fn seq_values(self) -> Seq<V> {
+        self.seq().map(|(_, v)| v)
+    }
+
+    fn update<K: Hash>(self, key: K, def: V, f: fn(existing: V) -> V) -> Map<K, V> {
+      let existing = self.get(key).unwrap_or(def);
+      let updated = f(existing);
+      self.insert(key, updated)
+    }
+}
+
+fn to_map<K: Hash, V>(s: Seq<(K, V)>) -> Map<K, V> {
+  s.reduce(Map::new(), |acc, item| acc.insert(item.0, item.1))
+}
+
+struct Set<K> {
+  m: Map<K, Bool>
+}
+
+impl<K> Set<K> {
+  fn new() -> Set<K> {
+    Set { m: Map::new() }
+  }
+
+  fn insert<K: Hash>(self, k: K) -> Set<K> {
+    Set { m: self.m.insert(k, true) }
+  }
+
+  fn delete<K>(self, k: K) -> Set<K> {
+    Set { m: self.m.delete(k) }
+  }
+
+  fn contains<K>(self, k: K) -> Bool {
+    self.m.get(k).is_some()
+  }
+
+  fn len(self) -> Int {
+    self.m.len()
+  }
+}
+
+fn to_set<K: Hash>(s: Seq<K>) -> Set<K> {
+  s.reduce(Set::new(), |acc, item| acc.insert(item))
+}
+
+
+struct Ref<T> {}
+
+extern "effect/Ref" {
+    fn ref_new<T>(value: T) -> Ref<T>;
+    fn ref_set<T>(r: Ref<T>, value: T);
+    fn ref_get<T>(r: Ref<T>) -> T;
+}
+
+impl<T> Ref<T> {
+    fn to_ref<T>(value: T) -> Ref<T> {
+        ref_new(value);
+    }
+
+    fn get(r: Ref<T>) -> T {
+        ref_get(r)
+    }
+
+    fn mutate(r: Ref<T>, f: fn(value: T) -> T) {
+        let current = ref_get(r);
+        ref_set(r, f(current));
+    }
+}
+
+struct Channel<T> {}
+struct Receiver<T> {}
+struct Sender<T> {}
+
+extern "effect/Channel" {
+    fn channel_new<T>() -> Channel<T>;
+    fn channel_recv<T>(self: Receiver<T>) -> Option<T>;
+    fn channel_send<T>(self: Sender<T>, value: T);
+}
+
+impl<T> Channel<T> {
+    fn new() -> (Sender<T>, Receiver<T>) {
+        let ch = channel_new();
+        (Internal::unsafe_coerce(ch), Internal::unsafe_coerce(ch))
+    }
+}
+
+impl<T> Receiver<T> {
+    fn recv(self) -> Option<T> {
+        channel_recv(self)
+    }
+}
+
+impl<T> Sender<T> {
+    // TODO this needs a return type?
+    fn send(self, value: T) {
+        channel_send(self, value)
+    }
+}
+
+enum ChannelOp<T> {
+    Recv(Receiver<T>, Option<T>),
+    Send(Sender<T>, T),
+}
+
+struct Internal {}
+
+extern "native/Internal" {
+    fn unsafe_coerce<T, Y>(x: T) -> Y;
+}
+
+impl Int {
+    fn abs(n: Int) -> Int {
+        if n < 0 {
+            return -n;
+        }
+
+        n
+    }
+
+    fn cmp(a: Int, b: Int) -> Ordering {
+        if a == b {
+            Ordering::Equal
+        } else if a > b {
+            Ordering::Greater
+        } else {
+            Ordering::Less
+        }
+    }
+}
+
+enum Ordering {
+    Less,
+    Equal,
+    Greater,
+}
+
+extern "native/Char" {
+    fn to_int(self: Char) -> Int;
+    fn to_string(self: Char) -> String;
+}
+
+impl Seq<Int> {
+    fn sum(self) -> Int {
+        self.reduce(0, |a, b| a + b)
+    }
+}
+
+impl Seq<String> {
+    fn to_string(self) -> String {
+        self.reduce("", |acc, item| acc.append(item))
+    }
+
+    fn join(self, sep: String) -> String {
+        self.reduce("", |acc, item| acc.append(sep).append(item))
+    }
+}
+
+#[is_trait]
+struct Eq<T> {
+    equals: fn(x: T, y: T) -> Bool,
+}
+
+#[is_trait]
+struct Hash<T> {
+    to_hash: fn(x: T) -> Int,
+}
+
+#[is_trait]
+struct Display<T> {
+    to_string: fn(x: T) -> String,
+}

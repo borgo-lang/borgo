@@ -1,0 +1,36 @@
+
+enum Result<T, E> {
+  Ok(T),
+  Err(E),
+}
+
+struct Tuple2<T,Y> {
+  first: T,
+  second: Y,
+}
+
+struct Tuple3<T,Y,Z> {
+  first: T,
+  second: Y,
+  third: Z,
+}
+
+enum ErrFoo {
+  A,
+  B,
+}
+
+enum ErrBar {
+  X,
+  Y,
+}
+
+#[is_trait]
+struct Eq<T> {
+  equals: fn (x: T, y: T) -> Bool,
+}
+
+#[is_trait]
+struct Hash<T> {
+  to_hash: fn (x: T) -> Int,
+}

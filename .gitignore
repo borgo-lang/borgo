@@ -1,0 +1,7 @@
+/target
+/wasm/pkg
+node_modules
+*.wasm
+/playground/static/std
+/playground/static/*.js
+/playground/static/*.json
