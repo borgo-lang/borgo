@@ -2,6 +2,5 @@
 
 members = [
   "compiler",
-  "server",
   "wasm",
 ]
