@@ -146,13 +146,14 @@ But compiler inferred:
 
 async function writeExpectation(folder: string, out: string, block: CodeBlock) {
   const filename = slugify(block.description);
+  const new_out = replaceUnboundVars(out);
   const content = `${block.description}
 
 SOURCE:
 ${block.code}
 
 OUTPUT:
-${out}`;
+${new_out}`;
 
   Deno.writeTextFileSync(
     `${folder}/${filename}.exp`,
@@ -361,6 +362,18 @@ function appendGoSource(output: string) {
   // Append go source code to expectation output
   const source = Deno.readTextFileSync("user.go");
   return [output, source].join("\n---\n");
+}
+
+function replaceUnboundVars(output: string) {
+  // Replace all unbound vars with a stable number, so that snapshots don't get updated when there are inference changes that don't affect the end result
+  return output.replaceAll(/"Var": (\d+)/gm, (match, var_n) => {
+    if (var_n == "-1") {
+      console.error("Dummy unbound variable -1 found");
+      Deno.exit(1);
+    }
+
+    return `"Var": 99`;
+  });
 }
 
 export function decode(s: any) {
