@@ -2,19 +2,35 @@
 
 set -euo pipefail
 
+if [ $# -gt 1 ];
+then
+    echo "USAGE: $0 [--skip-rust]"
+    exit 1
+fi
+
+# Building wasm bindings is very slow
+SKIP_RUST=0
+
+if [ ${1:-""} = "--skip-rust" ];
+then
+  SKIP_RUST=true
+fi
+
 cd ../runtime
 
 GOOS=js GOARCH=wasm go build -o ../playground/static/main.wasm interpreter/wasm.go
 
 cd -
 
-cd ../wasm
-
-echo "SKIP BUILDING RUST"
-# wasm-pack build --target web # --debug
-cp -R pkg ../playground/static
-
-cd -
+if [ $SKIP_RUST = true ];
+then
+  echo "SKIP BUILDING RUST WASM BINDINGS"
+else
+  cd ../wasm
+  wasm-pack build --target web # --debug
+  cp -R pkg ../playground/static
+  cd -
+fi
 
 cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" "./static/go-wasm-exec.js"
 
