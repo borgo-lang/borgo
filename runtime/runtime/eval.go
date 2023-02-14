@@ -553,8 +553,14 @@ func (eval *Eval) Run(expr Expr) any {
 			panic("unhandled arity")
 		}
 
+		field_names := []string{}
+
+		for _, f := range fields {
+			field_names = append(field_names, f.Name)
+		}
+
 		RegisterMakeFunction(qualifiedName, makeConstructorFn)
-		RegisterStruct(qualifiedName, qualifiedName)
+		RegisterStruct(qualifiedName, qualifiedName, field_names)
 
 		// If it's a trait, register the trait function as well
 		if expr.IsTrait {

@@ -46,7 +46,7 @@ func pkg_user_init() {
 	borgo.RegisterMakeFunction("Color::Red", make_Color_Red)
 	borgo.RegisterTypeConstructor("Color::Green", "Color_Green")
 	borgo.RegisterMakeFunction("Color::Green", make_Color_Green)
-	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterStruct("Foo", "Foo", []string{"name"})
 	borgo.RegisterMakeFunction("Foo", make_Foo)
 	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
 }

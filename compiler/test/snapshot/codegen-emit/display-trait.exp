@@ -233,9 +233,9 @@ func borgo_main() any {
 }
 
 func pkg_user_init() {
-	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterStruct("Foo", "Foo", []string{"a", "b"})
 	borgo.RegisterMakeFunction("Foo", make_Foo)
-	borgo.RegisterStruct("Bar", "Bar")
+	borgo.RegisterStruct("Bar", "Bar", []string{"baz"})
 	borgo.RegisterMakeFunction("Bar", make_Bar)
 	borgo.RegisterTypeConstructor("Color::Blue", "Color_Blue")
 	borgo.RegisterMakeFunction("Color::Blue", make_Color_Blue)

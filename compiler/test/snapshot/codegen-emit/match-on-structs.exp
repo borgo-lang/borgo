@@ -97,7 +97,7 @@ func borgo_main() any {
 }
 
 func pkg_user_init() {
-	borgo.RegisterStruct("Foo", "Foo")
+	borgo.RegisterStruct("Foo", "Foo", []string{"a"})
 	borgo.RegisterMakeFunction("Foo", make_Foo)
 	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
 }

@@ -60,7 +60,7 @@ func borgo_main() any {
 }
 
 func pkg_user_init() {
-	borgo.RegisterStruct("Bar", "Bar")
+	borgo.RegisterStruct("Bar", "Bar", []string{"name", "age", "v"})
 	borgo.RegisterMakeFunction("Bar", make_Bar)
 	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
 }

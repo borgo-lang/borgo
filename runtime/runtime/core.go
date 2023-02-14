@@ -29,6 +29,7 @@ type TypeRep struct {
 	kind    TypeKind
 	name    string
 	mangled string
+	fields  []string
 }
 
 func (r TypeRep) IsStruct() bool {
@@ -62,11 +63,11 @@ var Ops = OperatorImpl{}
 // ------------
 
 func RegisterTypeConstructor(original string, mangled string) {
-	borgo.type_reps[mangled] = TypeRep{name: original, mangled: mangled, kind: TypeEnum}
+	borgo.type_reps[mangled] = TypeRep{name: original, mangled: mangled, kind: TypeEnum, fields: []string{}}
 }
 
-func RegisterStruct(original string, mangled string) {
-	borgo.type_reps[mangled] = TypeRep{name: original, mangled: mangled, kind: TypeStruct}
+func RegisterStruct(original string, mangled string, fields []string) {
+	borgo.type_reps[mangled] = TypeRep{name: original, mangled: mangled, kind: TypeStruct, fields: fields}
 }
 
 func RegisterMakeFunction(name string, fn any) {
@@ -483,7 +484,6 @@ func genericToString(value any) string {
 
 		// Accumulate all data in a map
 		// This is to use the same logic across real structures and BorgoValues
-		// TODO these will turn up out of order. TypeRep should include list of fields.
 		var data = []FieldData{}
 
 		isBorgoValue := name == "BorgoValue"
@@ -542,8 +542,18 @@ func genericToString(value any) string {
 		if type_rep.IsStruct() {
 			isTuple := strings.HasPrefix(type_rep.name, "Tuple")
 
-			for _, field := range data {
-				field_name := field.name
+			// Iterate over type rep fields, so that order is preserved
+			for _, field_name := range type_rep.fields {
+
+				// Lookup field
+				var field FieldData
+				for _, f := range data {
+					if f.name == field_name {
+						field = f
+						break
+					}
+				}
+
 				field_value := field.value
 				s := genericToString(field_value)
 
@@ -621,7 +631,7 @@ func mapToString(m *immutable.Map) string {
 
 func InitCore() {
 
-	RegisterStruct("Unit", "Unit")
+	RegisterStruct("Unit", "Unit", []string{})
 	RegisterMakeFunction("Unit", make_Unit)
 
 	RegisterGlobalFunction("Option::unwrap", func(o any) any {

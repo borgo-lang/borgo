@@ -206,7 +206,16 @@ impl Codegen {
                 if let Expr::StructDef { def, .. } = expr {
                     let name = def.name.clone();
                     let mangled = to_name(&name);
-                    out.emit(format!("borgo.RegisterStruct(\"{name}\", \"{mangled}\")"));
+                    let fields = def
+                        .fields
+                        .iter()
+                        .map(|f| format!("\"{name}\"", name = f.name))
+                        .collect::<Vec<_>>()
+                        .join(", ");
+
+                    out.emit(format!(
+                        "borgo.RegisterStruct(\"{name}\", \"{mangled}\", []string{{ {fields} }})"
+                    ));
 
                     let make_fn = "make_".to_string() + &mangled;
                     out.emit(format!("borgo.RegisterMakeFunction(\"{name}\", {make_fn})"));

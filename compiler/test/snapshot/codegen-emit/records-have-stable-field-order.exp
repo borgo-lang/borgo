@@ -1,0 +1,68 @@
+Records have stable field order.
+
+SOURCE:
+struct Foo { x: Int, y: String }
+
+fn borgo_main() {
+  (1, "a", true).inspect();
+  Foo { x: 1, y: "b" }.inspect();
+  ()
+}
+
+OUTPUT:
+(1, "a", true)
+Foo { x: 1, y: "b" }
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo(arg_0 any, arg_1 any) any {
+	return Foo{arg_0, arg_1}
+}
+
+type Foo struct {
+	X any
+	Y any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var3 := "a"
+		var4 := true
+		var5 := func(base any) any {
+			data := base.(Tuple3)
+			data.First = var2
+			data.Second = var3
+			data.Third = var4
+			return data
+		}(Tuple3{})
+		var6 := Debug_inspect(var5)
+		_ = var6
+		var7 := 1
+		var8 := "b"
+		var9 := func(base any) any {
+			data := base.(Foo)
+			data.X = var7
+			data.Y = var8
+			return data
+		}(Foo{})
+		var10 := Debug_inspect(var9)
+		_ = var10
+		var11 := borgo.Unit
+		var1_block = var11
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterStruct("Foo", "Foo", []string{"x", "y"})
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

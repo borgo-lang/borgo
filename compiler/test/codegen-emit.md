@@ -875,3 +875,15 @@ fn borgo_main() {
   ()
 }
 ```
+
+Records have stable field order.
+
+```rust
+struct Foo { x: Int, y: String }
+
+fn borgo_main() {
+  (1, "a", true).inspect();
+  Foo { x: 1, y: "b" }.inspect();
+  ()
+}
+```
