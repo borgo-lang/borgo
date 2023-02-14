@@ -829,11 +829,20 @@ Equality with Eq trait
 ```rust
 struct Foo { a: Int, b: String }
 
+struct Bar { c: List<Foo> }
+
 fn borgo_main() {
   let x = Foo { a: 1, b: "yo" };
   let y = Foo { a: 1, b: "yo" };
   Eq::equals(x, y).assert_eq(true);
   Eq::equals(x, Foo { a: 2, ..y}).assert_eq(false);
+
+  Eq::equals(Bar { c: [x, y] }, Bar { c: [x, y] }).assert_eq(true);
+  Eq::equals(Bar { c: [x] }, Bar { c: [x, y] }).assert_eq(false);
+
+  let xs = [x];
+  let a = Bar { c: xs.push(y) };
+  Eq::equals(a, Bar { c: [x, y] }).assert_eq(true);
 }
 ```
 

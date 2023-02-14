@@ -280,10 +280,6 @@ func (OperatorImpl) Or(x any, y any) any {
 }
 
 func (OperatorImpl) Eq(x any, y any) any {
-	if _, ok := x.(*immutable.List); ok {
-		return compareLists(x, y)
-	}
-
 	// TODO this isn't great
 	return reflect.DeepEqual(x, y)
 }

@@ -3,11 +3,20 @@ Equality with Eq trait
 SOURCE:
 struct Foo { a: Int, b: String }
 
+struct Bar { c: List<Foo> }
+
 fn borgo_main() {
   let x = Foo { a: 1, b: "yo" };
   let y = Foo { a: 1, b: "yo" };
   Eq::equals(x, y).assert_eq(true);
   Eq::equals(x, Foo { a: 2, ..y}).assert_eq(false);
+
+  Eq::equals(Bar { c: [x, y] }, Bar { c: [x, y] }).assert_eq(true);
+  Eq::equals(Bar { c: [x] }, Bar { c: [x, y] }).assert_eq(false);
+
+  let xs = [x];
+  let a = Bar { c: xs.push(y) };
+  Eq::equals(a, Bar { c: [x, y] }).assert_eq(true);
 }
 
 OUTPUT:
@@ -22,10 +31,16 @@ var _ = borgo.Unit
 func make_Foo(arg_0 any, arg_1 any) any {
 	return Foo{arg_0, arg_1}
 }
+func make_Bar(arg_0 any) any {
+	return Bar{arg_0}
+}
 
 type Foo struct {
 	A any
 	B any
+}
+type Bar struct {
+	C any
 }
 
 func borgo_main() any {
@@ -75,7 +90,82 @@ func borgo_main() any {
 		var25 := false
 		var26 := Debug_assert_eq
 		var27 := var26(var24, var25)
-		var1_block = var27
+		_ = var27
+		var28 := var5
+		var29 := var10
+		var30 := borgo.List(var28, var29)
+		var31 := func(base any) any {
+			data := base.(Bar)
+			data.C = var30
+			return data
+		}(Bar{})
+		var32 := var5
+		var33 := var10
+		var34 := borgo.List(var32, var33)
+		var35 := func(base any) any {
+			data := base.(Bar)
+			data.C = var34
+			return data
+		}(Bar{})
+		var36 := Eq_equals
+		var37 := var36(var31, var35)
+		var38 := true
+		var39 := Debug_assert_eq
+		var40 := var39(var37, var38)
+		_ = var40
+		var41 := var5
+		var42 := borgo.List(var41)
+		var43 := func(base any) any {
+			data := base.(Bar)
+			data.C = var42
+			return data
+		}(Bar{})
+		var44 := var5
+		var45 := var10
+		var46 := borgo.List(var44, var45)
+		var47 := func(base any) any {
+			data := base.(Bar)
+			data.C = var46
+			return data
+		}(Bar{})
+		var48 := Eq_equals
+		var49 := var48(var43, var47)
+		var50 := false
+		var51 := Debug_assert_eq
+		var52 := var51(var49, var50)
+		_ = var52
+		var53 := var5
+		var54 := borgo.List(var53)
+		var55 := var54
+		var56 := borgo.Unit
+		_ = var56
+		var57 := var55
+		var58 := var10
+		var59 := List_push
+		var60 := var59(var57, var58)
+		var61 := func(base any) any {
+			data := base.(Bar)
+			data.C = var60
+			return data
+		}(Bar{})
+		var62 := var61
+		var63 := borgo.Unit
+		_ = var63
+		var64 := var62
+		var65 := var5
+		var66 := var10
+		var67 := borgo.List(var65, var66)
+		var68 := func(base any) any {
+			data := base.(Bar)
+			data.C = var67
+			return data
+		}(Bar{})
+		var69 := Eq_equals
+		var70 := var69(var64, var68)
+		var71 := true
+		var72 := Debug_assert_eq
+		var73 := var72(var70, var71)
+		var1_block = var73
 	}
 	return var1_block
 }
@@ -83,5 +173,7 @@ func borgo_main() any {
 func pkg_user_init() {
 	borgo.RegisterStruct("Foo", "Foo", []string{"a", "b"})
 	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterStruct("Bar", "Bar", []string{"c"})
+	borgo.RegisterMakeFunction("Bar", make_Bar)
 	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
 }
