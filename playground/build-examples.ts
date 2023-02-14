@@ -40,11 +40,16 @@ import { marked } from "https://esm.sh/marked@4.0.18";
   const tpl = Deno.readTextFileSync("./home.html");
   const readme = Deno.readTextFileSync("../README.md");
 
-  let intro = marked.parse(readme);
-  const needle = `<h2 id="goals"`;
-  intro = intro.split(needle)[1];
-  intro = intro.split(`<h2 id="tour"`)[0];
-  intro = needle + intro;
+  const md = marked.parse(readme);
+  let intro = md;
+
+  // Just keep Goals section?
+  // const needle = `<h2 id="goals"`;
+  // let intro = intro.split(needle)[1];
+  // intro = intro.split(`<h2 id="tour"`)[0];
+  // intro = needle + intro;
+
+  intro = md;
 
   const content = tpl.replace("[content]", intro);
   Deno.writeTextFileSync("./static/index.html", content);

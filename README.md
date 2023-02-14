@@ -13,8 +13,8 @@ The Borgo compiler is written in Rust. Check out the
 
 ## Goals
 
-**Simple but powerful type system** - Think Elm, Haskell98 or Rust (with a way
-less powerful trait system).
+**Simple but powerful type system** - Good type inference like Elm, Haskell,
+Rust.
 
 **Garbage collected** - Optimize for developer experience over extreme
 performance. Leverage Go's garbage collector.
@@ -245,7 +245,8 @@ Primitive types
 | `Char`    | `rune`                                                     |
 | `List<T>` | [immutable.List](https://github.com/benbjohnson/immutable) |
 
-The stdlib can be found in [runtime/std/core.brg](runtime/std/core.brg).
+The stdlib can be found at
+[runtime/std/core.brg](https://github.com/borgo-lang/borgo/blob/main/runtime/std/core.brg).
 
 ## Usage
 
