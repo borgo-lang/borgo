@@ -45,18 +45,18 @@ fn borgo_main() {
 
 
 
-    <script src="go-wasm-exec.js"></script>
-    <script src="bundle.js"></script>
+    <script src="/go-wasm-exec.js"></script>
+    <script src="/bundle.js"></script>
     <script type="module">
       // Rust compiler
-      import init, { compile_wasm, on_hover } from "./pkg/wasm.js";
+      import init, { compile_wasm, on_hover } from "/pkg/wasm.js";
 
       // Go evaluator
       function initGo() {
         const go = new Go();
 
         return WebAssembly
-          .instantiateStreaming(fetch("main.wasm"), go.importObject)
+          .instantiateStreaming(fetch("/main.wasm"), go.importObject)
           .then((result) => {
             go.run(result.instance);
           });

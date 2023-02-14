@@ -8,6 +8,8 @@ then
     exit 1
 fi
 
+mkdir -p static
+
 # Building wasm bindings is very slow
 SKIP_RUST=0
 

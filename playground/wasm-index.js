@@ -33,8 +33,8 @@ let EXAMPLES;
 let STD_SOURCE;
 
 async function initStaticData() {
-  EXAMPLES = await (fetch("examples.out.json").then((res) => res.json()));
-  STD_SOURCE = await (fetch("std/core.brg").then((res) => res.text()));
+  EXAMPLES = await (fetch("/examples.out.json").then((res) => res.json()));
+  STD_SOURCE = await (fetch("/std/core.brg").then((res) => res.text()));
 }
 
 initStaticData();
