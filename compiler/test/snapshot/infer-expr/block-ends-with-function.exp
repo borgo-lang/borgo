@@ -1,0 +1,132 @@
+Block ends with function
+
+SOURCE:
+{ fn foo() -> Int { 1 } }
+
+OUTPUT:
+fn () -> Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [],
+            "bounds": [],
+            "args": [],
+            "ret": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Literal": {
+                      "lit": {
+                        "Int": 1
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 1,
+                          "col": 20
+                        },
+                        "end": {
+                          "line": 1,
+                          "col": 21
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 18
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 23
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1,
+              "col": 2
+            },
+            "end": {
+              "line": 1,
+              "col": 23
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Fun": {
+        "args": [],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "Int",
+            "args": []
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 25
+      }
+    }
+  }
+}

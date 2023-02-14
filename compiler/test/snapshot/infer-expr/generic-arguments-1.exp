@@ -1,5 +1,4 @@
-Types with generic arguments (Maybe, List) should be applied with the correct
-number of arguments.
+Generic arguments 1
 
 SOURCE:
 { fn foo(foo: List<Int, Bool>) {} }

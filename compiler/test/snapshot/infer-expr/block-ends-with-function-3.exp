@@ -1,0 +1,233 @@
+Block ends with function 3
+
+SOURCE:
+{ fn foo(foo: Int, bar: Bool) -> Int { foo } }
+
+OUTPUT:
+fn (Int, Bool) -> Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [],
+            "bounds": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "foo",
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 1,
+                        "col": 9
+                      },
+                      "end": {
+                        "line": 1,
+                        "col": 12
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                }
+              },
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "bar",
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 1,
+                        "col": 19
+                      },
+                      "end": {
+                        "line": 1,
+                        "col": 22
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "Bool",
+                    "args": []
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Bool",
+                    "args": []
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Int",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Var": {
+                      "value": "foo",
+                      "decl": {
+                        "file_id": {
+                          "package": "dummy",
+                          "filename": "dummy"
+                        },
+                        "span": {
+                          "start": {
+                            "line": 1,
+                            "col": 9
+                          },
+                          "end": {
+                            "line": 1,
+                            "col": 12
+                          }
+                        }
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 1,
+                          "col": 39
+                        },
+                        "end": {
+                          "line": 1,
+                          "col": 42
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 37
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 44
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Con": {
+                    "name": "Int",
+                    "args": []
+                  }
+                },
+                {
+                  "Con": {
+                    "name": "Bool",
+                    "args": []
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1,
+              "col": 2
+            },
+            "end": {
+              "line": 1,
+              "col": 44
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Fun": {
+        "args": [
+          {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          {
+            "Con": {
+              "name": "Bool",
+              "args": []
+            }
+          }
+        ],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "Int",
+            "args": []
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 46
+      }
+    }
+  }
+}

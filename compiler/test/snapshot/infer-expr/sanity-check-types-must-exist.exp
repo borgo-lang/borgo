@@ -1,0 +1,10 @@
+Sanity check: types must exist
+
+SOURCE:
+{ fn foo(x: T) -> T { x } }
+
+OUTPUT:
+Type not found: T
+
+1|  { fn foo(x: T) -> T { x } }
+      ^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,0 +1,271 @@
+Generic arguments 2
+
+SOURCE:
+{ fn foo() -> List<List<Int>> { [[1]]} }
+
+OUTPUT:
+fn () -> List<List<Int>>
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [],
+            "bounds": [],
+            "args": [],
+            "ret": {
+              "Con": {
+                "name": "List",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "List",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "List",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "List",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Int",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Literal": {
+                      "lit": {
+                        "List": [
+                          {
+                            "Literal": {
+                              "lit": {
+                                "List": [
+                                  {
+                                    "Literal": {
+                                      "lit": {
+                                        "Int": 1
+                                      },
+                                      "ty": {
+                                        "Con": {
+                                          "name": "Int",
+                                          "args": []
+                                        }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 1,
+                                          "col": 34
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "col": 35
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "ty": {
+                                "Con": {
+                                  "name": "List",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "Int",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 1,
+                                  "col": 33
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "col": 36
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "List",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "List",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "Int",
+                                      "args": []
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 1,
+                          "col": 32
+                        },
+                        "end": {
+                          "line": 1,
+                          "col": 37
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ty": {
+                  "Con": {
+                    "name": "List",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "List",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "Int",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 30
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 38
+                  }
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "List",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "List",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "fx": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1,
+              "col": 2
+            },
+            "end": {
+              "line": 1,
+              "col": 38
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Fun": {
+        "args": [],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "List",
+            "args": [
+              {
+                "Con": {
+                  "name": "List",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Int",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "fx": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 40
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-
+Generic arguments 3
 
 SOURCE:
 { fn foo(foo: Int<Bool>) {} }

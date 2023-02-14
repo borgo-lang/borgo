@@ -4,6 +4,8 @@ What's the type of an `ast::Expr`?
 
 ---
 
+Literals.
+
 > infer("Int")
 
 ```rust
@@ -18,11 +20,15 @@ Blocks get the type of the last expression.
 { fn foo() {} }
 ```
 
+Block ends with function
+
 > infer("fn () -> Int")
 
 ```rust
 { fn foo() -> Int { 1 } }
 ```
+
+Block ends with function 2
 
 > infer("fn (Int) -> Int")
 
@@ -30,11 +36,15 @@ Blocks get the type of the last expression.
 { fn foo(foo: Int) -> Int { foo } }
 ```
 
+Block ends with function 3
+
 > infer("fn (Int, Bool) -> Int")
 
 ```rust
 { fn foo(foo: Int, bar: Bool) -> Int { foo } }
 ```
+
+Block ends with function 4
 
 > infer("fn <A>(A, Bool) -> A")
 
@@ -42,11 +52,15 @@ Blocks get the type of the last expression.
 { fn foo<T>(foo: T, bar: Bool) -> T { foo } }
 ```
 
+Sanity check: types must exist
+
 > errorContains("Type not found: T")
 
 ```rust
 { fn foo(x: T) -> T { x } }
 ```
+
+Block ends with list
 
 > infer("fn () -> List<Int>")
 
@@ -54,14 +68,15 @@ Blocks get the type of the last expression.
 { fn foo() -> List<Int> { [1] } }
 ```
 
+Block ends with generic list
+
 > infer("fn <A>(A) -> List<A>")
 
 ```rust
-{ fn foo<Y>(foo: Y) -> List<Y> { [foo, foo ]} }
+{ fn foo<Y>(foo: Y) -> List<Y> { [foo, foo] } }
 ```
 
-Types with generic arguments (Maybe, List) should be applied with the correct
-number of arguments.
+Generic arguments 1
 
 > errorContains("Wrong arity")
 
@@ -69,11 +84,15 @@ number of arguments.
 { fn foo(foo: List<Int, Bool>) {} }
 ```
 
+Generic arguments 2
+
 > infer("fn () -> List<List<Int>>")
 
 ```rust
 { fn foo() -> List<List<Int>> { [[1]]} }
 ```
+
+Generic arguments 3
 
 > errorContains("Wrong arity")
 
