@@ -309,7 +309,7 @@ fn stringify_bounds(g: &str, bounds: &[Type]) -> String {
         .filter_map(|b| match b {
             Type::Con { name, args } => {
                 let type_arg = args.first().unwrap().get_name().unwrap();
-                if &type_arg == g {
+                if type_arg == g {
                     return Some(name.to_string());
                 }
 

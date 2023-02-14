@@ -2,7 +2,7 @@ use compiler::ast::UnparsedFile;
 use compiler::infer;
 use compiler::project::{self, Project};
 
-use bincode;
+
 use wasm_bindgen::prelude::*;
 
 extern crate console_error_panic_hook;
@@ -55,5 +55,5 @@ pub fn on_hover(bytes: Vec<u8>, line: u32, character: u32) -> Option<String> {
 
     let contents = format!("{}", ty);
 
-    return Some(contents);
+    Some(contents)
 }

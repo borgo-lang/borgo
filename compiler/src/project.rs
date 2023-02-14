@@ -145,7 +145,7 @@ impl Project {
 
         let first_error =
             std.first_error()
-                .or(pkg.first_error())
+                .or_else(|| pkg.first_error())
                 .map(|err: (File, error::Error)| ErrorJSON {
                     kind: "error".to_string(),
                     filename: err.0.name,

@@ -2092,4 +2092,4 @@ has no method:
     }
 }
 
-const RESERVED_WORDS: &'static [&'static str] = &["default"];
+const RESERVED_WORDS: &[&str] = &["default"];

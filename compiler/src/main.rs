@@ -166,7 +166,7 @@ fn main() {
             let std = scan_folder("std", std_path.to_str().unwrap());
             let pkg = Package::from_file_contents(project::Project::user(), files);
 
-            let mut project = Project::from_packages(vec![std, pkg.clone()]);
+            let mut project = Project::from_packages(vec![std, pkg]);
 
             project.infer(&mut instance);
 
