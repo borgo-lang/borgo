@@ -259,7 +259,7 @@ Requirements:
 Run this script to build the compiler and set up a fresh project:
 
 ```bash
-$ bash init-project.sh PROJECT_NAME
+$ bash init-project PROJECT_NAME
 
 $ ls PROJECT_NAME
 app.brg   # write source code here
