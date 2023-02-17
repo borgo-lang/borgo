@@ -253,13 +253,13 @@ The stdlib can be found at
 Requirements:
 
 - Rust toolchain
-- Go compiler
+- Go toolchain
 - Deno (if you want to run tests)
 
 Run this script to build the compiler and set up a fresh project:
 
 ```bash
-$ bash init-project PROJECT_NAME
+$ ./init-project PROJECT_NAME
 
 $ ls PROJECT_NAME
 app.brg   # write source code here
