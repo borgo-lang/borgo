@@ -4,7 +4,7 @@
   <title>Playground | The Borgo Programming Language</title>
   <meta charset="utf-8">
   <style>
-    h1 { font-size: 1.2em; display: none; }
+    h1 { font-size: 1.2em; }
     pre { white-space: pre-wrap; word-wrap: break-word; }
     hr { border: 1px solid #eee; }
     header { adisplay: flex; align-items: center; justify-content: space-between; }
@@ -18,7 +18,7 @@
 </head>
 <body>
   <header>
-    <h1>Borgo programming language</h1>
+    <h1>Borgo Playground</h1>
   </header>
 
   <div class="links">
@@ -32,7 +32,12 @@
     <button onclick="compile()" title="Shift + Enter">Run</button>
   </div>
 
-  <textarea id="code" cols="80" rows="30">/// What to expect:
+  <div id="editor">
+    <div>
+      Loading compiler...
+    </div>
+
+    <textarea style="display: none;">/// What to expect:
 ///   1. Loads of panics
 ///   2. Somewhat working type system
 ///   3. No side-effects for now
@@ -43,6 +48,7 @@ fn borgo_main() {
   "Hello world".inspect();
   ()
 }</textarea>
+  </div>
 
   <pre id="output"></pre>
 
@@ -53,30 +59,28 @@ fn borgo_main() {
   <script src="/bundle.js"></script> 
   <script type="module">
 
+    // Rust compiler
+    import { default as initRust, compile_wasm, on_hover } from "/pkg/wasm.js";
 
-      // Rust compiler
-      import { default as initRust, compile_wasm, on_hover } from "/pkg/wasm.js";
+    // Go evaluator
+    function initGo() {
+      const go = new Go();
 
-      // Go evaluator
-      function initGo() {
-        const go = new Go();
+      return WebAssembly
+        .instantiateStreaming(fetch("/main.wasm"), go.importObject)
+        .then((result) => {
+          go.run(result.instance);
+        });
+    }
 
-        return WebAssembly
-          .instantiateStreaming(fetch("/main.wasm"), go.importObject)
-          .then((result) => {
-            go.run(result.instance);
-          });
-      }
+    await Promise.all([initRust(), initGo()])
 
+    window.Borgo.compile = compile_wasm
+    window.Borgo.on_hover = on_hover
 
-      await Promise.all([initRust(), initGo()])
+    window.Borgo.main()
 
-      window.Borgo.compile = compile_wasm
-      window.Borgo.on_hover = on_hover
-
-      window.Borgo.main()
-
-      // --------------------
+    // --------------------
   </script>
 </body>
 </html>

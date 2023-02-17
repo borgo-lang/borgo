@@ -65,8 +65,8 @@ Borgo.main = async function () {
   resetLogs();
   initExamples();
 
-  const textarea = document.getElementById("code");
-  const initial_content = textarea.value;
+  const editor = document.getElementById("editor");
+  const initial_content = editor.getElementsByTagName("textarea")[0].value;
 
   // Hover Tooltip
   const wordHover = hoverTooltip((view, pos, side) => {
@@ -89,7 +89,6 @@ Borgo.main = async function () {
     };
   });
 
-  // Create a CodeMirror editor with the textarea's contents
   let view = new EditorView({
     doc: initial_content,
     extensions: [
@@ -109,8 +108,8 @@ Borgo.main = async function () {
     ],
   });
 
-  textarea.insertAdjacentElement("afterend", view.dom);
-  textarea.remove();
+  editor.insertAdjacentElement("afterend", view.dom);
+  editor.remove();
 
   // Set global editor
   Borgo.view = view;
