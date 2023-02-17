@@ -2,12 +2,9 @@ package main
 
 import borgo "borgo/runtime"
 
-// This file gets copied as "main.go" when running tests
-
 func main() {
 	borgo.InitCore()
 	pkg_std_init()
 	pkg_user_init()
 	borgo_main()
-	// PrintMemUsage()
 }
