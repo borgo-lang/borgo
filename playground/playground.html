@@ -1,8 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <style>
+<head>
+  <title>Playground | The Borgo Programming Language</title>
+  <meta charset="utf-8">
+  <style>
     h1 { font-size: 1.2em; display: none; }
     pre { white-space: pre-wrap; word-wrap: break-word; }
     hr { border: 1px solid #eee; }
@@ -13,27 +14,25 @@
 
     .cm-editor { height: 30em; }
     .cm-scroller { overflow: auto; }
-    </style>
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Borgo programming language</h1>
+  </header>
 
-  </head>
-  <body>
-    <header>
-      <h1>Borgo programming language</h1>
-    </header>
+  <div class="links">
+    <section id="examples">
+    </section>
+  </div>
 
-    <div class="links">
-      <section id="examples">
-      </section>
-    </div>
+  <hr>
 
-    <hr />
+  <div class="actions">
+    <button onclick="compile()" title="Shift + Enter">Run</button>
+  </div>
 
-    <div class="actions">
-      <button onclick="compile()" title="Shift + Enter">Run</button>
-    </div>
-
-    <textarea id="code" cols="80" rows="30">
-/// What to expect:
+  <textarea id="code" cols="80" rows="30">/// What to expect:
 ///   1. Loads of panics
 ///   2. Somewhat working type system
 ///   3. No side-effects for now
@@ -45,16 +44,16 @@ fn borgo_main() {
   ()
 }</textarea>
 
-    <pre id="output"></pre>
+  <pre id="output"></pre>
 
-    <hr />
-    <pre id="errors"></pre>
+  <hr>
+
+  <pre id="errors"></pre>
+  <script src="/go-wasm-exec.js"></script> 
+  <script src="/bundle.js"></script> 
+  <script type="module">
 
 
-
-    <script src="/go-wasm-exec.js"></script>
-    <script src="/bundle.js"></script>
-    <script type="module">
       // Rust compiler
       import { default as initRust, compile_wasm, on_hover } from "/pkg/wasm.js";
 
@@ -78,8 +77,6 @@ fn borgo_main() {
       window.Borgo.main()
 
       // --------------------
-
-
-    </script>
-  </body>
+  </script>
+</body>
 </html>
