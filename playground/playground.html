@@ -56,7 +56,7 @@ fn borgo_main() {
     <script src="/bundle.js"></script>
     <script type="module">
       // Rust compiler
-      import init, { compile_wasm, on_hover } from "/pkg/wasm.js";
+      import { default as initRust, compile_wasm, on_hover } from "/pkg/wasm.js";
 
       // Go evaluator
       function initGo() {
@@ -70,7 +70,7 @@ fn borgo_main() {
       }
 
 
-      await Promise.all([init(), initGo()])
+      await Promise.all([initRust(), initGo()])
 
       window.Borgo.compile = compile_wasm
       window.Borgo.on_hover = on_hover
