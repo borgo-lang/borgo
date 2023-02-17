@@ -3,7 +3,8 @@
 **Borgo** is a Rusty functional language that compiles to Go.
 
 The Borgo compiler is written in Rust. Check out the
-**[online playground](TODO)** for some examples.
+**[online playground](https://borgo-lang.github.io/playground/)** for some
+examples.
 
 - [Goals](#goals)
 - [Language Tour](#tour)

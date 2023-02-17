@@ -31,6 +31,7 @@ else
   cd ../wasm
   wasm-pack build --target web # --debug
   cp -R pkg ../playground/static
+  rm ../playground/static/pkg/.gitignore
   cd -
 fi
 
