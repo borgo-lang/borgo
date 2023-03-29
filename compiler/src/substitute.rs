@@ -331,6 +331,7 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
+        Expr::Flow { kind, span } => Expr::Flow { kind, span },
         Expr::Unit { span } => Expr::Unit { span },
         Expr::Noop => Expr::Noop,
         Expr::Todo => Expr::Todo,

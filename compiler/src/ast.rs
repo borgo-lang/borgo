@@ -401,6 +401,12 @@ pub enum ExternKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum LoopFlow {
+    Break,
+    Continue,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Span {
     pub start: LineColumn,
     pub end: LineColumn,
@@ -646,6 +652,10 @@ pub enum Expr {
         binding: Binding,
         expr: Box<Expr>,
         body: Box<Expr>,
+        span: Span,
+    },
+    Flow {
+        kind: LoopFlow,
         span: Span,
     },
 
@@ -1113,6 +1123,16 @@ impl Expr {
                 })
             }
 
+            syn::Expr::Break(_) => Ok(Self::Flow {
+                kind: LoopFlow::Break,
+                span: root_span,
+            }),
+
+            syn::Expr::Continue(_) => Ok(Self::Flow {
+                kind: LoopFlow::Continue,
+                span: root_span,
+            }),
+
             _ => todo!("uncovered expr {:#?}", input),
         }
     }
@@ -1491,6 +1511,7 @@ impl Expr {
             Self::Spawn { ty, .. } => ty,
             Self::Select { ty, .. } => ty,
             Self::Loop { .. } => Type::unit(),
+            Self::Flow { .. } => Type::unit(),
 
             Self::Unit { .. } => Type::unit(),
             Self::Noop => Type::unit(),
@@ -1529,6 +1550,7 @@ impl Expr {
             Self::Spawn { ref mut ty, .. } => *ty = new_ty,
             Self::Select { ref mut ty, .. } => *ty = new_ty,
             Self::Loop { .. } => (),
+            Self::Flow { .. } => (),
 
             Self::Unit { .. } => (),
             Self::Noop => (),
@@ -1568,6 +1590,7 @@ impl Expr {
             Self::Spawn { span, .. } => span,
             Self::Select { span, .. } => span,
             Self::Loop { span, .. } => span,
+            Self::Flow { span, .. } => span,
 
             Self::Unit { span, .. } => span,
             Self::Noop => Span::dummy(),
@@ -1608,6 +1631,7 @@ impl Expr {
             Self::Spawn { ref mut span, .. } => *span = new_span,
             Self::Select { ref mut span, .. } => *span = new_span,
             Self::Loop { ref mut span, .. } => *span = new_span,
+            Self::Flow { ref mut span, .. } => *span = new_span,
 
             Self::Unit { .. } => (),
             Self::Noop => (),

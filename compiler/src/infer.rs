@@ -1241,6 +1241,8 @@ has no method:
                 }
             }
 
+            Expr::Flow { kind, span } => Expr::Flow { kind, span },
+
             Expr::Noop => Expr::Noop,
             Expr::Todo => todo!(),
             // _ => todo!("{:#?}", expr),

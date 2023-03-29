@@ -32,18 +32,22 @@ func borgo_main() any {
 		for !borgo.ValuesIsOfType(var7, "Seq::Nil") {
 			var8 := borgo.GetArg(var7, 0)
 			var9 := var8
-			var var10_block any
+			var10 := var9
+			var11 := borgo.Unit
+			var var12_block any
 			{
-				var11 := var9
-				var12 := Debug_inspect(var11)
-				var10_block = var12
+				var13 := var10
+				var14 := Debug_inspect(var13)
+				var12_block = var14
 			}
-			_ = var10_block
 
 			var7 = borgo.GetArg(var7, 1).(func() any)()
+
+			_ = var11
+			_ = var12_block
 		}
-		var13 := borgo.Unit
-		var1_block = var13
+		var15 := borgo.Unit
+		var1_block = var15
 	}
 	return var1_block
 }

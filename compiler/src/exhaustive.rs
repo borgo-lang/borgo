@@ -528,6 +528,7 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
             check(body, instance)
         }
 
+        Expr::Flow { .. } => Ok(()),
         Expr::Unit { .. } => Ok(()),
         Expr::Noop => Ok(()),
         Expr::Todo => Ok(()),

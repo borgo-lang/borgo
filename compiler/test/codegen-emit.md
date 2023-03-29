@@ -978,10 +978,33 @@ fn borgo_main() {
 
 Using for loops.
 
-```rust-only
+```rust
 fn borgo_main() {
   for x in [1, 2, 3].seq() {
     x.inspect();
   }
+}
+```
+
+Control flow in loops
+
+```rust
+fn borgo_main() {
+  let n = 0.to_ref();
+  let check = false.to_ref();
+
+  for _ in Seq::infinite(0, |count| count + 1) {
+    if n.get() <= 5 {
+      n.mutate(|n| n + 1);
+      check.get().assert_eq(false);
+      continue;
+    }
+
+    check.mutate(|_| true);
+    break;
+  }
+
+  check.get().assert_eq(true);
+  n.get().assert_eq(6);
 }
 ```

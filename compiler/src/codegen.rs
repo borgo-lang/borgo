@@ -3,7 +3,7 @@ use std::collections::{HashMap, VecDeque};
 use crate::{
     ast::{
         Arm, Binding, Constructor, DebugKind, EnumDefinition, Expr, ExternKind, Function,
-        FunctionKind, Literal, Operator, Pat, Span, StructDefinition, StructField, UnOp,
+        FunctionKind, Literal, LoopFlow, Operator, Pat, Span, StructDefinition, StructField, UnOp,
     },
     global_state::{self, Declaration, DerivedOverload},
     project::{Package, Project},
@@ -362,12 +362,15 @@ impl Codegen {
             Expr::CheckType { .. } => self.push("borgo.Unit".to_string()),
             Expr::Const { .. } => "".to_string(),
             Expr::Paren { expr, .. } => self.emit_paren(expr),
+
             Expr::Loop {
                 binding,
                 expr,
                 body,
                 ..
             } => self.emit_loop(binding, expr, body),
+
+            Expr::Flow { kind, .. } => self.emit_loop_flow(kind),
 
             Expr::Tuple { .. } => unreachable!(),
             Expr::VarUpdate { .. } => unreachable!(),
@@ -1121,24 +1124,57 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
         let expr_var = self.emit_local(expr, &mut out);
 
         let current_loop_value = self.fresh_var();
-        let loop_var = self.emit_pattern(&current_loop_value, &binding.pat);
+
+        // Create a fake let binding so that patterns are destructured correctly
+        let loop_var = self.emit_let(
+            &binding,
+            &Expr::Var {
+                value: current_loop_value.clone(),
+                decl: Declaration::dummy(),
+                ty: Type::dummy(),
+                span: Span::dummy(),
+            },
+        );
+
+        // ignore whatever let returns
+        let let_ignore_value = self.pop();
+
         let body_render = self.emit_expr(body);
 
         // ignore whatever body returns
-        let body_value = self.pop();
+        let body_ignore_value = self.pop();
 
         out.emit(format!(
             "for !borgo.ValuesIsOfType({expr_var}, \"Seq::Nil\") {{
     {current_loop_value} := borgo.GetArg({expr_var}, 0)
     {loop_var}
     {body_render}
-    _ = {body_value}
 
     {expr_var} = borgo.GetArg({expr_var}, 1).(func() any)()
+
+    _ = {let_ignore_value}
+    _ = {body_ignore_value}
 }}",
         ));
 
         // always push unit so that there's something to return
+        let unit = self.push("borgo.Unit".to_string());
+        out.emit(unit);
+
+        out.render()
+    }
+
+    fn emit_loop_flow(&mut self, kind: &LoopFlow) -> String {
+        let mut out = emitter();
+
+        let token = match kind {
+            LoopFlow::Break => "break".to_string(),
+            LoopFlow::Continue => "continue".to_string(),
+        };
+
+        out.emit(token);
+
+        // push unit
         let unit = self.push("borgo.Unit".to_string());
         out.emit(unit);
 

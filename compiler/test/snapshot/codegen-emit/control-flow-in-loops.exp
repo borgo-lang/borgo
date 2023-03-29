@@ -1,0 +1,154 @@
+Control flow in loops
+
+SOURCE:
+fn borgo_main() {
+  let n = 0.to_ref();
+  let check = false.to_ref();
+
+  for _ in Seq::infinite(0, |count| count + 1) {
+    if n.get() <= 5 {
+      n.mutate(|n| n + 1);
+      check.get().assert_eq(false);
+      continue;
+    }
+
+    check.mutate(|_| true);
+    break;
+  }
+
+  check.get().assert_eq(true);
+  n.get().assert_eq(6);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 0
+		var3 := Ref_to_ref
+		var4 := var3(var2)
+		var5 := var4
+		var6 := borgo.Unit
+		_ = var6
+		var7 := false
+		var8 := Ref_to_ref
+		var9 := var8(var7)
+		var10 := var9
+		var11 := borgo.Unit
+		_ = var11
+		var12 := 0
+		var17 := func(count any) any {
+
+			var13 := count
+			var14 := 1
+			var15 := borgo.Ops.IAdd
+			var16 := var15(var13, var14)
+			return var16
+		}
+
+		var18 := var17
+		var19 := Seq_infinite
+		var20 := var19(var12, var18)
+		for !borgo.ValuesIsOfType(var20, "Seq::Nil") {
+			var21 := borgo.GetArg(var20, 0)
+			var22 := var21
+			_ = var22
+			var23 := borgo.Unit
+			var var24_block any
+			{
+				var26 := var5
+				var27 := Ref_get
+				var28 := var27(var26)
+				var29 := 5
+				var30 := borgo.Ops.ILe
+				var31 := var30(var28, var29)
+				var var25_result any
+
+				if borgo.Ops.Eq(var31, true).(bool) {
+					var var32_block any
+					{
+						var33 := var5
+						var38 := func(n any) any {
+
+							var34 := n
+							var35 := 1
+							var36 := borgo.Ops.IAdd
+							var37 := var36(var34, var35)
+							return var37
+						}
+
+						var39 := var38
+						var40 := Ref_mutate
+						var41 := var40(var33, var39)
+						_ = var41
+						var42 := var10
+						var43 := Ref_get
+						var44 := var43(var42)
+						var45 := false
+						var46 := Debug_assert_eq
+						var47 := var46(var44, var45)
+						_ = var47
+						continue
+						var48 := borgo.Unit
+						var32_block = var48
+					}
+					var25_result = var32_block
+				} else {
+					var49 := borgo.Unit
+					var25_result = var49
+				}
+				var50 := var25_result
+				_ = var50
+				var51 := var10
+				var53 := func(_ any) any {
+
+					var52 := true
+					return var52
+				}
+
+				var54 := var53
+				var55 := Ref_mutate
+				var56 := var55(var51, var54)
+				_ = var56
+				break
+				var57 := borgo.Unit
+				var24_block = var57
+			}
+
+			var20 = borgo.GetArg(var20, 1).(func() any)()
+
+			_ = var23
+			_ = var24_block
+		}
+		var58 := borgo.Unit
+		_ = var58
+		var59 := var10
+		var60 := Ref_get
+		var61 := var60(var59)
+		var62 := true
+		var63 := Debug_assert_eq
+		var64 := var63(var61, var62)
+		_ = var64
+		var65 := var5
+		var66 := Ref_get
+		var67 := var66(var65)
+		var68 := 6
+		var69 := Debug_assert_eq
+		var70 := var69(var67, var68)
+		var1_block = var70
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}
