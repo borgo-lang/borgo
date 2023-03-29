@@ -1184,6 +1184,7 @@ No errors.
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "name": "Foo",

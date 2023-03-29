@@ -69,6 +69,7 @@ No errors.
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "name": "String",
@@ -140,6 +141,7 @@ No errors.
                     }
                   }
                 },
+                "mutable": false,
                 "ty": {
                   "Con": {
                     "name": "String",

@@ -9,7 +9,7 @@ SOURCE:
 }
 
 OUTPUT:
-updating struct fields is not supported. Re-bind instead
+TODO updating struct fields should be supported.
 
 5|    x.a = "foo"
       ^^^^^^^^^^^

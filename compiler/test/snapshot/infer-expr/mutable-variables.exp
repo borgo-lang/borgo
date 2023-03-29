@@ -1,14 +1,14 @@
-Equality
+Mutable variables
 
 SOURCE:
 {
-  let a = 1;
-  let b = 2;
-  a == b
+  let mut x = 0;
+  x = x + 1;
+  x
 }
 
 OUTPUT:
-Bool
+Int
 ---
 No errors.
 ---
@@ -22,7 +22,7 @@ No errors.
           "binding": {
             "pat": {
               "Type": {
-                "ident": "a",
+                "ident": "x",
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -31,7 +31,7 @@ No errors.
                   },
                   "end": {
                     "line": 2,
-                    "col": 7
+                    "col": 11
                   }
                 }
               }
@@ -47,7 +47,7 @@ No errors.
           "value": {
             "Literal": {
               "lit": {
-                "Int": 1
+                "Int": 0
               },
               "ty": {
                 "Con": {
@@ -58,16 +58,16 @@ No errors.
               "span": {
                 "start": {
                   "line": 2,
-                  "col": 10
+                  "col": 14
                 },
                 "end": {
                   "line": 2,
-                  "col": 11
+                  "col": 15
                 }
               }
             }
           },
-          "mutable": false,
+          "mutable": true,
           "ty": {
             "Con": {
               "name": "Int",
@@ -81,86 +81,16 @@ No errors.
             },
             "end": {
               "line": 2,
-              "col": 12
+              "col": 16
             }
           }
         }
       },
       {
-        "Let": {
-          "binding": {
-            "pat": {
-              "Type": {
-                "ident": "b",
-                "ann": "Unknown",
-                "span": {
-                  "start": {
-                    "line": 3,
-                    "col": 6
-                  },
-                  "end": {
-                    "line": 3,
-                    "col": 7
-                  }
-                }
-              }
-            },
-            "ann": "Unknown",
-            "ty": {
-              "Con": {
-                "name": "Int",
-                "args": []
-              }
-            }
-          },
-          "value": {
-            "Literal": {
-              "lit": {
-                "Int": 2
-              },
-              "ty": {
-                "Con": {
-                  "name": "Int",
-                  "args": []
-                }
-              },
-              "span": {
-                "start": {
-                  "line": 3,
-                  "col": 10
-                },
-                "end": {
-                  "line": 3,
-                  "col": 11
-                }
-              }
-            }
-          },
-          "mutable": false,
-          "ty": {
-            "Con": {
-              "name": "Int",
-              "args": []
-            }
-          },
-          "span": {
-            "start": {
-              "line": 3,
-              "col": 2
-            },
-            "end": {
-              "line": 3,
-              "col": 12
-            }
-          }
-        }
-      },
-      {
-        "Binary": {
-          "op": "Eq",
-          "left": {
+        "VarUpdate": {
+          "target": {
             "Var": {
-              "value": "a",
+              "value": "x",
               "decl": {
                 "file_id": {
                   "package": "dummy",
@@ -173,68 +103,131 @@ No errors.
                   },
                   "end": {
                     "line": 2,
-                    "col": 7
+                    "col": 11
                   }
                 }
               },
               "ty": {
-                "Con": {
-                  "name": "Int",
-                  "args": []
-                }
+                "Var": 99
               },
               "span": {
                 "start": {
-                  "line": 4,
+                  "line": 3,
                   "col": 2
                 },
                 "end": {
-                  "line": 4,
+                  "line": 3,
                   "col": 3
                 }
               }
             }
           },
-          "right": {
-            "Var": {
-              "value": "b",
-              "decl": {
-                "file_id": {
-                  "package": "dummy",
-                  "filename": "dummy"
-                },
-                "span": {
-                  "start": {
-                    "line": 3,
-                    "col": 6
+          "value": {
+            "Binary": {
+              "op": "Add",
+              "left": {
+                "Var": {
+                  "value": "x",
+                  "decl": {
+                    "file_id": {
+                      "package": "std",
+                      "filename": "builtin.brg"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 0,
+                        "col": 0
+                      },
+                      "end": {
+                        "line": 0,
+                        "col": 0
+                      }
+                    }
                   },
-                  "end": {
-                    "line": 3,
-                    "col": 7
+                  "ty": {
+                    "Var": -1
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 6
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 7
+                    }
+                  }
+                }
+              },
+              "right": {
+                "Literal": {
+                  "lit": {
+                    "Int": 1
+                  },
+                  "ty": {
+                    "Var": -1
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 10
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 11
+                    }
                   }
                 }
               },
               "ty": {
-                "Con": {
-                  "name": "Int",
-                  "args": []
-                }
+                "Var": -1
               },
               "span": {
                 "start": {
-                  "line": 4,
-                  "col": 7
+                  "line": 3,
+                  "col": 6
                 },
                 "end": {
-                  "line": 4,
-                  "col": 8
+                  "line": 3,
+                  "col": 11
                 }
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 11
+            }
+          }
+        }
+      },
+      {
+        "Var": {
+          "value": "x",
+          "decl": {
+            "file_id": {
+              "package": "dummy",
+              "filename": "dummy"
+            },
+            "span": {
+              "start": {
+                "line": 2,
+                "col": 6
+              },
+              "end": {
+                "line": 2,
+                "col": 11
               }
             }
           },
           "ty": {
             "Con": {
-              "name": "Bool",
+              "name": "Int",
               "args": []
             }
           },
@@ -245,7 +238,7 @@ No errors.
             },
             "end": {
               "line": 4,
-              "col": 8
+              "col": 3
             }
           }
         }
@@ -253,7 +246,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Bool",
+        "name": "Int",
         "args": []
       }
     },

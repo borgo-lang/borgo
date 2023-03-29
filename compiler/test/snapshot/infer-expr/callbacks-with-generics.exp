@@ -315,6 +315,7 @@ No errors.
                           }
                         }
                       },
+                      "mutable": false,
                       "ty": {
                         "Con": {
                           "name": "A",
@@ -988,6 +989,7 @@ No errors.
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "name": "List",

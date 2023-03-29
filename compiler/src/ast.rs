@@ -512,6 +512,7 @@ pub enum Expr {
     Let {
         binding: Binding,
         value: Box<Expr>,
+        mutable: bool,
         ty: Type,
         span: Span,
     },
@@ -1393,9 +1394,15 @@ impl Expr {
                     .map(|(_, e)| Self::from_expr(*e))
                     .unwrap_or_else(|| Ok(Self::Noop))?;
 
+                let mutable = match pat {
+                    syn::Pat::Ident(i) => i.mutability.is_some(),
+                    _ => false,
+                };
+
                 Ok(Self::Let {
                     binding,
                     value: Box::new(value),
+                    mutable,
                     ty: Type::dummy(),
                     span: Span::make(stmt.span()),
                 })

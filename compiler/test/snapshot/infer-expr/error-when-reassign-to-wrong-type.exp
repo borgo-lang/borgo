@@ -7,7 +7,7 @@ SOURCE:
 }
 
 OUTPUT:
-Can't assign to variable x. Re-bind instead
+Variable x is not declared as mutable. Use `let mut x`.
 
 3|    x = "foo"
       ^^^^^^^^^

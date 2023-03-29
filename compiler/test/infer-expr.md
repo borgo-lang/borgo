@@ -737,32 +737,9 @@ Accessing struct fields.
 }
 ```
 
-Cannot update immutable variable.
-
-> errorContains("Can't assign")
-
-```rust
-{
-  let x = 1;
-  x = 99
-}
-```
-
-Re-binding normal variables.
-
-> errorContains("Can't assign")
-
-```rust
-{
-  let x = 1;
-  x = 2;
-  x
-}
-```
-
 Error when reassign to wrong type.
 
-> errorContains("Can't assign")
+> errorContains("not declared as mutable")
 
 ```rust
 {
@@ -773,7 +750,7 @@ Error when reassign to wrong type.
 
 Error when updating structs.
 
-> errorContains("not supported")
+> errorContains("TODO updating struct fields")
 
 ```rust
 {
@@ -1616,5 +1593,28 @@ No method found error
   let f = Foo {};
 
   f.bar()
+}
+```
+
+Mutable variables
+
+> infer("Int")
+
+```rust
+{
+  let mut x = 0;
+  x = x + 1;
+  x
+}
+```
+
+Only mutable variables can be mutated
+
+> errorContains("y is not declared as mutable")
+
+```rust
+{
+  let y = 0;
+  y = 3;
 }
 ```

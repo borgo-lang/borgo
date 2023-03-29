@@ -328,6 +328,7 @@ impl Infer {
             Expr::Let {
                 binding,
                 value,
+                mutable,
                 span,
                 ty: _,
             } => {
@@ -340,9 +341,17 @@ impl Infer {
                     ..binding
                 };
 
+                match &new_binding.pat {
+                    Pat::Type { ident, .. } => {
+                        self.gs.set_mutability(ident, mutable);
+                    }
+                    _ => (),
+                };
+
                 Expr::Let {
                     binding: new_binding,
                     value: new_value.into(),
+                    mutable,
                     ty,
                     span,
                 }
@@ -793,39 +802,69 @@ impl Infer {
                 value,
                 span,
             } => {
-                // TODO keep this around for named params in function calls
-                // ie. f(a = 1, b = false)
-
                 let ty = self.fresh_ty_var();
-
                 let new_target = self.infer_expr(*target.clone(), &ty);
 
-                match &new_target {
-                    Expr::Var { value, .. } => {
-                        self.generic_error(
-                            format!("Can't assign to variable {}. Re-bind instead", value),
-                            span.clone(),
-                        );
-                    }
+                // Find variable on left side
+                let var_name = match *target {
+                    Expr::Var { value, .. } => Some(value),
 
                     Expr::StructAccess { .. } => {
+                        // expr should be a Var, no other update is allowed
                         self.generic_error(
-                            "updating struct fields is not supported. Re-bind instead".to_string(),
+                            "TODO updating struct fields should be supported.".to_string(),
                             span.clone(),
                         );
+
+                        None
                     }
 
-                    _ => self.generic_error(
-                        "Assign operator is not supported".to_string(),
-                        span.clone(),
-                    ),
+                    _ => {
+                        self.generic_error(
+                            "Assign operator is not supported here".to_string(),
+                            span.clone(),
+                        );
+
+                        None
+                    }
                 };
 
-                Expr::VarUpdate {
-                    target,
+                let ret = Expr::VarUpdate {
+                    target: new_target.into(),
                     value,
-                    span,
+                    span: span.clone(),
+                };
+
+                if var_name.is_none() {
+                    self.generic_error(
+                        "Only assignments to variables allowed".to_string(),
+                        span.clone(),
+                    );
+
+                    return ret;
                 }
+
+                let var_name = var_name.unwrap();
+                let existing_def = self.gs.get_value(&var_name);
+
+                if existing_def.is_none() {
+                    self.generic_error(
+                        format!("variable {} not found in env", var_name),
+                        span.clone(),
+                    );
+
+                    return ret;
+                }
+
+                if !self.gs.get_mutability(&var_name) {
+                    self.generic_error(
+                        format!("Variable {var_name} is not declared as mutable. Use `let mut {var_name}`.")
+                            ,
+                        span.clone(),
+                    );
+                }
+
+                ret
             }
 
             Expr::MethodCall {

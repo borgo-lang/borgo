@@ -11,8 +11,10 @@ struct Scope {
     types: HashMap<String, TypeDef>,
     // bindings in the value universe, ie. x => Int
     values: HashMap<String, ValueDef>,
-    // Assumptions about a type found in trait bounds, ie. equals<T>. Used for constraint resolution.
+    // assumptions about a type found in trait bounds, ie. equals<T>. Used for constraint resolution.
     assumptions: Vec<Type>,
+    // bindings that were declared with `let mut`
+    mutability: HashMap<String, bool>,
 }
 
 impl Scope {
@@ -21,6 +23,7 @@ impl Scope {
             types: Default::default(),
             values: Default::default(),
             assumptions: Default::default(),
+            mutability: Default::default(),
         }
     }
 
@@ -285,6 +288,20 @@ impl GlobalState {
 
         let value = DerivedOverload { overload, ty };
         self.derived_traits.remove(&value);
+    }
+
+    pub fn set_mutability(&mut self, ident: &str, mutable: bool) {
+        self.current_scope()
+            .mutability
+            .insert(ident.to_string(), mutable);
+    }
+
+    pub fn get_mutability(&mut self, ident: &str) -> bool {
+        self.scopes
+            .iter()
+            .find_map(|scope| scope.mutability.get(ident))
+            .cloned()
+            .unwrap_or_default()
     }
 }
 

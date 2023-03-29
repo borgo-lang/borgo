@@ -60,11 +60,13 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
         Expr::Let {
             binding,
             value,
+            mutable,
             ty,
             span,
         } => Expr::Let {
             binding: substitute_binding(&binding, instance),
             value: substitute_expr(*value, instance).into(),
+            mutable,
             ty: instance.substitute(ty),
             span,
         },
