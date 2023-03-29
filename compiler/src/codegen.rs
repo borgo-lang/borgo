@@ -1115,8 +1115,34 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
         out.render()
     }
 
-    fn emit_loop(&self, binding: &Binding, expr: &Expr, body: &Expr) -> String {
-        todo!("TODO asdf")
+    fn emit_loop(&mut self, binding: &Binding, expr: &Expr, body: &Expr) -> String {
+        let mut out = emitter();
+
+        let expr_var = self.emit_local(expr, &mut out);
+
+        let current_loop_value = self.fresh_var();
+        let loop_var = self.emit_pattern(&current_loop_value, &binding.pat);
+        let body_render = self.emit_expr(body);
+
+        // ignore whatever body returns
+        let body_value = self.pop();
+
+        out.emit(format!(
+            "for !borgo.ValuesIsOfType({expr_var}, \"Seq::Nil\") {{
+    {current_loop_value} := borgo.GetArg({expr_var}, 0)
+    {loop_var}
+    {body_render}
+    _ = {body_value}
+
+    {expr_var} = borgo.GetArg({expr_var}, 1).(func() any)()
+}}",
+        ));
+
+        // always push unit so that there's something to return
+        let unit = self.push("borgo.Unit".to_string());
+        out.emit(unit);
+
+        out.render()
     }
 }
 

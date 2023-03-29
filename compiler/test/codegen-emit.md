@@ -975,3 +975,13 @@ fn borgo_main() {
   ()
 }
 ```
+
+Using for loops.
+
+```rust-only
+fn borgo_main() {
+  for x in [1, 2, 3].seq() {
+    x.inspect();
+  }
+}
+```
