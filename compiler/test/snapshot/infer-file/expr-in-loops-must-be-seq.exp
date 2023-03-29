@@ -1,0 +1,17 @@
+Expr in loops must be seq.
+
+SOURCE:
+fn borgo_main() {
+  for x in [1] {
+  }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Seq<A>
+Got:
+    List<Int>
+
+2|    for x in [1] {
+               ^^^

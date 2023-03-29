@@ -366,10 +366,21 @@ For loops.
 
 > infer("fn () -> ()")
 
-```rust-only
+```rust
 fn borgo_main() {
   for x in [1].seq() {
     x as Int;
+  }
+}
+```
+
+Expr in loops must be seq.
+
+> errorContains("mismatch")
+
+```rust
+fn borgo_main() {
+  for x in [1] {
   }
 }
 ```
