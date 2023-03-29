@@ -187,7 +187,15 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
-        Expr::VarUpdate { .. } => expr,
+        Expr::VarUpdate {
+            target,
+            value,
+            span,
+        } => Expr::VarUpdate {
+            target: substitute_expr(*target, instance).into(),
+            value: substitute_expr(*value, instance).into(),
+            span,
+        },
 
         Expr::MethodCall {
             target,

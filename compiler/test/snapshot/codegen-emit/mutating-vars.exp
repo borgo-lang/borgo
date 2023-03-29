@@ -1,0 +1,67 @@
+Mutating vars
+
+SOURCE:
+fn borgo_main() {
+  let mut x = 1;
+  x = x + 3;
+  x.assert_eq(4);
+
+  {
+    let x = 5;
+    x.assert_eq(5);
+  }
+
+  // TODO this doesn't type check :/
+  // x = x + 6;
+  // x.assert_eq(10);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := 1
+		var var3 any = var2
+		var4 := borgo.Unit
+		_ = var4
+		var5 := var3
+		var6 := 3
+		var7 := borgo.Ops.IAdd
+		var8 := var7(var5, var6)
+		var3 = var8
+		var9 := borgo.Unit
+		_ = var9
+		var10 := var3
+		var11 := 4
+		var12 := Debug_assert_eq
+		var13 := var12(var10, var11)
+		_ = var13
+		var var14_block any
+		{
+			var15 := 5
+			var16 := var15
+			var17 := borgo.Unit
+			_ = var17
+			var18 := var16
+			var19 := 5
+			var20 := Debug_assert_eq
+			var21 := var20(var18, var19)
+			var14_block = var21
+		}
+		var1_block = var14_block
+	}
+	return var1_block
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

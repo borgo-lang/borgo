@@ -343,7 +343,12 @@ impl Codegen {
             Expr::Call { func, args, .. } => self.emit_call(func, args, CallMode::Push),
             Expr::Var { value, .. } => self.emit_var(value),
             Expr::Match { subject, arms, .. } => self.emit_match(subject, arms),
-            Expr::Let { binding, value, .. } => self.emit_let(binding, value),
+            Expr::Let {
+                binding,
+                value,
+                mutable,
+                ..
+            } => self.emit_let(binding, value, *mutable),
             Expr::Binary {
                 op, left, right, ..
             } => self.emit_binary(op, left, right),
@@ -373,7 +378,7 @@ impl Codegen {
             Expr::Flow { kind, .. } => self.emit_loop_flow(kind),
 
             Expr::Tuple { .. } => unreachable!(),
-            Expr::VarUpdate { .. } => unreachable!(),
+            Expr::VarUpdate { value, target, .. } => self.emit_var_update(value, target),
             Expr::MethodCall { .. } => unreachable!(),
             Expr::Todo { .. } => todo!(),
         }
@@ -765,7 +770,7 @@ if !ok {{ continue; }}"
         self.push(expr)
     }
 
-    fn emit_let(&mut self, binding: &Binding, value: &Expr) -> String {
+    fn emit_let(&mut self, binding: &Binding, value: &Expr, mutable: bool) -> String {
         let mut out = emitter();
 
         let new_value = self.emit_local(value, &mut out);
@@ -774,7 +779,17 @@ if !ok {{ continue; }}"
             Pat::Type { ref ident, .. } => {
                 let var = self.fresh_var();
 
-                out.emit(format!("{var} := {new_value}"));
+                if !mutable {
+                    out.emit(format!("{var} := {new_value}"));
+                } else {
+                    // this explicit any declaration is needed otherwise upon reassigning the
+                    // compiler will complain that the original variable had another type.
+                    // In theory all let bindings could be output with this format, but it
+                    // increases the noise significantly so it's good to have the short notation
+                    // for the majority of (non mut) cases.
+                    out.emit(format!("var {var} any = {new_value}"));
+                }
+
                 self.scope.add_binding(ident.clone(), var);
             }
 
@@ -1134,6 +1149,7 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
                 ty: Type::dummy(),
                 span: Span::dummy(),
             },
+            false,
         );
 
         // ignore whatever let returns
@@ -1173,6 +1189,29 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
         };
 
         out.emit(token);
+
+        // push unit
+        let unit = self.push("borgo.Unit".to_string());
+        out.emit(unit);
+
+        out.render()
+    }
+
+    fn emit_var_update(&mut self, value: &Expr, target: &Expr) -> String {
+        let mut out = emitter();
+
+        let new_expr = self.emit_local(value, &mut out);
+
+        match target {
+            Expr::Var {
+                value: var_name, ..
+            } => {
+                let actual_var = self.scope.get_binding(var_name).unwrap();
+                out.emit(format!("{actual_var} = {new_expr}"));
+            }
+
+            e => panic!("unexpected expr in codegen var update {:#?}", e),
+        };
 
         // push unit
         let unit = self.push("borgo.Unit".to_string());

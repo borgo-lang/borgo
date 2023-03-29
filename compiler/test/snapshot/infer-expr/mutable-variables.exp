@@ -108,7 +108,10 @@ No errors.
                 }
               },
               "ty": {
-                "Var": 99
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
               },
               "span": {
                 "start": {
@@ -130,22 +133,25 @@ No errors.
                   "value": "x",
                   "decl": {
                     "file_id": {
-                      "package": "std",
-                      "filename": "builtin.brg"
+                      "package": "dummy",
+                      "filename": "dummy"
                     },
                     "span": {
                       "start": {
-                        "line": 0,
-                        "col": 0
+                        "line": 2,
+                        "col": 6
                       },
                       "end": {
-                        "line": 0,
-                        "col": 0
+                        "line": 2,
+                        "col": 11
                       }
                     }
                   },
                   "ty": {
-                    "Var": -1
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
                   },
                   "span": {
                     "start": {
@@ -165,7 +171,10 @@ No errors.
                     "Int": 1
                   },
                   "ty": {
-                    "Var": -1
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
                   },
                   "span": {
                     "start": {
@@ -180,7 +189,10 @@ No errors.
                 }
               },
               "ty": {
-                "Var": -1
+                "Con": {
+                  "name": "Int",
+                  "args": []
+                }
               },
               "span": {
                 "start": {

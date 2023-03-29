@@ -802,8 +802,11 @@ impl Infer {
                 value,
                 span,
             } => {
-                let ty = self.fresh_ty_var();
-                let new_target = self.infer_expr(*target.clone(), &ty);
+                let target_ty = self.fresh_ty_var();
+                let new_target = self.infer_expr(*target.clone(), &target_ty);
+
+                let value_ty = self.fresh_ty_var();
+                let new_value = self.infer_expr(*value.clone(), &value_ty);
 
                 // Find variable on left side
                 let var_name = match *target {
@@ -831,7 +834,7 @@ impl Infer {
 
                 let ret = Expr::VarUpdate {
                     target: new_target.into(),
-                    value,
+                    value: new_value.into(),
                     span: span.clone(),
                 };
 
@@ -845,15 +848,22 @@ impl Infer {
                 }
 
                 let var_name = var_name.unwrap();
-                let existing_def = self.gs.get_value(&var_name);
 
-                if existing_def.is_none() {
-                    self.generic_error(
-                        format!("variable {} not found in env", var_name),
-                        span.clone(),
-                    );
+                match self.gs.get_value(&var_name) {
+                    Some(existing_ty) => {
+                        // The type of the expression on the right must match the type of whatever
+                        // was previously declared in the environment
+                        self.add_constraint(&existing_ty.ty.ty, &value_ty, &span);
+                    }
 
-                    return ret;
+                    None => {
+                        self.generic_error(
+                            format!("variable {} not found in env", var_name),
+                            span.clone(),
+                        );
+
+                        return ret;
+                    }
                 }
 
                 if !self.gs.get_mutability(&var_name) {

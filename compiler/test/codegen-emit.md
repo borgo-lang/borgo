@@ -1008,3 +1008,22 @@ fn borgo_main() {
   n.get().assert_eq(6);
 }
 ```
+
+Mutating vars
+
+```rust
+fn borgo_main() {
+  let mut x = 1;
+  x = x + 3;
+  x.assert_eq(4);
+
+  {
+    let x = 5;
+    x.assert_eq(5);
+  }
+
+  // TODO this doesn't type check :/
+  // x = x + 6;
+  // x.assert_eq(10);
+}
+```
