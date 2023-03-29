@@ -2,10 +2,10 @@ Instances for built-in types are automatically derived
 
 SOURCE:
 fn foo() -> Bool {
-  Eq::equals(1, 1) as Bool;
-  Eq::equals(false, true) as Bool;
-  Eq::equals("yo", "bo") as Bool;
-  Eq::equals([1], [2,3]) as Bool;
+  equals(1, 1) as Bool;
+  equals(false, true) as Bool;
+  equals("yo", "bo") as Bool;
+  equals([1], [2,3]) as Bool;
 }
 
 OUTPUT:
@@ -46,11 +46,11 @@ No errors.
                           "Call": {
                             "func": {
                               "Var": {
-                                "value": "Eq::equals",
+                                "value": "equals",
                                 "decl": {
                                   "file_id": {
-                                    "package": "builtin",
-                                    "filename": ""
+                                    "package": "std",
+                                    "filename": "builtin.brg"
                                   },
                                   "span": {
                                     "start": {
@@ -82,7 +82,7 @@ No errors.
                                     "bounds": [
                                       {
                                         "Con": {
-                                          "name": "Eq",
+                                          "name": "equals",
                                           "args": [
                                             {
                                               "Con": {
@@ -110,7 +110,7 @@ No errors.
                                   },
                                   "end": {
                                     "line": 2,
-                                    "col": 12
+                                    "col": 8
                                   }
                                 }
                               }
@@ -130,11 +130,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 2,
-                                      "col": 13
+                                      "col": 9
                                     },
                                     "end": {
                                       "line": 2,
-                                      "col": 14
+                                      "col": 10
                                     }
                                   }
                                 }
@@ -153,11 +153,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 2,
-                                      "col": 16
+                                      "col": 12
                                     },
                                     "end": {
                                       "line": 2,
-                                      "col": 17
+                                      "col": 13
                                     }
                                   }
                                 }
@@ -176,7 +176,7 @@ No errors.
                               },
                               "end": {
                                 "line": 2,
-                                "col": 18
+                                "col": 14
                               }
                             }
                           }
@@ -200,7 +200,7 @@ No errors.
                           },
                           "end": {
                             "line": 2,
-                            "col": 26
+                            "col": 22
                           }
                         }
                       }
@@ -211,11 +211,11 @@ No errors.
                           "Call": {
                             "func": {
                               "Var": {
-                                "value": "Eq::equals",
+                                "value": "equals",
                                 "decl": {
                                   "file_id": {
-                                    "package": "builtin",
-                                    "filename": ""
+                                    "package": "std",
+                                    "filename": "builtin.brg"
                                   },
                                   "span": {
                                     "start": {
@@ -247,7 +247,7 @@ No errors.
                                     "bounds": [
                                       {
                                         "Con": {
-                                          "name": "Eq",
+                                          "name": "equals",
                                           "args": [
                                             {
                                               "Con": {
@@ -275,7 +275,7 @@ No errors.
                                   },
                                   "end": {
                                     "line": 3,
-                                    "col": 12
+                                    "col": 8
                                   }
                                 }
                               }
@@ -295,11 +295,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 3,
-                                      "col": 13
+                                      "col": 9
                                     },
                                     "end": {
                                       "line": 3,
-                                      "col": 18
+                                      "col": 14
                                     }
                                   }
                                 }
@@ -318,11 +318,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 3,
-                                      "col": 20
+                                      "col": 16
                                     },
                                     "end": {
                                       "line": 3,
-                                      "col": 24
+                                      "col": 20
                                     }
                                   }
                                 }
@@ -341,7 +341,7 @@ No errors.
                               },
                               "end": {
                                 "line": 3,
-                                "col": 25
+                                "col": 21
                               }
                             }
                           }
@@ -365,7 +365,7 @@ No errors.
                           },
                           "end": {
                             "line": 3,
-                            "col": 33
+                            "col": 29
                           }
                         }
                       }
@@ -376,11 +376,11 @@ No errors.
                           "Call": {
                             "func": {
                               "Var": {
-                                "value": "Eq::equals",
+                                "value": "equals",
                                 "decl": {
                                   "file_id": {
-                                    "package": "builtin",
-                                    "filename": ""
+                                    "package": "std",
+                                    "filename": "builtin.brg"
                                   },
                                   "span": {
                                     "start": {
@@ -412,7 +412,7 @@ No errors.
                                     "bounds": [
                                       {
                                         "Con": {
-                                          "name": "Eq",
+                                          "name": "equals",
                                           "args": [
                                             {
                                               "Con": {
@@ -440,7 +440,7 @@ No errors.
                                   },
                                   "end": {
                                     "line": 4,
-                                    "col": 12
+                                    "col": 8
                                   }
                                 }
                               }
@@ -460,11 +460,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 4,
-                                      "col": 13
+                                      "col": 9
                                     },
                                     "end": {
                                       "line": 4,
-                                      "col": 17
+                                      "col": 13
                                     }
                                   }
                                 }
@@ -483,11 +483,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 4,
-                                      "col": 19
+                                      "col": 15
                                     },
                                     "end": {
                                       "line": 4,
-                                      "col": 23
+                                      "col": 19
                                     }
                                   }
                                 }
@@ -506,7 +506,7 @@ No errors.
                               },
                               "end": {
                                 "line": 4,
-                                "col": 24
+                                "col": 20
                               }
                             }
                           }
@@ -530,7 +530,7 @@ No errors.
                           },
                           "end": {
                             "line": 4,
-                            "col": 32
+                            "col": 28
                           }
                         }
                       }
@@ -541,11 +541,11 @@ No errors.
                           "Call": {
                             "func": {
                               "Var": {
-                                "value": "Eq::equals",
+                                "value": "equals",
                                 "decl": {
                                   "file_id": {
-                                    "package": "builtin",
-                                    "filename": ""
+                                    "package": "std",
+                                    "filename": "builtin.brg"
                                   },
                                   "span": {
                                     "start": {
@@ -591,7 +591,7 @@ No errors.
                                     "bounds": [
                                       {
                                         "Con": {
-                                          "name": "Eq",
+                                          "name": "equals",
                                           "args": [
                                             {
                                               "Con": {
@@ -626,7 +626,7 @@ No errors.
                                   },
                                   "end": {
                                     "line": 5,
-                                    "col": 12
+                                    "col": 8
                                   }
                                 }
                               }
@@ -650,11 +650,11 @@ No errors.
                                           "span": {
                                             "start": {
                                               "line": 5,
-                                              "col": 14
+                                              "col": 10
                                             },
                                             "end": {
                                               "line": 5,
-                                              "col": 15
+                                              "col": 11
                                             }
                                           }
                                         }
@@ -677,11 +677,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 5,
-                                      "col": 13
+                                      "col": 9
                                     },
                                     "end": {
                                       "line": 5,
-                                      "col": 16
+                                      "col": 12
                                     }
                                   }
                                 }
@@ -704,11 +704,11 @@ No errors.
                                           "span": {
                                             "start": {
                                               "line": 5,
-                                              "col": 19
+                                              "col": 15
                                             },
                                             "end": {
                                               "line": 5,
-                                              "col": 20
+                                              "col": 16
                                             }
                                           }
                                         }
@@ -727,11 +727,11 @@ No errors.
                                           "span": {
                                             "start": {
                                               "line": 5,
-                                              "col": 21
+                                              "col": 17
                                             },
                                             "end": {
                                               "line": 5,
-                                              "col": 22
+                                              "col": 18
                                             }
                                           }
                                         }
@@ -754,11 +754,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 5,
-                                      "col": 18
+                                      "col": 14
                                     },
                                     "end": {
                                       "line": 5,
-                                      "col": 23
+                                      "col": 19
                                     }
                                   }
                                 }
@@ -777,7 +777,7 @@ No errors.
                               },
                               "end": {
                                 "line": 5,
-                                "col": 24
+                                "col": 20
                               }
                             }
                           }
@@ -801,7 +801,7 @@ No errors.
                           },
                           "end": {
                             "line": 5,
-                            "col": 32
+                            "col": 28
                           }
                         }
                       }
@@ -853,7 +853,7 @@ No errors.
           }
         }
       ],
-      "source": "fn foo() -> Bool {\n  Eq::equals(1, 1) as Bool;\n  Eq::equals(false, true) as Bool;\n  Eq::equals(\"yo\", \"bo\") as Bool;\n  Eq::equals([1], [2,3]) as Bool;\n}"
+      "source": "fn foo() -> Bool {\n  equals(1, 1) as Bool;\n  equals(false, true) as Bool;\n  equals(\"yo\", \"bo\") as Bool;\n  equals([1], [2,3]) as Bool;\n}"
     }
   ],
   "errors": [

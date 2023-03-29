@@ -3,6 +3,7 @@ package borgo
 import (
 	"fmt"
 	"hash/fnv"
+	"log"
 	"strconv"
 	"strings"
 
@@ -79,7 +80,10 @@ func RegisterGlobalFunction(name string, fn any) {
 }
 
 func RegisterEffectFunction(name string, fn any) {
-	borgo.effect_functions[name] = fn
+	// TODO This is a bit messy
+	// there should be a distinction between a native function and an effect
+	RegisterGlobalFunction(name, fn)
+	// borgo.effect_functions[name] = fn
 }
 
 func SetOutputFunction(fn func(string)) {
@@ -165,20 +169,218 @@ func Call(fun any, args []any) any {
 	return val[0].Interface()
 }
 
-func TraitImpl(trait_name string, values []any) any {
+func OverloadImpl(trait_name string, values []any) any {
+	return borgo.overloadImplementation(trait_name, values)
+}
+
+func (borgo *B) overloadImplementation(trait_name string, values []any) any {
+	target := values[0]
+	ref := reflect.TypeOf(target)
+
+	type_name := refToTypeName(target)
+
+	method := fmt.Sprintf("%s::%s", type_name, trait_name)
+
+	// Check if there is a custom implementation for this trait
+	if impl, ok := borgo.global_functions[method]; ok {
+		return Call(impl, values)
+	}
+
+	// Skip equals implementation, can't have user provided impls for now
+	if ref.Kind() != reflect.Struct && ref.Kind() != reflect.Ptr && trait_name != "equals" {
+		log.Fatalf("missing overload impl for %s, kind %v", method, ref.Kind())
+	}
+
+	// If there's not, it must be a trait the compiler knows about
+	if ret, ok := builtInTraitImpl(trait_name, ref, values); ok {
+		return ret
+	}
+
+	log.Fatalf("unhandled trait impl %s", method)
+	return nil
+}
+
+func builtInTraitImpl(trait_name string, ref reflect.Type, values []any) (any, bool) {
+	switch ref.Kind() {
+	case reflect.Array:
+	case reflect.Map:
+		panic("can't handle array/map")
+
+	case reflect.Chan:
+		panic("TODO do channels")
+
+	}
+
+	// TODO both to_hash and equals will get proper support when comptime lands.
 	switch trait_name {
-	case "Eq":
-		return Ops.Eq(values[0], values[1])
+	case "to_string":
+		return builtInToString(values[0]), true
+	case "to_hash":
+		return builtinHashImpl(values[0]), true
+	case "equals":
+		return reflect.DeepEqual(values[0], values[1]), true
+	}
 
-	case "Hash":
-		return genericHash(values[0])
+	return nil, false
+}
 
-	case "Display":
-		return genericToString(values[0])
+func builtInToString(value any) any {
+	ref := reflect.TypeOf(value)
+	ref_value := reflect.ValueOf(value)
+
+	name := ref.Name()
+
+	// Accumulate all data in a map
+	// This is to use the same logic across real structures and BorgoValues
+	var data = []FieldData{}
+
+	isBorgoValue := name == "BorgoValue"
+
+	if isBorgoValue {
+		name = value.(BorgoValue).typ
+		for k, v := range value.(BorgoValue).data {
+			data = append(data, FieldData{k, v})
+		}
+	}
+
+	type_rep, ok := borgo.type_reps[name]
+	if !ok {
+		panic("type not found " + name)
+	}
+
+	// Populate `data` with all the fields in a struct
+	if !isBorgoValue && type_rep.IsStruct() {
+		for i := 0; i < ref.NumField(); i++ {
+			f := ref.Field(i)
+
+			field_name := revertStructFieldName(f.Name)
+			field_value := ref_value.Field(i).Interface()
+			data = append(data, FieldData{field_name, field_value})
+		}
+	}
+
+	// Populate `data` with all the fields in an enum
+	if !isBorgoValue && type_rep.IsEnum() {
+		for i := 0; i < ref.NumField(); i++ {
+			field_value := ref_value.Field(i).Interface()
+			data = append(data, FieldData{strconv.Itoa(i), field_value})
+		}
+	}
+
+	fields := []string{}
+
+	if type_rep.IsStruct() {
+		isTuple := strings.HasPrefix(type_rep.name, "Tuple")
+
+		// Iterate over type rep fields, so that order is preserved
+		for _, field_name := range type_rep.fields {
+
+			// Lookup field
+			var field FieldData
+			for _, f := range data {
+				if f.name == field_name {
+					field = f
+					break
+				}
+			}
+
+			field_value := field.value
+			s := genericToString(field_value)
+
+			if !isTuple {
+				s = field_name + ": " + s
+			}
+
+			fields = append(fields, s)
+		}
+
+		return type_rep.name + " { " + strings.Join(fields, ", ") + " }"
+	}
+
+	if type_rep.IsEnum() {
+		if len(data) == 0 {
+			return type_rep.name
+		}
+
+		for _, field := range data {
+			s := genericToString(field.value)
+			fields = append(fields, s)
+		}
+
+		return type_rep.name + "(" + strings.Join(fields, ", ") + ")"
+
+	}
+
+	log.Fatalf("builtin to_string broke %+v", value)
+	return ""
+}
+
+func refToTypeName(value any) string {
+	ref := reflect.TypeOf(value)
+	ref_value := reflect.ValueOf(value)
+
+	// Check if it's a borgo value
+	if v, ok := value.(BorgoValue); ok {
+		return constructorToType(v.typ)
+	}
+
+	switch ref.Kind() {
+	case reflect.Int:
+		return "Int"
+	case reflect.Float64:
+		return "Float"
+	case reflect.Bool:
+		return "Bool"
+	case reflect.String:
+		return "String"
+	case reflect.Func:
+		return "$Function"
+
+	case reflect.Int32:
+		// int32 -> char
+		// int64 -> int
+		// bit of a hack, not great
+		return "Char"
+
+	case reflect.Uint32:
+		return "Hash"
+
+	case reflect.Struct:
+		name := ref.Name()
+
+		if name == "" {
+			return "Unit"
+		}
+
+		cons := borgo.type_reps[name].name
+		return constructorToType(cons)
+
+	case reflect.Ptr:
+		// Follow the pointer
+		inner := reflect.Indirect(ref_value).Interface()
+		name := reflect.TypeOf(inner).Name()
+
+		switch name {
+		case "List":
+			return "List"
+		case "Map":
+			return "Map"
+		case "Internal_Ref":
+			return "Ref"
+		}
+
+		panic("unhandled pointer type " + name)
 
 	default:
-		panic("Trait not implemented: " + trait_name)
+		log.Fatalf("Unhandled kind kindToType %v", ref.Kind())
 	}
+
+	return ""
+}
+
+func constructorToType(cons string) string {
+	parts := strings.Split(cons, "::")
+	return parts[0]
 }
 
 // ------------
@@ -280,8 +482,7 @@ func (OperatorImpl) Or(x any, y any) any {
 }
 
 func (OperatorImpl) Eq(x any, y any) any {
-	// TODO this isn't great
-	return reflect.DeepEqual(x, y)
+	return OverloadImpl("equals", []any{x, y})
 }
 
 func (OperatorImpl) Ne(x any, y any) any {
@@ -290,29 +491,6 @@ func (OperatorImpl) Ne(x any, y any) any {
 
 func (OperatorImpl) Not(x any) any {
 	return !x.(bool)
-}
-
-func compareLists(x any, y any) any {
-	xs := x.(*immutable.List)
-	ys := y.(*immutable.List)
-
-	if xs.Len() != ys.Len() {
-		return false
-	}
-
-	x_iter := xs.Iterator()
-	y_iter := xs.Iterator()
-
-	for !x_iter.Done() {
-		_, a := x_iter.Next()
-		_, b := y_iter.Next()
-
-		if !Ops.Eq(a, b).(bool) {
-			return false
-		}
-	}
-
-	return true
 }
 
 // ------------
@@ -397,7 +575,7 @@ func strSliceToSeq(s_ any) any {
 
 func Debug(v any) {
 	// s := fmt.Sprintf("%s -> %v", reflect.TypeOf(v), v)
-	s := fmt.Sprintf("%v", v)
+	s := fmt.Sprintf("%+v", v)
 	borgo.debug_output_fn(s)
 }
 
@@ -406,7 +584,7 @@ func Debug(v any) {
 type hashTraitHasher struct{}
 
 func (h *hashTraitHasher) Hash(key any) uint32 {
-	return genericHash(key)
+	return OverloadImpl("to_hash", []any{key}).(uint32)
 }
 
 func (h *hashTraitHasher) Equal(a, b any) bool {
@@ -415,9 +593,16 @@ func (h *hashTraitHasher) Equal(a, b any) bool {
 
 // Reuse Display trait implementation to generate an hash.
 // This is inefficient but ok for now.
-func genericHash(key any) uint32 {
+func builtinHashImpl(key any) uint32 {
 	algorithm := fnv.New32a()
-	text := genericToString(key)
+
+	var text string
+	if s, ok := key.(string); ok {
+		text = s
+	} else {
+		text = genericToString(key)
+	}
+
 	algorithm.Write([]byte(text))
 	return algorithm.Sum32()
 }
@@ -432,193 +617,13 @@ type FieldData struct {
 }
 
 func genericToString(value any) string {
-	ref := reflect.TypeOf(value)
-	ref_value := reflect.ValueOf(value)
-
-	switch ref.Kind() {
-	case reflect.Int:
-		return fmt.Sprintf("%d", value)
-	case reflect.Float64:
-		return fmt.Sprintf("%.2f", value)
-	case reflect.Bool:
-		return fmt.Sprintf("%v", value)
-	case reflect.String:
-		return "\"" + value.(string) + "\""
-	case reflect.Func:
-		return "<function>"
-
-	case reflect.Int32:
-		// this is not great
-		return strconv.QuoteRune(value.(int32))
-
-	case reflect.Ptr:
-		// Follow the pointer
-		inner := reflect.Indirect(ref_value).Interface()
-		name := reflect.TypeOf(inner).Name()
-
-		if name == "List" {
-			return listToString(value.(*immutable.List))
-		}
-
-		if name == "Map" {
-			return mapToString(value.(*immutable.Map))
-		}
-
-		if name == "Internal_Ref" {
-			return "<ref>"
-		}
-
-		panic("unhandled pointer type " + name)
-
-	case reflect.Struct:
-		name := ref.Name()
-
-		// Unit type
-		if name == "" {
-			return "()"
-		}
-
-		// Accumulate all data in a map
-		// This is to use the same logic across real structures and BorgoValues
-		var data = []FieldData{}
-
-		isBorgoValue := name == "BorgoValue"
-
-		if isBorgoValue {
-			name = value.(BorgoValue).typ
-			for k, v := range value.(BorgoValue).data {
-				data = append(data, FieldData{k, v})
-			}
-		}
-
-		type_rep, ok := borgo.type_reps[name]
-		if !ok {
-			panic("type not found " + name)
-		}
-
-		// Populate `data` with all the fields in a struct
-		if !isBorgoValue && type_rep.IsStruct() {
-			for i := 0; i < ref.NumField(); i++ {
-				f := ref.Field(i)
-
-				field_name := revertStructFieldName(f.Name)
-				field_value := ref_value.Field(i).Interface()
-				data = append(data, FieldData{field_name, field_value})
-			}
-		}
-
-		// Populate `data` with all the fields in an enum
-		if !isBorgoValue && type_rep.IsEnum() {
-			for i := 0; i < ref.NumField(); i++ {
-				field_value := ref_value.Field(i).Interface()
-				data = append(data, FieldData{strconv.Itoa(i), field_value})
-			}
-		}
-
-		// Special case Seq
-		// Realize the first N elements and turn into a list
-		if type_rep.name == "Seq::Cons" {
-			elems_to_render := 30
-			slice := Call(GetNative2("Seq::take"), []any{value, elems_to_render})
-			list := Call(GetNative1("Seq::to_list"), []any{slice})
-			return genericToString(list)
-		}
-
-		// Special case Set
-		if type_rep.name == "Set" {
-			// Get `m`, which is the inner Map in the Set
-			m := GetField(value, "m")
-			s := Call(GetNative1("Map::seq_keys"), []any{m})
-			list := Call(GetNative1("Seq::to_list"), []any{s})
-			return genericToString(list)
-		}
-
-		fields := []string{}
-
-		if type_rep.IsStruct() {
-			isTuple := strings.HasPrefix(type_rep.name, "Tuple")
-
-			// Iterate over type rep fields, so that order is preserved
-			for _, field_name := range type_rep.fields {
-
-				// Lookup field
-				var field FieldData
-				for _, f := range data {
-					if f.name == field_name {
-						field = f
-						break
-					}
-				}
-
-				field_value := field.value
-				s := genericToString(field_value)
-
-				if !isTuple {
-					s = field_name + ": " + s
-				}
-
-				fields = append(fields, s)
-			}
-
-			if isTuple {
-				return "(" + strings.Join(fields, ", ") + ")"
-			}
-
-			return type_rep.name + " { " + strings.Join(fields, ", ") + " }"
-		}
-
-		if type_rep.IsEnum() {
-			if len(data) == 0 {
-				return type_rep.name
-			}
-
-			for _, field := range data {
-				s := genericToString(field.value)
-				fields = append(fields, s)
-			}
-
-			return type_rep.name + "(" + strings.Join(fields, ", ") + ")"
-
-		}
-
-		panic("not a struct and not an enum?")
-	}
-
-	Debug(value)
-	Debug(ref.Kind())
-	panic("unimplemented to string")
+	return OverloadImpl("to_string", []any{value}).(string)
 }
 
 // The first char in field names is turned to uppercase during codegen.
 // Restore it to lowercase when printing a struct
 func revertStructFieldName(s string) string {
 	return strings.ToLower(string(s[0])) + s[1:]
-}
-
-func listToString(xs *immutable.List) string {
-	iter := xs.Iterator()
-	elems := []string{}
-
-	for !iter.Done() {
-		_, x := iter.Next()
-		elems = append(elems, genericToString(x))
-	}
-
-	return "[" + strings.Join(elems, ", ") + "]"
-}
-
-func mapToString(m *immutable.Map) string {
-	iter := m.Iterator()
-	elems := []string{}
-
-	for !iter.Done() {
-		key, value := iter.Next()
-
-		s := genericToString(key) + " => " + genericToString(value)
-		elems = append(elems, s)
-	}
-
-	return "{ " + strings.Join(elems, ", ") + " }"
 }
 
 // ------------
@@ -787,7 +792,7 @@ func InitCore() {
 		return int(c.(rune))
 	})
 
-	RegisterGlobalFunction("Char::to_string", func(c any) any {
+	RegisterGlobalFunction("Char::to_unquoted_string", func(c any) any {
 		return string(c.(rune))
 	})
 
@@ -799,15 +804,15 @@ func InitCore() {
 		inner any
 	}
 
-	RegisterGlobalFunction("ref_new", func(inner any) any {
+	RegisterEffectFunction("ref_new", func(inner any) any {
 		return &Internal_Ref{inner}
 	})
 
-	RegisterGlobalFunction("ref_get", func(ref any) any {
+	RegisterEffectFunction("ref_get", func(ref any) any {
 		return ref.(*Internal_Ref).inner
 	})
 
-	RegisterGlobalFunction("ref_set", func(ref any, inner any) any {
+	RegisterEffectFunction("ref_set", func(ref any, inner any) any {
 		ref.(*Internal_Ref).inner = inner
 		return nil
 	})
@@ -884,11 +889,11 @@ func InitCore() {
 
 	// ----
 
-	RegisterGlobalFunction("channel_new", func() any {
+	RegisterEffectFunction("channel_new", func() any {
 		return make(chan any)
 	})
 
-	RegisterGlobalFunction("channel_recv", func(ch any) any {
+	RegisterEffectFunction("channel_recv", func(ch any) any {
 		value, more := <-ch.(chan any)
 		if more {
 			return Create1("Option::Some", value)
@@ -897,7 +902,7 @@ func InitCore() {
 		}
 	})
 
-	RegisterGlobalFunction("channel_send", func(ch any, value any) any {
+	RegisterEffectFunction("channel_send", func(ch any, value any) any {
 		ch.(chan any) <- value
 		return make_Unit
 	})
@@ -911,7 +916,8 @@ func InitCore() {
 	})
 
 	RegisterGlobalFunction("Debug::inspect", func(v any) any {
-		borgo.debug_output_fn(genericToString(v))
+		s := borgo.overloadImplementation("to_string", []any{v})
+		borgo.debug_output_fn(s.(string))
 		return v
 	})
 
@@ -940,6 +946,63 @@ func InitCore() {
 		return make_Unit
 	})
 
+	// ------------
+	// Native to_string implementations
+	// ------------
+	RegisterGlobalFunction("Int::to_string", func(v any) any {
+		return fmt.Sprintf("%d", v.(int))
+	})
+
+	RegisterGlobalFunction("String::to_string", func(v any) any {
+		return "\"" + v.(string) + "\""
+	})
+
+	RegisterGlobalFunction("Bool::to_string", func(v any) any {
+		return fmt.Sprintf("%v", v)
+	})
+
+	RegisterGlobalFunction("Char::to_string", func(v any) any {
+		return strconv.QuoteRune(v.(int32))
+	})
+
+	RegisterGlobalFunction("Float::to_string", func(v any) any {
+		return fmt.Sprintf("%.2f", v)
+	})
+
+	RegisterGlobalFunction("$Function::to_string", func(v any) any {
+		return "<function>"
+	})
+
+	RegisterGlobalFunction("Hash::to_string", func(v any) any {
+		return fmt.Sprintf("%d", v)
+	})
+
+	// ------------
+	// Native to_hash implementations
+	// ------------
+	RegisterGlobalFunction("Int::to_hash", func(v any) any {
+		return uint32(v.(int))
+	})
+
+	RegisterGlobalFunction("String::to_hash", func(v any) any {
+		return builtinHashImpl(v)
+	})
+
+	RegisterGlobalFunction("Bool::to_hash", func(v any) any {
+		if v.(bool) {
+			return 1
+		}
+
+		return 0
+	})
+
+	RegisterGlobalFunction("Char::to_hash", func(v any) any {
+		return uint32(v.(int32))
+	})
+
+	RegisterGlobalFunction("Float::to_hash", func(v any) any {
+		return builtinHashImpl(v)
+	})
 }
 
 /// -------

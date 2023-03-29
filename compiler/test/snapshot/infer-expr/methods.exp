@@ -27,8 +27,8 @@ No errors.
                   "value": "int_to_string",
                   "decl": {
                     "file_id": {
-                      "package": "builtin",
-                      "filename": ""
+                      "package": "std",
+                      "filename": "builtin.brg"
                     },
                     "span": {
                       "start": {
@@ -217,8 +217,8 @@ No errors.
                   "value": "sum",
                   "decl": {
                     "file_id": {
-                      "package": "builtin",
-                      "filename": ""
+                      "package": "std",
+                      "filename": "builtin.brg"
                     },
                     "span": {
                       "start": {
@@ -380,8 +380,8 @@ No errors.
               "value": "str_concat",
               "decl": {
                 "file_id": {
-                  "package": "builtin",
-                  "filename": ""
+                  "package": "std",
+                  "filename": "builtin.brg"
                 },
                 "span": {
                   "start": {
@@ -440,8 +440,8 @@ No errors.
                     "value": "hello",
                     "decl": {
                       "file_id": {
-                        "package": "builtin",
-                        "filename": ""
+                        "package": "std",
+                        "filename": "builtin.brg"
                       },
                       "span": {
                         "start": {

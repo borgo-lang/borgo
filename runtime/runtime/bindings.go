@@ -2085,9 +2085,8 @@ func load_Expr__EnumDef(deserializer serde.Deserializer) (Expr__EnumDef, error) 
 }
 
 type Expr__StructDef struct {
-	Def     StructDefinition
-	IsTrait bool
-	Span    Span
+	Def  StructDefinition
+	Span Span
 }
 
 func (*Expr__StructDef) isExpr() {}
@@ -2098,9 +2097,6 @@ func (obj *Expr__StructDef) Serialize(serializer serde.Serializer) error {
 	}
 	serializer.SerializeVariantIndex(11)
 	if err := obj.Def.Serialize(serializer); err != nil {
-		return err
-	}
-	if err := serializer.SerializeBool(obj.IsTrait); err != nil {
 		return err
 	}
 	if err := obj.Span.Serialize(serializer); err != nil {
@@ -2128,11 +2124,6 @@ func load_Expr__StructDef(deserializer serde.Deserializer) (Expr__StructDef, err
 	}
 	if val, err := DeserializeStructDefinition(deserializer); err == nil {
 		obj.Def = val
-	} else {
-		return obj, err
-	}
-	if val, err := deserializer.DeserializeBool(); err == nil {
-		obj.IsTrait = val
 	} else {
 		return obj, err
 	}
@@ -3324,6 +3315,13 @@ func DeserializeExternKind(deserializer serde.Deserializer) (ExternKind, error) 
 			return nil, err
 		}
 
+	case 2:
+		if val, err := load_ExternKind__Overload(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
 	default:
 		return nil, fmt.Errorf("Unknown variant index for ExternKind: %d", index)
 	}
@@ -3403,6 +3401,40 @@ func (obj *ExternKind__Native) BincodeSerialize() ([]byte, error) {
 
 func load_ExternKind__Native(deserializer serde.Deserializer) (ExternKind__Native, error) {
 	var obj ExternKind__Native
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type ExternKind__Overload struct {
+}
+
+func (*ExternKind__Overload) isExternKind() {}
+
+func (obj *ExternKind__Overload) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(2)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *ExternKind__Overload) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_ExternKind__Overload(deserializer serde.Deserializer) (ExternKind__Overload, error) {
+	var obj ExternKind__Overload
 	if err := deserializer.IncreaseContainerDepth(); err != nil {
 		return obj, err
 	}

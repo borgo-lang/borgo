@@ -5,8 +5,7 @@ fn borgo_main() {
   let a = "yo";
   let b = "y".append("o");
 
-  Hash::to_hash(a)
-    .assert_eq(Hash::to_hash(b));
+  a.to_hash().assert_eq(b.to_hash());
 }
 
 OUTPUT:
@@ -34,10 +33,10 @@ func borgo_main() any {
 		var10 := borgo.Unit
 		_ = var10
 		var11 := var3
-		var12 := Hash_to_hash
+		var12 := String_to_hash
 		var13 := var12(var11)
 		var14 := var9
-		var15 := Hash_to_hash
+		var15 := String_to_hash
 		var16 := var15(var14)
 		var17 := Debug_assert_eq
 		var18 := var17(var13, var16)

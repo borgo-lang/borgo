@@ -1,4 +1,3 @@
-
 enum Result<T, E> {
     Ok(T),
     Err(E),
@@ -88,6 +87,14 @@ impl<T> List<T> {
     fn is_empty(self) -> Bool {
         self.len() == 0
     }
+
+    fn to_string<T: to_string>(self) -> String {
+        let body = self
+            .seq()
+            .reduce([], |acc, item| acc.push(item.to_string()));
+
+        "[".append(body.seq().join(", ")).append("]")
+    }
 }
 
 extern "native/String" {
@@ -111,7 +118,7 @@ impl String {
 }
 
 extern "native/Debug" {
-    fn inspect<T: Display>(x: T) -> T;
+    fn inspect<T: to_string>(x: T) -> T;
     fn unreachable();
     fn todo();
     fn assert_eq<T>(a: T, b: T);
@@ -140,16 +147,14 @@ impl<T> Seq<T> {
     }
 
     fn filter_map<Y>(self, f: fn(x: T) -> Option<Y>) -> Seq<Y> {
-        self.reduce(Seq::Nil, |acc, item| {
-          match f(item) {
+        self.reduce(Seq::Nil, |acc, item| match f(item) {
             Some(x) => acc.append(Seq::once(x)),
             None => acc,
-          }
         })
     }
 
     fn filter(self, f: fn(x: T) -> Bool) -> Seq<T> {
-      self.filter_map(|x| if f(x) { Some(x) } else { None })
+        self.filter_map(|x| if f(x) { Some(x) } else { None })
     }
 
     fn reduce<Y>(self, initial: Y, f: fn(acc: Y, item: T) -> Y) -> Y {
@@ -319,13 +324,24 @@ impl<T> Seq<T> {
             return acc;
         })
     }
+
+    fn interleave(self, sep: T) -> Seq<T> {
+        self.reduce([], |acc, x| acc.push(sep).push(x))
+            .seq()
+            .drop(1)
+    }
+
+    fn to_string<T: to_string>(self) -> String {
+        // Realize the first N elements
+        self.take(30).to_list().to_string()
+    }
 }
 
 struct Map<K, V> {}
 
 extern "native/Map" {
     fn new<K, V>() -> Map<K, V>;
-    fn insert<K: Hash, V>(m: Map<K, V>, key: K, value: V) -> Map<K, V>;
+    fn insert<K: to_hash, V>(m: Map<K, V>, key: K, value: V) -> Map<K, V>;
     fn get<K, V>(m: Map<K, V>, key: K) -> Option<V>;
     fn seq<K, V>(m: Map<K, V>) -> Seq<(K, V)>;
     fn delete<K, V>(m: Map<K, V>, key: K) -> Map<K, V>;
@@ -341,47 +357,64 @@ impl<K, V> Map<K, V> {
         self.seq().map(|(_, v)| v)
     }
 
-    fn update<K: Hash>(self, key: K, def: V, f: fn(existing: V) -> V) -> Map<K, V> {
-      let existing = self.get(key).unwrap_or(def);
-      let updated = f(existing);
-      self.insert(key, updated)
+    fn update<K: to_hash>(self, key: K, def: V, f: fn(existing: V) -> V) -> Map<K, V> {
+        let existing = self.get(key).unwrap_or(def);
+        let updated = f(existing);
+        self.insert(key, updated)
+    }
+
+    fn to_string<K: to_string, V: to_string>(self) -> String {
+        let body = self.seq().reduce([], |acc, item| {
+            let key = item.0.to_string();
+            let val = item.1.to_string();
+            acc.push(key.append(" => ").append(val))
+        });
+
+        "{ ".append(body.seq().join(", ")).append(" }")
     }
 }
 
-fn to_map<K: Hash, V>(s: Seq<(K, V)>) -> Map<K, V> {
-  s.reduce(Map::new(), |acc, item| acc.insert(item.0, item.1))
+fn to_map<K: to_hash, V>(s: Seq<(K, V)>) -> Map<K, V> {
+    s.reduce(Map::new(), |acc, item| acc.insert(item.0, item.1))
 }
 
 struct Set<K> {
-  m: Map<K, Bool>
+    m: Map<K, Bool>,
 }
 
 impl<K> Set<K> {
-  fn new() -> Set<K> {
-    Set { m: Map::new() }
-  }
+    fn new() -> Set<K> {
+        Set { m: Map::new() }
+    }
 
-  fn insert<K: Hash>(self, k: K) -> Set<K> {
-    Set { m: self.m.insert(k, true) }
-  }
+    fn insert<K: to_hash>(self, k: K) -> Set<K> {
+        Set {
+            m: self.m.insert(k, true),
+        }
+    }
 
-  fn delete<K>(self, k: K) -> Set<K> {
-    Set { m: self.m.delete(k) }
-  }
+    fn delete<K>(self, k: K) -> Set<K> {
+        Set {
+            m: self.m.delete(k),
+        }
+    }
 
-  fn contains<K>(self, k: K) -> Bool {
-    self.m.get(k).is_some()
-  }
+    fn contains<K>(self, k: K) -> Bool {
+        self.m.get(k).is_some()
+    }
 
-  fn len(self) -> Int {
-    self.m.len()
-  }
+    fn len(self) -> Int {
+        self.m.len()
+    }
+
+    fn to_string<K: to_string>(self) -> String {
+        self.m.seq_keys().to_list().to_string()
+    }
 }
 
-fn to_set<K: Hash>(s: Seq<K>) -> Set<K> {
-  s.reduce(Set::new(), |acc, item| acc.insert(item))
+fn to_set<K: to_hash>(s: Seq<K>) -> Set<K> {
+    s.reduce(Set::new(), |acc, item| acc.insert(item))
 }
-
 
 struct Ref<T> {}
 
@@ -403,6 +436,10 @@ impl<T> Ref<T> {
     fn mutate(r: Ref<T>, f: fn(value: T) -> T) {
         let current = ref_get(r);
         ref_set(r, f(current));
+    }
+
+    fn to_string<T: to_string>(self) -> String {
+        "<ref> ".append(self.get().to_string())
     }
 }
 
@@ -475,7 +512,7 @@ enum Ordering {
 
 extern "native/Char" {
     fn to_int(self: Char) -> Int;
-    fn to_string(self: Char) -> String;
+    fn to_unquoted_string(self: Char) -> String;
 }
 
 impl Seq<Int> {
@@ -485,26 +522,40 @@ impl Seq<Int> {
 }
 
 impl Seq<String> {
-    fn to_string(self) -> String {
-        self.reduce("", |acc, item| acc.append(item))
-    }
-
     fn join(self, sep: String) -> String {
-        self.reduce("", |acc, item| acc.append(sep).append(item))
+        self.interleave(sep)
+            .reduce("", |acc, item| acc.append(item))
     }
 }
 
-#[is_trait]
-struct Eq<T> {
-    equals: fn(x: T, y: T) -> Bool,
+extern "overload" {
+    fn equals<T>(x: T, y: T) -> Bool;
+    fn to_hash<T>(x: T) -> Int;
+    fn to_string<T>(x: T) -> String;
 }
 
-#[is_trait]
-struct Hash<T> {
-    to_hash: fn(x: T) -> Int,
+impl Unit {
+    fn to_string(self) -> String {
+        "()"
+    }
 }
 
-#[is_trait]
-struct Display<T> {
-    to_string: fn(x: T) -> String,
+impl<T, Y> Tuple2<T, Y> {
+    fn to_string<T: to_string, Y: to_string>(self) -> String {
+        "(".append(self.first.to_string())
+            .append(", ")
+            .append(self.second.to_string())
+            .append(")")
+    }
+}
+
+impl<T, Y, Z> Tuple3<T, Y, Z> {
+    fn to_string<T: to_string, Y: to_string, Z: to_string>(self) -> String {
+        "(".append(self.first.to_string())
+            .append(", ")
+            .append(self.second.to_string())
+            .append(", ")
+            .append(self.third.to_string())
+            .append(")")
+    }
 }

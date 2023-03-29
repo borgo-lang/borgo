@@ -14,24 +14,24 @@ fn foo() -> Int { 1 }
 
 Trait bounds
 
-> infer("fn <A: Eq>(A) -> Bool")
+> infer("fn <A: equals>(A) -> Bool")
 
 ```rust
-fn foo<T: Eq>(x: T) -> Bool {
+fn foo<T: equals>(x: T) -> Bool {
   true
 }
 
-fn bar<Y: Eq>(x: Y) -> Bool {
+fn bar<Y: equals>(x: Y) -> Bool {
   foo(x)
 }
 ```
 
 Missing constraint
 
-> errorContains("Constraint Eq not satisfied for type Y")
+> errorContains("Constraint equals not satisfied for type Y")
 
 ```rust
-fn foo<T: Eq>(x: T) -> Bool {
+fn foo<T: equals>(x: T) -> Bool {
   true
 }
 
@@ -69,7 +69,7 @@ Traits bring functions in scope
 
 ```rust
 fn foo() -> Int {
-  let x = Eq::equals;
+  let x = equals;
   1
 }
 ```
@@ -80,22 +80,22 @@ Instances for built-in types are automatically derived
 
 ```rust
 fn foo() -> Bool {
-  Eq::equals(1, 1) as Bool;
-  Eq::equals(false, true) as Bool;
-  Eq::equals("yo", "bo") as Bool;
-  Eq::equals([1], [2,3]) as Bool;
+  equals(1, 1) as Bool;
+  equals(false, true) as Bool;
+  equals("yo", "bo") as Bool;
+  equals([1], [2,3]) as Bool;
 }
 ```
 
 Deriving will error on functions
 
-> errorContains("Functions can't be compared")
+> errorContains("overload `equals`")
 
 ```rust
 fn bar() {}
 
 fn foo() -> Bool {
-  Eq::equals(bar, bar) as Bool;
+  equals(bar, bar) as Bool;
 }
 ```
 
@@ -143,10 +143,10 @@ fn borgo_main() {}
 
 Keys in Maps must be hashable
 
-> errorContains("Functions can't be hashed")
+> errorContains("overload `to_hash`")
 
 ```rust
-fn foo<K: Hash>(k: K) {}
+fn foo<K: to_hash>(k: K) {}
 
 fn borgo_main() {
   foo(|| {});
@@ -190,18 +190,6 @@ extern "native/Foo" {
 
 fn borgo_main() {
   1.assert_eq(2)
-}
-```
-
-Bools missing arm
-
-> errorContains('missing case: \"true\"')
-
-```rust
-fn borgo_main() {
-  match false {
-    false => (),
-  };
 }
 ```
 
@@ -299,6 +287,77 @@ fn borgo_main() {
     _ => true,
   };
 
+  ()
+}
+```
+
+Overloads can be used as methods.
+
+> infer("fn () -> String")
+
+```rust
+struct Foo {
+  x: Int,
+}
+
+fn borgo_main() -> String {
+  let f = Foo { x: 1 };
+  Foo::to_string(f)
+}
+```
+
+Overloaded functions check for instances
+
+> errorContains("No overload `equals` found for type `Foo`")
+
+```rust
+struct Foo {
+  x: Int,
+  y: fn() -> Int,
+}
+
+fn borgo_main() -> Bool {
+  let f = Foo { x: 1, y: || 2 };
+  let _ = Foo::to_string(f); // this is ok
+  equals(f, f)
+}
+```
+
+Users can override derived overload implementations
+
+> infer("fn () -> Bool")
+
+```rust
+struct Foo {
+  x: Int,
+  y: fn() -> Int,
+}
+
+impl Foo {
+  fn equals(a: Foo, b: Foo) -> Bool {
+    return a.x == b.x
+  }
+}
+
+fn borgo_main() -> Bool {
+  let f = Foo { x: 1, y: || 2 };
+  equals(f, f)
+}
+```
+
+Calling overloads as methods.
+
+> infer("fn () -> ()")
+
+```rust
+struct Foo<T> {
+  x: T,
+}
+
+fn borgo_main() {
+  let f = Foo { x: 1 };
+  let m = Map::new().insert(1, f);
+  m.to_string();
   ()
 }
 ```

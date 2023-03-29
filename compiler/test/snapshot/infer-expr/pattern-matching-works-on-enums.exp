@@ -340,8 +340,8 @@ No errors.
                       "value": "str_concat",
                       "decl": {
                         "file_id": {
-                          "package": "builtin",
-                          "filename": ""
+                          "package": "std",
+                          "filename": "builtin.brg"
                         },
                         "span": {
                           "start": {

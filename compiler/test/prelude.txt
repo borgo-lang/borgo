@@ -25,12 +25,3 @@ enum ErrBar {
   Y,
 }
 
-#[is_trait]
-struct Eq<T> {
-  equals: fn (x: T, y: T) -> Bool,
-}
-
-#[is_trait]
-struct Hash<T> {
-  to_hash: fn (x: T) -> Int,
-}

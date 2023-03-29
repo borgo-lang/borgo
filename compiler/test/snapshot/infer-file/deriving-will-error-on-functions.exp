@@ -4,11 +4,11 @@ SOURCE:
 fn bar() {}
 
 fn foo() -> Bool {
-  Eq::equals(bar, bar) as Bool;
+  equals(bar, bar) as Bool;
 }
 
 OUTPUT:
-Functions can't be compared
+Functions don't support overload `equals`
 
-4|    Eq::equals(bar, bar) as Bool;
-      ^^^^^^^^^^^^^^^^^^^^
+4|    equals(bar, bar) as Bool;
+      ^^^^^^^^^^^^^^^^

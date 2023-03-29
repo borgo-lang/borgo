@@ -25,10 +25,10 @@ var _ = borgo.Unit
 var state any
 
 func init_const_state() any {
-	var1 := 5
-	var2 := Ref_to_ref
-	var3 := var2(var1)
-	return var3
+	var30 := 5
+	var31 := Ref_to_ref
+	var32 := var31(var30)
+	return var32
 }
 
 func foo() any {

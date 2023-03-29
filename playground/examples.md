@@ -469,13 +469,13 @@ AoC 2022 #6
 fn solve(input: String, n_different: Int) -> Int {
     let target = input
         .chars()
-        .map(|c| c.to_string())
+        .map(|c| c.to_unquoted_string())
         .windows(n_different)
         .filter(find_different)
         .first()
         .unwrap();
 
-    input.index_of(target.to_string()).unwrap() + n_different
+    input.index_of(target.join("")).unwrap() + n_different
 }
 
 fn find_different(chunk: Seq<String>) -> Bool {

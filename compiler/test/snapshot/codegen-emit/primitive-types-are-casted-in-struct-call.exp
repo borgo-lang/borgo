@@ -55,6 +55,15 @@ func borgo_main() any {
 	return var1_block
 }
 
+func Foo_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Foo_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Foo_to_string(values ...any) any {
+	return borgo.OverloadImpl("to_string", values)
+}
 func pkg_user_init() {
 	borgo.RegisterStruct("Foo", "Foo", []string{"bar"})
 	borgo.RegisterMakeFunction("Foo", make_Foo)

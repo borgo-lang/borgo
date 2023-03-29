@@ -3,6 +3,7 @@ package borgo
 import (
 	"borgo/immutable"
 	"errors"
+	"strings"
 
 	"io"
 	"os"
@@ -34,8 +35,9 @@ func unwrapReturn(x any) any {
 }
 
 type Eval struct {
-	globals *Globals
-	env     *immutable.Map
+	globals   *Globals
+	env       *immutable.Map
+	overloads map[string]bool
 }
 
 // This type is necessary so we can share the pointer to this struct across all Eval instances
@@ -47,13 +49,14 @@ func CreateEvaluator() Eval {
 	hasher := immutable.NewHasher("yo")
 	globals := Globals{values: immutable.NewMap(hasher)}
 	env := immutable.NewMap(hasher)
-	return Eval{&globals, env}
+	overloads := map[string]bool{}
+	return Eval{&globals, env, overloads}
 }
 
 // Keep a reference to the existing `globals` map, but clone `env`
 func (eval *Eval) beginScope() *Eval {
 	new_env := *eval.env
-	return &Eval{globals: eval.globals, env: &new_env}
+	return &Eval{globals: eval.globals, env: &new_env, overloads: eval.overloads}
 }
 
 func (eval *Eval) setVariable(k string, v any) {
@@ -181,6 +184,33 @@ func (eval *Eval) matchPattern(subject any, pat Pat, subs map[string]any) MatchR
 
 	Debug(pat)
 	panic("match pattern")
+}
+
+// Scan tree for Expr::ExternDecl where Kind == Overload
+func (eval *Eval) declareOverloads(expr Expr) {
+	switch expr := expr.(type) {
+	case *Expr__ExternDecl:
+		switch expr.Kind.(type) {
+		case *ExternKind__Overload:
+			for _, decl := range expr.Items {
+				closure := decl.(*Expr__Closure)
+				name := closure.Fun.Name
+				eval.overloads[name] = true
+			}
+		}
+	}
+}
+
+func (eval *Eval) lookupOverload(name string) (func(...any) any, bool) {
+	for overload := range eval.overloads {
+		if overload == name || strings.HasSuffix(name, "::"+overload) {
+			return func(values ...any) any {
+				return OverloadImpl(overload, values)
+			}, true
+		}
+	}
+
+	return nil, false
 }
 
 type ToLiteralValue interface {
@@ -316,6 +346,11 @@ func (eval *Eval) Run(expr Expr) any {
 
 	case *Expr__Var:
 		value, found := eval.lookupVariable(expr.Value)
+
+		if !found {
+			value, found = eval.lookupOverload(expr.Value)
+		}
+
 		if !found {
 			Debug(expr.Span)
 			panic("unknown var value: " + expr.Value)
@@ -562,17 +597,6 @@ func (eval *Eval) Run(expr Expr) any {
 		RegisterMakeFunction(qualifiedName, makeConstructorFn)
 		RegisterStruct(qualifiedName, qualifiedName, field_names)
 
-		// If it's a trait, register the trait function as well
-		if expr.IsTrait {
-			field := expr.Def.Fields[0]
-			traitFn := qualifiedName + "::" + field.Name
-			fun := func(values ...any) any {
-				return TraitImpl(qualifiedName, values)
-			}
-
-			eval.addGlobal(traitFn, fun)
-		}
-
 		return make_Unit
 
 	case *Expr__StructCall:
@@ -669,6 +693,10 @@ func (eval *Eval) Run(expr Expr) any {
 			target = borgo.global_functions
 			// TODO they're all in the same bucket for now
 			// target = borgo.effect_functions
+
+		case *ExternKind__Overload:
+			// Overloads should have been declared already
+			return make_Unit
 		}
 
 		for _, decl := range expr.Items {
@@ -729,6 +757,16 @@ func RunMainFunction(project Project) error {
 
 	packages := []string{"std", "user"}
 
+	// Declare overloads
+	for _, pkg := range packages {
+		for _, file := range project.Packages[pkg].Files {
+			for _, expr := range file.Decls {
+				eval.declareOverloads(expr)
+			}
+		}
+	}
+
+	// Run all expressions
 	for _, pkg := range packages {
 		for _, file := range project.Packages[pkg].Files {
 			for _, expr := range file.Decls {

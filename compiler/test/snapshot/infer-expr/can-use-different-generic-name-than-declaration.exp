@@ -30,7 +30,6 @@ No errors.
             ],
             "fields": []
           },
-          "is_trait": false,
           "span": {
             "start": {
               "line": 2,

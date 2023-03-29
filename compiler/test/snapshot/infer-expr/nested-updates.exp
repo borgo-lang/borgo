@@ -58,7 +58,6 @@ No errors.
               }
             ]
           },
-          "is_trait": false,
           "span": {
             "start": {
               "line": 2,
@@ -124,7 +123,6 @@ No errors.
               }
             ]
           },
-          "is_trait": false,
           "span": {
             "start": {
               "line": 3,

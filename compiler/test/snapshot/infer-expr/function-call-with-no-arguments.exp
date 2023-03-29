@@ -20,8 +20,8 @@ No errors.
               "value": "hello",
               "decl": {
                 "file_id": {
-                  "package": "builtin",
-                  "filename": ""
+                  "package": "std",
+                  "filename": "builtin.brg"
                 },
                 "span": {
                   "start": {

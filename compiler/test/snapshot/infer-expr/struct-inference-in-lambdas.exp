@@ -56,7 +56,6 @@ No errors.
               }
             ]
           },
-          "is_trait": false,
           "span": {
             "start": {
               "line": 2,
@@ -197,8 +196,8 @@ No errors.
               "value": "list_map",
               "decl": {
                 "file_id": {
-                  "package": "builtin",
-                  "filename": ""
+                  "package": "std",
+                  "filename": "builtin.brg"
                 },
                 "span": {
                   "start": {
@@ -393,8 +392,8 @@ No errors.
                           "value": "str_concat",
                           "decl": {
                             "file_id": {
-                              "package": "builtin",
-                              "filename": ""
+                              "package": "std",
+                              "filename": "builtin.brg"
                             },
                             "span": {
                               "start": {

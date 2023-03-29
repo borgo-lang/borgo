@@ -18,7 +18,7 @@ fn borgo_main() {
   "abcd".index_of("z").assert_eq(None);
 
   'f'.to_int().assert_eq(102);
-  'f'.to_string().assert_eq("f");
+  'f'.to_string().assert_eq("'f'");
   ()
 }
 
@@ -141,7 +141,7 @@ func borgo_main() any {
 		var91 := 'f'
 		var92 := Char_to_string
 		var93 := var92(var91)
-		var94 := "f"
+		var94 := "'f'"
 		var95 := Debug_assert_eq
 		var96 := var95(var93, var94)
 		_ = var96

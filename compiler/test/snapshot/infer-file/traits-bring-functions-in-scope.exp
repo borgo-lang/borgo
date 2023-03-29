@@ -2,7 +2,7 @@ Traits bring functions in scope
 
 SOURCE:
 fn foo() -> Int {
-  let x = Eq::equals;
+  let x = equals;
   1
 }
 
@@ -71,7 +71,7 @@ No errors.
                               "bounds": [
                                 {
                                   "Con": {
-                                    "name": "Eq",
+                                    "name": "equals",
                                     "args": [
                                       {
                                         "Var": 99
@@ -92,11 +92,11 @@ No errors.
                         },
                         "value": {
                           "Var": {
-                            "value": "Eq::equals",
+                            "value": "equals",
                             "decl": {
                               "file_id": {
-                                "package": "builtin",
-                                "filename": ""
+                                "package": "std",
+                                "filename": "builtin.brg"
                               },
                               "span": {
                                 "start": {
@@ -122,7 +122,7 @@ No errors.
                                 "bounds": [
                                   {
                                     "Con": {
-                                      "name": "Eq",
+                                      "name": "equals",
                                       "args": [
                                         {
                                           "Var": 99
@@ -147,7 +147,7 @@ No errors.
                               },
                               "end": {
                                 "line": 2,
-                                "col": 20
+                                "col": 16
                               }
                             }
                           }
@@ -165,7 +165,7 @@ No errors.
                             "bounds": [
                               {
                                 "Con": {
-                                  "name": "Eq",
+                                  "name": "equals",
                                   "args": [
                                     {
                                       "Var": 99
@@ -190,7 +190,7 @@ No errors.
                           },
                           "end": {
                             "line": 2,
-                            "col": 21
+                            "col": 17
                           }
                         }
                       }
@@ -265,7 +265,7 @@ No errors.
           }
         }
       ],
-      "source": "fn foo() -> Int {\n  let x = Eq::equals;\n  1\n}"
+      "source": "fn foo() -> Int {\n  let x = equals;\n  1\n}"
     }
   ],
   "errors": [

@@ -432,8 +432,8 @@ No errors.
                           "value": "int_to_string",
                           "decl": {
                             "file_id": {
-                              "package": "builtin",
-                              "filename": ""
+                              "package": "std",
+                              "filename": "builtin.brg"
                             },
                             "span": {
                               "start": {

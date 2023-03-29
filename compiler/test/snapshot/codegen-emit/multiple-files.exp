@@ -128,6 +128,24 @@ type Foo_X struct {
 }
 type Foo any
 
+func Bar_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Foo_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Bar_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Foo_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Bar_to_string(values ...any) any {
+	return borgo.OverloadImpl("to_string", values)
+}
+func Foo_to_string(values ...any) any {
+	return borgo.OverloadImpl("to_string", values)
+}
 func pkg_user_init() {
 	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
 	borgo.RegisterTypeConstructor("Bar::A", "Bar_A")

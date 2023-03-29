@@ -1,0 +1,827 @@
+Users can override derived overload implementations
+
+SOURCE:
+struct Foo {
+  x: Int,
+  y: fn() -> Int,
+}
+
+impl Foo {
+  fn equals(a: Foo, b: Foo) -> Bool {
+    return a.x == b.x
+  }
+}
+
+fn borgo_main() -> Bool {
+  let f = Foo { x: 1, y: || 2 };
+  equals(f, f)
+}
+
+OUTPUT:
+fn () -> Bool
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "StructDef": {
+            "def": {
+              "name": "Foo",
+              "generics": [],
+              "fields": [
+                {
+                  "name": "x",
+                  "ann": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Int",
+                      "args": []
+                    }
+                  }
+                },
+                {
+                  "name": "y",
+                  "ann": {
+                    "Fun": {
+                      "args": [],
+                      "ret": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Fun": {
+                      "args": [],
+                      "bounds": [],
+                      "ret": {
+                        "Con": {
+                          "name": "Int",
+                          "args": []
+                        }
+                      },
+                      "fx": []
+                    }
+                  }
+                }
+              ]
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 4,
+                "col": 1
+              }
+            }
+          }
+        },
+        {
+          "ImplBlock": {
+            "ann": {
+              "Con": {
+                "name": "Foo",
+                "args": []
+              }
+            },
+            "ty": {
+              "Con": {
+                "name": "Foo",
+                "args": []
+              }
+            },
+            "items": [
+              {
+                "Closure": {
+                  "fun": {
+                    "name": "Foo::equals",
+                    "generics": [],
+                    "bounds": [],
+                    "args": [
+                      {
+                        "pat": {
+                          "Type": {
+                            "ident": "a",
+                            "ann": "Unknown",
+                            "span": {
+                              "start": {
+                                "line": 7,
+                                "col": 12
+                              },
+                              "end": {
+                                "line": 7,
+                                "col": 13
+                              }
+                            }
+                          }
+                        },
+                        "ann": {
+                          "Con": {
+                            "name": "Foo",
+                            "args": []
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Foo",
+                            "args": []
+                          }
+                        }
+                      },
+                      {
+                        "pat": {
+                          "Type": {
+                            "ident": "b",
+                            "ann": "Unknown",
+                            "span": {
+                              "start": {
+                                "line": 7,
+                                "col": 20
+                              },
+                              "end": {
+                                "line": 7,
+                                "col": 21
+                              }
+                            }
+                          }
+                        },
+                        "ann": {
+                          "Con": {
+                            "name": "Foo",
+                            "args": []
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Foo",
+                            "args": []
+                          }
+                        }
+                      }
+                    ],
+                    "ret": {
+                      "Con": {
+                        "name": "Bool",
+                        "args": []
+                      }
+                    },
+                    "ann": {
+                      "Con": {
+                        "name": "Bool",
+                        "args": []
+                      }
+                    },
+                    "body": {
+                      "Block": {
+                        "stmts": [
+                          {
+                            "Return": {
+                              "expr": {
+                                "Binary": {
+                                  "op": "Eq",
+                                  "left": {
+                                    "StructAccess": {
+                                      "expr": {
+                                        "Var": {
+                                          "value": "a",
+                                          "decl": {
+                                            "file_id": {
+                                              "package": "user",
+                                              "filename": "test.brg"
+                                            },
+                                            "span": {
+                                              "start": {
+                                                "line": 7,
+                                                "col": 12
+                                              },
+                                              "end": {
+                                                "line": 7,
+                                                "col": 13
+                                              }
+                                            }
+                                          },
+                                          "ty": {
+                                            "Con": {
+                                              "name": "Foo",
+                                              "args": []
+                                            }
+                                          },
+                                          "span": {
+                                            "start": {
+                                              "line": 8,
+                                              "col": 11
+                                            },
+                                            "end": {
+                                              "line": 8,
+                                              "col": 12
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "field": "x",
+                                      "ty": {
+                                        "Con": {
+                                          "name": "Int",
+                                          "args": []
+                                        }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 8,
+                                          "col": 11
+                                        },
+                                        "end": {
+                                          "line": 8,
+                                          "col": 14
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "right": {
+                                    "StructAccess": {
+                                      "expr": {
+                                        "Var": {
+                                          "value": "b",
+                                          "decl": {
+                                            "file_id": {
+                                              "package": "user",
+                                              "filename": "test.brg"
+                                            },
+                                            "span": {
+                                              "start": {
+                                                "line": 7,
+                                                "col": 20
+                                              },
+                                              "end": {
+                                                "line": 7,
+                                                "col": 21
+                                              }
+                                            }
+                                          },
+                                          "ty": {
+                                            "Con": {
+                                              "name": "Foo",
+                                              "args": []
+                                            }
+                                          },
+                                          "span": {
+                                            "start": {
+                                              "line": 8,
+                                              "col": 18
+                                            },
+                                            "end": {
+                                              "line": 8,
+                                              "col": 19
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "field": "x",
+                                      "ty": {
+                                        "Con": {
+                                          "name": "Int",
+                                          "args": []
+                                        }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 8,
+                                          "col": 18
+                                        },
+                                        "end": {
+                                          "line": 8,
+                                          "col": 21
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "name": "Bool",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 8,
+                                      "col": 11
+                                    },
+                                    "end": {
+                                      "line": 8,
+                                      "col": 21
+                                    }
+                                  }
+                                }
+                              },
+                              "ty": {
+                                "Con": {
+                                  "name": "Bool",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 8,
+                                  "col": 4
+                                },
+                                "end": {
+                                  "line": 8,
+                                  "col": 21
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "ty": {
+                          "Con": {
+                            "name": "Bool",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 7,
+                            "col": 36
+                          },
+                          "end": {
+                            "line": 9,
+                            "col": 3
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "kind": "TopLevel",
+                  "ty": {
+                    "Fun": {
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Foo",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "Foo",
+                            "args": []
+                          }
+                        }
+                      ],
+                      "bounds": [],
+                      "ret": {
+                        "Con": {
+                          "name": "Bool",
+                          "args": []
+                        }
+                      },
+                      "fx": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 7,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 9,
+                      "col": 3
+                    }
+                  }
+                }
+              }
+            ],
+            "generics": [],
+            "span": {
+              "start": {
+                "line": 6,
+                "col": 5
+              },
+              "end": {
+                "line": 6,
+                "col": 8
+              }
+            }
+          }
+        },
+        {
+          "Closure": {
+            "fun": {
+              "name": "borgo_main",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Bool",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Bool",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Let": {
+                        "binding": {
+                          "pat": {
+                            "Type": {
+                              "ident": "f",
+                              "ann": "Unknown",
+                              "span": {
+                                "start": {
+                                  "line": 13,
+                                  "col": 6
+                                },
+                                "end": {
+                                  "line": 13,
+                                  "col": 7
+                                }
+                              }
+                            }
+                          },
+                          "ann": "Unknown",
+                          "ty": {
+                            "Con": {
+                              "name": "Foo",
+                              "args": []
+                            }
+                          }
+                        },
+                        "value": {
+                          "StructCall": {
+                            "name": "Foo",
+                            "fields": [
+                              {
+                                "name": "x",
+                                "value": {
+                                  "Literal": {
+                                    "lit": {
+                                      "Int": 1
+                                    },
+                                    "ty": {
+                                      "Con": {
+                                        "name": "Int",
+                                        "args": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 13,
+                                        "col": 19
+                                      },
+                                      "end": {
+                                        "line": 13,
+                                        "col": 20
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "name": "y",
+                                "value": {
+                                  "Closure": {
+                                    "fun": {
+                                      "name": "__anonymous",
+                                      "generics": [],
+                                      "bounds": [],
+                                      "args": [],
+                                      "ret": {
+                                        "Con": {
+                                          "name": "Int",
+                                          "args": []
+                                        }
+                                      },
+                                      "ann": "Unknown",
+                                      "body": {
+                                        "Literal": {
+                                          "lit": {
+                                            "Int": 2
+                                          },
+                                          "ty": {
+                                            "Con": {
+                                              "name": "Int",
+                                              "args": []
+                                            }
+                                          },
+                                          "span": {
+                                            "start": {
+                                              "line": 13,
+                                              "col": 28
+                                            },
+                                            "end": {
+                                              "line": 13,
+                                              "col": 29
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "kind": "Lambda",
+                                    "ty": {
+                                      "Fun": {
+                                        "args": [],
+                                        "bounds": [],
+                                        "ret": {
+                                          "Con": {
+                                            "name": "Int",
+                                            "args": []
+                                          }
+                                        },
+                                        "fx": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 13,
+                                        "col": 25
+                                      },
+                                      "end": {
+                                        "line": 13,
+                                        "col": 29
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "rest": null,
+                            "ty": {
+                              "Con": {
+                                "name": "Foo",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 13,
+                                "col": 10
+                              },
+                              "end": {
+                                "line": 13,
+                                "col": 31
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Foo",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 13,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 13,
+                            "col": 32
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Call": {
+                        "func": {
+                          "Var": {
+                            "value": "equals",
+                            "decl": {
+                              "file_id": {
+                                "package": "std",
+                                "filename": "builtin.brg"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 0,
+                                  "col": 0
+                                },
+                                "end": {
+                                  "line": 0,
+                                  "col": 0
+                                }
+                              }
+                            },
+                            "ty": {
+                              "Fun": {
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "Foo",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "Foo",
+                                      "args": []
+                                    }
+                                  }
+                                ],
+                                "bounds": [
+                                  {
+                                    "Con": {
+                                      "name": "equals",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "name": "Foo",
+                                            "args": []
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ],
+                                "ret": {
+                                  "Con": {
+                                    "name": "Bool",
+                                    "args": []
+                                  }
+                                },
+                                "fx": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 14,
+                                "col": 2
+                              },
+                              "end": {
+                                "line": 14,
+                                "col": 8
+                              }
+                            }
+                          }
+                        },
+                        "args": [
+                          {
+                            "Var": {
+                              "value": "f",
+                              "decl": {
+                                "file_id": {
+                                  "package": "user",
+                                  "filename": "test.brg"
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 13,
+                                    "col": 6
+                                  },
+                                  "end": {
+                                    "line": 13,
+                                    "col": 7
+                                  }
+                                }
+                              },
+                              "ty": {
+                                "Con": {
+                                  "name": "Foo",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 14,
+                                  "col": 9
+                                },
+                                "end": {
+                                  "line": 14,
+                                  "col": 10
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "Var": {
+                              "value": "f",
+                              "decl": {
+                                "file_id": {
+                                  "package": "user",
+                                  "filename": "test.brg"
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 13,
+                                    "col": 6
+                                  },
+                                  "end": {
+                                    "line": 13,
+                                    "col": 7
+                                  }
+                                }
+                              },
+                              "ty": {
+                                "Con": {
+                                  "name": "Foo",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 14,
+                                  "col": 12
+                                },
+                                "end": {
+                                  "line": 14,
+                                  "col": 13
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "ty": {
+                          "Con": {
+                            "name": "Bool",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 14,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 14,
+                            "col": 14
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "col": 24
+                    },
+                    "end": {
+                      "line": 15,
+                      "col": 1
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Bool",
+                    "args": []
+                  }
+                },
+                "fx": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 12,
+                "col": 0
+              },
+              "end": {
+                "line": 15,
+                "col": 1
+              }
+            }
+          }
+        }
+      ],
+      "source": "struct Foo {\n  x: Int,\n  y: fn() -> Int,\n}\n\nimpl Foo {\n  fn equals(a: Foo, b: Foo) -> Bool {\n    return a.x == b.x\n  }\n}\n\nfn borgo_main() -> Bool {\n  let f = Foo { x: 1, y: || 2 };\n  equals(f, f)\n}"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}

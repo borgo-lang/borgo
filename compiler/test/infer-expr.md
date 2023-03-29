@@ -1577,18 +1577,6 @@ Struct patterns on generic structs
 }
 ```
 
-Trait bounds
-
-> infer("fn <A: Eq>(A) -> Bool")
-
-```rust
-{
-  fn foo<T: Eq>(x: T) -> Bool {
-    true
-  }
-}
-```
-
 Unit pattern match arm
 
 > infer("Int")

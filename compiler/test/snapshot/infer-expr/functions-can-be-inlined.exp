@@ -182,8 +182,8 @@ No errors.
               "value": "list_map",
               "decl": {
                 "file_id": {
-                  "package": "builtin",
-                  "filename": ""
+                  "package": "std",
+                  "filename": "builtin.brg"
                 },
                 "span": {
                   "start": {
@@ -354,8 +354,8 @@ No errors.
                           "value": "sum",
                           "decl": {
                             "file_id": {
-                              "package": "builtin",
-                              "filename": ""
+                              "package": "std",
+                              "filename": "builtin.brg"
                             },
                             "span": {
                               "start": {

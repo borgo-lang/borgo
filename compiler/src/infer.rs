@@ -1,7 +1,7 @@
 use crate::ast::{
-    Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, File, Function,
-    FunctionKind, Literal, Operator, Pat, Span, StructDefinition, StructField, StructFieldDef,
-    StructFieldPat, TypeAst, UnOp,
+    Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, ExternKind, File,
+    Function, FunctionKind, Literal, Operator, Pat, Span, StructDefinition, StructField,
+    StructFieldDef, StructFieldPat, TypeAst, UnOp,
 };
 use crate::error::{ArityError, Error, UnificationError};
 use crate::exhaustive;
@@ -259,7 +259,7 @@ impl Infer {
 
                 // TODO the return type from `expected` should also flow in
                 let new_ret = self.to_type(&fun.ann, &span);
-                // let new_ret = self.generalize(new_ret, &fun.generics, &span);
+
                 let new_bounds: Vec<_> =
                     fun.bounds.iter().map(|b| self.to_type(b, &span)).collect();
 
@@ -290,11 +290,20 @@ impl Infer {
 
                 match kind {
                     FunctionKind::TopLevel | FunctionKind::Inline => {
+                        // TODO for now, out of the builtin overloads only to_string can be overridden.
+                        // The reason is buried somewhere in the runtime, it's probably not worth
+                        // implementing this right now -- better wait for comptime.
+                        // But it means that there should be a check here to prevent users from
+                        // overriding these overloads, as their code won't get called if in a
+                        // nested struct.
+
                         self.gs.add_value(
                             fun.name.clone(),
                             bounded_ty.clone(),
                             self.new_declaration(&span),
                         );
+
+                        self.gs.remove_derived_overload(&fun.name);
                     }
 
                     FunctionKind::Lambda => {}
@@ -420,12 +429,23 @@ impl Infer {
                 // match constraint bounds
                 bounds.iter().for_each(|b| {
                     let constraint = self.substitute(b.clone());
-                    let trait_name = constraint.get_name().unwrap();
+
+                    let trait_name = constraint.get_name();
+                    if trait_name.is_none() {
+                        // There's probably a type error somewhere else, just skip checking.
+                        return;
+                    }
+
+                    let trait_name = trait_name.unwrap();
                     let inner_type = constraint.get_args().unwrap().first().unwrap().clone();
 
-                    // If it's a function, we check immediately if the trait can be derived
+                    // There can't be any overload for functions, so this is always an error
                     if inner_type.is_function() {
-                        self.check_trait_can_be_derived(&trait_name, &inner_type, &span);
+                        // self.check_trait_can_be_derived(&trait_name, &inner_type);
+                        self.generic_error(
+                            format!("Functions don't support overload `{trait_name}`"),
+                            span.clone(),
+                        );
                         return;
                     }
 
@@ -433,7 +453,7 @@ impl Infer {
                     let type_name = inner_type.get_name();
 
                     if type_name.is_none() {
-                        // There's probably a type error somewhere else, just skip checking.
+                        // Same as above, type error somewhere else
                         return;
                     }
 
@@ -443,7 +463,16 @@ impl Infer {
                     match ty {
                         Some(_) => {
                             // Regular type
-                            self.check_trait_can_be_derived(&trait_name, &inner_type, &span);
+                            // Check that an overload exists for this type.
+                            let method = format!("{type_name}::{trait_name}");
+                            if self.gs.get_value(&method).is_none() {
+                                self.generic_error(
+                                    format!(
+                                        "No overload `{trait_name}` found for type `{type_name}`"
+                                    ),
+                                    span.clone(),
+                                );
+                            }
                         }
 
                         None => {
@@ -609,18 +638,13 @@ impl Infer {
                 }
             }
 
-            Expr::StructDef {
-                ref def,
-                is_trait,
-                ref span,
-            } => {
+            Expr::StructDef { ref def, ref span } => {
                 self.declare_type(&expr);
                 self.declare_variants(&expr);
 
                 let actual_def = self.gs.get_struct(&def.name).unwrap();
                 Expr::StructDef {
                     def: actual_def,
-                    is_trait,
                     span: span.clone(),
                 }
             }
@@ -961,7 +985,9 @@ has no method:
                 }
 
                 if op == Operator::Eq || op == Operator::Ne {
-                    self.check_trait_can_be_derived("Eq", &ty, &span);
+                    if !self.check_trait_can_be_derived("equals", &ty) {
+                        self.generic_error(format!("Type {} can't be compared", &ty), span.clone());
+                    }
                 }
 
                 Expr::Binary {
@@ -1153,6 +1179,15 @@ has no method:
                 items,
                 span,
             } => {
+                if kind == ExternKind::Overload {
+                    return Expr::ExternDecl {
+                        name,
+                        kind,
+                        items,
+                        span,
+                    };
+                }
+
                 let new_items = items
                     .into_iter()
                     .map(|e| {
@@ -1456,8 +1491,11 @@ has no method:
     pub fn declare_files(&mut self, files: &[File]) {
         // This seems a bit insane, and perhaps it is.
         // BUT:
-        //   - First we need to put enum and struct names in scope
-        //   - Second bring everything else in scope (top level fn, impls, consts)
+        //   - First put enum and struct names in scope
+        //   - Second declare all the variants for the types we just processed
+        //   - Third declare all overloads, because they are used in trait bounds
+        //   - Fourth derive implementations for known overloads (eq, hash, display).
+        //   - Fifth bring everything else in scope (top level fn, impls, consts)
         //   - Finally declare all enum/struct variants
         //
         //  It's important that all these steps stay separated, otherwise stuff will break
@@ -1471,7 +1509,86 @@ has no method:
                 .for_each(|e| self.declare_type(e));
         });
 
-        // 2. Declare Closure, Impl, Extern and Const
+        // 2. Declare all the actual variants
+        files.iter().for_each(|f| {
+            // Now that all types are in scope, actually parse the enum variants and struct fields.
+            f.decls.iter().for_each(|e| self.declare_variants(e));
+        });
+
+        // 3. Declare overloads
+        files.iter().for_each(|f| {
+            f.decls.iter().for_each(|e| match e {
+                Expr::ExternDecl { kind, items, .. } if kind == &ExternKind::Overload => {
+                    items.iter().for_each(|e| match e {
+                        Expr::Closure {
+                            ref fun, ref span, ..
+                        } => {
+                            let ty = self.fresh_ty_var();
+                            self.infer_expr(e.clone(), &ty);
+
+                            // Would be nice to just use `ty` here, but infer_expr will always
+                            // return an instantiated type, so we can't use it.
+                            // Instead, we get the generalized type by looking in GlobalState
+                            let def = self.gs.get_value(&fun.name).unwrap();
+
+                            self.check_and_add_overload(fun, &def.ty, &span);
+                        }
+
+                        _ => unreachable!(),
+                    });
+                }
+
+                _ => (),
+            });
+        });
+
+        // 4. Derive implementation for known overloads
+        // (this will be moved to comptime eventually)
+
+        let overloads = self.gs.get_overloads();
+        self.gs
+            .get_all_types()
+            .into_iter()
+            .for_each(|(ty_name, ty)| {
+                // Skip overloading overloads, bit confusing I guess.
+                if overloads.contains(&ty_name) {
+                    return;
+                }
+
+                overloads.iter().for_each(|overload_name| {
+                    let overload_ty = self.gs.get_value(overload_name).unwrap();
+
+                    if self.check_trait_can_be_derived(overload_name, &ty.ty) {
+                        let method = format!("{ty_name}::{overload_name}");
+
+                        // Replace T in overload_ty with ty.ty
+                        // For example, given a target type Foo<X>
+                        // we want to instantiate the overload
+                        // equals<T>(x: T, y: T) -> Bool
+                        // to
+                        // equals<X: equals>(x: Foo<X>, y: Foo<X>) -> Bool
+                        let new_fn = self
+                            .instantiate_overload(
+                                &overload_ty.ty.ty,
+                                overload_ty.ty.generics.first().unwrap(),
+                                overload_name,
+                                &ty,
+                            )
+                            .to_bounded_with_generics(overload_ty.ty.generics);
+
+                        // Finally add the new function to the global scope.
+                        // Note that there's no actual implementation, codegen will take care of it.
+                        // Only do this if there's no implementation in scope already.
+
+                        if self.gs.get_value(&method).is_none() {
+                            self.gs.add_value(method, new_fn, Declaration::dummy());
+                            self.gs.add_derived_overload(&overload_name, &ty_name);
+                        }
+                    }
+                })
+            });
+
+        // 5. Declare Closure, Impl, Extern and Const
         files.iter().for_each(|f| {
             f.decls
                 .iter()
@@ -1485,12 +1602,6 @@ has no method:
                     )
                 })
                 .for_each(|e| self.declare_type(e));
-        });
-
-        // 3. Declare all the actual variants
-        files.iter().for_each(|f| {
-            // Now that all types are in scope, actually parse the enum variants and struct fields.
-            f.decls.iter().for_each(|e| self.declare_variants(e));
         });
     }
 
@@ -1559,7 +1670,12 @@ has no method:
                     .add_value(ident.clone(), ty.to_bounded(), self.new_declaration(span));
             }
 
-            Expr::ExternDecl { items, .. } => {
+            Expr::ExternDecl { items, kind, .. } => {
+                if kind == &ExternKind::Overload {
+                    // overloads need to be declared already, see declare_files
+                    return ();
+                }
+
                 items.iter().for_each(|fun| {
                     let ty = self.fresh_ty_var();
                     self.infer_expr(fun.clone(), &ty);
@@ -1653,11 +1769,7 @@ has no method:
                 self.gs.add_enum(def.name.clone(), def);
             }
 
-            Expr::StructDef {
-                def,
-                is_trait,
-                span,
-            } => {
+            Expr::StructDef { def, span } => {
                 let new_fields = def
                     .fields
                     .iter()
@@ -1683,10 +1795,6 @@ has no method:
                     generics: def.generics.clone(),
                     fields: new_fields,
                 };
-
-                if *is_trait {
-                    self.check_and_add_trait(&def);
-                }
 
                 self.gs.add_struct(def.name.clone(), def);
             }
@@ -1994,47 +2102,59 @@ has no method:
         }
     }
 
-    fn check_and_add_trait(&mut self, def: &StructDefinition) {
+    fn check_and_add_overload(&mut self, fun: &Function, bounded_ty: &BoundedType, span: &Span) {
         // TODO check:
         //   - there is one generic param
-        //   - there is one field and it's a function
-        //   - field is of shape T -> A
-        let type_param = def.generics.first().unwrap();
-
-        let fun = def.fields.first().unwrap();
-        let trait_fn = format!(
-            "{trait_name}::{fun_name}",
-            trait_name = def.name,
-            fun_name = fun.name
-        );
+        //   - function is of shape T -> A
+        //
+        let type_param = fun.generics.first().unwrap();
 
         let bound = Type::Con {
-            name: def.name.to_string(),
+            name: fun.name.clone(),
             args: vec![Type::generic(type_param)],
         };
 
-        let ty = match &fun.ty {
+        let ty = match &bounded_ty.ty {
             Type::Fun { args, ret, .. } => Type::Fun {
                 args: args.clone(),
-                bounds: vec![bound],
+                bounds: vec![bound.clone()],
                 ret: ret.clone(),
                 fx: Default::default(),
             },
             _ => unreachable!(),
         };
 
-        // Add trait ie. Eq
-        self.gs.add_trait(&def.name);
+        // Add type (needed when resolving constraints)
+        self.gs.add_type(
+            fun.name.clone(),
+            bound.to_bounded_with_generics(vec![type_param.to_string()]),
+            self.new_declaration(span),
+        );
 
-        // Add function ie. Eq::equals
+        // Add trait ie. equals
+        self.gs.add_trait(&fun.name);
+
+        // Add function ie. equals
+        // NOTE this overrides the declaration that was just added when inferring the function.
+        // It's probably a bit confusing, need to think of how to improve this.
         self.gs.add_value(
-            trait_fn,
+            fun.name.clone(),
             ty.to_bounded_with_generics(vec![type_param.to_string()]),
             Declaration::dummy(),
         );
     }
 
-    fn check_trait_can_be_derived(&mut self, trait_name: &str, ty: &Type, span: &Span) {
+    fn check_trait_can_be_derived(&mut self, trait_name: &str, ty: &Type) -> bool {
+        let mut seen = HashSet::new();
+        self.check_trait_can_be_derived_impl(&mut seen, trait_name, ty)
+    }
+
+    fn check_trait_can_be_derived_impl(
+        &mut self,
+        seen: &mut HashSet<String>,
+        trait_name: &str,
+        ty: &Type,
+    ) -> bool {
         // All the built-in traits pretty much follow the same logic.
         // Deriving an automatic instance for a trait is allowed, as long as the type doesn't
         // contain functions (which can't be compared, hashed etc.)
@@ -2043,36 +2163,40 @@ has no method:
             Type::Con { name, .. } => {
                 // Extend check to fields in structs and enums
 
+                if seen.contains(name) {
+                    return true;
+                }
+
+                seen.insert(name.to_string());
+
                 if let Some(def) = self.gs.get_struct(name) {
-                    def.fields
+                    return def
+                        .fields
                         .iter()
-                        .for_each(|f| self.check_trait_can_be_derived(trait_name, &f.ty, span))
+                        .all(|f| self.check_trait_can_be_derived_impl(seen, trait_name, &f.ty));
                 }
 
                 if let Some(def) = self.gs.get_enum(name) {
-                    def.cons.iter().for_each(|c| {
+                    return def.cons.iter().all(|c| {
                         c.fields
                             .iter()
-                            .for_each(|f| self.check_trait_can_be_derived(trait_name, &f.ty, span))
-                    })
+                            .all(|f| self.check_trait_can_be_derived_impl(seen, trait_name, &f.ty))
+                    });
                 }
+
+                return true;
             }
 
-            Type::Fun { .. } => {
-                let action = match trait_name {
-                    "Eq" => Some("compared".to_string()),
-                    "Hash" => Some("hashed".to_string()),
-                    "Display" => None,
-                    _ => todo!("Do something with trait {}", trait_name),
-                };
-
-                if let Some(action) = action {
-                    self.generic_error(format!("Functions can't be {action}"), span.clone());
-                }
-            }
+            Type::Fun { .. } => match trait_name {
+                "equals" => false,
+                "to_hash" => false,
+                "to_string" => true,
+                _ => todo!("Do something with trait {}", trait_name),
+            },
 
             Type::Var(_) => {
-                self.generic_error("Type must be known at this point".to_string(), span.clone())
+                return false;
+                // self.generic_error("Type must be known at this point".to_string(), span.clone())
             }
         }
     }
@@ -2089,6 +2213,64 @@ has no method:
         }
 
         true
+    }
+
+    // This is similar to `instantiate_with_vars`, but uses a concrete type instead of type variables.
+    // ie. fn to_string<T>(x: T) -> String
+    // instantiated with Foo<X, Y> becomes
+    // fn to_string<X: to_string, Y: to_string>(x: Foo<X, Y>) -> String
+    //
+    // `self_ty` is the generic T in the overload
+    // `overload_name` is `equals`, `to_string` etc.
+    fn instantiate_overload(
+        &mut self,
+        typ: &Type,
+        self_ty: &str,
+        overload_name: &str,
+        replace_with: &BoundedType,
+    ) -> Type {
+        match typ {
+            Type::Var(_) => unreachable!(),
+
+            Type::Con { name, args } => {
+                if name == self_ty {
+                    return replace_with.ty.clone();
+                }
+
+                Type::Con {
+                    name: name.to_string(),
+                    args: args
+                        .iter()
+                        .map(|x| self.instantiate_overload(x, self_ty, overload_name, replace_with))
+                        .collect(),
+                }
+            }
+
+            Type::Fun {
+                args,
+                bounds: _,
+                ret,
+                fx,
+            } => Type::Fun {
+                args: args
+                    .iter()
+                    .map(|x| self.instantiate_overload(x, self_ty, overload_name, replace_with))
+                    .collect(),
+                bounds: replace_with
+                    .generics
+                    .iter()
+                    .map(|g| Type::Con {
+                        name: overload_name.to_string(),
+                        args: vec![Type::generic(g)],
+                    })
+                    .collect(),
+
+                ret: self
+                    .instantiate_overload(ret, self_ty, overload_name, replace_with)
+                    .into(),
+                fx: fx.clone(),
+            },
+        }
     }
 }
 

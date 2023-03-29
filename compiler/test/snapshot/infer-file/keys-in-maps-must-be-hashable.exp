@@ -1,7 +1,7 @@
 Keys in Maps must be hashable
 
 SOURCE:
-fn foo<K: Hash>(k: K) {}
+fn foo<K: to_hash>(k: K) {}
 
 fn borgo_main() {
   foo(|| {});
@@ -9,7 +9,7 @@ fn borgo_main() {
 }
 
 OUTPUT:
-Functions can't be hashed
+Functions don't support overload `to_hash`
 
 4|    foo(|| {});
       ^^^^^^^^^^

@@ -1,7 +1,7 @@
 Missing constraint
 
 SOURCE:
-fn foo<T: Eq>(x: T) -> Bool {
+fn foo<T: equals>(x: T) -> Bool {
   true
 }
 
@@ -10,7 +10,7 @@ fn bar<Y>(x: Y) -> Bool {
 }
 
 OUTPUT:
-Constraint Eq not satisfied for type Y
+Constraint equals not satisfied for type Y
 
 6|    foo(x)
       ^^^^^^

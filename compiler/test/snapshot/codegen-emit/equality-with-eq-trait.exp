@@ -8,15 +8,15 @@ struct Bar { c: List<Foo> }
 fn borgo_main() {
   let x = Foo { a: 1, b: "yo" };
   let y = Foo { a: 1, b: "yo" };
-  Eq::equals(x, y).assert_eq(true);
-  Eq::equals(x, Foo { a: 2, ..y}).assert_eq(false);
+  equals(x, y).assert_eq(true);
+  equals(x, Foo { a: 2, ..y}).assert_eq(false);
 
-  Eq::equals(Bar { c: [x, y] }, Bar { c: [x, y] }).assert_eq(true);
-  Eq::equals(Bar { c: [x] }, Bar { c: [x, y] }).assert_eq(false);
+  equals(Bar { c: [x, y] }, Bar { c: [x, y] }).assert_eq(true);
+  equals(Bar { c: [x] }, Bar { c: [x, y] }).assert_eq(false);
 
   let xs = [x];
   let a = Bar { c: xs.push(y) };
-  Eq::equals(a, Bar { c: [x, y] }).assert_eq(true);
+  equals(a, Bar { c: [x, y] }).assert_eq(true);
 }
 
 OUTPUT:
@@ -71,7 +71,7 @@ func borgo_main() any {
 		_ = var11
 		var12 := var5
 		var13 := var10
-		var14 := Eq_equals
+		var14 := equals
 		var15 := var14(var12, var13)
 		var16 := true
 		var17 := Debug_assert_eq
@@ -85,7 +85,7 @@ func borgo_main() any {
 			data.A = var21
 			return data
 		}(var20)
-		var23 := Eq_equals
+		var23 := equals
 		var24 := var23(var19, var22)
 		var25 := false
 		var26 := Debug_assert_eq
@@ -107,7 +107,7 @@ func borgo_main() any {
 			data.C = var34
 			return data
 		}(Bar{})
-		var36 := Eq_equals
+		var36 := equals
 		var37 := var36(var31, var35)
 		var38 := true
 		var39 := Debug_assert_eq
@@ -128,7 +128,7 @@ func borgo_main() any {
 			data.C = var46
 			return data
 		}(Bar{})
-		var48 := Eq_equals
+		var48 := equals
 		var49 := var48(var43, var47)
 		var50 := false
 		var51 := Debug_assert_eq
@@ -160,7 +160,7 @@ func borgo_main() any {
 			data.C = var67
 			return data
 		}(Bar{})
-		var69 := Eq_equals
+		var69 := equals
 		var70 := var69(var64, var68)
 		var71 := true
 		var72 := Debug_assert_eq
@@ -170,6 +170,24 @@ func borgo_main() any {
 	return var1_block
 }
 
+func Bar_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Foo_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Bar_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Foo_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Bar_to_string(values ...any) any {
+	return borgo.OverloadImpl("to_string", values)
+}
+func Foo_to_string(values ...any) any {
+	return borgo.OverloadImpl("to_string", values)
+}
 func pkg_user_init() {
 	borgo.RegisterStruct("Foo", "Foo", []string{"a", "b"})
 	borgo.RegisterMakeFunction("Foo", make_Foo)

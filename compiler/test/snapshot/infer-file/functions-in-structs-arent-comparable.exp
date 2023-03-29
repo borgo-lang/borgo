@@ -13,7 +13,7 @@ fn borgo_main() {
 }
 
 OUTPUT:
-Functions can't be compared
+Type Foo can't be compared
 
 8|    foo == bar;
       ^^^^^^^^^^

@@ -11,7 +11,6 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 enum Input {
-    ParseExpr(String),
     InferExpr(String),
     InferPackage(String),
 }
@@ -32,7 +31,12 @@ fn scan_folder(name: &str, folder: &str) -> Package {
             if path.ends_with(".brg") {
                 let contents = std::fs::read_to_string(&path).unwrap();
                 return Some(UnparsedFile {
-                    filename: path,
+                    filename: std::path::Path::new(&path)
+                        .file_name()
+                        .unwrap()
+                        .to_os_string()
+                        .into_string()
+                        .unwrap(),
                     contents,
                 });
             }
@@ -98,12 +102,6 @@ fn main() {
     let input: Input = serde_json::from_str(&args).unwrap();
 
     match input {
-        Input::ParseExpr(source) => {
-            let e = Expr::from_source(&source);
-            let expr = Expr::from_expr(e);
-            println!("{:#?}", expr);
-        }
-
         Input::InferExpr(source) => {
             let e = Expr::from_source(&source);
             let expr = Expr::from_expr(e).unwrap();
@@ -146,31 +144,17 @@ fn main() {
         Input::InferPackage(source) => {
             let mut instance = infer::Infer::new();
 
-            // prelude::init(&mut instance);
-
             let files = vec![UnparsedFile {
                 filename: "test.brg".to_string(),
                 contents: source,
             }];
 
-            // Compile stdlib first
-            //
-            // TODO set this path in some config
-            let mut std_path = std::env::current_exe().unwrap();
-            std_path.pop();
-            std_path.pop();
-            std_path.pop();
-            std_path.push("runtime");
-            std_path.push("std");
-
-            let std = scan_folder("std", std_path.to_str().unwrap());
+            let std = scan_folder("std", "../runtime/std");
             let pkg = Package::from_file_contents(project::Project::user(), files);
 
             let mut project = Project::from_packages(vec![std, pkg]);
 
             project.infer(&mut instance);
-
-            // let pkg = project.compile(project::Project::user(), &mut instance, files);
 
             let new_pkg = project
                 .packages

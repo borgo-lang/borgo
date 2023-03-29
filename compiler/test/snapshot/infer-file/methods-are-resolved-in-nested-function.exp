@@ -51,7 +51,6 @@ No errors.
                 }
               ]
             },
-            "is_trait": false,
             "span": {
               "start": {
                 "line": 1,
@@ -453,7 +452,7 @@ No errors.
                                         "decl": {
                                           "file_id": {
                                             "package": "std",
-                                            "filename": "/Users/marco/dev/borgo-compiler/runtime/std/core.brg"
+                                            "filename": "core.brg"
                                           },
                                           "span": {
                                             "start": {

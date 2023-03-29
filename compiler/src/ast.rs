@@ -397,6 +397,7 @@ pub struct StructFieldDef {
 pub enum ExternKind {
     Effect,
     Native,
+    Overload,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -550,7 +551,6 @@ pub enum Expr {
     },
     StructDef {
         def: StructDefinition,
-        is_trait: bool,
         span: Span,
     },
     StructCall {
@@ -1142,7 +1142,7 @@ impl Expr {
             syn::Item::Struct(e) => {
                 let generics = parse::parse_generics(e.generics);
                 let fields = parse::parse_fields(e.fields);
-                let attrs = e
+                let _attrs = e
                     .attrs
                     .iter()
                     .map(|a| {
@@ -1155,8 +1155,6 @@ impl Expr {
                     })
                     .collect::<Vec<_>>();
 
-                let is_trait = attrs.contains(&"is_trait".to_string());
-
                 match fields {
                     parse::Fields::StructFields(fields) => {
                         let def = StructDefinition {
@@ -1165,11 +1163,7 @@ impl Expr {
                             fields,
                         };
 
-                        Ok(Expr::StructDef {
-                            def,
-                            is_trait,
-                            span,
-                        })
+                        Ok(Expr::StructDef { def, span })
                     }
 
                     _ => panic!("wrong fields in struct"),
@@ -1185,8 +1179,12 @@ impl Expr {
 
                 let kind = if name.starts_with("native") {
                     ExternKind::Native
-                } else {
+                } else if name.starts_with("effect") {
                     ExternKind::Effect
+                } else if name == "overload" {
+                    ExternKind::Overload
+                } else {
+                    panic!("unknown extern kind {}", name)
                 };
 
                 let module_name: Option<String> = match kind {
@@ -1194,6 +1192,7 @@ impl Expr {
                         Some(name.chars().into_iter().skip("native/".len()).collect())
                     }
                     ExternKind::Effect => None,
+                    ExternKind::Overload => None,
                 };
 
                 let items = f

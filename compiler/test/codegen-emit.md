@@ -422,7 +422,7 @@ fn borgo_main() {
   "abcd".index_of("z").assert_eq(None);
 
   'f'.to_int().assert_eq(102);
-  'f'.to_string().assert_eq("f");
+  'f'.to_string().assert_eq("'f'");
   ()
 }
 ```
@@ -819,8 +819,7 @@ fn borgo_main() {
   let a = "yo";
   let b = "y".append("o");
 
-  Hash::to_hash(a)
-    .assert_eq(Hash::to_hash(b));
+  a.to_hash().assert_eq(b.to_hash());
 }
 ```
 
@@ -834,15 +833,15 @@ struct Bar { c: List<Foo> }
 fn borgo_main() {
   let x = Foo { a: 1, b: "yo" };
   let y = Foo { a: 1, b: "yo" };
-  Eq::equals(x, y).assert_eq(true);
-  Eq::equals(x, Foo { a: 2, ..y}).assert_eq(false);
+  equals(x, y).assert_eq(true);
+  equals(x, Foo { a: 2, ..y}).assert_eq(false);
 
-  Eq::equals(Bar { c: [x, y] }, Bar { c: [x, y] }).assert_eq(true);
-  Eq::equals(Bar { c: [x] }, Bar { c: [x, y] }).assert_eq(false);
+  equals(Bar { c: [x, y] }, Bar { c: [x, y] }).assert_eq(true);
+  equals(Bar { c: [x] }, Bar { c: [x, y] }).assert_eq(false);
 
   let xs = [x];
   let a = Bar { c: xs.push(y) };
-  Eq::equals(a, Bar { c: [x, y] }).assert_eq(true);
+  equals(a, Bar { c: [x, y] }).assert_eq(true);
 }
 ```
 
@@ -854,32 +853,38 @@ struct Bar { baz: fn () -> Int }
 enum Color { Blue, Red }
 
 fn borgo_main() {
-  Display::to_string(1).inspect();
-  Display::to_string(false).inspect();
-  Display::to_string("yo").inspect();
-  Display::to_string('a').inspect();
+  to_string(1).inspect();
+  to_string(false).inspect();
+  to_string("yo").inspect();
+  to_string('a').inspect();
 
   let x = Foo { a: 1, b: "yo" };
-  Display::to_string(x).inspect();
+  to_string(x).inspect();
 
-  Display::to_string([1,2,3]).inspect();
-  Display::to_string(Ok(Color::Red)).inspect();
-  Display::to_string((1, 2.3)).inspect();
-  Display::to_string(()).inspect();
+  to_string([1,2,3]).inspect();
+  to_string(Ok(Color::Red)).inspect();
+  to_string((1, 2.3)).inspect();
+  to_string((1, false, "yo")).inspect();
+  to_string(()).inspect();
 
   let m = Map::new()
     .insert("a", Color::Blue)
     .insert("b", Color::Red);
-  Display::to_string(m).inspect();
+  to_string(m).inspect();
 
-  Display::to_string(5.to_ref()).inspect();
+  to_string(5.to_ref()).inspect();
 
-  Display::to_string(Bar { baz: || 1 }).inspect();
+  to_string(Bar { baz: || 1 }).inspect();
 
-  Display::to_string([1,2,3].seq()).inspect();
+  to_string([1,2,3].seq()).inspect();
 
   let s = Seq::infinite(0, |x| x + 1);
-  Display::to_string(s).inspect();
+  to_string(s).inspect();
+
+  to_string(Set::new()
+    .insert("a")
+    .insert("b"))
+    .inspect();
 
   ()
 }
@@ -893,6 +898,80 @@ struct Foo { x: Int, y: String }
 fn borgo_main() {
   (1, "a", true).inspect();
   Foo { x: 1, y: "b" }.inspect();
+  ()
+}
+```
+
+Custom overload implementations.
+
+```rust
+struct Foo<T> { x: Int, y: Bar<T> }
+
+struct Bar<T> {
+  a: String,
+  b: T,
+}
+
+struct Baz<T> { one: Int, two: T }
+
+impl<T> Baz<T> {
+  fn to_string<T: to_string>(self) -> String {
+    "BAZ [ \n ONE: "
+      .append(self.one.to_string())
+      .append(", TWO: ")
+      .append(to_string(self.two))
+      .append("\n ]")
+  }
+}
+
+struct Bad { bad: Bool }
+
+fn borgo_main() {
+  let bar: Bar<Baz<Bad>> = Bar {
+    a: "yo",
+    b: Baz {
+      one: 1,
+      two: Bad { bad: false },
+    }
+  };
+
+  bar.inspect();
+  ()
+}
+```
+
+Native types have builtin overload implementations.
+
+```rust
+fn borgo_main() {
+  1.to_string().inspect();
+  1.to_hash().inspect();
+  1.equals(1).inspect();
+
+  "hello".to_string().inspect();
+  "hello".to_hash().inspect();
+  "hello".equals("hello").inspect();
+
+  (1.34).to_string().inspect();
+  (1.34).to_hash().inspect();
+  (1.34).equals(1.34).inspect();
+
+  'f'.to_string().inspect();
+  'f'.to_hash().inspect();
+  'f'.equals('f').inspect();
+
+  false.to_string().inspect();
+  false.to_hash().inspect();
+  false.equals(false).inspect();
+
+  [1, 2, 3].to_string().inspect();
+  [1, 2, 3].to_hash().inspect();
+  [1, 2, 3].equals([1, 2, 3]).inspect();
+
+  ().to_string().inspect();
+  ().to_hash().inspect();
+  ().equals(()).inspect();
+
   ()
 }
 ```

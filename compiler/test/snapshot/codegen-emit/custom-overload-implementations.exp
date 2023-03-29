@@ -1,0 +1,188 @@
+Custom overload implementations.
+
+SOURCE:
+struct Foo<T> { x: Int, y: Bar<T> }
+
+struct Bar<T> {
+  a: String,
+  b: T,
+}
+
+struct Baz<T> { one: Int, two: T }
+
+impl<T> Baz<T> {
+  fn to_string<T: to_string>(self) -> String {
+    "BAZ [ \n ONE: "
+      .append(self.one.to_string())
+      .append(", TWO: ")
+      .append(to_string(self.two))
+      .append("\n ]")
+  }
+}
+
+struct Bad { bad: Bool }
+
+fn borgo_main() {
+  let bar: Bar<Baz<Bad>> = Bar {
+    a: "yo",
+    b: Baz {
+      one: 1,
+      two: Bad { bad: false },
+    }
+  };
+
+  bar.inspect();
+  ()
+}
+
+OUTPUT:
+Bar { a: "yo", b: BAZ [ 
+ ONE: 1, TWO: Bad { bad: false }
+ ] }
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func make_Foo(arg_0 any, arg_1 any) any {
+	return Foo{arg_0, arg_1}
+}
+func make_Bar(arg_0 any, arg_1 any) any {
+	return Bar{arg_0, arg_1}
+}
+func make_Baz(arg_0 any, arg_1 any) any {
+	return Baz{arg_0, arg_1}
+}
+func make_Bad(arg_0 any) any {
+	return Bad{arg_0}
+}
+
+type Foo struct {
+	X any
+	Y any
+}
+type Bar struct {
+	A any
+	B any
+}
+type Baz struct {
+	One any
+	Two any
+}
+
+func Baz_to_string(self any) any {
+
+	var var1_block any
+	{
+		var2 := "BAZ [ \n ONE: "
+		var3 := self
+		var4 := var3.(Baz).One
+		var5 := Int_to_string
+		var6 := var5(var4)
+		var7 := String_append
+		var8 := var7(var2, var6)
+		var9 := ", TWO: "
+		var10 := String_append
+		var11 := var10(var8, var9)
+		var12 := self
+		var13 := var12.(Baz).Two
+		var14 := to_string
+		var15 := var14(var13)
+		var16 := String_append
+		var17 := var16(var11, var15)
+		var18 := "\n ]"
+		var19 := String_append
+		var20 := var19(var17, var18)
+		var1_block = var20
+	}
+	return var1_block
+}
+
+type Bad struct {
+	Bad any
+}
+
+func borgo_main() any {
+
+	var var1_block any
+	{
+		var2 := "yo"
+		var3 := 1
+		var4 := false
+		var5 := func(base any) any {
+			data := base.(Bad)
+			data.Bad = var4
+			return data
+		}(Bad{})
+		var6 := func(base any) any {
+			data := base.(Baz)
+			data.One = var3
+			data.Two = var5
+			return data
+		}(Baz{})
+		var7 := func(base any) any {
+			data := base.(Bar)
+			data.A = var2
+			data.B = var6
+			return data
+		}(Bar{})
+		var8 := var7
+		var9 := borgo.Unit
+		_ = var9
+		var10 := var8
+		var11 := Debug_inspect(var10)
+		_ = var11
+		var12 := borgo.Unit
+		var1_block = var12
+	}
+	return var1_block
+}
+
+func Bad_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Bar_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Baz_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Foo_equals(values ...any) any {
+	return borgo.OverloadImpl("equals", values)
+}
+func Bad_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Bar_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Baz_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Foo_to_hash(values ...any) any {
+	return borgo.OverloadImpl("to_hash", values)
+}
+func Bad_to_string(values ...any) any {
+	return borgo.OverloadImpl("to_string", values)
+}
+func Bar_to_string(values ...any) any {
+	return borgo.OverloadImpl("to_string", values)
+}
+func Foo_to_string(values ...any) any {
+	return borgo.OverloadImpl("to_string", values)
+}
+func pkg_user_init() {
+	borgo.RegisterStruct("Foo", "Foo", []string{"x", "y"})
+	borgo.RegisterMakeFunction("Foo", make_Foo)
+	borgo.RegisterStruct("Bar", "Bar", []string{"a", "b"})
+	borgo.RegisterMakeFunction("Bar", make_Bar)
+	borgo.RegisterStruct("Baz", "Baz", []string{"one", "two"})
+	borgo.RegisterMakeFunction("Baz", make_Baz)
+	borgo.RegisterGlobalFunction("Baz::to_string", Baz_to_string)
+	borgo.RegisterStruct("Bad", "Bad", []string{"bad"})
+	borgo.RegisterMakeFunction("Bad", make_Bad)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

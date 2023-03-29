@@ -109,28 +109,6 @@ impl Project {
         new_pkg
     }
 
-    pub fn compile_stdlib(&mut self, instance: &mut infer::Infer) -> Package {
-        // TODO set this path in some config
-        let mut std_path = std::env::current_exe().unwrap();
-        std_path.pop();
-        std_path.pop();
-        std_path.pop();
-        std_path.push("std");
-
-        let read_file = |file: &str| {
-            let mut p = std_path.clone();
-            p.push(file);
-            std::fs::read_to_string(p).unwrap()
-        };
-
-        let std_files = vec![UnparsedFile {
-            filename: "core".to_string(),
-            contents: read_file("core.brg"),
-        }];
-
-        self.compile(Self::std(), instance, std_files)
-    }
-
     pub fn std() -> String {
         "std".to_string()
     }

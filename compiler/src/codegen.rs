@@ -2,11 +2,11 @@ use std::collections::{HashMap, VecDeque};
 
 use crate::{
     ast::{
-        Arm, Binding, Constructor, DebugKind, EnumDefinition, Expr, Function, FunctionKind,
-        Literal, Operator, Pat, Span, StructDefinition, StructField, UnOp,
+        Arm, Binding, Constructor, DebugKind, EnumDefinition, Expr, ExternKind, Function,
+        FunctionKind, Literal, Operator, Pat, Span, StructDefinition, StructField, UnOp,
     },
-    global_state::{self, Declaration},
-    project::Package,
+    global_state::{self, Declaration, DerivedOverload},
+    project::{Package, Project},
     type_::Type,
 };
 
@@ -121,18 +121,20 @@ impl Codegen {
                     source.emit(self.create_make_function(def));
                 }
 
-                if let Expr::StructDef { def, is_trait, .. } = expr {
+                if let Expr::StructDef { def, .. } = expr {
                     source.emit(self.create_struct_make_function(def));
-
-                    if *is_trait {
-                        source.emit(self.emit_trait_impelementation(def));
-                    }
                 }
 
-                if let Expr::ExternDecl { items, .. } = expr {
+                if let Expr::ExternDecl { items, kind, .. } = expr {
+                    if kind == &ExternKind::Overload {
+                        return;
+                    }
+
                     items.iter().for_each(|item| match &item {
                         Expr::Closure { fun, ty, .. } => {
                             let mangled = to_name(&fun.name);
+                            // TODO note that the type signature here for overloads is wrong.
+                            // The dummy type doesn't get replaced during inference.
                             let sig = to_loose_type_signature(ty);
                             source.emit(format!("var {mangled} {sig}"));
                         }
@@ -162,8 +164,18 @@ impl Codegen {
             });
         });
 
+        // Generate automatically derived overloads
+        source.emit(self.emit_derived_overloads(&pkg.name));
+
         // emit `init` function to populate known types
         source.emit(self.emit_init_function(pkg));
+
+        // emit blanket implementation for overloads.
+        // TODO we need to store the FileId for each overload declaration.
+        // For now we do this once in the std package, bit hacky.
+        if pkg.name == Project::std() {
+            source.emit(self.emit_blanket_overloads());
+        }
 
         EmittedFile {
             name: pkg.name.to_string() + ".go",
@@ -221,7 +233,11 @@ impl Codegen {
                     out.emit(format!("borgo.RegisterMakeFunction(\"{name}\", {make_fn})"));
                 }
 
-                if let Expr::ExternDecl { items, .. } = expr {
+                if let Expr::ExternDecl { items, kind, .. } = expr {
+                    if kind == &ExternKind::Overload {
+                        return;
+                    }
+
                     items.iter().for_each(|item| match &item {
                         Expr::Closure { fun, ty, .. } => {
                             let name = &fun.name;
@@ -1039,17 +1055,57 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
         self.pop()
     }
 
-    fn emit_trait_impelementation(&self, def: &StructDefinition) -> String {
-        let trait_name = def.name.to_string();
-        let fun = def.fields.first().unwrap();
-        let trait_fn = format!("{trait_name}::{fun_name}", fun_name = fun.name);
+    fn emit_trait_impelementation(&self, def: &DerivedOverload) -> String {
+        let trait_fn = format!("{ty}::{overload}", ty = def.ty, overload = def.overload);
 
         format!(
             "func {name}(values ...any) any {{
-return borgo.TraitImpl(\"{trait_name}\", values)
+return borgo.OverloadImpl(\"{trait_name}\", values)
         }}",
-            name = to_name(&trait_fn)
+            name = to_name(&trait_fn),
+            trait_name = def.overload
         )
+    }
+
+    fn emit_derived_overloads(&self, pkg: &str) -> String {
+        let mut out = emitter();
+
+        let overloads = self.gs.get_derived_overloads();
+        let mut overloads: Vec<_> = overloads.iter().collect();
+
+        overloads.sort();
+
+        overloads.iter().for_each(|d| {
+            let typ = self.gs.get_global_type_declaration(&d.ty).unwrap();
+
+            // Make sure type was declared in the current package
+            if typ.decl.file_id.package == pkg {
+                out.emit(self.emit_trait_impelementation(d));
+            }
+        });
+
+        out.render()
+    }
+
+    fn emit_blanket_overloads(&self) -> String {
+        let mut out = emitter();
+
+        let overloads = self.gs.get_overloads();
+        let mut overloads: Vec<_> = overloads.iter().collect();
+
+        overloads.sort();
+
+        overloads.iter().for_each(|overload| {
+            let mangled = to_name(&overload);
+
+            out.emit(format!(
+                "func {mangled} (values ...any) any {{
+    return borgo.OverloadImpl(\"{overload}\", values)
+}}"
+            ));
+        });
+
+        out.render()
     }
 }
 

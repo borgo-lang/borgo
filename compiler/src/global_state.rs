@@ -11,7 +11,7 @@ struct Scope {
     types: HashMap<String, TypeDef>,
     // bindings in the value universe, ie. x => Int
     values: HashMap<String, ValueDef>,
-    // Assumptions about a type found in trait bounds, ie. Eq<T>. Used for constraint resolution.
+    // Assumptions about a type found in trait bounds, ie. equals<T>. Used for constraint resolution.
     assumptions: Vec<Type>,
 }
 
@@ -51,6 +51,7 @@ pub struct GlobalState {
     aliases: HashMap<String, String>,
     effects: HashSet<String>,
     traits: HashSet<String>,
+    derived_traits: HashSet<DerivedOverload>,
 }
 
 impl GlobalState {
@@ -64,6 +65,7 @@ impl GlobalState {
             aliases: Default::default(), // Ok -> Result::Ok
             effects: Default::default(),
             traits: Default::default(),
+            derived_traits: Default::default(),
         }
     }
 
@@ -89,8 +91,12 @@ impl GlobalState {
             .or_else(|| self.current_scope().get_type(name).map(|t| t.ty))
     }
 
-    pub fn get_global_type(&mut self, name: &str) -> Option<BoundedType> {
+    pub fn get_global_type(&self, name: &str) -> Option<BoundedType> {
         self.types.get(name).cloned().map(|t| t.ty)
+    }
+
+    pub fn get_global_type_declaration(&self, name: &str) -> Option<TypeDef> {
+        self.types.get(name).cloned()
     }
 
     pub fn add_value(&mut self, name: String, ty: BoundedType, decl: Declaration) {
@@ -243,6 +249,43 @@ impl GlobalState {
     pub fn add_trait(&mut self, name: &str) {
         self.traits.insert(name.to_string());
     }
+
+    pub fn get_all_types(&self) -> HashMap<String, BoundedType> {
+        self.types
+            .iter()
+            .map(|(name, t)| (name.clone(), t.ty.clone()))
+            .collect()
+    }
+
+    pub fn get_overloads(&self) -> HashSet<String> {
+        self.traits.clone()
+    }
+
+    pub fn add_derived_overload(&mut self, overload_name: &str, ty_name: &str) {
+        let value = DerivedOverload {
+            overload: overload_name.to_string(),
+            ty: ty_name.to_string(),
+        };
+
+        self.derived_traits.insert(value);
+    }
+
+    pub fn get_derived_overloads(&self) -> HashSet<DerivedOverload> {
+        self.derived_traits.clone()
+    }
+
+    pub fn remove_derived_overload(&mut self, name: &str) {
+        if !name.contains("::") {
+            return;
+        }
+
+        let parts: Vec<_> = name.split("::").collect();
+        let ty = parts[0].to_string();
+        let overload = parts[1].to_string();
+
+        let value = DerivedOverload { overload, ty };
+        self.derived_traits.remove(&value);
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -261,8 +304,8 @@ impl FileId {
 
     pub fn builtin() -> Self {
         FileId {
-            package: "builtin".to_string(),
-            filename: "".to_string(),
+            package: "std".to_string(),
+            filename: "builtin.brg".to_string(),
         }
     }
 }
@@ -315,4 +358,10 @@ impl Declaration {
             file_id: FileId::builtin(),
         }
     }
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub struct DerivedOverload {
+    pub overload: String,
+    pub ty: String,
 }

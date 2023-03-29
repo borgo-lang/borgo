@@ -18,8 +18,8 @@ var _ = borgo.Unit
 var a any
 
 func init_const_a() any {
-	var1 := 1
-	return var1
+	var30 := 1
+	return var30
 }
 
 func borgo_main() any {
