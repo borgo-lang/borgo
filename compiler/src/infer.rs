@@ -1204,6 +1204,43 @@ has no method:
                 }
             }
 
+            Expr::Loop {
+                binding,
+                expr,
+                body,
+                span,
+            } => {
+                let binding_ty = self.to_type(&binding.ann, &span);
+
+                let new_binding = Binding {
+                    pat: self.infer_pat(binding.pat, binding_ty.clone()),
+                    ty: binding_ty.clone(),
+                    ..binding
+                };
+
+                let expr_ty = self.fresh_ty_var();
+                let body_ty = self.fresh_ty_var();
+
+                let new_expr = self.infer_expr(*expr, &expr_ty);
+                let new_body = self.infer_expr(*body, &body_ty);
+
+                // for $binding in $expr { $body }
+                // $expr should be of type Seq<$binding>
+                let seq_ty = Type::Con {
+                    name: "Seq".to_string(),
+                    args: vec![binding_ty.clone()],
+                };
+
+                self.add_constraint(&seq_ty, &expr_ty, &new_expr.get_span());
+
+                Expr::Loop {
+                    binding: new_binding,
+                    expr: new_expr.into(),
+                    body: new_body.into(),
+                    span,
+                }
+            }
+
             Expr::Noop => Expr::Noop,
             Expr::Todo => todo!(),
             // _ => todo!("{:#?}", expr),

@@ -523,6 +523,11 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
         Expr::Spawn { expr, .. } => check(expr, instance),
         Expr::Select { arms, .. } => arms.iter().try_for_each(|a| check(&a.expr, instance)),
 
+        Expr::Loop { expr, body, .. } => {
+            check(expr, instance)?;
+            check(body, instance)
+        }
+
         Expr::Unit { .. } => Ok(()),
         Expr::Noop => Ok(()),
         Expr::Todo => Ok(()),

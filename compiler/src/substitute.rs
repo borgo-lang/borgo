@@ -319,6 +319,18 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
+        Expr::Loop {
+            binding,
+            expr,
+            body,
+            span,
+        } => Expr::Loop {
+            binding: substitute_binding(&binding, instance),
+            expr: substitute_expr(*expr, instance).into(),
+            body: substitute_expr(*body, instance).into(),
+            span,
+        },
+
         Expr::Unit { span } => Expr::Unit { span },
         Expr::Noop => Expr::Noop,
         Expr::Todo => Expr::Todo,

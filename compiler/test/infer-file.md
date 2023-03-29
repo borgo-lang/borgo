@@ -361,3 +361,15 @@ fn borgo_main() {
   ()
 }
 ```
+
+For loops.
+
+> infer("fn () -> ()")
+
+```rust-only
+fn borgo_main() {
+  for x in [1].seq() {
+    x as Int;
+  }
+}
+```

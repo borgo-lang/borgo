@@ -362,6 +362,13 @@ impl Codegen {
             Expr::CheckType { .. } => self.push("borgo.Unit".to_string()),
             Expr::Const { .. } => "".to_string(),
             Expr::Paren { expr, .. } => self.emit_paren(expr),
+            Expr::Loop {
+                binding,
+                expr,
+                body,
+                ..
+            } => self.emit_loop(binding, expr, body),
+
             Expr::Tuple { .. } => unreachable!(),
             Expr::VarUpdate { .. } => unreachable!(),
             Expr::MethodCall { .. } => unreachable!(),
@@ -1106,6 +1113,10 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
         });
 
         out.render()
+    }
+
+    fn emit_loop(&self, binding: &Binding, expr: &Expr, body: &Expr) -> String {
+        todo!("TODO asdf")
     }
 }
 

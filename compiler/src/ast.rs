@@ -642,6 +642,12 @@ pub enum Expr {
         ty: Type,
         span: Span,
     },
+    Loop {
+        binding: Binding,
+        expr: Box<Expr>,
+        body: Box<Expr>,
+        span: Span,
+    },
 
     Unit {
         span: Span,
@@ -1094,6 +1100,19 @@ impl Expr {
                 })
             }
 
+            syn::Expr::ForLoop(f) => {
+                let binding = Binding::from_pat(f.pat)?;
+                let expr = Self::from_expr(*f.expr)?;
+                let body = Self::from_block(f.body)?;
+
+                Ok(Self::Loop {
+                    binding,
+                    expr: Box::new(expr),
+                    body: Box::new(body),
+                    span: root_span,
+                })
+            }
+
             _ => todo!("uncovered expr {:#?}", input),
         }
     }
@@ -1471,6 +1490,7 @@ impl Expr {
             Self::Debug { ty, .. } => ty,
             Self::Spawn { ty, .. } => ty,
             Self::Select { ty, .. } => ty,
+            Self::Loop { .. } => Type::unit(),
 
             Self::Unit { .. } => Type::unit(),
             Self::Noop => Type::unit(),
@@ -1508,6 +1528,7 @@ impl Expr {
             Self::Debug { ref mut ty, .. } => *ty = new_ty,
             Self::Spawn { ref mut ty, .. } => *ty = new_ty,
             Self::Select { ref mut ty, .. } => *ty = new_ty,
+            Self::Loop { .. } => (),
 
             Self::Unit { .. } => (),
             Self::Noop => (),
@@ -1546,6 +1567,7 @@ impl Expr {
             Self::Debug { span, .. } => span,
             Self::Spawn { span, .. } => span,
             Self::Select { span, .. } => span,
+            Self::Loop { span, .. } => span,
 
             Self::Unit { span, .. } => span,
             Self::Noop => Span::dummy(),
@@ -1585,6 +1607,7 @@ impl Expr {
             Self::Debug { ref mut span, .. } => *span = new_span,
             Self::Spawn { ref mut span, .. } => *span = new_span,
             Self::Select { ref mut span, .. } => *span = new_span,
+            Self::Loop { ref mut span, .. } => *span = new_span,
 
             Self::Unit { .. } => (),
             Self::Noop => (),
