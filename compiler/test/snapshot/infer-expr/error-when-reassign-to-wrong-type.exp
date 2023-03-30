@@ -7,7 +7,11 @@ SOURCE:
 }
 
 OUTPUT:
-Variable x is not declared as mutable. Use `let mut x`.
+Type mismatch
+Expected:
+    Int
+Got:
+    String
 
 3|    x = "foo"
       ^^^^^^^^^

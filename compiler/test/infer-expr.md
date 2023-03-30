@@ -739,7 +739,7 @@ Accessing struct fields.
 
 Error when reassign to wrong type.
 
-> errorContains("not declared as mutable")
+> errorContains("mismatch")
 
 ```rust
 {
