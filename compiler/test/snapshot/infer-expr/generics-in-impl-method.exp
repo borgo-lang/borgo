@@ -106,6 +106,7 @@ No errors.
                       "pat": {
                         "Type": {
                           "ident": "self",
+                          "is_mut": false,
                           "ann": {
                             "Con": {
                               "name": "Foo",
@@ -162,6 +163,7 @@ No errors.
                       "pat": {
                         "Type": {
                           "ident": "f",
+                          "is_mut": false,
                           "ann": "Unknown",
                           "span": {
                             "start": {
@@ -455,6 +457,7 @@ No errors.
                       "pat": {
                         "Type": {
                           "ident": "self",
+                          "is_mut": false,
                           "ann": {
                             "Con": {
                               "name": "Foo",
@@ -659,6 +662,7 @@ No errors.
                                         "pat": {
                                           "Type": {
                                             "ident": "x",
+                                            "is_mut": false,
                                             "ann": "Unknown",
                                             "span": {
                                               "start": {
@@ -843,6 +847,7 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "foo",
+                "is_mut": false,
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -928,7 +933,6 @@ No errors.
               }
             }
           },
-          "mutable": false,
           "ty": {
             "Con": {
               "name": "Foo",

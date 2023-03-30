@@ -87,6 +87,7 @@ No errors.
                           "pat": {
                             "Type": {
                               "ident": "f",
+                              "is_mut": false,
                               "ann": "Unknown",
                               "span": {
                                 "start": {
@@ -172,7 +173,6 @@ No errors.
                             }
                           }
                         },
-                        "mutable": false,
                         "ty": {
                           "Con": {
                             "name": "Foo",
@@ -204,6 +204,7 @@ No errors.
                           "pat": {
                             "Type": {
                               "ident": "m",
+                              "is_mut": false,
                               "ann": "Unknown",
                               "span": {
                                 "start": {
@@ -257,11 +258,11 @@ No errors.
                                   },
                                   "span": {
                                     "start": {
-                                      "line": 344,
+                                      "line": 331,
                                       "col": 4
                                     },
                                     "end": {
-                                      "line": 344,
+                                      "line": 331,
                                       "col": 74
                                     }
                                   }
@@ -384,11 +385,11 @@ No errors.
                                         },
                                         "span": {
                                           "start": {
-                                            "line": 343,
+                                            "line": 330,
                                             "col": 4
                                           },
                                           "end": {
-                                            "line": 343,
+                                            "line": 330,
                                             "col": 32
                                           }
                                         }
@@ -583,7 +584,6 @@ No errors.
                             }
                           }
                         },
-                        "mutable": false,
                         "ty": {
                           "Con": {
                             "name": "Map",
@@ -634,11 +634,11 @@ No errors.
                               },
                               "span": {
                                 "start": {
-                                  "line": 366,
+                                  "line": 353,
                                   "col": 4
                                 },
                                 "end": {
-                                  "line": 374,
+                                  "line": 361,
                                   "col": 5
                                 }
                               }

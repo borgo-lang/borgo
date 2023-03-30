@@ -344,12 +344,7 @@ impl Codegen {
             Expr::Call { func, args, .. } => self.emit_call(func, args, CallMode::Push),
             Expr::Var { value, .. } => self.emit_var(value),
             Expr::Match { subject, arms, .. } => self.emit_match(subject, arms),
-            Expr::Let {
-                binding,
-                value,
-                mutable,
-                ..
-            } => self.emit_let(binding, value, *mutable),
+            Expr::Let { binding, value, .. } => self.emit_let(binding, value),
             Expr::Binary {
                 op, left, right, ..
             } => self.emit_binary(op, left, right),
@@ -820,16 +815,18 @@ if {new_is_matching} != 1 {{
         self.push(expr)
     }
 
-    fn emit_let(&mut self, binding: &Binding, value: &Expr, mutable: bool) -> String {
+    fn emit_let(&mut self, binding: &Binding, value: &Expr) -> String {
         let mut out = emitter();
 
         let new_value = self.emit_local(value, &mut out);
 
         match binding.pat {
-            Pat::Type { ref ident, .. } => {
+            Pat::Type {
+                ref ident, is_mut, ..
+            } => {
                 let var = self.fresh_var();
 
-                if !mutable {
+                if !is_mut {
                     out.emit(format!("{var} := {new_value}"));
                 } else {
                     // this explicit any declaration is needed otherwise upon reassigning the
@@ -1199,7 +1196,6 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
                 ty: Type::dummy(),
                 span: Span::dummy(),
             },
-            false,
         );
 
         // ignore whatever let returns

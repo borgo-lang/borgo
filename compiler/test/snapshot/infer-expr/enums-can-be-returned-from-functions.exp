@@ -83,6 +83,7 @@ No errors.
                 "pat": {
                   "Type": {
                     "ident": "v",
+                    "is_mut": false,
                     "ann": "Unknown",
                     "span": {
                       "start": {

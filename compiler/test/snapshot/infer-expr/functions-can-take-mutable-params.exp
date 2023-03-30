@@ -1,8 +1,12 @@
-Functions are in scope after declaration.
+Functions can take mutable params
 
 SOURCE:
 {
-  fn foo(a: Int) -> Int { sum(a, 4) }
+  fn foo (mut a: Int) -> Int {
+    a = a + 1;
+    a
+  }
+
   foo(1)
 }
 
@@ -27,16 +31,16 @@ No errors.
                 "pat": {
                   "Type": {
                     "ident": "a",
-                    "is_mut": false,
+                    "is_mut": true,
                     "ann": "Unknown",
                     "span": {
                       "start": {
                         "line": 2,
-                        "col": 9
+                        "col": 10
                       },
                       "end": {
                         "line": 2,
-                        "col": 10
+                        "col": 15
                       }
                     }
                   }
@@ -71,126 +75,156 @@ No errors.
               "Block": {
                 "stmts": [
                   {
-                    "Call": {
-                      "func": {
+                    "VarUpdate": {
+                      "target": {
                         "Var": {
-                          "value": "sum",
+                          "value": "a",
                           "decl": {
                             "file_id": {
-                              "package": "std",
-                              "filename": "builtin.brg"
+                              "package": "dummy",
+                              "filename": "dummy"
                             },
                             "span": {
                               "start": {
-                                "line": 0,
-                                "col": 0
+                                "line": 2,
+                                "col": 10
                               },
                               "end": {
-                                "line": 0,
-                                "col": 0
+                                "line": 2,
+                                "col": 15
                               }
                             }
                           },
                           "ty": {
-                            "Fun": {
-                              "args": [
-                                {
-                                  "Con": {
-                                    "name": "Int",
-                                    "args": []
-                                  }
+                            "Con": {
+                              "name": "Int",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 3,
+                              "col": 4
+                            },
+                            "end": {
+                              "line": 3,
+                              "col": 5
+                            }
+                          }
+                        }
+                      },
+                      "value": {
+                        "Binary": {
+                          "op": "Add",
+                          "left": {
+                            "Var": {
+                              "value": "a",
+                              "decl": {
+                                "file_id": {
+                                  "package": "dummy",
+                                  "filename": "dummy"
                                 },
-                                {
-                                  "Con": {
-                                    "name": "Int",
-                                    "args": []
+                                "span": {
+                                  "start": {
+                                    "line": 2,
+                                    "col": 10
+                                  },
+                                  "end": {
+                                    "line": 2,
+                                    "col": 15
                                   }
                                 }
-                              ],
-                              "bounds": [],
-                              "ret": {
+                              },
+                              "ty": {
                                 "Con": {
                                   "name": "Int",
                                   "args": []
                                 }
                               },
-                              "fx": []
+                              "span": {
+                                "start": {
+                                  "line": 3,
+                                  "col": 8
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "col": 9
+                                }
+                              }
+                            }
+                          },
+                          "right": {
+                            "Literal": {
+                              "lit": {
+                                "Int": 1
+                              },
+                              "ty": {
+                                "Con": {
+                                  "name": "Int",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 3,
+                                  "col": 12
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "col": 13
+                                }
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Con": {
+                              "name": "Int",
+                              "args": []
                             }
                           },
                           "span": {
                             "start": {
-                              "line": 2,
-                              "col": 26
+                              "line": 3,
+                              "col": 8
                             },
                             "end": {
-                              "line": 2,
-                              "col": 29
+                              "line": 3,
+                              "col": 13
                             }
                           }
                         }
                       },
-                      "args": [
-                        {
-                          "Var": {
-                            "value": "a",
-                            "decl": {
-                              "file_id": {
-                                "package": "dummy",
-                                "filename": "dummy"
-                              },
-                              "span": {
-                                "start": {
-                                  "line": 2,
-                                  "col": 9
-                                },
-                                "end": {
-                                  "line": 2,
-                                  "col": 10
-                                }
-                              }
-                            },
-                            "ty": {
-                              "Con": {
-                                "name": "Int",
-                                "args": []
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 2,
-                                "col": 30
-                              },
-                              "end": {
-                                "line": 2,
-                                "col": 31
-                              }
-                            }
-                          }
+                      "span": {
+                        "start": {
+                          "line": 3,
+                          "col": 4
                         },
-                        {
-                          "Literal": {
-                            "lit": {
-                              "Int": 4
-                            },
-                            "ty": {
-                              "Con": {
-                                "name": "Int",
-                                "args": []
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 2,
-                                "col": 33
-                              },
-                              "end": {
-                                "line": 2,
-                                "col": 34
-                              }
-                            }
+                        "end": {
+                          "line": 3,
+                          "col": 13
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Var": {
+                      "value": "a",
+                      "decl": {
+                        "file_id": {
+                          "package": "dummy",
+                          "filename": "dummy"
+                        },
+                        "span": {
+                          "start": {
+                            "line": 2,
+                            "col": 10
+                          },
+                          "end": {
+                            "line": 2,
+                            "col": 15
                           }
                         }
-                      ],
+                      },
                       "ty": {
                         "Con": {
                           "name": "Int",
@@ -199,12 +233,12 @@ No errors.
                       },
                       "span": {
                         "start": {
-                          "line": 2,
-                          "col": 26
+                          "line": 4,
+                          "col": 4
                         },
                         "end": {
-                          "line": 2,
-                          "col": 35
+                          "line": 4,
+                          "col": 5
                         }
                       }
                     }
@@ -219,11 +253,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 24
+                    "col": 29
                   },
                   "end": {
-                    "line": 2,
-                    "col": 37
+                    "line": 5,
+                    "col": 3
                   }
                 }
               }
@@ -256,8 +290,8 @@ No errors.
               "col": 2
             },
             "end": {
-              "line": 2,
-              "col": 37
+              "line": 5,
+              "col": 3
             }
           }
         }
@@ -278,8 +312,8 @@ No errors.
                     "col": 2
                   },
                   "end": {
-                    "line": 2,
-                    "col": 37
+                    "line": 5,
+                    "col": 3
                   }
                 }
               },
@@ -305,11 +339,11 @@ No errors.
               },
               "span": {
                 "start": {
-                  "line": 3,
+                  "line": 7,
                   "col": 2
                 },
                 "end": {
-                  "line": 3,
+                  "line": 7,
                   "col": 5
                 }
               }
@@ -329,11 +363,11 @@ No errors.
                 },
                 "span": {
                   "start": {
-                    "line": 3,
+                    "line": 7,
                     "col": 6
                   },
                   "end": {
-                    "line": 3,
+                    "line": 7,
                     "col": 7
                   }
                 }
@@ -348,11 +382,11 @@ No errors.
           },
           "span": {
             "start": {
-              "line": 3,
+              "line": 7,
               "col": 2
             },
             "end": {
-              "line": 3,
+              "line": 7,
               "col": 8
             }
           }
@@ -371,7 +405,7 @@ No errors.
         "col": 0
       },
       "end": {
-        "line": 4,
+        "line": 8,
         "col": 1
       }
     }

@@ -36,6 +36,7 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "x",
+                "is_mut": false,
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -80,7 +81,6 @@ No errors.
               }
             }
           },
-          "mutable": false,
           "ty": {
             "Con": {
               "name": "String",
@@ -105,6 +105,7 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "a",
+                "is_mut": false,
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -272,7 +273,6 @@ No errors.
               }
             }
           },
-          "mutable": false,
           "ty": {
             "Con": {
               "name": "Int",
@@ -297,6 +297,7 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "cond",
+                "is_mut": false,
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -341,7 +342,6 @@ No errors.
               }
             }
           },
-          "mutable": false,
           "ty": {
             "Con": {
               "name": "Bool",
@@ -366,6 +366,7 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "b",
+                "is_mut": false,
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -534,7 +535,6 @@ No errors.
               }
             }
           },
-          "mutable": false,
           "ty": {
             "Con": {
               "name": "Int",

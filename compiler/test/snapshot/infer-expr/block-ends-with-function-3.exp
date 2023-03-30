@@ -24,6 +24,7 @@ No errors.
                 "pat": {
                   "Type": {
                     "ident": "foo",
+                    "is_mut": false,
                     "ann": "Unknown",
                     "span": {
                       "start": {
@@ -54,6 +55,7 @@ No errors.
                 "pat": {
                   "Type": {
                     "ident": "bar",
+                    "is_mut": false,
                     "ann": "Unknown",
                     "span": {
                       "start": {

@@ -78,6 +78,7 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "f",
+                "is_mut": false,
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -175,7 +176,6 @@ No errors.
               }
             }
           },
-          "mutable": false,
           "ty": {
             "Con": {
               "name": "Foo",
@@ -244,6 +244,7 @@ No errors.
                       "value": {
                         "Type": {
                           "ident": "x",
+                          "is_mut": false,
                           "ann": "Unknown",
                           "span": {
                             "start": {
@@ -437,6 +438,7 @@ No errors.
                       "value": {
                         "Type": {
                           "ident": "x",
+                          "is_mut": false,
                           "ann": "Unknown",
                           "span": {
                             "start": {
@@ -456,6 +458,7 @@ No errors.
                       "value": {
                         "Type": {
                           "ident": "y",
+                          "is_mut": false,
                           "ann": "Unknown",
                           "span": {
                             "start": {

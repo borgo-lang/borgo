@@ -137,6 +137,7 @@ No errors.
                       "value": {
                         "Type": {
                           "ident": "y",
+                          "is_mut": false,
                           "ann": "Unknown",
                           "span": {
                             "start": {

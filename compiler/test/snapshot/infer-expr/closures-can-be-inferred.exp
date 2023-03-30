@@ -21,6 +21,7 @@ No errors.
           "pat": {
             "Type": {
               "ident": "n",
+              "is_mut": false,
               "ann": "Unknown",
               "span": {
                 "start": {

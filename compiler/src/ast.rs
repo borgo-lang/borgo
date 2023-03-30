@@ -55,6 +55,7 @@ pub struct Function {
 pub enum Pat {
     Type {
         ident: String,
+        is_mut: bool,
         ann: TypeAst,
         span: Span,
     },
@@ -108,13 +109,14 @@ impl Pat {
 
         match p {
             syn::Pat::Type(ty) => Ok(Pat::Type {
-                ident: Self::parse_ident(*ty.pat)?,
+                ident: Self::parse_ident(*ty.pat.clone())?,
+                is_mut: Pat::parse_mutability(&*ty.pat),
                 ann: parse::type_from_expr(*ty.ty),
                 span,
             }),
 
             syn::Pat::Ident(_) => {
-                let ident = Self::parse_ident(p)?;
+                let ident = Self::parse_ident(p.clone())?;
 
                 // syn cannot distinguish between Foo (constructor) and foo (binding).
                 // So let's use a dumb heuristic:
@@ -133,6 +135,7 @@ impl Pat {
 
                 Ok(Pat::Type {
                     ident,
+                    is_mut: Pat::parse_mutability(&p),
                     ann: TypeAst::Unknown,
                     span,
                 })
@@ -318,6 +321,13 @@ impl Pat {
                     None
                 }
             }
+        }
+    }
+
+    pub fn parse_mutability(pat: &syn::Pat) -> bool {
+        match &pat {
+            syn::Pat::Ident(i) => i.mutability.is_some(),
+            _ => false,
         }
     }
 }
@@ -518,7 +528,6 @@ pub enum Expr {
     Let {
         binding: Binding,
         value: Box<Expr>,
-        mutable: bool,
         ty: Type,
         span: Span,
     },
@@ -1309,6 +1318,7 @@ impl Expr {
                 let receiver = Binding {
                     pat: Pat::Type {
                         ident: "self".to_string(),
+                        is_mut: false,
                         ann: ann.clone(),
                         span,
                     },
@@ -1411,15 +1421,9 @@ impl Expr {
                     .map(|(_, e)| Self::from_expr(*e))
                     .unwrap_or_else(|| Ok(Self::Noop))?;
 
-                let mutable = match pat {
-                    syn::Pat::Ident(i) => i.mutability.is_some(),
-                    _ => false,
-                };
-
                 Ok(Self::Let {
                     binding,
                     value: Box::new(value),
-                    mutable,
                     ty: Type::dummy(),
                     span: Span::make(stmt.span()),
                 })

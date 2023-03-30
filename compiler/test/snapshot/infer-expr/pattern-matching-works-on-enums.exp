@@ -71,6 +71,7 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "x",
+                "is_mut": false,
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -188,7 +189,6 @@ No errors.
               }
             }
           },
-          "mutable": false,
           "ty": {
             "Con": {
               "name": "Color",
@@ -302,6 +302,7 @@ No errors.
                     {
                       "Type": {
                         "ident": "c",
+                        "is_mut": false,
                         "ann": "Unknown",
                         "span": {
                           "start": {

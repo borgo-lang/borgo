@@ -549,6 +549,7 @@ No errors.
                 "pat": {
                   "Type": {
                     "ident": "f",
+                    "is_mut": false,
                     "ann": "Unknown",
                     "span": {
                       "start": {
@@ -617,6 +618,7 @@ No errors.
                 "pat": {
                   "Type": {
                     "ident": "g",
+                    "is_mut": false,
                     "ann": "Unknown",
                     "span": {
                       "start": {

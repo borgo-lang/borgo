@@ -23,6 +23,7 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "x",
+                "is_mut": true,
                 "ann": "Unknown",
                 "span": {
                   "start": {
@@ -67,7 +68,6 @@ No errors.
               }
             }
           },
-          "mutable": true,
           "ty": {
             "Con": {
               "name": "Int",

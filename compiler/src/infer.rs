@@ -328,7 +328,6 @@ impl Infer {
             Expr::Let {
                 binding,
                 value,
-                mutable,
                 span,
                 ty: _,
             } => {
@@ -341,17 +340,9 @@ impl Infer {
                     ..binding
                 };
 
-                match &new_binding.pat {
-                    Pat::Type { ident, .. } => {
-                        self.gs.set_mutability(ident, mutable);
-                    }
-                    _ => (),
-                };
-
                 Expr::Let {
                     binding: new_binding,
                     value: new_value.into(),
-                    mutable,
                     ty,
                     span,
                 }
@@ -1379,7 +1370,12 @@ has no method:
 
     fn infer_pat(&mut self, pat: Pat, expected: Type) -> Pat {
         match pat {
-            Pat::Type { ident, ann, span } => {
+            Pat::Type {
+                ident,
+                is_mut,
+                ann,
+                span,
+            } => {
                 // Check that the name isn't reserved (like `default`)
                 if self.check_reserved_name(&ident) {
                     self.generic_error(format!("Name {ident} is reserved"), span.clone());
@@ -1392,7 +1388,15 @@ has no method:
                     expected.to_bounded(),
                     self.new_declaration(&span),
                 );
-                Pat::Type { ident, ann, span }
+
+                self.gs.set_mutability(&ident, is_mut);
+
+                Pat::Type {
+                    ident,
+                    is_mut,
+                    ann,
+                    span,
+                }
             }
 
             Pat::Lit {

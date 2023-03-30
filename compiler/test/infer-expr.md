@@ -1618,3 +1618,18 @@ Only mutable variables can be mutated
   y = 3;
 }
 ```
+
+Functions can take mutable params
+
+> infer("Int")
+
+```rust
+{
+  fn foo (mut a: Int) -> Int {
+    a = a + 1;
+    a
+  }
+
+  foo(1)
+}
+```
