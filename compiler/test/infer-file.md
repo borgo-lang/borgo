@@ -396,3 +396,19 @@ fn borgo_main() {
   }
 }
 ```
+
+Inference in loops
+
+> infer("fn () -> ()")
+
+```rust-only
+fn borgo_main() {
+    let rows = "yo"
+      .split("\n")
+      .map(|row| row.chars());
+
+    for row in rows {
+      row.enumerate();
+    }
+}
+```
