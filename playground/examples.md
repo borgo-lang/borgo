@@ -391,29 +391,26 @@ struct Cmd {
 
 fn parse_stacks(s: String) -> Map<Int, List<Char>> {
     let rows = s.split("\n");
-    let rows = rows.take(rows.len() - 1);
-
-    rows.map(|row| {
-        row.chars()
-            .chunks(4)
-            .filter_map(|chars| chars.filter(|c| c != '[' && c != ']').first())
-    })
-    .reverse()
-    .reduce(Map::new(), |m, row| {
-        row.enumerate().reduce(m, |acc, (index, c)| {
-            acc.update(
-                index + 1,
-                [],
-                |stack| {
-                    if c != ' ' {
-                        stack.push(c)
-                    } else {
-                        stack
-                    }
-                },
-            )
+    let rows = rows
+        .take(rows.len() - 1)
+        .map(|row| {
+            row.chars()
+                .chunks(4)
+                .filter_map(|chars| chars.filter(|c| c != '[' && c != ']').first())
         })
-    })
+        .reverse();
+
+    let mut m = Map::new();
+
+    for row in rows {
+        for (index, c) in row.enumerate() {
+            if c != ' ' {
+                m = m.update(index + 1, [], |stack| stack.push(c));
+            }
+        }
+    }
+
+    m
 }
 
 fn parse_commands(s: String) -> Seq<Cmd> {
@@ -432,9 +429,8 @@ fn parse_commands(s: String) -> Seq<Cmd> {
 }
 
 fn run_commands(stacks: Map<Int, List<Char>>, cmds: Seq<Cmd>) -> Map<Int, List<Char>> {
-    cmds.reduce(stacks, |acc, cmd| {
+    cmds.reduce(stacks, |mut new_stacks, cmd| {
         let mut remaining = cmd.count;
-        let mut new_stacks = acc;
 
         loop {
             if remaining == 0 {
