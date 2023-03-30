@@ -732,6 +732,20 @@ func (eval *Eval) Run(expr Expr) any {
 		os.Exit(0)
 		return nil
 
+	case *Expr__Loop:
+		current_loop := eval.Run(expr.Expr)
+
+		scope := eval.beginScope()
+
+		for !ValuesIsOfType(current_loop, "Seq::Nil") {
+			loop_var := GetArg(current_loop, 0)
+			scope.putPatternInScope(expr.Binding.Pat, loop_var)
+			scope.Run(expr.Body)
+			current_loop = GetArg(current_loop, 1).(func() any)()
+		}
+
+		return make_Unit
+
 	case *Expr__Noop:
 		return make_Unit
 

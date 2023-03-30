@@ -1312,20 +1312,34 @@ func DeserializeExpr(deserializer serde.Deserializer) (Expr, error) {
 		}
 
 	case 27:
-		if val, err := load_Expr__Unit(deserializer); err == nil {
+		if val, err := load_Expr__Loop(deserializer); err == nil {
 			return &val, nil
 		} else {
 			return nil, err
 		}
 
 	case 28:
-		if val, err := load_Expr__Noop(deserializer); err == nil {
+		if val, err := load_Expr__Flow(deserializer); err == nil {
 			return &val, nil
 		} else {
 			return nil, err
 		}
 
 	case 29:
+		if val, err := load_Expr__Unit(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 30:
+		if val, err := load_Expr__Noop(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 31:
 		if val, err := load_Expr__Todo(deserializer); err == nil {
 			return &val, nil
 		} else {
@@ -1545,6 +1559,7 @@ func load_Expr__Block(deserializer serde.Deserializer) (Expr__Block, error) {
 type Expr__Let struct {
 	Binding Binding
 	Value   Expr
+	Mutable bool
 	Ty      Type
 	Span    Span
 }
@@ -1560,6 +1575,9 @@ func (obj *Expr__Let) Serialize(serializer serde.Serializer) error {
 		return err
 	}
 	if err := obj.Value.Serialize(serializer); err != nil {
+		return err
+	}
+	if err := serializer.SerializeBool(obj.Mutable); err != nil {
 		return err
 	}
 	if err := obj.Ty.Serialize(serializer); err != nil {
@@ -1595,6 +1613,11 @@ func load_Expr__Let(deserializer serde.Deserializer) (Expr__Let, error) {
 	}
 	if val, err := DeserializeExpr(deserializer); err == nil {
 		obj.Value = val
+	} else {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeBool(); err == nil {
+		obj.Mutable = val
 	} else {
 		return obj, err
 	}
@@ -3177,6 +3200,128 @@ func load_Expr__Select(deserializer serde.Deserializer) (Expr__Select, error) {
 	return obj, nil
 }
 
+type Expr__Loop struct {
+	Binding Binding
+	Expr    Expr
+	Body    Expr
+	Span    Span
+}
+
+func (*Expr__Loop) isExpr() {}
+
+func (obj *Expr__Loop) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(27)
+	if err := obj.Binding.Serialize(serializer); err != nil {
+		return err
+	}
+	if err := obj.Expr.Serialize(serializer); err != nil {
+		return err
+	}
+	if err := obj.Body.Serialize(serializer); err != nil {
+		return err
+	}
+	if err := obj.Span.Serialize(serializer); err != nil {
+		return err
+	}
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *Expr__Loop) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_Expr__Loop(deserializer serde.Deserializer) (Expr__Loop, error) {
+	var obj Expr__Loop
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	if val, err := DeserializeBinding(deserializer); err == nil {
+		obj.Binding = val
+	} else {
+		return obj, err
+	}
+	if val, err := DeserializeExpr(deserializer); err == nil {
+		obj.Expr = val
+	} else {
+		return obj, err
+	}
+	if val, err := DeserializeExpr(deserializer); err == nil {
+		obj.Body = val
+	} else {
+		return obj, err
+	}
+	if val, err := DeserializeSpan(deserializer); err == nil {
+		obj.Span = val
+	} else {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type Expr__Flow struct {
+	Kind LoopFlow
+	Span Span
+}
+
+func (*Expr__Flow) isExpr() {}
+
+func (obj *Expr__Flow) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(28)
+	if err := obj.Kind.Serialize(serializer); err != nil {
+		return err
+	}
+	if err := obj.Span.Serialize(serializer); err != nil {
+		return err
+	}
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *Expr__Flow) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_Expr__Flow(deserializer serde.Deserializer) (Expr__Flow, error) {
+	var obj Expr__Flow
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	if val, err := DeserializeLoopFlow(deserializer); err == nil {
+		obj.Kind = val
+	} else {
+		return obj, err
+	}
+	if val, err := DeserializeSpan(deserializer); err == nil {
+		obj.Span = val
+	} else {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
 type Expr__Unit struct {
 	Span Span
 }
@@ -3187,7 +3332,7 @@ func (obj *Expr__Unit) Serialize(serializer serde.Serializer) error {
 	if err := serializer.IncreaseContainerDepth(); err != nil {
 		return err
 	}
-	serializer.SerializeVariantIndex(27)
+	serializer.SerializeVariantIndex(29)
 	if err := obj.Span.Serialize(serializer); err != nil {
 		return err
 	}
@@ -3229,7 +3374,7 @@ func (obj *Expr__Noop) Serialize(serializer serde.Serializer) error {
 	if err := serializer.IncreaseContainerDepth(); err != nil {
 		return err
 	}
-	serializer.SerializeVariantIndex(28)
+	serializer.SerializeVariantIndex(30)
 	serializer.DecreaseContainerDepth()
 	return nil
 }
@@ -3263,7 +3408,7 @@ func (obj *Expr__Todo) Serialize(serializer serde.Serializer) error {
 	if err := serializer.IncreaseContainerDepth(); err != nil {
 		return err
 	}
-	serializer.SerializeVariantIndex(29)
+	serializer.SerializeVariantIndex(31)
 	serializer.DecreaseContainerDepth()
 	return nil
 }
@@ -4215,6 +4360,119 @@ func load_Literal__List(deserializer serde.Deserializer) (Literal__List, error) 
 	}
 	deserializer.DecreaseContainerDepth()
 	return (Literal__List)(obj), nil
+}
+
+type LoopFlow interface {
+	isLoopFlow()
+	Serialize(serializer serde.Serializer) error
+	BincodeSerialize() ([]byte, error)
+}
+
+func DeserializeLoopFlow(deserializer serde.Deserializer) (LoopFlow, error) {
+	index, err := deserializer.DeserializeVariantIndex()
+	if err != nil {
+		return nil, err
+	}
+
+	switch index {
+	case 0:
+		if val, err := load_LoopFlow__Break(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 1:
+		if val, err := load_LoopFlow__Continue(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	default:
+		return nil, fmt.Errorf("Unknown variant index for LoopFlow: %d", index)
+	}
+}
+
+func BincodeDeserializeLoopFlow(input []byte) (LoopFlow, error) {
+	if input == nil {
+		var obj LoopFlow
+		return obj, fmt.Errorf("Cannot deserialize null array")
+	}
+	deserializer := bincode.NewDeserializer(input)
+	obj, err := DeserializeLoopFlow(deserializer)
+	if err == nil && deserializer.GetBufferOffset() < uint64(len(input)) {
+		return obj, fmt.Errorf("Some input bytes were not read")
+	}
+	return obj, err
+}
+
+type LoopFlow__Break struct {
+}
+
+func (*LoopFlow__Break) isLoopFlow() {}
+
+func (obj *LoopFlow__Break) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(0)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *LoopFlow__Break) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_LoopFlow__Break(deserializer serde.Deserializer) (LoopFlow__Break, error) {
+	var obj LoopFlow__Break
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type LoopFlow__Continue struct {
+}
+
+func (*LoopFlow__Continue) isLoopFlow() {}
+
+func (obj *LoopFlow__Continue) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(1)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *LoopFlow__Continue) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_LoopFlow__Continue(deserializer serde.Deserializer) (LoopFlow__Continue, error) {
+	var obj LoopFlow__Continue
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
 }
 
 type Operator interface {
