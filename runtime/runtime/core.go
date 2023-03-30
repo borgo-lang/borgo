@@ -940,7 +940,7 @@ func InitCore() {
 			borgo.debug_output_fn(genericToString(x))
 			borgo.debug_output_fn(genericToString(y))
 			borgo.debug_output_fn("--------------")
-			panic("assert failed")
+			log.Fatalln("assert failed")
 		}
 
 		return make_Unit

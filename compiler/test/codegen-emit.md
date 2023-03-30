@@ -988,7 +988,7 @@ fn borgo_main() {
 
 Control flow in loops
 
-```rust-only
+```rust
 fn borgo_main() {
   let n = 0.to_ref();
   let check = false.to_ref();
@@ -1011,7 +1011,7 @@ fn borgo_main() {
 
 Mutating vars
 
-```rust
+```rust-only
 fn borgo_main() {
   let mut x = 1;
   x = x + 3;

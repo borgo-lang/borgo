@@ -23,6 +23,11 @@ type ReturnValue struct {
 
 func isReturn(x any) bool {
 	_, ok := x.(ReturnValue)
+	if ok {
+		return ok
+	}
+
+	_, ok = x.(LoopControlFlow)
 	return ok
 }
 
@@ -32,6 +37,10 @@ func unwrapReturn(x any) any {
 	}
 
 	return x
+}
+
+type LoopControlFlow struct {
+	kind LoopFlow
 }
 
 type Eval struct {
@@ -740,11 +749,32 @@ func (eval *Eval) Run(expr Expr) any {
 		for !ValuesIsOfType(current_loop, "Seq::Nil") {
 			loop_var := GetArg(current_loop, 0)
 			scope.putPatternInScope(expr.Binding.Pat, loop_var)
-			scope.Run(expr.Body)
-			current_loop = GetArg(current_loop, 1).(func() any)()
+
+			return_value := scope.Run(expr.Body)
+
+			next := func() {
+				current_loop = Call(GetArg(current_loop, 1), []any{})
+			}
+
+			if v, ok := return_value.(LoopControlFlow); ok {
+				if _, ok := v.kind.(*LoopFlow__Break); ok {
+					break
+				}
+
+				if _, ok := v.kind.(*LoopFlow__Continue); ok {
+					next()
+					continue
+				}
+
+			}
+
+			next()
 		}
 
 		return make_Unit
+
+	case *Expr__Flow:
+		return LoopControlFlow{kind: expr.Kind}
 
 	case *Expr__Noop:
 		return make_Unit
