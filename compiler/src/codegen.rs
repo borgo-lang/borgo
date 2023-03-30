@@ -459,7 +459,7 @@ impl Codegen {
                     Pat::Wild { .. } => "_".to_string(),
                     _ => {
                         let var = format!("arg_{index}");
-                        let pat = self.emit_pattern(&var, &a.pat);
+                        let pat = self.emit_pattern(&var, "_", &a.pat);
                         args_destructure.emit(pat);
                         var
                     }
@@ -575,45 +575,51 @@ impl Codegen {
 
         let result = self.fresh_var() + "_result";
         let subject_var = self.fresh_var() + "_subject";
-        let pattern = self.fresh_var() + "_pattern";
+        let is_matching = self.fresh_var() + "_matches";
+
+        // Magic values:
+        //   0 -> pattern matching hasn't started
+        //   1 -> pattern matching failed
+        //   2 -> pattern matching succeeded
+        //   TODO turn these into an enum
 
         out.emit(format!(
             "var {result} any
 {subject_var} := {subject}
+{is_matching} := 0
 
-for {pattern} := 0; {pattern} < {arms_len}; {pattern}++ {{",
-            arms_len = arms.len()
+",
         ));
 
-        arms.iter().enumerate().for_each(|(index, arm)| {
-            let if_statements = self.emit_pattern(&subject_var, &arm.pat);
+        arms.iter().for_each(|arm| {
+            let if_statements = self.emit_pattern(&subject_var, &is_matching, &arm.pat);
 
             let new_expr = self.emit_expr(&arm.expr);
             let value = self.pop();
 
             out.emit(format!(
                 "
-if {pattern} == {index} {{
+if {is_matching} != 2 {{
+    {is_matching} = 0
+
     {if_statements}
     _ = {subject_var}
 
-    {new_expr}
-    {result} = {value}
-    break;
+    if {is_matching} == 2 {{
+        {new_expr}
+        {result} = {value}
+    }}
 }}
 "
             ))
         });
-
-        // close for loop
-        out.emit("}".to_string());
 
         self.stack.push_front(result);
 
         out.render()
     }
 
-    fn emit_pattern(&mut self, subject: &str, pat: &Pat) -> String {
+    fn emit_pattern(&mut self, subject: &str, is_matching: &str, pat: &Pat) -> String {
         let mut out = emitter();
 
         match pat {
@@ -627,7 +633,12 @@ if {pattern} == {index} {{
                 let value = self.emit_local(&lit, &mut out);
 
                 out.emit(format!(
-                    "if (!borgo.Ops.Eq({value}, {subject}).(bool)) {{ continue; }}"
+                    "
+if {is_matching} != 1 && borgo.Ops.Eq({value}, {subject}).(bool) {{
+    {is_matching} = 2
+}} else {{
+    {is_matching} = 1
+}}"
                 ));
             }
 
@@ -641,39 +652,77 @@ if {pattern} == {index} {{
             Pat::Pat { ident, elems, .. } => {
                 let pat = self.fresh_var() + "_pat";
 
+                // Introduce a new sentinel matching value for the nested pattern match.
+                //
+                // For example, if we're trying to match (1, "foo")
+                // new_is_matching will be 2 if both fields match
+                // And then we can forward the success value to the parent is_matching
+                let new_is_matching = self.fresh_var() + "_match_pat";
+                out.emit(format!("{new_is_matching} := 0"));
+
                 let new_elems = elems
                     .iter()
                     .enumerate()
                     .map(|(index, p)| {
                         let new_subject = format!("{pat}.Field{index}");
-                        self.emit_pattern(&new_subject, p)
+                        self.emit_pattern(&new_subject, &new_is_matching, p)
                     })
                     .collect::<Vec<_>>()
                     .join("\n");
 
                 let name = to_name(ident);
 
+                // Check against new_is_matching but override parent is_matching for final check
                 out.emit(format!(
-                    "{pat}, ok := {subject}.({name})
+                    "
+{pat}, constructor_check := {subject}.({name})
 _ = {pat}
-if !ok {{ continue; }}"
+
+{new_elems}
+
+if {new_is_matching} != 1 && constructor_check {{
+    {is_matching} = 2
+}} else {{
+    {is_matching} = 1
+}}
+"
                 ));
-                out.emit(new_elems);
             }
 
             Pat::Struct { fields, ty, .. } => {
                 let ty = to_type(ty);
 
+                let new_is_matching = self.fresh_var() + "_match_pat";
+                out.emit(format!("{new_is_matching} := 0"));
+
                 fields.iter().for_each(|f| {
                     let field_name = to_struct_field(&f.name);
                     let cast = cast_to(&ty);
-                    let pat = self.emit_pattern(&format!("{subject}{cast}.{field_name}"), &f.value);
+                    let pat = self.emit_pattern(
+                        &format!("{subject}{cast}.{field_name}"),
+                        &new_is_matching,
+                        &f.value,
+                    );
                     out.emit(pat);
                 });
+
+                out.emit(format!(
+                    "
+if {new_is_matching} != 1 {{
+    {is_matching} = 2
+}} else {{
+    {is_matching} = 1
+}}
+"
+                ));
             }
 
-            Pat::Wild { .. } => out.emit("  // wildcard".to_string()),
-            Pat::Unit { .. } => out.emit("  // unit".to_string()),
+            Pat::Wild { .. } => out.emit(format!(
+                "if {is_matching} != 1 {{ {is_matching} = 2 /* wildcard */ }}"
+            )),
+            Pat::Unit { .. } => out.emit(format!(
+                "if {is_matching} != 1 {{ {is_matching} = 2 /* Unit */ }}"
+            )),
         };
 
         out.render()
@@ -802,7 +851,7 @@ if !ok {{ continue; }}"
                 let var = self.fresh_var();
                 out.emit(format!("{var} := {new_value}"));
 
-                let pat = self.emit_pattern(&var, &binding.pat);
+                let pat = self.emit_pattern(&var, "_", &binding.pat);
                 out.emit(pat);
             }
         };

@@ -41,93 +41,146 @@ func borgo_main() any {
 		}(Tuple2{})
 		var var5_result any
 		var6_subject := var4
+		var7_matches := 0
 
-		for var7_pattern := 0; var7_pattern < 4; var7_pattern++ {
+		if var7_matches != 2 {
+			var7_matches = 0
 
-			if var7_pattern == 0 {
-				var8 := 3
-				if !borgo.Ops.Eq(var8, var6_subject.(Tuple2).First).(bool) {
-					continue
-				}
-				// wildcard
-				_ = var6_subject
+			var8_match_pat := 0
+			var9 := 3
 
-				var9 := 5
-				var5_result = var9
-				break
+			if var8_match_pat != 1 && borgo.Ops.Eq(var9, var6_subject.(Tuple2).First).(bool) {
+				var8_match_pat = 2
+			} else {
+				var8_match_pat = 1
+			}
+			if var8_match_pat != 1 {
+				var8_match_pat = 2 /* wildcard */
 			}
 
-			if var7_pattern == 1 {
-				var10 := 1
-				if !borgo.Ops.Eq(var10, var6_subject.(Tuple2).First).(bool) {
-					continue
-				}
-				var11 := "bar"
-				if !borgo.Ops.Eq(var11, var6_subject.(Tuple2).Second).(bool) {
-					continue
-				}
-				_ = var6_subject
-
-				var12 := 6
-				var5_result = var12
-				break
+			if var8_match_pat != 1 {
+				var7_matches = 2
+			} else {
+				var7_matches = 1
 			}
 
-			if var7_pattern == 2 {
-				var13 := var6_subject.(Tuple2).First
-				var14 := "foo"
-				if !borgo.Ops.Eq(var14, var6_subject.(Tuple2).Second).(bool) {
-					continue
-				}
-				_ = var6_subject
+			_ = var6_subject
 
-				var15 := var13
-				var5_result = var15
-				break
+			if var7_matches == 2 {
+				var10 := 5
+				var5_result = var10
 			}
-
-			if var7_pattern == 3 {
-				// wildcard
-				_ = var6_subject
-
-				var16 := Debug_unreachable()
-				var5_result = var16
-				break
-			}
-
 		}
-		var17 := var5_result
-		var18 := borgo.Unit
-		_ = var18
-		var19 := var17
-		var20 := 1
-		var21 := Debug_assert_eq
-		var22 := var21(var19, var20)
-		_ = var22
-		var23 := borgo.Unit
-		var var24_result any
-		var25_subject := var23
 
-		for var26_pattern := 0; var26_pattern < 1; var26_pattern++ {
+		if var7_matches != 2 {
+			var7_matches = 0
 
-			if var26_pattern == 0 {
-				// unit
-				_ = var25_subject
+			var11_match_pat := 0
+			var12 := 1
 
-				var27 := 2
-				var24_result = var27
-				break
+			if var11_match_pat != 1 && borgo.Ops.Eq(var12, var6_subject.(Tuple2).First).(bool) {
+				var11_match_pat = 2
+			} else {
+				var11_match_pat = 1
+			}
+			var13 := "bar"
+
+			if var11_match_pat != 1 && borgo.Ops.Eq(var13, var6_subject.(Tuple2).Second).(bool) {
+				var11_match_pat = 2
+			} else {
+				var11_match_pat = 1
 			}
 
+			if var11_match_pat != 1 {
+				var7_matches = 2
+			} else {
+				var7_matches = 1
+			}
+
+			_ = var6_subject
+
+			if var7_matches == 2 {
+				var14 := 6
+				var5_result = var14
+			}
 		}
-		var28 := var24_result
-		var29 := borgo.Unit
-		_ = var29
-		var30 := var28
-		var31 := 2
-		var32 := Debug_assert_eq
-		var33 := var32(var30, var31)
-		var1_block = var33
+
+		if var7_matches != 2 {
+			var7_matches = 0
+
+			var15_match_pat := 0
+			var16 := var6_subject.(Tuple2).First
+			var17 := "foo"
+
+			if var15_match_pat != 1 && borgo.Ops.Eq(var17, var6_subject.(Tuple2).Second).(bool) {
+				var15_match_pat = 2
+			} else {
+				var15_match_pat = 1
+			}
+
+			if var15_match_pat != 1 {
+				var7_matches = 2
+			} else {
+				var7_matches = 1
+			}
+
+			_ = var6_subject
+
+			if var7_matches == 2 {
+				var18 := var16
+				var5_result = var18
+			}
+		}
+
+		if var7_matches != 2 {
+			var7_matches = 0
+
+			if var7_matches != 1 {
+				var7_matches = 2 /* wildcard */
+			}
+			_ = var6_subject
+
+			if var7_matches == 2 {
+				var19 := Debug_unreachable()
+				var5_result = var19
+			}
+		}
+
+		var20 := var5_result
+		var21 := borgo.Unit
+		_ = var21
+		var22 := var20
+		var23 := 1
+		var24 := Debug_assert_eq
+		var25 := var24(var22, var23)
+		_ = var25
+		var26 := borgo.Unit
+		var var27_result any
+		var28_subject := var26
+		var29_matches := 0
+
+		if var29_matches != 2 {
+			var29_matches = 0
+
+			if var29_matches != 1 {
+				var29_matches = 2 /* Unit */
+			}
+			_ = var28_subject
+
+			if var29_matches == 2 {
+				var30 := 2
+				var27_result = var30
+			}
+		}
+
+		var31 := var27_result
+		var32 := borgo.Unit
+		_ = var32
+		var33 := var31
+		var34 := 2
+		var35 := Debug_assert_eq
+		var36 := var35(var33, var34)
+		var1_block = var36
 	}
 	return var1_block
 }

@@ -47,51 +47,90 @@ func borgo_main() any {
 		var6 := var4
 		var var7_result any
 		var8_subject := var6
+		var9_matches := 0
 
-		for var9_pattern := 0; var9_pattern < 3; var9_pattern++ {
+		if var9_matches != 2 {
+			var9_matches = 0
 
-			if var9_pattern == 0 {
-				var10 := 2
-				if !borgo.Ops.Eq(var10, var8_subject.(Foo).A).(bool) {
-					continue
-				}
-				_ = var8_subject
+			var10_match_pat := 0
+			var11 := 2
 
-				var11 := false
-				var7_result = var11
-				break
+			if var10_match_pat != 1 && borgo.Ops.Eq(var11, var8_subject.(Foo).A).(bool) {
+				var10_match_pat = 2
+			} else {
+				var10_match_pat = 1
 			}
 
-			if var9_pattern == 1 {
-				var12 := 1
-				if !borgo.Ops.Eq(var12, var8_subject.(Foo).A).(bool) {
-					continue
-				}
-				_ = var8_subject
-
-				var13 := true
-				var7_result = var13
-				break
+			if var10_match_pat != 1 {
+				var9_matches = 2
+			} else {
+				var9_matches = 1
 			}
 
-			if var9_pattern == 2 {
-				// wildcard
-				_ = var8_subject
+			_ = var8_subject
 
-				var14 := false
-				var7_result = var14
-				break
+			if var9_matches == 2 {
+				var12 := false
+				var7_result = var12
 			}
-
 		}
-		var15 := var7_result
-		var16 := borgo.Unit
-		_ = var16
-		var17 := var15
-		var18 := true
-		var19 := Debug_assert_eq
-		var20 := var19(var17, var18)
-		var1_block = var20
+
+		if var9_matches != 2 {
+			var9_matches = 0
+
+			var13_match_pat := 0
+			var14 := 1
+
+			if var13_match_pat != 1 && borgo.Ops.Eq(var14, var8_subject.(Foo).A).(bool) {
+				var13_match_pat = 2
+			} else {
+				var13_match_pat = 1
+			}
+
+			if var13_match_pat != 1 {
+				var9_matches = 2
+			} else {
+				var9_matches = 1
+			}
+
+			_ = var8_subject
+
+			if var9_matches == 2 {
+				var15 := true
+				var7_result = var15
+			}
+		}
+
+		if var9_matches != 2 {
+			var9_matches = 0
+
+			var16_match_pat := 0
+			if var16_match_pat != 1 {
+				var16_match_pat = 2 /* wildcard */
+			}
+
+			if var16_match_pat != 1 {
+				var9_matches = 2
+			} else {
+				var9_matches = 1
+			}
+
+			_ = var8_subject
+
+			if var9_matches == 2 {
+				var17 := false
+				var7_result = var17
+			}
+		}
+
+		var18 := var7_result
+		var19 := borgo.Unit
+		_ = var19
+		var20 := var18
+		var21 := true
+		var22 := Debug_assert_eq
+		var23 := var22(var20, var21)
+		var1_block = var23
 	}
 	return var1_block
 }

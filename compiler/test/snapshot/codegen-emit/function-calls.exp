@@ -50,31 +50,40 @@ func borgo_main() any {
 		var2 := 1
 		var var3_result any
 		var4_subject := var2
+		var5_matches := 0
 
-		for var5_pattern := 0; var5_pattern < 2; var5_pattern++ {
+		if var5_matches != 2 {
+			var5_matches = 0
 
-			if var5_pattern == 0 {
-				var6 := 1
-				if !borgo.Ops.Eq(var6, var4_subject).(bool) {
-					continue
-				}
-				_ = var4_subject
+			var6 := 1
 
+			if var5_matches != 1 && borgo.Ops.Eq(var6, var4_subject).(bool) {
+				var5_matches = 2
+			} else {
+				var5_matches = 1
+			}
+			_ = var4_subject
+
+			if var5_matches == 2 {
 				var7 := true
 				var3_result = var7
-				break
 			}
+		}
 
-			if var5_pattern == 1 {
-				// wildcard
-				_ = var4_subject
+		if var5_matches != 2 {
+			var5_matches = 0
 
+			if var5_matches != 1 {
+				var5_matches = 2 /* wildcard */
+			}
+			_ = var4_subject
+
+			if var5_matches == 2 {
 				var8 := false
 				var3_result = var8
-				break
 			}
-
 		}
+
 		var9 := 5
 		var10 := bar
 		var11 := var10(var9)

@@ -51,80 +51,98 @@ func borgo_main() any {
 		var2 := Channel_new
 		var3 := var2()
 		var4 := var3
-		var5 := var4.(Tuple2).First
-		var6 := var4.(Tuple2).Second
-		var7 := borgo.Unit
-		_ = var7
-		var8 := Channel_new
-		var9 := var8()
-		var10 := var9
-		// wildcard
-		var11 := var10.(Tuple2).Second
-		var12 := borgo.Unit
-		_ = var12
-		var18 := func() any {
+		var5_match_pat := 0
+		var6 := var4.(Tuple2).First
+		var7 := var4.(Tuple2).Second
 
-			var var13_block any
-			{
-				var14 := var5
-				var15 := 5
-				var16 := Sender_send
-				var17 := var16(var14, var15)
-				var13_block = var17
-			}
-			return var13_block
+		if var5_match_pat != 1 {
+			_ = 2
+		} else {
+			_ = 1
 		}
 
-		var19 := var18
-		var20 := (var19)
-		go var20()
-		var21 := borgo.Unit
-		_ = var21
-		var22 := var6
-		var23 := Receiver_recv
-		var24 := var23(var22)
-		var25 := var24
-		var26 := borgo.Unit
-		_ = var26
-		var27 := var25
-		var28 := Option_unwrap
-		var29 := var28(var27)
-		var30 := 5
-		var31 := Debug_assert_eq
-		var32 := var31(var29, var30)
-		_ = var32
-		var33 := var5
-		var34 := foo
-		go var34(var33)
-		var35 := borgo.Unit
-		_ = var35
+		var8 := borgo.Unit
+		_ = var8
+		var9 := Channel_new
+		var10 := var9()
+		var11 := var10
+		var12_match_pat := 0
+		if var12_match_pat != 1 {
+			var12_match_pat = 2 /* wildcard */
+		}
+		var13 := var11.(Tuple2).Second
+
+		if var12_match_pat != 1 {
+			_ = 2
+		} else {
+			_ = 1
+		}
+
+		var14 := borgo.Unit
+		_ = var14
+		var20 := func() any {
+
+			var var15_block any
+			{
+				var16 := var6
+				var17 := 5
+				var18 := Sender_send
+				var19 := var18(var16, var17)
+				var15_block = var19
+			}
+			return var15_block
+		}
+
+		var21 := var20
+		var22 := (var21)
+		go var22()
+		var23 := borgo.Unit
+		_ = var23
+		var24 := var7
+		var25 := Receiver_recv
+		var26 := var25(var24)
+		var27 := var26
+		var28 := borgo.Unit
+		_ = var28
+		var29 := var27
+		var30 := Option_unwrap
+		var31 := var30(var29)
+		var32 := 5
+		var33 := Debug_assert_eq
+		var34 := var33(var31, var32)
+		_ = var34
+		var35 := var6
+		var36 := foo
+		go var36(var35)
+		var37 := borgo.Unit
+		_ = var37
 		select {
-		case var36_value, var37_more := <-var6.(chan any):
+		case var38_value, var39_more := <-var7.(chan any):
 			var val any
-			if var37_more {
-				val = make_Option_Some(var36_value)
+			if var39_more {
+				val = make_Option_Some(var38_value)
 			} else {
 				val = make_Option_None
 			}
-			var38 := val
-			var39 := Option_unwrap
-			var40 := var39(var38)
-			var41 := 3
-			var42 := Debug_assert_eq
-			var43 := var42(var40, var41)
-			_ = var43
-		case var44_value, var45_more := <-var11.(chan any):
+			var40 := val
+			var41 := Option_unwrap
+			var42 := var41(var40)
+			var43 := 3
+			var44 := Debug_assert_eq
+			var45 := var44(var42, var43)
+			_ = var45
+		case var46_value, var47_more := <-var13.(chan any):
 
-			if var45_more {
-				_ = make_Option_Some(var44_value)
+			if var47_more {
+				_ = make_Option_Some(var46_value)
 			} else {
 				_ = make_Option_None
 			}
-			var46 := Debug_unreachable()
-			_ = var46
+			var48 := Debug_unreachable()
+			_ = var48
 		}
-		var47 := borgo.Unit
-		var1_block = var47
+		var49 := borgo.Unit
+		var1_block = var49
 	}
 	return var1_block
 }

@@ -20,14 +20,24 @@ import borgo "borgo/runtime"
 var _ = borgo.Unit
 
 func foo(arg_0 any) any {
-	// wildcard
-	var1 := arg_0.(Tuple2).Second
-	var var2_block any
-	{
-		var3 := var1
-		var2_block = var3
+	var1_match_pat := 0
+	if var1_match_pat != 1 {
+		var1_match_pat = 2 /* wildcard */
 	}
-	return var2_block
+	var2 := arg_0.(Tuple2).Second
+
+	if var1_match_pat != 1 {
+		_ = 2
+	} else {
+		_ = 1
+	}
+
+	var var3_block any
+	{
+		var4 := var2
+		var3_block = var4
+	}
+	return var3_block
 }
 
 func borgo_main() any {

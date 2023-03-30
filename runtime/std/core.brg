@@ -158,10 +158,13 @@ impl<T> Seq<T> {
     }
 
     fn reduce<Y>(self, initial: Y, f: fn(acc: Y, item: T) -> Y) -> Y {
-        Loop::start((initial, self), |(acc, rest)| match rest {
-            Seq::Nil => Loop::Done(acc),
-            Seq::Cons(x, cont) => Loop::Recur((f(acc, x), cont())),
-        })
+        let mut ret = initial;
+
+        for x in self {
+            ret = f(ret, x)
+        }
+
+        return ret;
     }
 
     fn to_list(self) -> List<T> {
@@ -246,18 +249,26 @@ impl<T> Seq<T> {
     }
 
     fn split_at(self, n: Int) -> (Seq<T>, Seq<T>) {
-        Loop::start((self, Seq::Nil, n), |(remaining, first_part, count)| {
+        let mut count = n;
+        let mut first = [];
+        let mut remaining = self;
+
+        loop {
             if count <= 0 {
-                return Loop::Done((first_part, remaining));
+                break;
             }
 
             match remaining {
-                Seq::Nil => Loop::Done((first_part, Seq::Nil)),
-                Seq::Cons(x, next) => {
-                    Loop::Recur((next(), first_part.chain(Seq::once(x)), count - 1))
+                Seq::Nil => break,
+                Seq::Cons(x, cont) => {
+                    count = count - 1;
+                    first = first.push(x);
+                    remaining = cont();
                 }
             }
-        })
+        }
+
+        (first.seq(), remaining)
     }
 
     fn take(self, n: Int) -> Seq<T> {

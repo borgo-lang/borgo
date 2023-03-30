@@ -44,67 +44,110 @@ func borgo_main() any {
 		}(Tuple2{})
 		var var5_result any
 		var6_subject := var4
+		var7_matches := 0
 
-		for var7_pattern := 0; var7_pattern < 3; var7_pattern++ {
+		if var7_matches != 2 {
+			var7_matches = 0
 
-			if var7_pattern == 0 {
-				var8_pat, ok := var6_subject.(Tuple2).First.(Foo_Bar)
-				_ = var8_pat
-				if !ok {
-					continue
-				}
+			var8_match_pat := 0
+			var10_match_pat := 0
 
-				var9_pat, ok := var6_subject.(Tuple2).Second.(Foo_Bar)
-				_ = var9_pat
-				if !ok {
-					continue
-				}
+			var9_pat, constructor_check := var6_subject.(Tuple2).First.(Foo_Bar)
+			_ = var9_pat
 
-				_ = var6_subject
-
-				var10 := 0
-				var5_result = var10
-				break
+			if var10_match_pat != 1 && constructor_check {
+				var8_match_pat = 2
+			} else {
+				var8_match_pat = 1
 			}
 
-			if var7_pattern == 1 {
-				var11_pat, ok := var6_subject.(Tuple2).First.(Foo_Bar)
-				_ = var11_pat
-				if !ok {
-					continue
-				}
+			var12_match_pat := 0
 
-				var12_pat, ok := var6_subject.(Tuple2).Second.(Foo_Baz)
-				_ = var12_pat
-				if !ok {
-					continue
-				}
+			var11_pat, constructor_check := var6_subject.(Tuple2).Second.(Foo_Bar)
+			_ = var11_pat
 
-				_ = var6_subject
+			if var12_match_pat != 1 && constructor_check {
+				var8_match_pat = 2
+			} else {
+				var8_match_pat = 1
+			}
 
-				var13 := 2
+			if var8_match_pat != 1 {
+				var7_matches = 2
+			} else {
+				var7_matches = 1
+			}
+
+			_ = var6_subject
+
+			if var7_matches == 2 {
+				var13 := 0
 				var5_result = var13
-				break
 			}
-
-			if var7_pattern == 2 {
-				// wildcard
-				_ = var6_subject
-
-				var14 := Debug_unreachable()
-				var5_result = var14
-				break
-			}
-
 		}
-		var15 := var5_result
-		var16 := borgo.Unit
-		_ = var16
-		var17 := var15
-		var18 := 2
-		var19 := Debug_assert_eq
-		var20 := var19(var17, var18)
-		var1_block = var20
+
+		if var7_matches != 2 {
+			var7_matches = 0
+
+			var14_match_pat := 0
+			var16_match_pat := 0
+
+			var15_pat, constructor_check := var6_subject.(Tuple2).First.(Foo_Bar)
+			_ = var15_pat
+
+			if var16_match_pat != 1 && constructor_check {
+				var14_match_pat = 2
+			} else {
+				var14_match_pat = 1
+			}
+
+			var18_match_pat := 0
+
+			var17_pat, constructor_check := var6_subject.(Tuple2).Second.(Foo_Baz)
+			_ = var17_pat
+
+			if var18_match_pat != 1 && constructor_check {
+				var14_match_pat = 2
+			} else {
+				var14_match_pat = 1
+			}
+
+			if var14_match_pat != 1 {
+				var7_matches = 2
+			} else {
+				var7_matches = 1
+			}
+
+			_ = var6_subject
+
+			if var7_matches == 2 {
+				var19 := 2
+				var5_result = var19
+			}
+		}
+
+		if var7_matches != 2 {
+			var7_matches = 0
+
+			if var7_matches != 1 {
+				var7_matches = 2 /* wildcard */
+			}
+			_ = var6_subject
+
+			if var7_matches == 2 {
+				var20 := Debug_unreachable()
+				var5_result = var20
+			}
+		}
+
+		var21 := var5_result
+		var22 := borgo.Unit
+		_ = var22
+		var23 := var21
+		var24 := 2
+		var25 := Debug_assert_eq
+		var26 := var25(var23, var24)
+		var1_block = var26
 	}
 	return var1_block
 }

@@ -77,47 +77,63 @@ func with_foo(f any, m any) any {
 		var2 := f
 		var var3_result any
 		var4_subject := var2
+		var5_matches := 0
 
-		for var5_pattern := 0; var5_pattern < 1; var5_pattern++ {
+		if var5_matches != 2 {
+			var5_matches = 0
 
-			if var5_pattern == 0 {
-				var6_pat, ok := var4_subject.(Foo_X)
-				_ = var6_pat
-				if !ok {
-					continue
-				}
-				var7 := var6_pat.Field0
-				_ = var4_subject
+			var7_match_pat := 0
 
-				var8 := var7
-				var var9_result any
-				var10_subject := var8
+			var6_pat, constructor_check := var4_subject.(Foo_X)
+			_ = var6_pat
 
-				for var11_pattern := 0; var11_pattern < 1; var11_pattern++ {
+			var8 := var6_pat.Field0
 
-					if var11_pattern == 0 {
-						var12_pat, ok := var10_subject.(Bar_A)
-						_ = var12_pat
-						if !ok {
-							continue
-						}
-						var13 := var12_pat.Field0
-						_ = var10_subject
-
-						var14 := var13
-						var15 := m
-						var16 := borgo.Ops.IAdd
-						var17 := var16(var14, var15)
-						var9_result = var17
-						break
-					}
-
-				}
-				var3_result = var9_result
-				break
+			if var7_match_pat != 1 && constructor_check {
+				var5_matches = 2
+			} else {
+				var5_matches = 1
 			}
 
+			_ = var4_subject
+
+			if var5_matches == 2 {
+				var9 := var8
+				var var10_result any
+				var11_subject := var9
+				var12_matches := 0
+
+				if var12_matches != 2 {
+					var12_matches = 0
+
+					var14_match_pat := 0
+
+					var13_pat, constructor_check := var11_subject.(Bar_A)
+					_ = var13_pat
+
+					var15 := var13_pat.Field0
+
+					if var14_match_pat != 1 && constructor_check {
+						var12_matches = 2
+					} else {
+						var12_matches = 1
+					}
+
+					_ = var11_subject
+
+					if var12_matches == 2 {
+						var16 := var15
+						var17 := m
+						var18 := borgo.Ops.IAdd
+						var19 := var18(var16, var17)
+						var10_result = var19
+					}
+				}
+
+				var3_result = var10_result
+			}
 		}
+
 		var1_block = var3_result
 	}
 	return var1_block

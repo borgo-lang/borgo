@@ -71,16 +71,21 @@ func borgo_main() any {
 		var19 := true
 		var var20_result any
 		var21_subject := var19
+		var22_matches := 0
 
-		for var22_pattern := 0; var22_pattern < 2; var22_pattern++ {
+		if var22_matches != 2 {
+			var22_matches = 0
 
-			if var22_pattern == 0 {
-				var23 := true
-				if !borgo.Ops.Eq(var23, var21_subject).(bool) {
-					continue
-				}
-				_ = var21_subject
+			var23 := true
 
+			if var22_matches != 1 && borgo.Ops.Eq(var23, var21_subject).(bool) {
+				var22_matches = 2
+			} else {
+				var22_matches = 1
+			}
+			_ = var21_subject
+
+			if var22_matches == 2 {
 				var var24_block any
 				{
 					var25 := 25
@@ -89,22 +94,27 @@ func borgo_main() any {
 					var24_block = var26
 				}
 				var20_result = var24_block
-				break
 			}
+		}
 
-			if var22_pattern == 1 {
-				var27 := false
-				if !borgo.Ops.Eq(var27, var21_subject).(bool) {
-					continue
-				}
-				_ = var21_subject
+		if var22_matches != 2 {
+			var22_matches = 0
 
+			var27 := false
+
+			if var22_matches != 1 && borgo.Ops.Eq(var27, var21_subject).(bool) {
+				var22_matches = 2
+			} else {
+				var22_matches = 1
+			}
+			_ = var21_subject
+
+			if var22_matches == 2 {
 				var28 := borgo.Unit
 				var20_result = var28
-				break
 			}
-
 		}
+
 		_ = var20_result
 		for {
 			var var29_block any
