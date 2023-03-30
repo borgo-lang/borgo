@@ -1279,12 +1279,6 @@ has no method:
                     ..binding
                 };
 
-                let expr_ty = self.fresh_ty_var();
-                let body_ty = self.fresh_ty_var();
-
-                let new_expr = self.infer_expr(*expr, &expr_ty);
-                let new_body = self.infer_expr(*body, &body_ty);
-
                 // for $binding in $expr { $body }
                 // $expr should be of type Seq<$binding>
                 let seq_ty = Type::Con {
@@ -1292,7 +1286,14 @@ has no method:
                     args: vec![binding_ty.clone()],
                 };
 
+                let expr_ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &expr_ty);
                 self.add_constraint(&seq_ty, &expr_ty, &new_expr.get_span());
+
+                // Inference for body must run after constraining the binding, otherwise there will
+                // be a loose type variable that won't unify.
+                let body_ty = self.fresh_ty_var();
+                let new_body = self.infer_expr(*body, &body_ty);
 
                 let new_kind = match kind {
                     Loop::NoCondition => Loop::NoCondition,

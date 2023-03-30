@@ -6,7 +6,7 @@ Process files and emit Go code
 
 Standalone expressions
 
-```rust-only
+```rust
 fn borgo_main() {
   4.inspect();
   ()

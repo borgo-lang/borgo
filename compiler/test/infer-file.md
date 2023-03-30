@@ -401,7 +401,7 @@ Inference in loops
 
 > infer("fn () -> ()")
 
-```rust-only
+```rust
 fn borgo_main() {
     let rows = "yo"
       .split("\n")
