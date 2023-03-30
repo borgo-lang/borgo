@@ -1025,6 +1025,15 @@ fn borgo_main() {
 Mutating vars
 
 ```rust
+fn foo(mut a: Int) -> Int {
+  loop {
+    if a > 5 { break; }
+    a = a + 1;
+  }
+
+  a
+}
+
 fn borgo_main() {
   let mut x = 1;
   x = x + 3;
@@ -1034,6 +1043,8 @@ fn borgo_main() {
     let x = 5;
     x.assert_eq(5);
   }
+
+  foo(0).assert_eq(6);
 
   // TODO this doesn't type check :/
   // x = x + 6;

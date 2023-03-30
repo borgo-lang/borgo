@@ -1,6 +1,15 @@
 Mutating vars
 
 SOURCE:
+fn foo(mut a: Int) -> Int {
+  loop {
+    if a > 5 { break; }
+    a = a + 1;
+  }
+
+  a
+}
+
 fn borgo_main() {
   let mut x = 1;
   x = x + 3;
@@ -10,6 +19,8 @@ fn borgo_main() {
     let x = 5;
     x.assert_eq(5);
   }
+
+  foo(0).assert_eq(6);
 
   // TODO this doesn't type check :/
   // x = x + 6;
@@ -24,6 +35,51 @@ package main
 import borgo "borgo/runtime"
 
 var _ = borgo.Unit
+
+func foo(a any) any {
+
+	var var1_block any
+	{
+		for {
+			var var2_block any
+			{
+				var4 := a
+				var5 := 5
+				var6 := borgo.Ops.IGt
+				var7 := var6(var4, var5)
+				var var3_result any
+
+				if borgo.Ops.Eq(var7, true).(bool) {
+					var var8_block any
+					{
+						break
+						var9 := borgo.Unit
+						var8_block = var9
+					}
+					var3_result = var8_block
+				} else {
+					var10 := borgo.Unit
+					var3_result = var10
+				}
+				var11 := var3_result
+				_ = var11
+				var12 := a
+				var13 := 1
+				var14 := borgo.Ops.IAdd
+				var15 := var14(var12, var13)
+				a = var15
+				var16 := borgo.Unit
+				var2_block = var16
+			}
+			_ = var2_block
+		}
+		var17 := borgo.Unit
+		_ = var17
+		var18 := a
+		var1_block = var18
+	}
+	return var1_block
+}
 
 func borgo_main() any {
 
@@ -57,11 +113,19 @@ func borgo_main() any {
 			var21 := var20(var18, var19)
 			var14_block = var21
 		}
-		var1_block = var14_block
+		_ = var14_block
+		var22 := 0
+		var23 := foo
+		var24 := var23(var22)
+		var25 := 6
+		var26 := Debug_assert_eq
+		var27 := var26(var24, var25)
+		var1_block = var27
 	}
 	return var1_block
 }
 
 func pkg_user_init() {
+	borgo.RegisterGlobalFunction("foo", foo)
 	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
 }
