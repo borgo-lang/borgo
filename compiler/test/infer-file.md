@@ -384,3 +384,15 @@ fn borgo_main() {
   }
 }
 ```
+
+Loops with no condition
+
+> infer("fn () -> ()")
+
+```rust
+fn borgo_main() {
+  loop {
+    break;
+  }
+}
+```

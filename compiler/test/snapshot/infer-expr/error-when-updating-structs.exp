@@ -9,7 +9,7 @@ SOURCE:
 }
 
 OUTPUT:
-TODO updating struct fields should be supported.
+Can't update struct fields, re-assign instead. x =Foo { field = new_value, ..x } 
 
 5|    x.a = "foo"
       ^^^^^^^^^^^

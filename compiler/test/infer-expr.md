@@ -750,7 +750,7 @@ Error when reassign to wrong type.
 
 Error when updating structs.
 
-> errorContains("TODO updating struct fields")
+> errorContains("re-assign instead")
 
 ```rust
 {
@@ -1616,18 +1616,5 @@ Only mutable variables can be mutated
 {
   let y = 0;
   y = 3;
-}
-```
-
-Loops with no condition
-
-> infer("Int")
-
-```rust
-{
-  loop {
-    break;
-  }
-  1
 }
 ```

@@ -1,0 +1,147 @@
+Loops with no condition
+
+SOURCE:
+fn borgo_main() {
+  loop {
+    break;
+  }
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "borgo_main",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Loop": {
+                        "kind": "NoCondition",
+                        "body": {
+                          "Block": {
+                            "stmts": [
+                              {
+                                "Flow": {
+                                  "kind": "Break",
+                                  "span": {
+                                    "start": {
+                                      "line": 3,
+                                      "col": 4
+                                    },
+                                    "end": {
+                                      "line": 3,
+                                      "col": 9
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "ty": {
+                              "Var": 99
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 7
+                              },
+                              "end": {
+                                "line": 4,
+                                "col": 3
+                              }
+                            }
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 2,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 4,
+                            "col": 3
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Unit",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 1,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 5,
+                      "col": 1
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "fx": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 5,
+                "col": 1
+              }
+            }
+          }
+        }
+      ],
+      "source": "fn borgo_main() {\n  loop {\n    break;\n  }\n}"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}

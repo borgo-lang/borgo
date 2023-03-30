@@ -815,7 +815,7 @@ impl Infer {
                     Expr::StructAccess { .. } => {
                         // expr should be a Var, no other update is allowed
                         self.generic_error(
-                            "TODO updating struct fields should be supported.".to_string(),
+                            "Can't update struct fields, re-assign instead. x =Foo { field = new_value, ..x } ".to_string(),
                             span.clone(),
                         );
 
