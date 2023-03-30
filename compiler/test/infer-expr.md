@@ -1618,3 +1618,16 @@ Only mutable variables can be mutated
   y = 3;
 }
 ```
+
+Loops with no condition
+
+> infer("Int")
+
+```rust
+{
+  loop {
+    break;
+  }
+  1
+}
+```

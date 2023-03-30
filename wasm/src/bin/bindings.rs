@@ -20,6 +20,7 @@ fn main() {
     tracer.trace_simple_type::<ast::Pat>().unwrap();
     tracer.trace_simple_type::<ast::Expr>().unwrap();
     tracer.trace_simple_type::<ast::File>().unwrap();
+    tracer.trace_simple_type::<ast::Loop>().unwrap();
     tracer.trace_simple_type::<ast::LoopFlow>().unwrap();
 
     tracer.trace_simple_type::<type_::Type>().unwrap();

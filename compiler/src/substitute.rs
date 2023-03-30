@@ -1,4 +1,4 @@
-use crate::ast::{Arm, Binding, Expr, Function, Literal, Pat, StructField, StructFieldPat};
+use crate::ast::{Arm, Binding, Expr, Function, Literal, Loop, Pat, StructField, StructFieldPat};
 use crate::infer;
 
 pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
@@ -329,17 +329,21 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
-        Expr::Loop {
-            binding,
-            expr,
-            body,
-            span,
-        } => Expr::Loop {
-            binding: substitute_binding(&binding, instance),
-            expr: substitute_expr(*expr, instance).into(),
-            body: substitute_expr(*body, instance).into(),
-            span,
-        },
+        Expr::Loop { kind, body, span } => {
+            let new_kind = match kind {
+                Loop::NoCondition => kind,
+                Loop::WithCondition { binding, expr } => Loop::WithCondition {
+                    binding: substitute_binding(&binding, instance),
+                    expr: substitute_expr(*expr, instance).into(),
+                },
+            };
+
+            Expr::Loop {
+                kind: new_kind,
+                body: substitute_expr(*body, instance).into(),
+                span,
+            }
+        }
 
         Expr::Flow { kind, span } => Expr::Flow { kind, span },
         Expr::Unit { span } => Expr::Unit { span },

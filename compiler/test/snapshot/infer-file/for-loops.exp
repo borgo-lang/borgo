@@ -41,56 +41,131 @@ No errors.
                   "stmts": [
                     {
                       "Loop": {
-                        "binding": {
-                          "pat": {
-                            "Type": {
-                              "ident": "x",
-                              "ann": "Unknown",
-                              "span": {
-                                "start": {
-                                  "line": 2,
-                                  "col": 6
-                                },
-                                "end": {
-                                  "line": 2,
-                                  "col": 7
-                                }
-                              }
-                            }
-                          },
-                          "ann": "Unknown",
-                          "ty": {
-                            "Con": {
-                              "name": "Int",
-                              "args": []
-                            }
-                          }
-                        },
-                        "expr": {
-                          "Call": {
-                            "func": {
-                              "Var": {
-                                "value": "List::seq",
-                                "decl": {
-                                  "file_id": {
-                                    "package": "std",
-                                    "filename": "core.brg"
-                                  },
+                        "kind": {
+                          "WithCondition": {
+                            "binding": {
+                              "pat": {
+                                "Type": {
+                                  "ident": "x",
+                                  "ann": "Unknown",
                                   "span": {
                                     "start": {
-                                      "line": 83,
-                                      "col": 4
+                                      "line": 2,
+                                      "col": 6
                                     },
                                     "end": {
-                                      "line": 83,
-                                      "col": 37
+                                      "line": 2,
+                                      "col": 7
+                                    }
+                                  }
+                                }
+                              },
+                              "ann": "Unknown",
+                              "ty": {
+                                "Con": {
+                                  "name": "Int",
+                                  "args": []
+                                }
+                              }
+                            },
+                            "expr": {
+                              "Call": {
+                                "func": {
+                                  "Var": {
+                                    "value": "List::seq",
+                                    "decl": {
+                                      "file_id": {
+                                        "package": "std",
+                                        "filename": "core.brg"
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 83,
+                                          "col": 4
+                                        },
+                                        "end": {
+                                          "line": 83,
+                                          "col": 37
+                                        }
+                                      }
+                                    },
+                                    "ty": {
+                                      "Fun": {
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "List",
+                                              "args": [
+                                                {
+                                                  "Con": {
+                                                    "name": "Int",
+                                                    "args": []
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ],
+                                        "bounds": [],
+                                        "ret": {
+                                          "Con": {
+                                            "name": "Seq",
+                                            "args": [
+                                              {
+                                                "Con": {
+                                                  "name": "Int",
+                                                  "args": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "fx": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 2,
+                                        "col": 15
+                                      },
+                                      "end": {
+                                        "line": 2,
+                                        "col": 18
+                                      }
                                     }
                                   }
                                 },
-                                "ty": {
-                                  "Fun": {
-                                    "args": [
-                                      {
+                                "args": [
+                                  {
+                                    "Literal": {
+                                      "lit": {
+                                        "List": [
+                                          {
+                                            "Literal": {
+                                              "lit": {
+                                                "Int": 1
+                                              },
+                                              "ty": {
+                                                "Con": {
+                                                  "name": "Int",
+                                                  "args": []
+                                                }
+                                              },
+                                              "span": {
+                                                "start": {
+                                                  "line": 2,
+                                                  "col": 12
+                                                },
+                                                "end": {
+                                                  "line": 2,
+                                                  "col": 13
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "ty": {
                                         "Con": {
                                           "name": "List",
                                           "args": [
@@ -102,23 +177,31 @@ No errors.
                                             }
                                           ]
                                         }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 2,
+                                          "col": 15
+                                        },
+                                        "end": {
+                                          "line": 2,
+                                          "col": 18
+                                        }
                                       }
-                                    ],
-                                    "bounds": [],
-                                    "ret": {
-                                      "Con": {
-                                        "name": "Seq",
-                                        "args": [
-                                          {
-                                            "Con": {
-                                              "name": "Int",
-                                              "args": []
-                                            }
-                                          }
-                                        ]
+                                    }
+                                  }
+                                ],
+                                "ty": {
+                                  "Con": {
+                                    "name": "Seq",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "Int",
+                                          "args": []
+                                        }
                                       }
-                                    },
-                                    "fx": []
+                                    ]
                                   }
                                 },
                                 "span": {
@@ -131,85 +214,6 @@ No errors.
                                     "col": 18
                                   }
                                 }
-                              }
-                            },
-                            "args": [
-                              {
-                                "Literal": {
-                                  "lit": {
-                                    "List": [
-                                      {
-                                        "Literal": {
-                                          "lit": {
-                                            "Int": 1
-                                          },
-                                          "ty": {
-                                            "Con": {
-                                              "name": "Int",
-                                              "args": []
-                                            }
-                                          },
-                                          "span": {
-                                            "start": {
-                                              "line": 2,
-                                              "col": 12
-                                            },
-                                            "end": {
-                                              "line": 2,
-                                              "col": 13
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  "ty": {
-                                    "Con": {
-                                      "name": "List",
-                                      "args": [
-                                        {
-                                          "Con": {
-                                            "name": "Int",
-                                            "args": []
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "span": {
-                                    "start": {
-                                      "line": 2,
-                                      "col": 15
-                                    },
-                                    "end": {
-                                      "line": 2,
-                                      "col": 18
-                                    }
-                                  }
-                                }
-                              }
-                            ],
-                            "ty": {
-                              "Con": {
-                                "name": "Seq",
-                                "args": [
-                                  {
-                                    "Con": {
-                                      "name": "Int",
-                                      "args": []
-                                    }
-                                  }
-                                ]
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 2,
-                                "col": 15
-                              },
-                              "end": {
-                                "line": 2,
-                                "col": 18
                               }
                             }
                           }

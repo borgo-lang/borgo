@@ -5,12 +5,22 @@ fn borgo_main() {
   for x in [1, 2, 3].seq() {
     x.inspect();
   }
+
+  let mut n = 20;
+  loop {
+    if n > 22 { break; }
+    n.inspect();
+    n = n + 1;
+  }
 }
 
 OUTPUT:
 1
 2
 3
+20
+21
+22
 
 ---
 package main
@@ -47,7 +57,49 @@ func borgo_main() any {
 			_ = var12_block
 		}
 		var15 := borgo.Unit
-		var1_block = var15
+		_ = var15
+		var16 := 20
+		var var17 any = var16
+		var18 := borgo.Unit
+		_ = var18
+		for {
+			var var19_block any
+			{
+				var21 := var17
+				var22 := 22
+				var23 := borgo.Ops.IGt
+				var24 := var23(var21, var22)
+				var var20_result any
+
+				if borgo.Ops.Eq(var24, true).(bool) {
+					var var25_block any
+					{
+						break
+						var26 := borgo.Unit
+						var25_block = var26
+					}
+					var20_result = var25_block
+				} else {
+					var27 := borgo.Unit
+					var20_result = var27
+				}
+				var28 := var20_result
+				_ = var28
+				var29 := var17
+				var30 := Debug_inspect(var29)
+				_ = var30
+				var31 := var17
+				var32 := 1
+				var33 := borgo.Ops.IAdd
+				var34 := var33(var31, var32)
+				var17 = var34
+				var35 := borgo.Unit
+				var19_block = var35
+			}
+			_ = var19_block
+		}
+		var36 := borgo.Unit
+		var1_block = var36
 	}
 	return var1_block
 }

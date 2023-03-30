@@ -1,0 +1,111 @@
+Loops with no condition
+
+SOURCE:
+{
+  loop {
+    break;
+  }
+  1
+}
+
+OUTPUT:
+Int
+---
+No errors.
+---
+[]
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Loop": {
+          "kind": "NoCondition",
+          "body": {
+            "Block": {
+              "stmts": [
+                {
+                  "Flow": {
+                    "kind": "Break",
+                    "span": {
+                      "start": {
+                        "line": 3,
+                        "col": 4
+                      },
+                      "end": {
+                        "line": 3,
+                        "col": 9
+                      }
+                    }
+                  }
+                }
+              ],
+              "ty": {
+                "Var": 99
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 7
+                },
+                "end": {
+                  "line": 4,
+                  "col": 3
+                }
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 3
+            }
+          }
+        }
+      },
+      {
+        "Literal": {
+          "lit": {
+            "Int": 1
+          },
+          "ty": {
+            "Con": {
+              "name": "Int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 5,
+              "col": 2
+            },
+            "end": {
+              "line": 5,
+              "col": 3
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 6,
+        "col": 1
+      }
+    }
+  }
+}

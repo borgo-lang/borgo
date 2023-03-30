@@ -223,6 +223,76 @@ func (eval *Eval) lookupOverload(name string) (func(...any) any, bool) {
 	return nil, false
 }
 
+func (eval *Eval) RunLoopNoCondition(body Expr) any {
+	scope := eval.beginScope()
+
+	kk := 0
+	for {
+		if kk > 10 {
+			break
+		}
+		kk = kk + 1
+
+		value := scope.Run(body)
+
+		if v, ok := value.(LoopControlFlow); ok {
+			if _, ok := v.kind.(*LoopFlow__Break); ok {
+				break
+			}
+
+			if _, ok := v.kind.(*LoopFlow__Continue); ok {
+				continue
+			}
+
+		}
+
+		if isReturn(value) {
+			return value
+		}
+	}
+
+	return make_Unit
+}
+
+func (eval *Eval) RunLoopWithCondition(binding Binding, expr Expr, body Expr) any {
+	current_loop := eval.Run(expr)
+	scope := eval.beginScope()
+
+	for !ValuesIsOfType(current_loop, "Seq::Nil") {
+		loop_var := GetArg(current_loop, 0)
+		scope.putPatternInScope(binding.Pat, loop_var)
+
+		value := scope.Run(body)
+
+		next := func() {
+			current_loop = Call(GetArg(current_loop, 1), []any{})
+		}
+
+		if v, ok := value.(LoopControlFlow); ok {
+			if _, ok := v.kind.(*LoopFlow__Break); ok {
+				break
+			}
+
+			if _, ok := v.kind.(*LoopFlow__Continue); ok {
+				next()
+				continue
+			}
+
+		}
+
+		// The check for `return` statements must happen
+		// after checking for control flow in loops,
+		// otherwise we'd bubble up break/continue
+		if isReturn(value) {
+			return value
+		}
+
+		next()
+	}
+
+	return make_Unit
+}
+
 type ToLiteralValue interface {
 	LiteralValue(eval *Eval) any
 }
@@ -743,40 +813,14 @@ func (eval *Eval) Run(expr Expr) any {
 		return nil
 
 	case *Expr__Loop:
-		current_loop := eval.Run(expr.Expr)
+		switch kind := expr.Kind.(type) {
+		// loop {}
+		case *Loop__NoCondition:
+			eval.RunLoopNoCondition(expr.Body)
 
-		scope := eval.beginScope()
-
-		for !ValuesIsOfType(current_loop, "Seq::Nil") {
-			loop_var := GetArg(current_loop, 0)
-			scope.putPatternInScope(expr.Binding.Pat, loop_var)
-
-			value := scope.Run(expr.Body)
-
-			next := func() {
-				current_loop = Call(GetArg(current_loop, 1), []any{})
-			}
-
-			if v, ok := value.(LoopControlFlow); ok {
-				if _, ok := v.kind.(*LoopFlow__Break); ok {
-					break
-				}
-
-				if _, ok := v.kind.(*LoopFlow__Continue); ok {
-					next()
-					continue
-				}
-
-			}
-
-			// The check for `return` statements must happen
-			// after checking for control flow in loops,
-			// otherwise we'd bubble up break/continue
-			if isReturn(value) {
-				return value
-			}
-
-			next()
+			// for x in y {}
+		case *Loop__WithCondition:
+			eval.RunLoopWithCondition(kind.Binding, kind.Expr, expr.Body)
 		}
 
 		return make_Unit

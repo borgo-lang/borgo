@@ -3201,10 +3201,9 @@ func load_Expr__Select(deserializer serde.Deserializer) (Expr__Select, error) {
 }
 
 type Expr__Loop struct {
-	Binding Binding
-	Expr    Expr
-	Body    Expr
-	Span    Span
+	Kind Loop
+	Body Expr
+	Span Span
 }
 
 func (*Expr__Loop) isExpr() {}
@@ -3214,10 +3213,7 @@ func (obj *Expr__Loop) Serialize(serializer serde.Serializer) error {
 		return err
 	}
 	serializer.SerializeVariantIndex(27)
-	if err := obj.Binding.Serialize(serializer); err != nil {
-		return err
-	}
-	if err := obj.Expr.Serialize(serializer); err != nil {
+	if err := obj.Kind.Serialize(serializer); err != nil {
 		return err
 	}
 	if err := obj.Body.Serialize(serializer); err != nil {
@@ -3246,13 +3242,8 @@ func load_Expr__Loop(deserializer serde.Deserializer) (Expr__Loop, error) {
 	if err := deserializer.IncreaseContainerDepth(); err != nil {
 		return obj, err
 	}
-	if val, err := DeserializeBinding(deserializer); err == nil {
-		obj.Binding = val
-	} else {
-		return obj, err
-	}
-	if val, err := DeserializeExpr(deserializer); err == nil {
-		obj.Expr = val
+	if val, err := DeserializeLoop(deserializer); err == nil {
+		obj.Kind = val
 	} else {
 		return obj, err
 	}
@@ -4360,6 +4351,137 @@ func load_Literal__List(deserializer serde.Deserializer) (Literal__List, error) 
 	}
 	deserializer.DecreaseContainerDepth()
 	return (Literal__List)(obj), nil
+}
+
+type Loop interface {
+	isLoop()
+	Serialize(serializer serde.Serializer) error
+	BincodeSerialize() ([]byte, error)
+}
+
+func DeserializeLoop(deserializer serde.Deserializer) (Loop, error) {
+	index, err := deserializer.DeserializeVariantIndex()
+	if err != nil {
+		return nil, err
+	}
+
+	switch index {
+	case 0:
+		if val, err := load_Loop__NoCondition(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 1:
+		if val, err := load_Loop__WithCondition(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	default:
+		return nil, fmt.Errorf("Unknown variant index for Loop: %d", index)
+	}
+}
+
+func BincodeDeserializeLoop(input []byte) (Loop, error) {
+	if input == nil {
+		var obj Loop
+		return obj, fmt.Errorf("Cannot deserialize null array")
+	}
+	deserializer := bincode.NewDeserializer(input)
+	obj, err := DeserializeLoop(deserializer)
+	if err == nil && deserializer.GetBufferOffset() < uint64(len(input)) {
+		return obj, fmt.Errorf("Some input bytes were not read")
+	}
+	return obj, err
+}
+
+type Loop__NoCondition struct {
+}
+
+func (*Loop__NoCondition) isLoop() {}
+
+func (obj *Loop__NoCondition) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(0)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *Loop__NoCondition) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_Loop__NoCondition(deserializer serde.Deserializer) (Loop__NoCondition, error) {
+	var obj Loop__NoCondition
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type Loop__WithCondition struct {
+	Binding Binding
+	Expr    Expr
+}
+
+func (*Loop__WithCondition) isLoop() {}
+
+func (obj *Loop__WithCondition) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(1)
+	if err := obj.Binding.Serialize(serializer); err != nil {
+		return err
+	}
+	if err := obj.Expr.Serialize(serializer); err != nil {
+		return err
+	}
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *Loop__WithCondition) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_Loop__WithCondition(deserializer serde.Deserializer) (Loop__WithCondition, error) {
+	var obj Loop__WithCondition
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	if val, err := DeserializeBinding(deserializer); err == nil {
+		obj.Binding = val
+	} else {
+		return obj, err
+	}
+	if val, err := DeserializeExpr(deserializer); err == nil {
+		obj.Expr = val
+	} else {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
 }
 
 type LoopFlow interface {

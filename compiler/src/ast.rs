@@ -407,6 +407,12 @@ pub enum LoopFlow {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum Loop {
+    NoCondition,
+    WithCondition { binding: Binding, expr: Box<Expr> },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Span {
     pub start: LineColumn,
     pub end: LineColumn,
@@ -650,8 +656,7 @@ pub enum Expr {
         span: Span,
     },
     Loop {
-        binding: Binding,
-        expr: Box<Expr>,
+        kind: Loop,
         body: Box<Expr>,
         span: Span,
     },
@@ -1117,8 +1122,20 @@ impl Expr {
                 let body = Self::from_block(f.body)?;
 
                 Ok(Self::Loop {
-                    binding,
-                    expr: Box::new(expr),
+                    kind: Loop::WithCondition {
+                        binding,
+                        expr: Box::new(expr),
+                    },
+                    body: Box::new(body),
+                    span: root_span,
+                })
+            }
+
+            syn::Expr::Loop(l) => {
+                let body = Self::from_block(l.body)?;
+
+                Ok(Self::Loop {
+                    kind: Loop::NoCondition,
                     body: Box::new(body),
                     span: root_span,
                 })

@@ -1,6 +1,6 @@
 use crate::ast::{
     Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, ExternKind, File,
-    Function, FunctionKind, Literal, Operator, Pat, Span, StructDefinition, StructField,
+    Function, FunctionKind, Literal, Loop, Operator, Pat, Span, StructDefinition, StructField,
     StructFieldDef, StructFieldPat, TypeAst, UnOp,
 };
 use crate::error::{ArityError, Error, UnificationError};
@@ -1254,11 +1254,32 @@ has no method:
             }
 
             Expr::Loop {
-                binding,
-                expr,
+                ref kind,
                 body,
                 span,
             } => {
+                let (binding, expr) = match kind {
+                    Loop::WithCondition { binding, expr } => (binding.clone(), expr.clone()),
+
+                    // Create fake _ = Seq::Nil as loop condition
+                    Loop::NoCondition => (
+                        Binding {
+                            pat: Pat::Wild {
+                                span: Span::dummy(),
+                            },
+                            ty: Type::dummy(),
+                            ann: TypeAst::Unknown,
+                        },
+                        Expr::Var {
+                            value: "Seq::Nil".to_string(),
+                            ty: Type::dummy(),
+                            decl: Declaration::dummy(),
+                            span: Span::dummy(),
+                        }
+                        .into(),
+                    ),
+                };
+
                 let binding_ty = self.to_type(&binding.ann, &span);
 
                 let new_binding = Binding {
@@ -1282,9 +1303,16 @@ has no method:
 
                 self.add_constraint(&seq_ty, &expr_ty, &new_expr.get_span());
 
+                let new_kind = match kind {
+                    Loop::NoCondition => Loop::NoCondition,
+                    Loop::WithCondition { .. } => Loop::WithCondition {
+                        binding: new_binding,
+                        expr: new_expr.into(),
+                    },
+                };
+
                 Expr::Loop {
-                    binding: new_binding,
-                    expr: new_expr.into(),
+                    kind: new_kind,
                     body: new_body.into(),
                     span,
                 }
