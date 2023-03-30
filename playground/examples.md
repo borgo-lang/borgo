@@ -401,13 +401,17 @@ fn parse_stacks(s: String) -> Map<Int, List<Char>> {
     .reverse()
     .reduce(Map::new(), |m, row| {
         row.enumerate().reduce(m, |acc, (index, c)| {
-            acc.update(index + 1, [], |stack| {
-                if c != ' ' {
-                    stack.push(c)
-                } else {
-                    stack
-                }
-            })
+            acc.update(
+                index + 1,
+                [],
+                |stack| {
+                    if c != ' ' {
+                        stack.push(c)
+                    } else {
+                        stack
+                    }
+                },
+            )
         })
     })
 }
@@ -429,21 +433,26 @@ fn parse_commands(s: String) -> Seq<Cmd> {
 
 fn run_commands(stacks: Map<Int, List<Char>>, cmds: Seq<Cmd>) -> Map<Int, List<Char>> {
     cmds.reduce(stacks, |acc, cmd| {
-        Loop::start((acc, cmd.count), |(new_stacks, remaining)| {
+        let mut remaining = cmd.count;
+        let mut new_stacks = acc;
+
+        loop {
             if remaining == 0 {
-                return Loop::Done(new_stacks);
+                break;
             }
 
             let from = new_stacks.get(cmd.from).unwrap();
             let to = new_stacks.get(cmd.to).unwrap();
             let item = from.seq().last().unwrap();
 
-            let new_stacks = new_stacks
+            new_stacks = new_stacks
                 .insert(cmd.from, from.pop())
                 .insert(cmd.to, to.push(item));
 
-            Loop::Recur((new_stacks, remaining - 1))
-        })
+            remaining = remaining - 1;
+        }
+
+        return new_stacks;
     })
 }
 

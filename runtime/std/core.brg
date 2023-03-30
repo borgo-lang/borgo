@@ -124,15 +124,6 @@ extern "native/Debug" {
     fn assert_eq<T>(a: T, b: T);
 }
 
-enum Loop<State, Return> {
-    Done(Return),
-    Recur(State),
-}
-
-extern "native/Loop" {
-    fn start<State, Return>(initial: State, f: fn(state: State) -> Loop<State, Return>) -> Return;
-}
-
 enum Seq<T> {
     Nil,
     Cons(T, fn() -> Seq<T>),
@@ -276,35 +267,20 @@ impl<T> Seq<T> {
     }
 
     fn drop(self, n: Int) -> Seq<T> {
-        // Just call split_at ?
-        // self.split_at(n).1;
-
-        Loop::start((self, n), |(seq, remaining)| {
-            if remaining <= 0 {
-                return Loop::Done(seq);
-            }
-
-            match seq {
-                Seq::Nil => Loop::Done(Seq::Nil),
-                Seq::Cons(_, cont) => Loop::Recur((cont(), remaining - 1)),
-            }
-        })
+        self.split_at(n).1
     }
 
     fn find_map<Y>(self, f: fn(x: T) -> Option<Y>) -> Option<Y> {
-        Loop::start(self, |seq| match seq {
-            Seq::Nil => Loop::Done(None),
+        let mut ret = None;
 
-            Seq::Cons(x, cont) => {
-                let result = f(x);
-
-                if result.is_some() {
-                    return Loop::Done(result);
-                }
-
-                Loop::Recur(cont())
+        for x in self {
+            ret = f(x);
+            if ret.is_some() {
+                break;
             }
-        })
+        }
+
+        return ret;
     }
 
     fn once(x: T) -> Seq<T> {

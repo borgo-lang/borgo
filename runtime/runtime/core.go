@@ -865,30 +865,6 @@ func InitCore() {
 
 	// ----
 
-	RegisterGlobalFunction("Loop::start", func(initial any, f_ any) any {
-		current := initial
-
-		for {
-			next := Call(f_, []any{current})
-
-			if ValuesIsOfType(next, "Loop::Done") {
-				return GetArg(next, 0)
-			}
-
-			if ValuesIsOfType(next, "Loop::Recur") {
-				current = GetArg(next, 0)
-				continue
-			}
-
-			borgo.debug_output_fn("LOOP FAILED!")
-			borgo.debug_output_fn("--------------")
-			panic("broken")
-		}
-
-	})
-
-	// ----
-
 	RegisterEffectFunction("channel_new", func() any {
 		return make(chan any)
 	})
