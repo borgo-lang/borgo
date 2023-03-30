@@ -3,6 +3,7 @@ package borgo
 import (
 	"borgo/immutable"
 	"errors"
+	"log"
 	"strings"
 
 	"io"
@@ -750,13 +751,13 @@ func (eval *Eval) Run(expr Expr) any {
 			loop_var := GetArg(current_loop, 0)
 			scope.putPatternInScope(expr.Binding.Pat, loop_var)
 
-			return_value := scope.Run(expr.Body)
+			value := scope.Run(expr.Body)
 
 			next := func() {
 				current_loop = Call(GetArg(current_loop, 1), []any{})
 			}
 
-			if v, ok := return_value.(LoopControlFlow); ok {
+			if v, ok := value.(LoopControlFlow); ok {
 				if _, ok := v.kind.(*LoopFlow__Break); ok {
 					break
 				}
@@ -768,6 +769,13 @@ func (eval *Eval) Run(expr Expr) any {
 
 			}
 
+			// The check for `return` statements must happen
+			// after checking for control flow in loops,
+			// otherwise we'd bubble up break/continue
+			if isReturn(value) {
+				return value
+			}
+
 			next()
 		}
 
@@ -775,6 +783,23 @@ func (eval *Eval) Run(expr Expr) any {
 
 	case *Expr__Flow:
 		return LoopControlFlow{kind: expr.Kind}
+
+	case *Expr__VarUpdate:
+		value := eval.Run(expr.Value)
+		if isReturn(value) {
+			return value
+		}
+
+		v, ok := expr.Target.(*Expr__Var)
+
+		// only handles a = b
+		// TODO needs updating for struct access a.b = c
+		if !ok {
+			log.Fatalf("varupdate unhandled target %v", expr.Target)
+		}
+
+		eval.setVariable(v.Value, value)
+		return make_Unit
 
 	case *Expr__Noop:
 		return make_Unit

@@ -1011,7 +1011,7 @@ fn borgo_main() {
 
 Mutating vars
 
-```rust-only
+```rust
 fn borgo_main() {
   let mut x = 1;
   x = x + 3;
