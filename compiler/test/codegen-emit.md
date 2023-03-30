@@ -978,15 +978,21 @@ fn borgo_main() {
 
 Using for loops.
 
-```rust-only
+```rust
 fn borgo_main() {
   for x in [1, 2, 3].seq() {
     x.inspect();
   }
 
   let mut n = 20;
+
+  match true {
+    true => { n = 25; },
+    false => (),
+  }
+
   loop {
-    if n > 22 { break; }
+    if n > 27 { break; }
     n.inspect();
     n = n + 1;
   }

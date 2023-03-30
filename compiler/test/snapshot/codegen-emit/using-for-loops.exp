@@ -7,8 +7,14 @@ fn borgo_main() {
   }
 
   let mut n = 20;
+
+  match true {
+    true => { n = 25; },
+    false => (),
+  }
+
   loop {
-    if n > 22 { break; }
+    if n > 27 { break; }
     n.inspect();
     n = n + 1;
   }
@@ -18,9 +24,9 @@ OUTPUT:
 1
 2
 3
-20
-21
-22
+25
+26
+27
 
 ---
 package main
@@ -62,44 +68,82 @@ func borgo_main() any {
 		var var17 any = var16
 		var18 := borgo.Unit
 		_ = var18
-		for {
-			var var19_block any
-			{
-				var21 := var17
-				var22 := 22
-				var23 := borgo.Ops.IGt
-				var24 := var23(var21, var22)
-				var var20_result any
+		var19 := true
+		var var20_result any
+		var21_subject := var19
 
-				if borgo.Ops.Eq(var24, true).(bool) {
-					var var25_block any
+		for var22_pattern := 0; var22_pattern < 2; var22_pattern++ {
+
+			if var22_pattern == 0 {
+				var23 := true
+				if !borgo.Ops.Eq(var23, var21_subject).(bool) {
+					continue
+				}
+				_ = var21_subject
+
+				var var24_block any
+				{
+					var25 := 25
+					var17 = var25
+					var26 := borgo.Unit
+					var24_block = var26
+				}
+				var20_result = var24_block
+				break
+			}
+
+			if var22_pattern == 1 {
+				var27 := false
+				if !borgo.Ops.Eq(var27, var21_subject).(bool) {
+					continue
+				}
+				_ = var21_subject
+
+				var28 := borgo.Unit
+				var20_result = var28
+				break
+			}
+
+		}
+		_ = var20_result
+		for {
+			var var29_block any
+			{
+				var31 := var17
+				var32 := 27
+				var33 := borgo.Ops.IGt
+				var34 := var33(var31, var32)
+				var var30_result any
+
+				if borgo.Ops.Eq(var34, true).(bool) {
+					var var35_block any
 					{
 						break
-						var26 := borgo.Unit
-						var25_block = var26
+						var36 := borgo.Unit
+						var35_block = var36
 					}
-					var20_result = var25_block
+					var30_result = var35_block
 				} else {
-					var27 := borgo.Unit
-					var20_result = var27
+					var37 := borgo.Unit
+					var30_result = var37
 				}
-				var28 := var20_result
-				_ = var28
-				var29 := var17
-				var30 := Debug_inspect(var29)
-				_ = var30
-				var31 := var17
-				var32 := 1
-				var33 := borgo.Ops.IAdd
-				var34 := var33(var31, var32)
-				var17 = var34
-				var35 := borgo.Unit
-				var19_block = var35
+				var38 := var30_result
+				_ = var38
+				var39 := var17
+				var40 := Debug_inspect(var39)
+				_ = var40
+				var41 := var17
+				var42 := 1
+				var43 := borgo.Ops.IAdd
+				var44 := var43(var41, var42)
+				var17 = var44
+				var45 := borgo.Unit
+				var29_block = var45
 			}
-			_ = var19_block
+			_ = var29_block
 		}
-		var36 := borgo.Unit
-		var1_block = var36
+		var46 := borgo.Unit
+		var1_block = var46
 	}
 	return var1_block
 }

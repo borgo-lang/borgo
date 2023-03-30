@@ -2,19 +2,18 @@ package borgo
 
 import (
 	"borgo/immutable"
-	"errors"
-	"log"
-	"strings"
 
+	"errors"
 	"io"
+	"log"
 	"os"
 	"reflect"
+	"strings"
 )
 
 func Assert(e any) {
 	if e != nil {
-		Debug(e)
-		panic("Assert failed")
+		log.Panicf("Assert failed %+v", e)
 	}
 }
 
@@ -48,6 +47,7 @@ type Eval struct {
 	globals   *Globals
 	env       *immutable.Map
 	overloads map[string]bool
+	mutable   map[string]bool // track which vars are mutable
 }
 
 // This type is necessary so we can share the pointer to this struct across all Eval instances
@@ -60,13 +60,30 @@ func CreateEvaluator() Eval {
 	globals := Globals{values: immutable.NewMap(hasher)}
 	env := immutable.NewMap(hasher)
 	overloads := map[string]bool{}
-	return Eval{&globals, env, overloads}
+	mutable := map[string]bool{}
+	return Eval{&globals, env, overloads, mutable}
 }
 
 // Keep a reference to the existing `globals` map, but clone `env`
 func (eval *Eval) beginScope() *Eval {
 	new_env := *eval.env
-	return &Eval{globals: eval.globals, env: &new_env, overloads: eval.overloads}
+	return &Eval{globals: eval.globals, env: &new_env, overloads: eval.overloads, mutable: eval.mutable}
+}
+
+// Copy back any mutable variable into the parent scope
+func (eval *Eval) exitScope(parent *Eval) {
+	for k, is_mut := range parent.mutable {
+		if !is_mut {
+			continue
+		}
+
+		v, ok := eval.lookupVariable(k)
+		if !ok {
+			continue
+		}
+
+		parent.setVariable(k, v)
+	}
 }
 
 func (eval *Eval) setVariable(k string, v any) {
@@ -86,15 +103,16 @@ func (eval *Eval) addGlobal(k string, v any) {
 	eval.globals.values = eval.globals.values.Set(k, v)
 }
 
-func (eval *Eval) putPatternInScope(pat Pat, value any) {
+func (eval *Eval) putPatternInScope(pat Pat, mutable bool, value any) {
 	switch pat := pat.(type) {
 	case *Pat__Type:
 		eval.setVariable(pat.Ident, value)
+		eval.mutable[pat.Ident] = mutable
 
 	case *Pat__Struct:
 		value := value.(BorgoValue)
 		for _, field := range pat.Fields {
-			eval.putPatternInScope(field.Value, value.GetField(field.Name))
+			eval.putPatternInScope(field.Value, mutable, value.GetField(field.Name))
 		}
 
 	case *Pat__Wild:
@@ -104,10 +122,6 @@ func (eval *Eval) putPatternInScope(pat Pat, value any) {
 		Debug(pat)
 		panic("unhandled pat")
 	}
-}
-
-func (eval *Eval) exitScope() {
-	// Nothing to do here, might even remove it. Right?
 }
 
 func (eval *Eval) matchArm(subject any, arm Arm) (any, bool) {
@@ -120,6 +134,7 @@ func (eval *Eval) matchArm(subject any, arm Arm) (any, bool) {
 			scope.setVariable(k, v)
 		}
 		expr := scope.Run(arm.Expr)
+		scope.exitScope(eval)
 
 		return expr, true
 	}
@@ -226,13 +241,7 @@ func (eval *Eval) lookupOverload(name string) (func(...any) any, bool) {
 func (eval *Eval) RunLoopNoCondition(body Expr) any {
 	scope := eval.beginScope()
 
-	kk := 0
 	for {
-		if kk > 10 {
-			break
-		}
-		kk = kk + 1
-
 		value := scope.Run(body)
 
 		if v, ok := value.(LoopControlFlow); ok {
@@ -260,7 +269,7 @@ func (eval *Eval) RunLoopWithCondition(binding Binding, expr Expr, body Expr) an
 
 	for !ValuesIsOfType(current_loop, "Seq::Nil") {
 		loop_var := GetArg(current_loop, 0)
-		scope.putPatternInScope(binding.Pat, loop_var)
+		scope.putPatternInScope(binding.Pat, false, loop_var)
 
 		value := scope.Run(body)
 
@@ -284,12 +293,14 @@ func (eval *Eval) RunLoopWithCondition(binding Binding, expr Expr, body Expr) an
 		// after checking for control flow in loops,
 		// otherwise we'd bubble up break/continue
 		if isReturn(value) {
+			scope.exitScope(eval)
 			return value
 		}
 
 		next()
 	}
 
+	scope.exitScope(eval)
 	return make_Unit
 }
 
@@ -343,10 +354,12 @@ func (eval *Eval) Run(expr Expr) any {
 			scope := capturedEnv.beginScope()
 
 			for i, binding := range expr.Fun.Args {
-				scope.putPatternInScope(binding.Pat, args[i])
+				scope.putPatternInScope(binding.Pat, false, args[i])
 			}
 
 			result := scope.Run(expr.Fun.Body)
+			scope.exitScope(capturedEnv)
+
 			return unwrapReturn(result)
 		}
 
@@ -375,10 +388,13 @@ func (eval *Eval) Run(expr Expr) any {
 
 		for _, s := range expr.Stmts {
 			last = scope.Run(s)
+
 			if isReturn(last) {
-				return last
+				break
 			}
 		}
+
+		scope.exitScope(eval)
 
 		return last
 
@@ -444,7 +460,7 @@ func (eval *Eval) Run(expr Expr) any {
 			return value
 		}
 
-		eval.putPatternInScope(expr.Binding.Pat, value)
+		eval.putPatternInScope(expr.Binding.Pat, expr.Mutable, value)
 		return make_Unit
 
 	case *Expr__Debug:
