@@ -148,14 +148,12 @@ impl<T> Seq<T> {
         self.filter_map(|x| if f(x) { Some(x) } else { None })
     }
 
-    fn reduce<Y>(self, initial: Y, f: fn(acc: Y, item: T) -> Y) -> Y {
-        let mut ret = initial;
-
+    fn reduce<Y>(self, mut acc: Y, f: fn(acc: Y, item: T) -> Y) -> Y {
         for x in self {
-            ret = f(ret, x)
+            acc = f(acc, x)
         }
 
-        return ret;
+        return acc;
     }
 
     fn to_list(self) -> List<T> {
@@ -239,20 +237,19 @@ impl<T> Seq<T> {
         Seq::Cons(current, || Seq::windows(self.drop(1), n))
     }
 
-    fn split_at(self, n: Int) -> (Seq<T>, Seq<T>) {
-        let mut count = n;
+    fn split_at(self, mut n: Int) -> (Seq<T>, Seq<T>) {
         let mut first = [];
         let mut remaining = self;
 
         loop {
-            if count <= 0 {
+            if n <= 0 {
                 break;
             }
 
             match remaining {
                 Seq::Nil => break,
                 Seq::Cons(x, cont) => {
-                    count = count - 1;
+                    n = n - 1;
                     first = first.push(x);
                     remaining = cont();
                 }
