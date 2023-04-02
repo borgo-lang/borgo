@@ -2395,4 +2395,4 @@ has no method:
     }
 }
 
-const RESERVED_WORDS: &[&str] = &["default"];
+const RESERVED_WORDS: &[&str] = &["default", "len", "append", "cap"];
