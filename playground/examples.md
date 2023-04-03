@@ -498,7 +498,7 @@ fn borgo_main() {
 AoC 2022 #7
 
 ```rust
-// Advent of Code 2022 - Day 06
+// Advent of Code 2022 - Day 07
 
 const input: String = "$ cd /
 $ ls

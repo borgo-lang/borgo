@@ -153,13 +153,11 @@ Seq::infinite(0, |n| n + 1)
 Elements in a sequence can be iterated with for loops.
 
 ```rust
-let xs = [1,2,3];
-
-for x in xs.seq() {
+for x in numbers.seq() {
 
 }
 
-for (index, x) in xs.seq().enumerate() {
+for (index, x) in numbers.seq().enumerate() {
 
 }
 ```
