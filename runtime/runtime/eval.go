@@ -43,11 +43,78 @@ type LoopControlFlow struct {
 	kind LoopFlow
 }
 
+type Environment struct {
+	values  map[string]any
+	mutable map[string]bool // track which vars are mutable
+	parent  *Environment
+}
+
+func NewEnvironment() *Environment {
+	values := map[string]any{}
+	mutable := map[string]bool{}
+	var parent *Environment
+	return &Environment{values, mutable, parent}
+}
+
+func (env *Environment) Clone() *Environment {
+	values := map[string]any{}
+	mutable := map[string]bool{}
+
+	for k, v := range env.mutable {
+		mutable[k] = v
+	}
+
+	parent := env
+	return &Environment{values, mutable, parent}
+}
+
+func (env *Environment) Get(k string) (any, bool) {
+	if v, ok := env.values[k]; ok {
+		return v, true
+	}
+
+	if env.parent != nil {
+		return env.parent.Get(k)
+	}
+
+	return nil, false
+}
+
+func (env *Environment) Set(k string, v any) {
+	env.values[k] = v
+
+	parent := env.parent
+
+	// In case of mutable var, look for the parent env
+	// that is actually storing this key
+	for parent != nil {
+		if !parent.IsMutable(k) {
+			return
+		}
+
+		_, ok := parent.Get(k)
+		if ok {
+			parent.Set(k, v)
+			return
+		}
+
+		parent = env.parent
+	}
+}
+
+func (env *Environment) SetMutable(k string, is_mut bool) {
+	env.mutable[k] = is_mut
+}
+
+func (env *Environment) IsMutable(k string) bool {
+	v, ok := env.mutable[k]
+	return v && ok
+}
+
 type Eval struct {
 	globals   *Globals
-	env       *immutable.Map
+	env       *Environment
 	overloads map[string]bool
-	mutable   map[string]bool // track which vars are mutable
 }
 
 // This type is necessary so we can share the pointer to this struct across all Eval instances
@@ -58,36 +125,19 @@ type Globals struct {
 func CreateEvaluator() Eval {
 	hasher := immutable.NewHasher("yo")
 	globals := Globals{values: immutable.NewMap(hasher)}
-	env := immutable.NewMap(hasher)
 	overloads := map[string]bool{}
-	mutable := map[string]bool{}
-	return Eval{&globals, env, overloads, mutable}
+	env := NewEnvironment()
+	return Eval{&globals, env, overloads}
 }
 
 // Keep a reference to the existing `globals` map, but clone `env`
 func (eval *Eval) beginScope() *Eval {
-	new_env := *eval.env
-	return &Eval{globals: eval.globals, env: &new_env, overloads: eval.overloads, mutable: eval.mutable}
-}
-
-// Copy back any mutable variable into the parent scope
-func (eval *Eval) exitScope(parent *Eval) {
-	for k, is_mut := range parent.mutable {
-		if !is_mut {
-			continue
-		}
-
-		v, ok := eval.lookupVariable(k)
-		if !ok {
-			continue
-		}
-
-		parent.setVariable(k, v)
-	}
+	new_env := eval.env.Clone()
+	return &Eval{globals: eval.globals, env: new_env, overloads: eval.overloads}
 }
 
 func (eval *Eval) setVariable(k string, v any) {
-	eval.env = eval.env.Set(k, v)
+	eval.env.Set(k, v)
 }
 
 func (eval *Eval) lookupVariable(k string) (any, bool) {
@@ -107,7 +157,7 @@ func (eval *Eval) putPatternInScope(pat Pat, value any) {
 	switch pat := pat.(type) {
 	case *Pat__Type:
 		eval.setVariable(pat.Ident, value)
-		eval.mutable[pat.Ident] = pat.IsMut
+		eval.env.SetMutable(pat.Ident, pat.IsMut)
 
 	case *Pat__Struct:
 		value := value.(BorgoValue)
@@ -134,7 +184,6 @@ func (eval *Eval) matchArm(subject any, arm Arm) (any, bool) {
 			scope.setVariable(k, v)
 		}
 		expr := scope.Run(arm.Expr)
-		scope.exitScope(eval)
 
 		return expr, true
 	}
@@ -293,14 +342,12 @@ func (eval *Eval) RunLoopWithCondition(binding Binding, expr Expr, body Expr) an
 		// after checking for control flow in loops,
 		// otherwise we'd bubble up break/continue
 		if isReturn(value) {
-			scope.exitScope(eval)
 			return value
 		}
 
 		next()
 	}
 
-	scope.exitScope(eval)
 	return make_Unit
 }
 
@@ -358,7 +405,6 @@ func (eval *Eval) Run(expr Expr) any {
 			}
 
 			result := scope.Run(expr.Fun.Body)
-			scope.exitScope(capturedEnv)
 
 			return unwrapReturn(result)
 		}
@@ -393,8 +439,6 @@ func (eval *Eval) Run(expr Expr) any {
 				break
 			}
 		}
-
-		scope.exitScope(eval)
 
 		return last
 
