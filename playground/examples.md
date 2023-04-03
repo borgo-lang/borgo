@@ -494,3 +494,68 @@ fn borgo_main() {
     solve("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 4).inspect().assert_eq(10);
 }
 ```
+
+AoC 2022 #7
+
+```rust
+// Advent of Code 2022 - Day 06
+
+const input: String = "$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k";
+
+fn borgo_main() {
+    let mut sizes = Map::new();
+    let mut stack = [];
+
+    for line in input.split("\n") {
+        if line.starts_with("$ ls") || line.starts_with("dir") {
+            continue;
+        }
+
+        if line.starts_with("$ cd") {
+            let folder = line.slice(5, 10);
+
+            if folder == ".." {
+                stack = stack.pop();
+            } else if stack.is_empty() {
+                stack = stack.push(folder);
+            } else {
+                let path = stack.seq().last().unwrap().append("/").append(folder);
+                stack = stack.push(path);
+            }
+
+            continue;
+        }
+
+        let size = line.split(" ").get(0).and_then(String::parse_int).unwrap();
+
+        for path in stack.seq() {
+            sizes = sizes.update(path, 0, |n| n + size);
+        }
+    }
+
+    let result = sizes.seq_values().filter(|n| n < 100000).sum();
+    result.inspect().assert_eq(95437);
+}
+```
