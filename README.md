@@ -21,7 +21,7 @@ Rust.
 performance. Leverage Go's garbage collector.
 
 **Functional** - Algebraic data types, exhaustive pattern matching, immutable
-values and persistent collections. No loops, no imperative constructs.
+values and persistent collections.
 
 **`Result<T, E>` error handling and `?` operator** - Just like in Rust.
 
@@ -150,6 +150,30 @@ Seq::infinite(0, |n| n + 1)
     .reduce(0, |acc, n| if n % 2 == 0 { acc + n } else { acc })
 ```
 
+Elements in a sequence can be iterated with for loops.
+
+```rust
+let xs = [1,2,3];
+
+for x in xs.seq() {
+
+}
+
+for (index, x) in xs.seq().enumerate() {
+
+}
+```
+
+Infinite loops are also available.
+
+```rust
+loop {
+    if some_condition {
+        break;
+    }
+}
+```
+
 There is no `null` value, use `Option<T>` instead. Error handling works much
 like Rust, with `Result<T>` and the `?` operator.
 
@@ -204,33 +228,20 @@ let b = ("bar", 2);
 (a.1 + b.1).assert_eq(3)
 ```
 
-Mutability can still be achieved with `Ref<T>` (a mutable reference to a value
-of type `T`).
+Mutability can still be achieved with mutable variables.
 
 ```rust
-fn add_to_list(xs: Ref<List<Int>>, n: Int) {
-    if n == 0 {
-        return;
+fn count<T>(xs: Seq<T>) -> Int {
+    let mut n = 0;
+
+    for _ in xs {
+        n = n + 1;
     }
 
-    // Mutate the list
-    xs.mutate(|prev| prev.push(n));
-
-    add_to_list(xs, n - 1)
+    n
 }
 
-fn borgo_main() {
-    // Create a Ref
-    let xs = [].to_ref();
-
-    // Add 10 elements to the list
-    add_to_list(xs, 10);
-
-    // Get the inner value inside the Ref
-    let inner = xs.get();
-
-    inner.assert_eq([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-}
+count([1, 2, 3].seq()).assert_eq(3);
 ```
 
 ## Stdlib
