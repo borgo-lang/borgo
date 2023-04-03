@@ -1003,22 +1003,33 @@ Control flow in loops
 
 ```rust
 fn borgo_main() {
-  let n = 0.to_ref();
-  let check = false.to_ref();
+  let mut n = 0;
+  let mut check = false;
 
   for _ in Seq::infinite(0, |count| count + 1) {
-    if n.get() <= 5 {
-      n.mutate(|n| n + 1);
-      check.get().assert_eq(false);
+    if n <= 5 {
+      n = n + 1;
+      check.assert_eq(false);
       continue;
     }
 
-    check.mutate(|_| true);
+    check = true;
     break;
   }
 
-  check.get().assert_eq(true);
-  n.get().assert_eq(6);
+  check.assert_eq(true);
+  n.assert_eq(6);
+
+  n = 0;
+
+  for x in [1,2,3].seq() {
+    if x == 2 {
+      continue;
+    }
+    n = n + 1;
+  }
+
+  n.assert_eq(2);
 }
 ```
 

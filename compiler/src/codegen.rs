@@ -88,6 +88,11 @@ pub struct Codegen {
     // this allows inner scopes to reference existing bindings
     // IDENT => VAR
     scope: Scope,
+
+    // For loops can iterate over Seq values
+    // `continue` statements need to advance the iterator
+    // for the proper loop
+    current_loop: Option<String>,
 }
 
 enum CallMode {
@@ -103,6 +108,7 @@ impl Codegen {
             gs: gs.clone(),
             stack: Default::default(),
             scope: Scope::new(),
+            current_loop: None,
         }
     }
 
@@ -1185,6 +1191,7 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
 
         let expr_var = self.emit_local(expr, &mut out);
 
+        let prev_loop_expr = self.current_loop.clone();
         let current_loop_value = self.fresh_var();
 
         // Create a fake let binding so that patterns are destructured correctly
@@ -1201,7 +1208,9 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
         // ignore whatever let returns
         let let_ignore_value = self.pop();
 
+        self.current_loop = Some(expr_var.clone());
         let body_render = self.emit_expr(body);
+        self.current_loop = prev_loop_expr;
 
         // ignore whatever body returns
         let body_ignore_value = self.pop();
@@ -1231,7 +1240,20 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
 
         let token = match kind {
             LoopFlow::Break => "break".to_string(),
-            LoopFlow::Continue => "continue".to_string(),
+            LoopFlow::Continue => {
+                // Make sure to update the loop condition first
+                let current_loop = match &self.current_loop {
+                    Some(expr_var) => {
+                        format!("{expr_var} = borgo.GetArg({expr_var}, 1).(func() any)()")
+                    }
+                    None => "".to_string(),
+                };
+
+                format!(
+                    "{current_loop}
+                continue "
+                )
+            }
         };
 
         out.emit(token);
@@ -1269,7 +1291,10 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
     fn emit_loop(&mut self, body: &Expr) -> String {
         let mut out = emitter();
 
+        let prev_loop_expr = self.current_loop.clone();
+        self.current_loop = None;
         let body_render = self.emit_expr(body);
+        self.current_loop = prev_loop_expr;
 
         // ignore whatever body returns
         let body_ignore_value = self.pop();
