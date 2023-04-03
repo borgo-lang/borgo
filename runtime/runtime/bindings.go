@@ -1559,7 +1559,6 @@ func load_Expr__Block(deserializer serde.Deserializer) (Expr__Block, error) {
 type Expr__Let struct {
 	Binding Binding
 	Value   Expr
-	Mutable bool
 	Ty      Type
 	Span    Span
 }
@@ -1575,9 +1574,6 @@ func (obj *Expr__Let) Serialize(serializer serde.Serializer) error {
 		return err
 	}
 	if err := obj.Value.Serialize(serializer); err != nil {
-		return err
-	}
-	if err := serializer.SerializeBool(obj.Mutable); err != nil {
 		return err
 	}
 	if err := obj.Ty.Serialize(serializer); err != nil {
@@ -1613,11 +1609,6 @@ func load_Expr__Let(deserializer serde.Deserializer) (Expr__Let, error) {
 	}
 	if val, err := DeserializeExpr(deserializer); err == nil {
 		obj.Value = val
-	} else {
-		return obj, err
-	}
-	if val, err := deserializer.DeserializeBool(); err == nil {
-		obj.Mutable = val
 	} else {
 		return obj, err
 	}
@@ -5369,6 +5360,7 @@ func BincodeDeserializePat(input []byte) (Pat, error) {
 
 type Pat__Type struct {
 	Ident string
+	IsMut bool
 	Ann   TypeAst
 	Span  Span
 }
@@ -5381,6 +5373,9 @@ func (obj *Pat__Type) Serialize(serializer serde.Serializer) error {
 	}
 	serializer.SerializeVariantIndex(0)
 	if err := serializer.SerializeStr(obj.Ident); err != nil {
+		return err
+	}
+	if err := serializer.SerializeBool(obj.IsMut); err != nil {
 		return err
 	}
 	if err := obj.Ann.Serialize(serializer); err != nil {
@@ -5411,6 +5406,11 @@ func load_Pat__Type(deserializer serde.Deserializer) (Pat__Type, error) {
 	}
 	if val, err := deserializer.DeserializeStr(); err == nil {
 		obj.Ident = val
+	} else {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeBool(); err == nil {
+		obj.IsMut = val
 	} else {
 		return obj, err
 	}

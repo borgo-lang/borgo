@@ -103,16 +103,16 @@ func (eval *Eval) addGlobal(k string, v any) {
 	eval.globals.values = eval.globals.values.Set(k, v)
 }
 
-func (eval *Eval) putPatternInScope(pat Pat, mutable bool, value any) {
+func (eval *Eval) putPatternInScope(pat Pat, value any) {
 	switch pat := pat.(type) {
 	case *Pat__Type:
 		eval.setVariable(pat.Ident, value)
-		eval.mutable[pat.Ident] = mutable
+		eval.mutable[pat.Ident] = pat.IsMut
 
 	case *Pat__Struct:
 		value := value.(BorgoValue)
 		for _, field := range pat.Fields {
-			eval.putPatternInScope(field.Value, mutable, value.GetField(field.Name))
+			eval.putPatternInScope(field.Value, value.GetField(field.Name))
 		}
 
 	case *Pat__Wild:
@@ -269,7 +269,7 @@ func (eval *Eval) RunLoopWithCondition(binding Binding, expr Expr, body Expr) an
 
 	for !ValuesIsOfType(current_loop, "Seq::Nil") {
 		loop_var := GetArg(current_loop, 0)
-		scope.putPatternInScope(binding.Pat, false, loop_var)
+		scope.putPatternInScope(binding.Pat, loop_var)
 
 		value := scope.Run(body)
 
@@ -354,7 +354,7 @@ func (eval *Eval) Run(expr Expr) any {
 			scope := capturedEnv.beginScope()
 
 			for i, binding := range expr.Fun.Args {
-				scope.putPatternInScope(binding.Pat, false, args[i])
+				scope.putPatternInScope(binding.Pat, args[i])
 			}
 
 			result := scope.Run(expr.Fun.Body)
@@ -460,7 +460,7 @@ func (eval *Eval) Run(expr Expr) any {
 			return value
 		}
 
-		eval.putPatternInScope(expr.Binding.Pat, expr.Mutable, value)
+		eval.putPatternInScope(expr.Binding.Pat, value)
 		return make_Unit
 
 	case *Expr__Debug:
