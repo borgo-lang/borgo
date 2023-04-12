@@ -20,48 +20,36 @@ import borgo "borgo/runtime"
 var _ = borgo.Unit
 
 func foo(arg_0 any) any {
-	var1_match_pat := 0
-	if var1_match_pat != 1 {
-		var1_match_pat = 2 /* wildcard */
+	var1_match_pat := borgo.MatchNone
+	if var1_match_pat != borgo.MatchErr {
+		var1_match_pat = borgo.MatchOk /* wildcard */
 	}
-	var2 := arg_0.(Tuple2).Second
+	b := arg_0.(Tuple2).Second
 
-	if var1_match_pat != 1 {
-		_ = 2
+	if var1_match_pat != borgo.MatchErr {
+		_ = borgo.MatchOk
 	} else {
-		_ = 1
+		_ = borgo.MatchErr
 	}
 
-	var var3_block any
 	{
-		var4 := var2
-		var3_block = var4
-	}
-	return var3_block
-}
 
+		return b
+	}
+}
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := "yo"
-		var4 := func(base any) any {
+
+		Debug_assert_eq(foo(func(base any) any {
 			data := base.(Tuple2)
-			data.First = var2
-			data.Second = var3
+			data.First = 1
+			data.Second = "yo"
 			return data
-		}(Tuple2{})
-		var5 := foo
-		var6 := var5(var4)
-		var7 := "yo"
-		var8 := Debug_assert_eq
-		var9 := var8(var6, var7)
-		_ = var9
-		var10 := borgo.Unit
-		var1_block = var10
+		}(Tuple2{})), "yo")
+
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

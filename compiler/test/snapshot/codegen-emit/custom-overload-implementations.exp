@@ -75,30 +75,10 @@ type Baz struct {
 
 func Baz_to_string(self any) any {
 
-	var var1_block any
 	{
-		var2 := "BAZ [ \n ONE: "
-		var3 := self
-		var4 := var3.(Baz).One
-		var5 := Int_to_string
-		var6 := var5(var4)
-		var7 := String_append
-		var8 := var7(var2, var6)
-		var9 := ", TWO: "
-		var10 := String_append
-		var11 := var10(var8, var9)
-		var12 := self
-		var13 := var12.(Baz).Two
-		var14 := to_string
-		var15 := var14(var13)
-		var16 := String_append
-		var17 := var16(var11, var15)
-		var18 := "\n ]"
-		var19 := String_append
-		var20 := var19(var17, var18)
-		var1_block = var20
+
+		return String_append(String_append(String_append(String_append("BAZ [ \n ONE: ", Int_to_string(self.(Baz).One)), ", TWO: "), to_string(self.(Baz).Two)), "\n ]")
 	}
-	return var1_block
 }
 
 type Bad struct {
@@ -107,40 +87,28 @@ type Bad struct {
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := "yo"
-		var3 := 1
-		var4 := false
-		var5 := func(base any) any {
-			data := base.(Bad)
-			data.Bad = var4
-			return data
-		}(Bad{})
-		var6 := func(base any) any {
-			data := base.(Baz)
-			data.One = var3
-			data.Two = var5
-			return data
-		}(Baz{})
-		var7 := func(base any) any {
+
+		var bar any = func(base any) any {
 			data := base.(Bar)
-			data.A = var2
-			data.B = var6
+			data.A = "yo"
+			data.B = func(base any) any {
+				data := base.(Baz)
+				data.One = 1
+				data.Two = func(base any) any {
+					data := base.(Bad)
+					data.Bad = false
+					return data
+				}(Bad{})
+				return data
+			}(Baz{})
 			return data
 		}(Bar{})
-		var8 := var7
-		var9 := borgo.Unit
-		_ = var9
-		var10 := var8
-		var11 := Debug_inspect(var10)
-		_ = var11
-		var12 := borgo.Unit
-		var1_block = var12
-	}
-	return var1_block
-}
+		Debug_inspect(bar)
 
+		return borgo.Unit
+	}
+}
 func Bad_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }

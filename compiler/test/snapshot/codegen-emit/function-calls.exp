@@ -25,78 +25,63 @@ var _ = borgo.Unit
 
 func foo(b any, x any) any {
 
-	var var1_block any
 	{
-		var2 := b
-		var1_block = var2
-	}
-	return var1_block
-}
 
+		return b
+	}
+}
 func bar(x any) any {
 
-	var var1_block any
 	{
-		var2 := x
-		var1_block = var2
-	}
-	return var1_block
-}
 
+		return x
+	}
+}
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var var3_result any
-		var4_subject := var2
-		var5_matches := 0
+		var var1 any
+		_ = var1
+		var var2 any
+		_ = var2
 
-		if var5_matches != 2 {
-			var5_matches = 0
+		var4_subject := 1
+		var5_matches := borgo.MatchNone
 
-			var6 := 1
+		if var5_matches != borgo.MatchOk {
+			var5_matches = borgo.MatchNone
 
-			if var5_matches != 1 && borgo.Ops.Eq(var6, var4_subject).(bool) {
-				var5_matches = 2
+			if var5_matches != borgo.MatchErr && borgo.Ops.Eq(1, var4_subject).(bool) {
+				var5_matches = borgo.MatchOk
 			} else {
-				var5_matches = 1
+				var5_matches = borgo.MatchErr
 			}
 			_ = var4_subject
 
-			if var5_matches == 2 {
-				var7 := true
-				var3_result = var7
+			if var5_matches == borgo.MatchOk {
+
+				var2 = true
 			}
 		}
 
-		if var5_matches != 2 {
-			var5_matches = 0
+		if var5_matches != borgo.MatchOk {
+			var5_matches = borgo.MatchNone
 
-			if var5_matches != 1 {
-				var5_matches = 2 /* wildcard */
+			if var5_matches != borgo.MatchErr {
+				var5_matches = borgo.MatchOk /* wildcard */
 			}
 			_ = var4_subject
 
-			if var5_matches == 2 {
-				var8 := false
-				var3_result = var8
+			if var5_matches == borgo.MatchOk {
+
+				var2 = false
 			}
 		}
 
-		var9 := 5
-		var10 := bar
-		var11 := var10(var9)
-		var12 := foo
-		var13 := var12(var3_result, var11)
-		var14 := true
-		var15 := Debug_assert_eq
-		var16 := var15(var13, var14)
-		_ = var16
-		var17 := borgo.Unit
-		var1_block = var17
+		Debug_assert_eq(foo(var2, bar(5)), true)
+
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

@@ -30,89 +30,35 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
 		var foo func(any, any) any
 		foo = func(n any, acc any) any {
 
-			var var2_block any
 			{
-				var4 := n
-				var5 := 0
-				var6 := borgo.Ops.Eq
-				var7 := var6(var4, var5)
-				var var3_result any
 
-				if borgo.Ops.Eq(var7, true).(bool) {
-					var var8_block any
-					{
-						var9 := acc
-						return var9
-						var10 := borgo.Unit
-						var8_block = var10
-					}
-					var3_result = var8_block
-				} else {
-					var11 := borgo.Unit
-					var3_result = var11
-				}
-				var12 := var3_result
-				_ = var12
-				var14 := n
-				var15 := 2
-				var16 := borgo.Ops.IRem
-				var17 := var16(var14, var15)
-				var18 := 0
-				var19 := borgo.Ops.Eq
-				var20 := var19(var17, var18)
-				var var13_result any
+				if borgo.Ops.Eq(borgo.Ops.Eq(n, 0), true).(bool) {
 
-				if borgo.Ops.Eq(var20, true).(bool) {
-					var var21_block any
-					{
-						var22 := acc
-						var23 := n
-						var24 := borgo.Ops.IAdd
-						var25 := var24(var22, var23)
-						var21_block = var25
-					}
-					var13_result = var21_block
-				} else {
-					var var26_block any
-					{
-						var27 := acc
-						var26_block = var27
-					}
-					var13_result = var26_block
+					return acc
+
 				}
-				var28 := var13_result
-				var29 := var28
-				var30 := borgo.Unit
-				_ = var30
-				var31 := n
-				var32 := 1
-				var33 := borgo.Ops.ISub
-				var34 := var33(var31, var32)
-				var35 := var29
-				var36 := foo
-				var37 := var36(var34, var35)
-				var2_block = var37
+				var var6 any
+				_ = var6
+
+				if borgo.Ops.Eq(borgo.Ops.Eq(borgo.Ops.IRem(n, 2), 0), true).(bool) {
+
+					var6 = borgo.Ops.IAdd(acc, n)
+				} else {
+
+					var6 = acc
+				}
+				var new_acc any = var6
+
+				return foo(borgo.Ops.ISub(n, 1), new_acc)
 			}
-			return var2_block
 		}
 
-		var38 := foo
-		_ = var38
-		var39 := 10
-		var40 := 0
-		var41 := foo
-		var42 := var41(var39, var40)
-		var43 := 30
-		var44 := Debug_assert_eq
-		var45 := var44(var42, var43)
-		var1_block = var45
+		return Debug_assert_eq(foo(10, 0), 30)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

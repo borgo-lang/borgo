@@ -42,156 +42,71 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 0
-		var var3 any = var2
-		var4 := borgo.Unit
-		_ = var4
-		var5 := false
-		var var6 any = var5
-		var7 := borgo.Unit
-		_ = var7
-		var8 := 0
-		var13 := func(count any) any {
 
-			var9 := count
-			var10 := 1
-			var11 := borgo.Ops.IAdd
-			var12 := var11(var9, var10)
-			return var12
-		}
+		var n any = 0
 
-		var14 := var13
-		var15 := Seq_infinite
-		var16 := var15(var8, var14)
-		for !borgo.ValuesIsOfType(var16, "Seq::Nil") {
-			var17 := borgo.GetArg(var16, 0)
-			var18 := var17
-			_ = var18
-			var19 := borgo.Unit
-			var var20_block any
+		var check any = false
+
+		var3 := Seq_infinite(0, func(count any) any {
+
 			{
-				var22 := var3
-				var23 := 5
-				var24 := borgo.Ops.ILe
-				var25 := var24(var22, var23)
-				var var21_result any
 
-				if borgo.Ops.Eq(var25, true).(bool) {
-					var var26_block any
+				return borgo.Ops.IAdd(count, 1)
+			}
+		})
+		for !borgo.ValuesIsOfType(var3, "Seq::Nil") {
+			var12 := var3.(Seq_Cons).Field0
+
+			_ = var12
+			{
+
+				if borgo.Ops.Eq(borgo.Ops.ILe(n, 5), true).(bool) {
 					{
-						var27 := var3
-						var28 := 1
-						var29 := borgo.Ops.IAdd
-						var30 := var29(var27, var28)
-						var3 = var30
-						var31 := borgo.Unit
-						_ = var31
-						var32 := var6
-						var33 := false
-						var34 := Debug_assert_eq
-						var35 := var34(var32, var33)
-						_ = var35
-						var16 = borgo.GetArg(var16, 1).(func() any)()
+
+						n = borgo.Ops.IAdd(n, 1)
+
+						Debug_assert_eq(check, false)
+						var3 = var3.(Seq_Cons).Field1()
 						continue
-						var36 := borgo.Unit
-						var26_block = var36
 					}
-					var21_result = var26_block
-				} else {
-					var37 := borgo.Unit
-					var21_result = var37
+
 				}
-				var38 := var21_result
-				_ = var38
-				var39 := true
-				var6 = var39
-				var40 := borgo.Unit
-				_ = var40
+
+				check = true
 				break
-				var41 := borgo.Unit
-				var20_block = var41
 			}
 
-			var16 = borgo.GetArg(var16, 1).(func() any)()
-
-			_ = var19
-			_ = var20_block
+			var3 = var3.(Seq_Cons).Field1()
 		}
-		var42 := borgo.Unit
-		_ = var42
-		var43 := var6
-		var44 := true
-		var45 := Debug_assert_eq
-		var46 := var45(var43, var44)
-		_ = var46
-		var47 := var3
-		var48 := 6
-		var49 := Debug_assert_eq
-		var50 := var49(var47, var48)
-		_ = var50
-		var51 := 0
-		var3 = var51
-		var52 := borgo.Unit
-		_ = var52
-		var53 := 1
-		var54 := 2
-		var55 := 3
-		var56 := borgo.List(var53, var54, var55)
-		var57 := List_seq
-		var58 := var57(var56)
-		for !borgo.ValuesIsOfType(var58, "Seq::Nil") {
-			var59 := borgo.GetArg(var58, 0)
-			var60 := var59
-			var61 := var60
-			var62 := borgo.Unit
-			var var63_block any
+
+		Debug_assert_eq(check, true)
+
+		Debug_assert_eq(n, 6)
+
+		n = 0
+
+		var33 := List_seq(borgo.List(1, 2, 3))
+		for !borgo.ValuesIsOfType(var33, "Seq::Nil") {
+			var40 := var33.(Seq_Cons).Field0
+
+			var x any = var40
 			{
-				var65 := var61
-				var66 := 2
-				var67 := borgo.Ops.Eq
-				var68 := var67(var65, var66)
-				var var64_result any
 
-				if borgo.Ops.Eq(var68, true).(bool) {
-					var var69_block any
-					{
-						var58 = borgo.GetArg(var58, 1).(func() any)()
-						continue
-						var70 := borgo.Unit
-						var69_block = var70
-					}
-					var64_result = var69_block
-				} else {
-					var71 := borgo.Unit
-					var64_result = var71
+				if borgo.Ops.Eq(borgo.Ops.Eq(x, 2), true).(bool) {
+					var33 = var33.(Seq_Cons).Field1()
+					continue
+
 				}
-				var72 := var64_result
-				_ = var72
-				var73 := var3
-				var74 := 1
-				var75 := borgo.Ops.IAdd
-				var76 := var75(var73, var74)
-				var3 = var76
-				var77 := borgo.Unit
-				var63_block = var77
+
+				n = borgo.Ops.IAdd(n, 1)
 			}
 
-			var58 = borgo.GetArg(var58, 1).(func() any)()
-
-			_ = var62
-			_ = var63_block
+			var33 = var33.(Seq_Cons).Field1()
 		}
-		var78 := borgo.Unit
-		_ = var78
-		var79 := var3
-		var80 := 2
-		var81 := Debug_assert_eq
-		var82 := var81(var79, var80)
-		var1_block = var82
+
+		return Debug_assert_eq(n, 2)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

@@ -92,180 +92,81 @@ type Color any
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := to_string
-		var4 := var3(var2)
-		var5 := Debug_inspect(var4)
-		_ = var5
-		var6 := false
-		var7 := to_string
-		var8 := var7(var6)
-		var9 := Debug_inspect(var8)
-		_ = var9
-		var10 := "yo"
-		var11 := to_string
-		var12 := var11(var10)
-		var13 := Debug_inspect(var12)
-		_ = var13
-		var14 := 'a'
-		var15 := to_string
-		var16 := var15(var14)
-		var17 := Debug_inspect(var16)
-		_ = var17
-		var18 := 1
-		var19 := "yo"
-		var20 := func(base any) any {
+
+		Debug_inspect(to_string(1))
+
+		Debug_inspect(to_string(false))
+
+		Debug_inspect(to_string("yo"))
+
+		Debug_inspect(to_string('a'))
+
+		var x any = func(base any) any {
 			data := base.(Foo)
-			data.A = var18
-			data.B = var19
+			data.A = 1
+			data.B = "yo"
 			return data
 		}(Foo{})
-		var21 := var20
-		var22 := borgo.Unit
-		_ = var22
-		var23 := var21
-		var24 := to_string
-		var25 := var24(var23)
-		var26 := Debug_inspect(var25)
-		_ = var26
-		var27 := 1
-		var28 := 2
-		var29 := 3
-		var30 := borgo.List(var27, var28, var29)
-		var31 := to_string
-		var32 := var31(var30)
-		var33 := Debug_inspect(var32)
-		_ = var33
-		var34 := make_Color_Red
-		var35 := make_Result_Ok
-		var36 := var35(var34)
-		var37 := to_string
-		var38 := var37(var36)
-		var39 := Debug_inspect(var38)
-		_ = var39
-		var40 := 1
-		var41 := 2.3
-		var42 := func(base any) any {
+
+		Debug_inspect(to_string(x))
+
+		Debug_inspect(to_string(borgo.List(1, 2, 3)))
+
+		Debug_inspect(to_string(make_Result_Ok(make_Color_Red)))
+
+		Debug_inspect(to_string(func(base any) any {
 			data := base.(Tuple2)
-			data.First = var40
-			data.Second = var41
+			data.First = 1
+			data.Second = 2.3
 			return data
-		}(Tuple2{})
-		var43 := to_string
-		var44 := var43(var42)
-		var45 := Debug_inspect(var44)
-		_ = var45
-		var46 := 1
-		var47 := false
-		var48 := "yo"
-		var49 := func(base any) any {
+		}(Tuple2{})))
+
+		Debug_inspect(to_string(func(base any) any {
 			data := base.(Tuple3)
-			data.First = var46
-			data.Second = var47
-			data.Third = var48
+			data.First = 1
+			data.Second = false
+			data.Third = "yo"
 			return data
-		}(Tuple3{})
-		var50 := to_string
-		var51 := var50(var49)
-		var52 := Debug_inspect(var51)
-		_ = var52
-		var53 := borgo.Unit
-		var54 := to_string
-		var55 := var54(var53)
-		var56 := Debug_inspect(var55)
-		_ = var56
-		var57 := Map_new
-		var58 := var57()
-		var59 := "a"
-		var60 := make_Color_Blue
-		var61 := Map_insert
-		var62 := var61(var58, var59, var60)
-		var63 := "b"
-		var64 := make_Color_Red
-		var65 := Map_insert
-		var66 := var65(var62, var63, var64)
-		var67 := var66
-		var68 := borgo.Unit
-		_ = var68
-		var69 := var67
-		var70 := to_string
-		var71 := var70(var69)
-		var72 := Debug_inspect(var71)
-		_ = var72
-		var73 := 5
-		var74 := Ref_to_ref
-		var75 := var74(var73)
-		var76 := to_string
-		var77 := var76(var75)
-		var78 := Debug_inspect(var77)
-		_ = var78
-		var80 := func() any {
+		}(Tuple3{})))
 
-			var79 := 1
-			return var79
-		}
+		Debug_inspect(to_string(borgo.Unit))
 
-		var81 := var80
-		var82 := func(base any) any {
+		var m any = Map_insert(Map_insert(Map_new(), "a", make_Color_Blue), "b", make_Color_Red)
+
+		Debug_inspect(to_string(m))
+
+		Debug_inspect(to_string(Ref_to_ref(5)))
+
+		Debug_inspect(to_string(func(base any) any {
 			data := base.(Bar)
-			data.Baz = var81
+			data.Baz = func() any {
+
+				{
+
+					return 1
+				}
+			}
 			return data
-		}(Bar{})
-		var83 := to_string
-		var84 := var83(var82)
-		var85 := Debug_inspect(var84)
-		_ = var85
-		var86 := 1
-		var87 := 2
-		var88 := 3
-		var89 := borgo.List(var86, var87, var88)
-		var90 := List_seq
-		var91 := var90(var89)
-		var92 := to_string
-		var93 := var92(var91)
-		var94 := Debug_inspect(var93)
-		_ = var94
-		var95 := 0
-		var100 := func(x any) any {
+		}(Bar{})))
 
-			var96 := x
-			var97 := 1
-			var98 := borgo.Ops.IAdd
-			var99 := var98(var96, var97)
-			return var99
-		}
+		Debug_inspect(to_string(List_seq(borgo.List(1, 2, 3))))
 
-		var101 := var100
-		var102 := Seq_infinite
-		var103 := var102(var95, var101)
-		var104 := var103
-		var105 := borgo.Unit
-		_ = var105
-		var106 := var104
-		var107 := to_string
-		var108 := var107(var106)
-		var109 := Debug_inspect(var108)
-		_ = var109
-		var110 := Set_new
-		var111 := var110()
-		var112 := "a"
-		var113 := Set_insert
-		var114 := var113(var111, var112)
-		var115 := "b"
-		var116 := Set_insert
-		var117 := var116(var114, var115)
-		var118 := to_string
-		var119 := var118(var117)
-		var120 := Debug_inspect(var119)
-		_ = var120
-		var121 := borgo.Unit
-		var1_block = var121
+		var s any = Seq_infinite(0, func(x any) any {
+
+			{
+
+				return borgo.Ops.IAdd(x, 1)
+			}
+		})
+
+		Debug_inspect(to_string(s))
+
+		Debug_inspect(to_string(Set_insert(Set_insert(Set_new(), "a"), "b")))
+
+		return borgo.Unit
 	}
-	return var1_block
 }
-
 func Color_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }

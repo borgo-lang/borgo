@@ -39,23 +39,14 @@ type Foo any
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 2
-		var3 := false
-		var4 := make_Foo_Bar
-		var5 := var4(var2, var3)
-		var6 := Debug_inspect(var5)
-		_ = var6
-		var7 := make_Foo_Baz
-		var8 := Debug_inspect(var7)
-		_ = var8
-		var9 := borgo.Unit
-		var1_block = var9
-	}
-	return var1_block
-}
 
+		Debug_inspect(make_Foo_Bar(2, false))
+		Debug_inspect(make_Foo_Baz)
+
+		return borgo.Unit
+	}
+}
 func Foo_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }

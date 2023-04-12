@@ -20,22 +20,13 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 5
-		var3 := 5
-		var4 := borgo.Ops.IAdd
-		var5 := var4(var2, var3)
-		var6 := var5
-		var7 := borgo.Unit
-		_ = var7
-		var8 := var6
-		var9 := Debug_inspect(var8)
-		_ = var9
-		var10 := borgo.Unit
-		var1_block = var10
+
+		var a any = borgo.Ops.IAdd(5, 5)
+		Debug_inspect(a)
+
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

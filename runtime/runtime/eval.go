@@ -191,17 +191,6 @@ func (eval *Eval) matchArm(subject any, arm Arm) (any, bool) {
 	return nil, false
 }
 
-type MatchResult int
-
-const (
-	MatchNone MatchResult = iota
-	MatchOk
-)
-
-func isMatching(m MatchResult) bool {
-	return m == MatchOk
-}
-
 func (eval *Eval) matchPattern(subject any, pat Pat, subs map[string]any) MatchResult {
 	switch pat := pat.(type) {
 	case *Pat__Lit:

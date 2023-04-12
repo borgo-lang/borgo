@@ -17,27 +17,12 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := 2
-		var4 := 5
-		var5 := 5
-		var6 := borgo.Ops.IAdd
-		var7 := var6(var4, var5)
-		var8 := borgo.List(var2, var3, var7)
-		var9 := var8
-		var10 := borgo.Unit
-		_ = var10
-		var11 := var9
-		var12 := List_len
-		var13 := var12(var11)
-		var14 := 3
-		var15 := Debug_assert_eq
-		var16 := var15(var13, var14)
-		var1_block = var16
+
+		var x any = borgo.List(1, 2, borgo.Ops.IAdd(5, 5))
+
+		return Debug_assert_eq(List_len(x), 3)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

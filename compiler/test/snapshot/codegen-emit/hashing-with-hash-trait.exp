@@ -19,30 +19,14 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := "yo"
-		var3 := var2
-		var4 := borgo.Unit
-		_ = var4
-		var5 := "y"
-		var6 := "o"
-		var7 := String_append
-		var8 := var7(var5, var6)
-		var9 := var8
-		var10 := borgo.Unit
-		_ = var10
-		var11 := var3
-		var12 := String_to_hash
-		var13 := var12(var11)
-		var14 := var9
-		var15 := String_to_hash
-		var16 := var15(var14)
-		var17 := Debug_assert_eq
-		var18 := var17(var13, var16)
-		var1_block = var18
+
+		var a any = "yo"
+
+		var b any = String_append("y", "o")
+
+		return Debug_assert_eq(String_to_hash(a), String_to_hash(b))
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

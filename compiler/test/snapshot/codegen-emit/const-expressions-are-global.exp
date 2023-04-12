@@ -18,21 +18,16 @@ var _ = borgo.Unit
 var a any
 
 func init_const_a() any {
-	var30 := 1
-	return var30
+
+	return 1
 }
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := a
-		var3 := 5
-		var4 := borgo.Ops.IAdd
-		var5 := var4(var2, var3)
-		var1_block = var5
+
+		return borgo.Ops.IAdd(a, 5)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

@@ -33,118 +33,72 @@ var _ = borgo.Unit
 
 func foo(x any) any {
 
-	var var1_block any
 	{
-		var2 := x
-		var3 := 3
-		var4 := Sender_send
-		var5 := var4(var2, var3)
-		var1_block = var5
-	}
-	return var1_block
-}
 
+		return Sender_send(x, 3)
+	}
+}
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := Channel_new
-		var3 := var2()
-		var4 := var3
-		var5_match_pat := 0
-		var6 := var4.(Tuple2).First
-		var7 := var4.(Tuple2).Second
 
-		if var5_match_pat != 1 {
-			_ = 2
+		var3 := Channel_new()
+		var4_match_pat := borgo.MatchNone
+		x_send := var3.(Tuple2).First
+		x_recv := var3.(Tuple2).Second
+
+		if var4_match_pat != borgo.MatchErr {
+			_ = borgo.MatchOk
 		} else {
-			_ = 1
+			_ = borgo.MatchErr
 		}
 
-		var8 := borgo.Unit
-		_ = var8
-		var9 := Channel_new
-		var10 := var9()
-		var11 := var10
-		var12_match_pat := 0
-		if var12_match_pat != 1 {
-			var12_match_pat = 2 /* wildcard */
+		var7 := Channel_new()
+		var8_match_pat := borgo.MatchNone
+		if var8_match_pat != borgo.MatchErr {
+			var8_match_pat = borgo.MatchOk /* wildcard */
 		}
-		var13 := var11.(Tuple2).Second
+		y_recv := var7.(Tuple2).Second
 
-		if var12_match_pat != 1 {
-			_ = 2
+		if var8_match_pat != borgo.MatchErr {
+			_ = borgo.MatchOk
 		} else {
-			_ = 1
+			_ = borgo.MatchErr
 		}
 
-		var14 := borgo.Unit
-		_ = var14
-		var20 := func() any {
+		go (func() any {
 
-			var var15_block any
 			{
-				var16 := var6
-				var17 := 5
-				var18 := Sender_send
-				var19 := var18(var16, var17)
-				var15_block = var19
-			}
-			return var15_block
-		}
 
-		var21 := var20
-		var22 := (var21)
-		go var22()
-		var23 := borgo.Unit
-		_ = var23
-		var24 := var7
-		var25 := Receiver_recv
-		var26 := var25(var24)
-		var27 := var26
-		var28 := borgo.Unit
-		_ = var28
-		var29 := var27
-		var30 := Option_unwrap
-		var31 := var30(var29)
-		var32 := 5
-		var33 := Debug_assert_eq
-		var34 := var33(var31, var32)
-		_ = var34
-		var35 := var6
-		var36 := foo
-		go var36(var35)
-		var37 := borgo.Unit
-		_ = var37
+				return Sender_send(x_send, 5)
+			}
+		})()
+
+		var val any = Receiver_recv(x_recv)
+
+		Debug_assert_eq(Option_unwrap(val), 5)
+		go foo(x_send)
 		select {
-		case var38_value, var39_more := <-var7.(chan any):
+		case var26_value, var27_more := <-x_recv.(chan any):
 			var val any
-			if var39_more {
-				val = make_Option_Some(var38_value)
+			if var27_more {
+				val = make_Option_Some(var26_value)
 			} else {
 				val = make_Option_None
 			}
-			var40 := val
-			var41 := Option_unwrap
-			var42 := var41(var40)
-			var43 := 3
-			var44 := Debug_assert_eq
-			var45 := var44(var42, var43)
-			_ = var45
-		case var46_value, var47_more := <-var13.(chan any):
 
-			if var47_more {
-				_ = make_Option_Some(var46_value)
+			Debug_assert_eq(Option_unwrap(val), 3)
+		case var33_value, var34_more := <-y_recv.(chan any):
+
+			if var34_more {
+				_ = make_Option_Some(var33_value)
 			} else {
 				_ = make_Option_None
 			}
-			var48 := Debug_unreachable()
-			_ = var48
+			Debug_unreachable()
 		}
-		var49 := borgo.Unit
-		var1_block = var49
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

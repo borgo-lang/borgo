@@ -33,14 +33,11 @@ type Foo struct {
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var1_block = var2
-	}
-	return var1_block
-}
 
+		return 1
+	}
+}
 func Color_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }

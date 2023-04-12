@@ -33,122 +33,36 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := "hello "
-		var3 := "world"
-		var4 := String_append
-		var5 := var4(var2, var3)
-		var6 := "hello world"
-		var7 := Debug_assert_eq
-		var8 := var7(var5, var6)
-		_ = var8
-		var9 := "a b c"
-		var10 := " "
-		var11 := String_split
-		var12 := var11(var9, var10)
-		var13 := Seq_to_list
-		var14 := var13(var12)
-		var15 := "a"
-		var16 := "b"
-		var17 := "c"
-		var18 := borgo.List(var15, var16, var17)
-		var19 := Debug_assert_eq
-		var20 := var19(var14, var18)
-		_ = var20
-		var21 := "foobarbaz"
-		var22 := 0
-		var23 := 6
-		var24 := String_slice
-		var25 := var24(var21, var22, var23)
-		var26 := "foobar"
-		var27 := Debug_assert_eq
-		var28 := var27(var25, var26)
-		_ = var28
-		var29 := "foobarbaz"
-		var30 := 3
-		var31 := 3
-		var32 := borgo.Ops.INeg
-		var33 := var32(var31)
-		var34 := String_slice
-		var35 := var34(var29, var30, var33)
-		var36 := "bar"
-		var37 := Debug_assert_eq
-		var38 := var37(var35, var36)
-		_ = var38
-		var var39_block any
+
+		Debug_assert_eq(String_append("hello ", "world"), "hello world")
+
+		Debug_assert_eq(Seq_to_list(String_split("a b c", " ")), borgo.List("a", "b", "c"))
+
+		Debug_assert_eq(String_slice("foobarbaz", 0, 6), "foobar")
+
+		Debug_assert_eq(String_slice("foobarbaz", 3, borgo.Ops.INeg(3)), "bar")
 		{
-			var40 := "foo"
-			var41 := String_chars
-			var42 := var41(var40)
-			var43 := Seq_to_list
-			var44 := var43(var42)
-			var45 := var44
-			var46 := borgo.Unit
-			_ = var46
-			var47 := var45
-			var48 := List_len
-			var49 := var48(var47)
-			var50 := 3
-			var51 := Debug_assert_eq
-			var52 := var51(var49, var50)
-			_ = var52
-			var53 := var45
-			var54 := 0
-			var55 := List_get
-			var56 := var55(var53, var54)
-			var57 := 'f'
-			var58 := make_Option_Some
-			var59 := var58(var57)
-			var60 := Debug_assert_eq
-			var61 := var60(var56, var59)
-			var39_block = var61
+
+			var x any = Seq_to_list(String_chars("foo"))
+
+			Debug_assert_eq(List_len(x), 3)
+
+			Debug_assert_eq(List_get(x, 0), make_Option_Some('f'))
 		}
-		_ = var39_block
-		var62 := "foobarbaz"
-		var63 := "bar"
-		var64 := String_contains
-		var65 := var64(var62, var63)
-		var66 := true
-		var67 := Debug_assert_eq
-		var68 := var67(var65, var66)
-		_ = var68
-		var69 := "abcd"
-		var70 := "c"
-		var71 := String_index_of
-		var72 := var71(var69, var70)
-		var73 := 2
-		var74 := make_Option_Some
-		var75 := var74(var73)
-		var76 := Debug_assert_eq
-		var77 := var76(var72, var75)
-		_ = var77
-		var78 := "abcd"
-		var79 := "z"
-		var80 := String_index_of
-		var81 := var80(var78, var79)
-		var82 := make_Option_None
-		var83 := Debug_assert_eq
-		var84 := var83(var81, var82)
-		_ = var84
-		var85 := 'f'
-		var86 := Char_to_int
-		var87 := var86(var85)
-		var88 := 102
-		var89 := Debug_assert_eq
-		var90 := var89(var87, var88)
-		_ = var90
-		var91 := 'f'
-		var92 := Char_to_string
-		var93 := var92(var91)
-		var94 := "'f'"
-		var95 := Debug_assert_eq
-		var96 := var95(var93, var94)
-		_ = var96
-		var97 := borgo.Unit
-		var1_block = var97
+
+		Debug_assert_eq(String_contains("foobarbaz", "bar"), true)
+
+		Debug_assert_eq(String_index_of("abcd", "c"), make_Option_Some(2))
+
+		Debug_assert_eq(String_index_of("abcd", "z"), make_Option_None)
+
+		Debug_assert_eq(Char_to_int('f'), 102)
+
+		Debug_assert_eq(Char_to_string('f'), "'f'")
+
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

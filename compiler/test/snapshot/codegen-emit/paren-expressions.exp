@@ -17,21 +17,12 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := 4
-		var4 := borgo.Ops.IAdd
-		var5 := var4(var2, var3)
-		var6 := (var5)
-		var7 := 5
-		var8 := Debug_assert_eq
-		var9 := var8(var6, var7)
-		_ = var9
-		var10 := borgo.Unit
-		var1_block = var10
+
+		Debug_assert_eq((borgo.Ops.IAdd(1, 4)), 5)
+
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

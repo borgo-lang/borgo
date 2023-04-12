@@ -33,86 +33,36 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 40
-		var3 := a
-		var4 := var3(var2)
-		var1_block = var4
-	}
-	return var1_block
-}
 
+		return a(40)
+	}
+}
 func b(n any) any {
 
-	var var1_block any
 	{
-		var3 := n
-		var4 := 200
-		var5 := borgo.Ops.Eq
-		var6 := var5(var3, var4)
-		var var2_result any
 
-		if borgo.Ops.Eq(var6, true).(bool) {
-			var var7_block any
-			{
-				var8 := n
-				return var8
-				var9 := borgo.Unit
-				var7_block = var9
-			}
-			var2_result = var7_block
-		} else {
-			var10 := borgo.Unit
-			var2_result = var10
+		if borgo.Ops.Eq(borgo.Ops.Eq(n, 200), true).(bool) {
+
+			return n
+
 		}
-		var11 := var2_result
-		_ = var11
-		var12 := n
-		var13 := 20
-		var14 := borgo.Ops.IAdd
-		var15 := var14(var12, var13)
-		var16 := a
-		var17 := var16(var15)
-		var1_block = var17
-	}
-	return var1_block
-}
 
+		return a(borgo.Ops.IAdd(n, 20))
+	}
+}
 func a(n any) any {
 
-	var var1_block any
 	{
-		var3 := n
-		var4 := 100
-		var5 := borgo.Ops.Eq
-		var6 := var5(var3, var4)
-		var var2_result any
 
-		if borgo.Ops.Eq(var6, true).(bool) {
-			var var7_block any
-			{
-				var8 := n
-				return var8
-				var9 := borgo.Unit
-				var7_block = var9
-			}
-			var2_result = var7_block
-		} else {
-			var10 := borgo.Unit
-			var2_result = var10
+		if borgo.Ops.Eq(borgo.Ops.Eq(n, 100), true).(bool) {
+
+			return n
+
 		}
-		var11 := var2_result
-		_ = var11
-		var12 := n
-		var13 := 10
-		var14 := borgo.Ops.IAdd
-		var15 := var14(var12, var13)
-		var16 := b
-		var17 := var16(var15)
-		var1_block = var17
+
+		return b(borgo.Ops.IAdd(n, 10))
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

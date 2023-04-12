@@ -37,57 +37,32 @@ type Foo struct {
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := "hi"
-		var4 := true
-		var5 := func(base any) any {
+
+		var x any = func(base any) any {
 			data := base.(Foo)
-			data.A = var2
-			data.B = var3
-			data.C = var4
+			data.A = 1
+			data.B = "hi"
+			data.C = true
 			return data
 		}(Foo{})
-		var6 := var5
-		var7 := borgo.Unit
-		_ = var7
-		var8 := var6
-		var9 := var8.(Foo).A
-		var10 := 1
-		var11 := Debug_assert_eq
-		var12 := var11(var9, var10)
-		_ = var12
-		var13 := var6
-		var14 := 5
-		var15 := false
-		var16 := func(base any) any {
-			data := base.(Foo)
-			data.A = var14
-			data.C = var15
-			return data
-		}(var13)
-		var17 := var16
-		var18 := borgo.Unit
-		_ = var18
-		var19 := var17
-		var20 := var19.(Foo).A
-		var21 := 5
-		var22 := Debug_assert_eq
-		var23 := var22(var20, var21)
-		_ = var23
-		var24 := var6
-		var25 := var24.(Foo).A
-		var26 := 1
-		var27 := Debug_assert_eq
-		var28 := var27(var25, var26)
-		_ = var28
-		var29 := borgo.Unit
-		var1_block = var29
-	}
-	return var1_block
-}
 
+		Debug_assert_eq(x.(Foo).A, 1)
+
+		var y any = func(base any) any {
+			data := base.(Foo)
+			data.A = 5
+			data.C = false
+			return data
+		}(x)
+
+		Debug_assert_eq(y.(Foo).A, 5)
+
+		Debug_assert_eq(x.(Foo).A, 1)
+
+		return borgo.Unit
+	}
+}
 func Foo_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }

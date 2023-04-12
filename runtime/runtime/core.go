@@ -59,6 +59,18 @@ var borgo = B{
 
 var Ops = OperatorImpl{}
 
+type MatchResult int
+
+const (
+	MatchNone MatchResult = iota
+	MatchErr
+	MatchOk
+)
+
+func isMatching(m MatchResult) bool {
+	return m == MatchOk
+}
+
 // ------------
 // Core
 // ------------

@@ -1,0 +1,149 @@
+Nested if and match maintain context.
+
+SOURCE:
+fn foo() -> Int {
+  if 1 > 2 {
+    1
+  } else if 2 > 3  {
+    2
+  } else {
+    3
+  }
+}
+
+fn bar() -> Int {
+  match 1 {
+    1 => match 2 {
+      3 => 4,
+      _ => 5,
+    },
+    _ => 9,
+  }
+}
+
+fn borgo_main() {
+  foo().assert_eq(3);
+  bar().assert_eq(5);
+}
+
+OUTPUT:
+
+---
+package main
+
+import borgo "borgo/runtime"
+
+var _ = borgo.Unit
+
+func foo() any {
+
+	{
+		var var1 any
+		_ = var1
+
+		if borgo.Ops.Eq(borgo.Ops.IGt(1, 2), true).(bool) {
+
+			var1 = 1
+		} else {
+
+			if borgo.Ops.Eq(borgo.Ops.IGt(2, 3), true).(bool) {
+
+				var1 = 2
+			} else {
+
+				var1 = 3
+			}
+
+		}
+		return var1
+	}
+}
+func bar() any {
+
+	{
+		var var1 any
+		_ = var1
+
+		var3_subject := 1
+		var4_matches := borgo.MatchNone
+
+		if var4_matches != borgo.MatchOk {
+			var4_matches = borgo.MatchNone
+
+			if var4_matches != borgo.MatchErr && borgo.Ops.Eq(1, var3_subject).(bool) {
+				var4_matches = borgo.MatchOk
+			} else {
+				var4_matches = borgo.MatchErr
+			}
+			_ = var3_subject
+
+			if var4_matches == borgo.MatchOk {
+
+				var7_subject := 2
+				var8_matches := borgo.MatchNone
+
+				if var8_matches != borgo.MatchOk {
+					var8_matches = borgo.MatchNone
+
+					if var8_matches != borgo.MatchErr && borgo.Ops.Eq(3, var7_subject).(bool) {
+						var8_matches = borgo.MatchOk
+					} else {
+						var8_matches = borgo.MatchErr
+					}
+					_ = var7_subject
+
+					if var8_matches == borgo.MatchOk {
+
+						var1 = 4
+					}
+				}
+
+				if var8_matches != borgo.MatchOk {
+					var8_matches = borgo.MatchNone
+
+					if var8_matches != borgo.MatchErr {
+						var8_matches = borgo.MatchOk /* wildcard */
+					}
+					_ = var7_subject
+
+					if var8_matches == borgo.MatchOk {
+
+						var1 = 5
+					}
+				}
+
+			}
+		}
+
+		if var4_matches != borgo.MatchOk {
+			var4_matches = borgo.MatchNone
+
+			if var4_matches != borgo.MatchErr {
+				var4_matches = borgo.MatchOk /* wildcard */
+			}
+			_ = var3_subject
+
+			if var4_matches == borgo.MatchOk {
+
+				var1 = 9
+			}
+		}
+
+		return var1
+	}
+}
+func borgo_main() any {
+
+	{
+
+		Debug_assert_eq(foo(), 3)
+
+		return Debug_assert_eq(bar(), 5)
+	}
+}
+
+func pkg_user_init() {
+	borgo.RegisterGlobalFunction("foo", foo)
+	borgo.RegisterGlobalFunction("bar", bar)
+	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+}

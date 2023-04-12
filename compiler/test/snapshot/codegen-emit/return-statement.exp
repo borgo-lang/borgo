@@ -31,95 +31,65 @@ var _ = borgo.Unit
 
 func foo() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var var3_result any
-		var4_subject := var2
-		var5_matches := 0
+		var var1 any
+		_ = var1
 
-		if var5_matches != 2 {
-			var5_matches = 0
+		var3_subject := 1
+		var4_matches := borgo.MatchNone
 
-			var6 := 1
+		if var4_matches != borgo.MatchOk {
+			var4_matches = borgo.MatchNone
 
-			if var5_matches != 1 && borgo.Ops.Eq(var6, var4_subject).(bool) {
-				var5_matches = 2
+			if var4_matches != borgo.MatchErr && borgo.Ops.Eq(1, var3_subject).(bool) {
+				var4_matches = borgo.MatchOk
 			} else {
-				var5_matches = 1
+				var4_matches = borgo.MatchErr
 			}
-			_ = var4_subject
+			_ = var3_subject
 
-			if var5_matches == 2 {
-				var7 := 12
-				return var7
-				var8 := borgo.Unit
-				var3_result = var8
-			}
-		}
+			if var4_matches == borgo.MatchOk {
 
-		if var5_matches != 2 {
-			var5_matches = 0
+				return 12
 
-			if var5_matches != 1 {
-				var5_matches = 2 /* wildcard */
-			}
-			_ = var4_subject
-
-			if var5_matches == 2 {
-				var9 := 5
-				var3_result = var9
 			}
 		}
 
-		var10 := var3_result
-		var11 := borgo.Unit
-		_ = var11
-		var13 := true
-		var var12_result any
+		if var4_matches != borgo.MatchOk {
+			var4_matches = borgo.MatchNone
 
-		if borgo.Ops.Eq(var13, true).(bool) {
-			var var14_block any
-			{
-				var15 := var10
-				var16 := 40
-				var17 := borgo.Ops.IAdd
-				var18 := var17(var15, var16)
-				var14_block = var18
+			if var4_matches != borgo.MatchErr {
+				var4_matches = borgo.MatchOk /* wildcard */
 			}
-			var12_result = var14_block
+			_ = var3_subject
+
+			if var4_matches == borgo.MatchOk {
+
+				var1 = 5
+			}
+		}
+
+		var x any = var1
+
+		if borgo.Ops.Eq(true, true).(bool) {
+
+			borgo.Ops.IAdd(x, 40)
+
 		} else {
-			var var19_block any
-			{
-				var20 := 9
-				return var20
-				var21 := borgo.Unit
-				var19_block = var21
-			}
-			var12_result = var19_block
-		}
-		var22 := var12_result
-		_ = var22
-		var23 := 4
-		return var23
-		var24 := borgo.Unit
-		var1_block = var24
-	}
-	return var1_block
-}
 
+			return 9
+
+		}
+
+		return 4
+	}
+}
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := foo
-		var3 := var2()
-		var4 := 12
-		var5 := Debug_assert_eq
-		var6 := var5(var3, var4)
-		var1_block = var6
+
+		return Debug_assert_eq(foo(), 12)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

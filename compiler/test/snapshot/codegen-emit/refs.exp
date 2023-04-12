@@ -19,53 +19,28 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 0
-		var3 := Ref_to_ref
-		var4 := var3(var2)
-		var5 := var4
-		var6 := borgo.Unit
-		_ = var6
-		var7 := 0
-		var8 := 0
-		var9 := 0
-		var10 := borgo.List(var7, var8, var9)
-		var11 := List_seq
-		var12 := var11(var10)
-		var22 := func(_ any) any {
 
-			var13 := var5
-			var18 := func(c any) any {
+		var count any = Ref_to_ref(0)
 
-				var14 := c
-				var15 := 1
-				var16 := borgo.Ops.IAdd
-				var17 := var16(var14, var15)
-				return var17
+		Seq_for_each(List_seq(borgo.List(0, 0, 0)), func(_ any) any {
+
+			{
+
+				return Ref_mutate(count, func(c any) any {
+
+					{
+
+						return borgo.Ops.IAdd(c, 1)
+					}
+				})
 			}
+		})
 
-			var19 := var18
-			var20 := Ref_mutate
-			var21 := var20(var13, var19)
-			return var21
-		}
+		Debug_assert_eq(Ref_get(count), 3)
 
-		var23 := var22
-		var24 := Seq_for_each
-		var25 := var24(var12, var23)
-		_ = var25
-		var26 := var5
-		var27 := Ref_get
-		var28 := var27(var26)
-		var29 := 3
-		var30 := Debug_assert_eq
-		var31 := var30(var28, var29)
-		_ = var31
-		var32 := borgo.Unit
-		var1_block = var32
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

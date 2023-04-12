@@ -60,63 +60,33 @@ type Foo struct {
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := make_Expr_Number
-		var4 := var3(var2)
-		var5 := var4
-		var6 := borgo.Unit
-		_ = var6
-		var7 := 2
-		var8 := make_Expr_Number
-		var9 := var8(var7)
-		var10 := var9
-		var11 := borgo.Unit
-		_ = var11
-		var12 := var5
-		var13 := var10
-		var14 := make_Expr_Add
-		var15 := var14(var12, var13)
-		var16 := var15
-		var17 := borgo.Unit
-		_ = var17
-		var18 := var16
-		var19 := Debug_inspect(var18)
-		_ = var19
-		var20 := "a"
-		var21 := make_Option_None
-		var22 := func(base any) any {
-			data := base.(Foo)
-			data.N = var20
-			data.F = var21
-			return data
-		}(Foo{})
-		var23 := var22
-		var24 := borgo.Unit
-		_ = var24
-		var25 := "b"
-		var26 := var23
-		var27 := make_Option_Some
-		var28 := var27(var26)
-		var29 := func(base any) any {
-			data := base.(Foo)
-			data.N = var25
-			data.F = var28
-			return data
-		}(Foo{})
-		var30 := var29
-		var31 := borgo.Unit
-		_ = var31
-		var32 := var30
-		var33 := Debug_inspect(var32)
-		_ = var33
-		var34 := borgo.Unit
-		var1_block = var34
-	}
-	return var1_block
-}
 
+		var one any = make_Expr_Number(1)
+
+		var two any = make_Expr_Number(2)
+
+		var e any = make_Expr_Add(one, two)
+		Debug_inspect(e)
+
+		var f any = func(base any) any {
+			data := base.(Foo)
+			data.N = "a"
+			data.F = make_Option_None
+			return data
+		}(Foo{})
+
+		var ok any = func(base any) any {
+			data := base.(Foo)
+			data.N = "b"
+			data.F = make_Option_Some(f)
+			return data
+		}(Foo{})
+		Debug_inspect(ok)
+
+		return borgo.Unit
+	}
+}
 func Expr_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }

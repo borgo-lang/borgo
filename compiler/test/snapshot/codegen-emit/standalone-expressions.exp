@@ -18,15 +18,11 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 4
-		var3 := Debug_inspect(var2)
-		_ = var3
-		var4 := borgo.Unit
-		var1_block = var4
+		Debug_inspect(4)
+
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

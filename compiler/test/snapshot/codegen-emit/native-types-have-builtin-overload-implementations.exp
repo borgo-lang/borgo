@@ -65,139 +65,52 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := Int_to_string
-		var4 := var3(var2)
-		var5 := Debug_inspect(var4)
-		_ = var5
-		var6 := 1
-		var7 := Int_to_hash
-		var8 := var7(var6)
-		var9 := Debug_inspect(var8)
-		_ = var9
-		var10 := 1
-		var11 := 1
-		var12 := Int_equals
-		var13 := var12(var10, var11)
-		var14 := Debug_inspect(var13)
-		_ = var14
-		var15 := "hello"
-		var16 := String_to_string
-		var17 := var16(var15)
-		var18 := Debug_inspect(var17)
-		_ = var18
-		var19 := "hello"
-		var20 := String_to_hash
-		var21 := var20(var19)
-		var22 := Debug_inspect(var21)
-		_ = var22
-		var23 := "hello"
-		var24 := "hello"
-		var25 := String_equals
-		var26 := var25(var23, var24)
-		var27 := Debug_inspect(var26)
-		_ = var27
-		var28 := 1.34
-		var29 := (var28)
-		var30 := Float_to_string
-		var31 := var30(var29)
-		var32 := Debug_inspect(var31)
-		_ = var32
-		var33 := 1.34
-		var34 := (var33)
-		var35 := Float_to_hash
-		var36 := var35(var34)
-		var37 := Debug_inspect(var36)
-		_ = var37
-		var38 := 1.34
-		var39 := (var38)
-		var40 := 1.34
-		var41 := Float_equals
-		var42 := var41(var39, var40)
-		var43 := Debug_inspect(var42)
-		_ = var43
-		var44 := 'f'
-		var45 := Char_to_string
-		var46 := var45(var44)
-		var47 := Debug_inspect(var46)
-		_ = var47
-		var48 := 'f'
-		var49 := Char_to_hash
-		var50 := var49(var48)
-		var51 := Debug_inspect(var50)
-		_ = var51
-		var52 := 'f'
-		var53 := 'f'
-		var54 := Char_equals
-		var55 := var54(var52, var53)
-		var56 := Debug_inspect(var55)
-		_ = var56
-		var57 := false
-		var58 := Bool_to_string
-		var59 := var58(var57)
-		var60 := Debug_inspect(var59)
-		_ = var60
-		var61 := false
-		var62 := Bool_to_hash
-		var63 := var62(var61)
-		var64 := Debug_inspect(var63)
-		_ = var64
-		var65 := false
-		var66 := false
-		var67 := Bool_equals
-		var68 := var67(var65, var66)
-		var69 := Debug_inspect(var68)
-		_ = var69
-		var70 := 1
-		var71 := 2
-		var72 := 3
-		var73 := borgo.List(var70, var71, var72)
-		var74 := List_to_string
-		var75 := var74(var73)
-		var76 := Debug_inspect(var75)
-		_ = var76
-		var77 := 1
-		var78 := 2
-		var79 := 3
-		var80 := borgo.List(var77, var78, var79)
-		var81 := List_to_hash
-		var82 := var81(var80)
-		var83 := Debug_inspect(var82)
-		_ = var83
-		var84 := 1
-		var85 := 2
-		var86 := 3
-		var87 := borgo.List(var84, var85, var86)
-		var88 := 1
-		var89 := 2
-		var90 := 3
-		var91 := borgo.List(var88, var89, var90)
-		var92 := List_equals
-		var93 := var92(var87, var91)
-		var94 := Debug_inspect(var93)
-		_ = var94
-		var95 := borgo.Unit
-		var96 := Unit_to_string
-		var97 := var96(var95)
-		var98 := Debug_inspect(var97)
-		_ = var98
-		var99 := borgo.Unit
-		var100 := Unit_to_hash
-		var101 := var100(var99)
-		var102 := Debug_inspect(var101)
-		_ = var102
-		var103 := borgo.Unit
-		var104 := borgo.Unit
-		var105 := Unit_equals
-		var106 := var105(var103, var104)
-		var107 := Debug_inspect(var106)
-		_ = var107
-		var108 := borgo.Unit
-		var1_block = var108
+
+		Debug_inspect(Int_to_string(1))
+
+		Debug_inspect(Int_to_hash(1))
+
+		Debug_inspect(Int_equals(1, 1))
+
+		Debug_inspect(String_to_string("hello"))
+
+		Debug_inspect(String_to_hash("hello"))
+
+		Debug_inspect(String_equals("hello", "hello"))
+
+		Debug_inspect(Float_to_string((1.34)))
+
+		Debug_inspect(Float_to_hash((1.34)))
+
+		Debug_inspect(Float_equals((1.34), 1.34))
+
+		Debug_inspect(Char_to_string('f'))
+
+		Debug_inspect(Char_to_hash('f'))
+
+		Debug_inspect(Char_equals('f', 'f'))
+
+		Debug_inspect(Bool_to_string(false))
+
+		Debug_inspect(Bool_to_hash(false))
+
+		Debug_inspect(Bool_equals(false, false))
+
+		Debug_inspect(List_to_string(borgo.List(1, 2, 3)))
+
+		Debug_inspect(List_to_hash(borgo.List(1, 2, 3)))
+
+		Debug_inspect(List_equals(borgo.List(1, 2, 3), borgo.List(1, 2, 3)))
+
+		Debug_inspect(Unit_to_string(borgo.Unit))
+
+		Debug_inspect(Unit_to_hash(borgo.Unit))
+
+		Debug_inspect(Unit_equals(borgo.Unit, borgo.Unit))
+
+		return borgo.Unit
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

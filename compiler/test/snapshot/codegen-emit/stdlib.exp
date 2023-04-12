@@ -181,742 +181,199 @@ var _ = borgo.Unit
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := 2
-		var4 := 3
-		var5 := borgo.List(var2, var3, var4)
-		var6 := var5
-		var7 := borgo.Unit
-		_ = var7
-		var8 := var6
-		var9 := 4
-		var10 := List_push
-		var11 := var10(var8, var9)
-		var12 := 1
-		var13 := 2
-		var14 := 3
-		var15 := 4
-		var16 := borgo.List(var12, var13, var14, var15)
-		var17 := Debug_assert_eq
-		var18 := var17(var11, var16)
-		_ = var18
-		var19 := var6
-		var20 := List_pop
-		var21 := var20(var19)
-		var22 := 1
-		var23 := 2
-		var24 := borgo.List(var22, var23)
-		var25 := Debug_assert_eq
-		var26 := var25(var21, var24)
-		_ = var26
-		var27 := var6
-		var28 := List_pop
-		var29 := var28(var27)
-		var30 := List_pop
-		var31 := var30(var29)
-		var32 := List_pop
-		var33 := var32(var31)
-		var34 := List_pop
-		var35 := var34(var33)
-		var36 := List_is_empty
-		var37 := var36(var35)
-		var38 := true
-		var39 := Debug_assert_eq
-		var40 := var39(var37, var38)
-		_ = var40
-		var41 := 0
-		var46 := func(n any) any {
 
-			var42 := n
-			var43 := 3
-			var44 := borgo.Ops.IAdd
-			var45 := var44(var42, var43)
-			return var45
-		}
+		var x any = borgo.List(1, 2, 3)
 
-		var47 := var46
-		var48 := Seq_infinite
-		var49 := var48(var41, var47)
-		var50 := var49
-		var51 := borgo.Unit
-		_ = var51
-		var52 := var50
-		var53 := 3
-		var54 := Seq_take
-		var55 := var54(var52, var53)
-		var56 := Seq_len
-		var57 := var56(var55)
-		var58 := 3
-		var59 := Debug_assert_eq
-		var60 := var59(var57, var58)
-		_ = var60
-		var61 := var50
-		var62 := 50
-		var63 := Seq_take
-		var64 := var63(var61, var62)
-		var65 := Seq_to_list
-		var66 := var65(var64)
-		var67 := 4
-		var68 := List_get
-		var69 := var68(var66, var67)
-		var70 := 12
-		var71 := make_Option_Some
-		var72 := var71(var70)
-		var73 := Debug_assert_eq
-		var74 := var73(var69, var72)
-		_ = var74
-		var75 := var6
-		var76 := List_seq
-		var77 := var76(var75)
-		var82 := func(n any) any {
+		Debug_assert_eq(List_push(x, 4), borgo.List(1, 2, 3, 4))
 
-			var78 := n
-			var79 := 1
-			var80 := borgo.Ops.IGt
-			var81 := var80(var78, var79)
-			return var81
-		}
+		Debug_assert_eq(List_pop(x), borgo.List(1, 2))
 
-		var83 := var82
-		var84 := Seq_filter
-		var85 := var84(var77, var83)
-		var90 := func(n any) any {
+		Debug_assert_eq(List_is_empty(List_pop(List_pop(List_pop(List_pop(x))))), true)
 
-			var86 := n
-			var87 := 8
-			var88 := borgo.Ops.IMul
-			var89 := var88(var86, var87)
-			return var89
-		}
+		var s any = Seq_infinite(0, func(n any) any {
 
-		var91 := var90
-		var92 := Seq_map
-		var93 := var92(var85, var91)
-		var94 := Seq_to_list
-		var95 := var94(var93)
-		var96 := 1
-		var97 := List_get
-		var98 := var97(var95, var96)
-		var99 := Debug_inspect(var98)
-		_ = var99
-		var100 := var50
-		var101 := 10
-		var102 := Seq_take
-		var103 := var102(var100, var101)
-		var104 := Seq_sum
-		var105 := var104(var103)
-		var106 := 135
-		var107 := Debug_assert_eq
-		var108 := var107(var105, var106)
-		_ = var108
-		var109 := var50
-		var110 := 10
-		var111 := Seq_drop
-		var112 := var111(var109, var110)
-		var113 := 1
-		var114 := Seq_take
-		var115 := var114(var112, var113)
-		var116 := Seq_to_list
-		var117 := var116(var115)
-		var118 := 0
-		var119 := List_get
-		var120 := var119(var117, var118)
-		var121 := 30
-		var122 := make_Option_Some
-		var123 := var122(var121)
-		var124 := Debug_assert_eq
-		var125 := var124(var120, var123)
-		_ = var125
-		var var126_block any
+			{
+
+				return borgo.Ops.IAdd(n, 3)
+			}
+		})
+
+		Debug_assert_eq(Seq_len(Seq_take(s, 3)), 3)
+
+		Debug_assert_eq(List_get(Seq_to_list(Seq_take(s, 50)), 4), make_Option_Some(12))
+
+		Debug_inspect(List_get(Seq_to_list(Seq_map(Seq_filter(List_seq(x), func(n any) any {
+
+			{
+
+				return borgo.Ops.IGt(n, 1)
+			}
+		}), func(n any) any {
+
+			{
+
+				return borgo.Ops.IMul(n, 8)
+			}
+		})), 1))
+
+		Debug_assert_eq(Seq_sum(Seq_take(s, 10)), 135)
+
+		Debug_assert_eq(List_get(Seq_to_list(Seq_take(Seq_drop(s, 10), 1)), 0), make_Option_Some(30))
 		{
-			var127 := var50
-			var128 := 5
-			var129 := Seq_split_at
-			var130 := var129(var127, var128)
-			var131 := var130
-			var132_match_pat := 0
-			var133 := var131.(Tuple2).First
-			var134 := var131.(Tuple2).Second
 
-			if var132_match_pat != 1 {
-				_ = 2
+			var114 := Seq_split_at(s, 5)
+			var115_match_pat := borgo.MatchNone
+			first := var114.(Tuple2).First
+			last := var114.(Tuple2).Second
+
+			if var115_match_pat != borgo.MatchErr {
+				_ = borgo.MatchOk
 			} else {
-				_ = 1
+				_ = borgo.MatchErr
 			}
 
-			var135 := borgo.Unit
-			_ = var135
-			var136 := var133
-			var137 := Seq_sum
-			var138 := var137(var136)
-			var139 := 30
-			var140 := Debug_assert_eq
-			var141 := var140(var138, var139)
-			_ = var141
-			var142 := var134
-			var143 := 5
-			var144 := Seq_take
-			var145 := var144(var142, var143)
-			var146 := Seq_to_list
-			var147 := var146(var145)
-			var148 := 15
-			var149 := 18
-			var150 := 21
-			var151 := 24
-			var152 := 27
-			var153 := borgo.List(var148, var149, var150, var151, var152)
-			var154 := Debug_assert_eq
-			var155 := var154(var147, var153)
-			var126_block = var155
-		}
-		_ = var126_block
-		var var156_block any
-		{
-			var157 := var50
-			var158 := 2
-			var159 := Seq_chunks
-			var160 := var159(var157, var158)
-			var161 := var160
-			var162 := borgo.Unit
-			_ = var162
-			var163 := var161
-			var164 := 0
-			var165 := Seq_get
-			var166 := var165(var163, var164)
-			var167 := Option_unwrap
-			var168 := var167(var166)
-			var169 := Seq_sum
-			var170 := var169(var168)
-			var171 := 3
-			var172 := Debug_assert_eq
-			var173 := var172(var170, var171)
-			_ = var173
-			var174 := var161
-			var175 := 1
-			var176 := Seq_get
-			var177 := var176(var174, var175)
-			var178 := Option_unwrap
-			var179 := var178(var177)
-			var180 := Seq_sum
-			var181 := var180(var179)
-			var182 := 15
-			var183 := Debug_assert_eq
-			var184 := var183(var181, var182)
-			_ = var184
-			var185 := var161
-			var186 := 2
-			var187 := Seq_get
-			var188 := var187(var185, var186)
-			var189 := Option_unwrap
-			var190 := var189(var188)
-			var191 := Seq_sum
-			var192 := var191(var190)
-			var193 := 27
-			var194 := Debug_assert_eq
-			var195 := var194(var192, var193)
-			_ = var195
-			var196 := var50
-			var197 := 5
-			var198 := Seq_take
-			var199 := var198(var196, var197)
-			var200 := 3
-			var201 := Seq_chunks
-			var202 := var201(var199, var200)
-			var203 := var202
-			var204 := borgo.Unit
-			_ = var204
-			var205 := var203
-			var206 := 0
-			var207 := Seq_get
-			var208 := var207(var205, var206)
-			var209 := Option_unwrap
-			var210 := var209(var208)
-			var211 := Seq_sum
-			var212 := var211(var210)
-			var213 := 9
-			var214 := Debug_assert_eq
-			var215 := var214(var212, var213)
-			_ = var215
-			var216 := var203
-			var217 := 1
-			var218 := Seq_get
-			var219 := var218(var216, var217)
-			var220 := Option_unwrap
-			var221 := var220(var219)
-			var222 := Seq_sum
-			var223 := var222(var221)
-			var224 := 21
-			var225 := Debug_assert_eq
-			var226 := var225(var223, var224)
-			_ = var226
-			var227 := var203
-			var228 := 2
-			var229 := Seq_get
-			var230 := var229(var227, var228)
-			var231 := make_Option_None
-			var232 := Debug_assert_eq
-			var233 := var232(var230, var231)
-			var156_block = var233
-		}
-		_ = var156_block
-		var var234_block any
-		{
-			var235 := var50
-			var236 := 2
-			var237 := Seq_windows
-			var238 := var237(var235, var236)
-			var239 := var238
-			var240 := borgo.Unit
-			_ = var240
-			var241 := var239
-			var242 := 0
-			var243 := Seq_get
-			var244 := var243(var241, var242)
-			var245 := Option_unwrap
-			var246 := var245(var244)
-			var247 := Seq_sum
-			var248 := var247(var246)
-			var249 := 3
-			var250 := Debug_assert_eq
-			var251 := var250(var248, var249)
-			_ = var251
-			var252 := var239
-			var253 := 1
-			var254 := Seq_get
-			var255 := var254(var252, var253)
-			var256 := Option_unwrap
-			var257 := var256(var255)
-			var258 := Seq_sum
-			var259 := var258(var257)
-			var260 := 9
-			var261 := Debug_assert_eq
-			var262 := var261(var259, var260)
-			_ = var262
-			var263 := var239
-			var264 := 2
-			var265 := Seq_get
-			var266 := var265(var263, var264)
-			var267 := Option_unwrap
-			var268 := var267(var266)
-			var269 := Seq_sum
-			var270 := var269(var268)
-			var271 := 15
-			var272 := Debug_assert_eq
-			var273 := var272(var270, var271)
-			_ = var273
-			var274 := var50
-			var275 := 5
-			var276 := Seq_take
-			var277 := var276(var274, var275)
-			var278 := 3
-			var279 := Seq_windows
-			var280 := var279(var277, var278)
-			var281 := var280
-			var282 := borgo.Unit
-			_ = var282
-			var283 := var281
-			var284 := 0
-			var285 := Seq_get
-			var286 := var285(var283, var284)
-			var287 := Option_unwrap
-			var288 := var287(var286)
-			var289 := Seq_sum
-			var290 := var289(var288)
-			var291 := 9
-			var292 := Debug_assert_eq
-			var293 := var292(var290, var291)
-			_ = var293
-			var294 := var281
-			var295 := 1
-			var296 := Seq_get
-			var297 := var296(var294, var295)
-			var298 := Option_unwrap
-			var299 := var298(var297)
-			var300 := Seq_sum
-			var301 := var300(var299)
-			var302 := 18
-			var303 := Debug_assert_eq
-			var304 := var303(var301, var302)
-			_ = var304
-			var305 := var281
-			var306 := 2
-			var307 := Seq_get
-			var308 := var307(var305, var306)
-			var309 := Option_is_some
-			var310 := var309(var308)
-			var311 := true
-			var312 := Debug_assert_eq
-			var313 := var312(var310, var311)
-			_ = var313
-			var314 := var281
-			var315 := 3
-			var316 := Seq_get
-			var317 := var316(var314, var315)
-			var318 := Option_is_none
-			var319 := var318(var317)
-			var320 := true
-			var321 := Debug_assert_eq
-			var322 := var321(var319, var320)
-			var234_block = var322
-		}
-		_ = var234_block
-		var323 := var50
-		var336 := func(x any) any {
+			Debug_assert_eq(Seq_sum(first), 30)
 
-			var325 := x
-			var326 := 21
-			var327 := borgo.Ops.Eq
-			var328 := var327(var325, var326)
-			var var324_result any
+			Debug_assert_eq(Seq_to_list(Seq_take(last, 5)), borgo.List(15, 18, 21, 24, 27))
+		}
+		{
 
-			if borgo.Ops.Eq(var328, true).(bool) {
-				var var329_block any
-				{
-					var330 := x
-					var331 := make_Option_Some
-					var332 := var331(var330)
-					var329_block = var332
+			var foo any = Seq_chunks(s, 2)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(foo, 0))), 3)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(foo, 1))), 15)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(foo, 2))), 27)
+
+			var bar any = Seq_chunks(Seq_take(s, 5), 3)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(bar, 0))), 9)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(bar, 1))), 21)
+
+			Debug_assert_eq(Seq_get(bar, 2), make_Option_None)
+		}
+		{
+
+			var foo any = Seq_windows(s, 2)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(foo, 0))), 3)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(foo, 1))), 9)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(foo, 2))), 15)
+
+			var bar any = Seq_windows(Seq_take(s, 5), 3)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(bar, 0))), 9)
+
+			Debug_assert_eq(Seq_sum(Option_unwrap(Seq_get(bar, 1))), 18)
+
+			Debug_assert_eq(Option_is_some(Seq_get(bar, 2)), true)
+
+			Debug_assert_eq(Option_is_none(Seq_get(bar, 3)), true)
+		}
+
+		Debug_assert_eq(Seq_find_map(s, func(x any) any {
+
+			{
+				var var281 any
+				_ = var281
+
+				if borgo.Ops.Eq(borgo.Ops.Eq(x, 21), true).(bool) {
+
+					var281 = make_Option_Some(x)
+				} else {
+
+					var281 = make_Option_None
 				}
-				var324_result = var329_block
-			} else {
-				var var333_block any
-				{
-					var334 := make_Option_None
-					var333_block = var334
-				}
-				var324_result = var333_block
+				return var281
 			}
-			var335 := var324_result
-			return var335
-		}
+		}), make_Option_Some(21))
 
-		var337 := var336
-		var338 := Seq_find_map
-		var339 := var338(var323, var337)
-		var340 := 21
-		var341 := make_Option_Some
-		var342 := var341(var340)
-		var343 := Debug_assert_eq
-		var344 := var343(var339, var342)
-		_ = var344
-		var345 := var50
-		var346 := 10
-		var347 := Seq_take
-		var348 := var347(var345, var346)
-		var349 := Int_cmp
-		var350 := Seq_max_by
-		var351 := var350(var348, var349)
-		var352 := 27
-		var353 := make_Option_Some
-		var354 := var353(var352)
-		var355 := Debug_assert_eq
-		var356 := var355(var351, var354)
-		_ = var356
-		var var357_block any
+		Debug_assert_eq(Seq_max_by(Seq_take(s, 10), Int_cmp), make_Option_Some(27))
 		{
-			var358 := "a"
-			var359 := "b"
-			var360 := "c"
-			var361 := borgo.List(var358, var359, var360)
-			var362 := var361
-			var363 := borgo.Unit
-			_ = var363
-			var364 := var50
-			var365 := var362
-			var366 := List_seq
-			var367 := var366(var365)
-			var368 := Seq_zip
-			var369 := var368(var364, var367)
-			var370 := var369
-			var371 := borgo.Unit
-			_ = var371
-			var372 := var370
-			var373 := 1
-			var374 := Seq_get
-			var375 := var374(var372, var373)
-			var376 := 3
-			var377 := "b"
-			var378 := func(base any) any {
+
+			var other any = borgo.List("a", "b", "c")
+
+			var zipped any = Seq_zip(s, List_seq(other))
+
+			Debug_assert_eq(Seq_get(zipped, 1), make_Option_Some(func(base any) any {
 				data := base.(Tuple2)
-				data.First = var376
-				data.Second = var377
+				data.First = 3
+				data.Second = "b"
 				return data
-			}(Tuple2{})
-			var379 := make_Option_Some
-			var380 := var379(var378)
-			var381 := Debug_assert_eq
-			var382 := var381(var375, var380)
-			_ = var382
-			var383 := var370
-			var384 := 3
-			var385 := Seq_get
-			var386 := var385(var383, var384)
-			var387 := make_Option_None
-			var388 := Debug_assert_eq
-			var389 := var388(var386, var387)
-			var357_block = var389
+			}(Tuple2{})))
+
+			Debug_assert_eq(Seq_get(zipped, 3), make_Option_None)
 		}
-		_ = var357_block
-		var390 := "a"
-		var391 := "b"
-		var392 := "c"
-		var393 := borgo.List(var390, var391, var392)
-		var394 := List_seq
-		var395 := var394(var393)
-		var396 := Seq_enumerate
-		var397 := var396(var395)
-		var398 := 2
-		var399 := Seq_get
-		var400 := var399(var397, var398)
-		var401 := Option_unwrap
-		var402 := var401(var400)
-		var403 := 2
-		var404 := "c"
-		var405 := func(base any) any {
+
+		Debug_assert_eq(Option_unwrap(Seq_get(Seq_enumerate(List_seq(borgo.List("a", "b", "c"))), 2)), func(base any) any {
 			data := base.(Tuple2)
-			data.First = var403
-			data.Second = var404
+			data.First = 2
+			data.Second = "c"
 			return data
-		}(Tuple2{})
-		var406 := Debug_assert_eq
-		var407 := var406(var402, var405)
-		_ = var407
-		var var408_block any
+		}(Tuple2{}))
 		{
-			var409 := var50
-			var410 := 100
-			var411 := Seq_drop
-			var412 := var411(var409, var410)
-			var413 := 5
-			var414 := Seq_take
-			var415 := var414(var412, var413)
-			var416 := var50
-			var417 := Seq_chain
-			var418 := var417(var415, var416)
-			var419 := 10
-			var420 := Seq_take
-			var421 := var420(var418, var419)
-			var422 := Seq_to_list
-			var423 := var422(var421)
-			var424 := var423
-			var425 := borgo.Unit
-			_ = var425
-			var426 := var424
-			var427 := 4
-			var428 := List_get
-			var429 := var428(var426, var427)
-			var430 := 312
-			var431 := make_Option_Some
-			var432 := var431(var430)
-			var433 := Debug_assert_eq
-			var434 := var433(var429, var432)
-			_ = var434
-			var435 := var424
-			var436 := 6
-			var437 := List_get
-			var438 := var437(var435, var436)
-			var439 := 3
-			var440 := make_Option_Some
-			var441 := var440(var439)
-			var442 := Debug_assert_eq
-			var443 := var442(var438, var441)
-			var408_block = var443
-		}
-		_ = var408_block
-		var444 := Map_new
-		var445 := var444()
-		var446 := "foo"
-		var447 := 6
-		var448 := Map_insert
-		var449 := var448(var445, var446, var447)
-		var450 := "bar"
-		var451 := 8
-		var452 := Map_insert
-		var453 := var452(var449, var450, var451)
-		var454 := var453
-		var455 := borgo.Unit
-		_ = var455
-		var456 := var454
-		var457 := Map_len
-		var458 := var457(var456)
-		var459 := 2
-		var460 := Debug_assert_eq
-		var461 := var460(var458, var459)
-		_ = var461
-		var462 := var454
-		var463 := "bar"
-		var464 := Map_get
-		var465 := var464(var462, var463)
-		var466 := 8
-		var467 := make_Option_Some
-		var468 := var467(var466)
-		var469 := Debug_assert_eq
-		var470 := var469(var465, var468)
-		_ = var470
-		var471 := var454
-		var472 := "xyz"
-		var473 := Map_get
-		var474 := var473(var471, var472)
-		var475 := make_Option_None
-		var476 := Debug_assert_eq
-		var477 := var476(var474, var475)
-		_ = var477
-		var478 := var454
-		var479 := Map_seq
-		var480 := var479(var478)
-		var481 := Seq_to_list
-		var482 := var481(var480)
-		var483 := 0
-		var484 := List_get
-		var485 := var484(var482, var483)
-		var486 := "foo"
-		var487 := 6
-		var488 := func(base any) any {
-			data := base.(Tuple2)
-			data.First = var486
-			data.Second = var487
-			return data
-		}(Tuple2{})
-		var489 := make_Option_Some
-		var490 := var489(var488)
-		var491 := Debug_assert_eq
-		var492 := var491(var485, var490)
-		_ = var492
-		var493 := var454
-		var494 := Map_seq_keys
-		var495 := var494(var493)
-		var496 := Seq_to_list
-		var497 := var496(var495)
-		var498 := 1
-		var499 := List_get
-		var500 := var499(var497, var498)
-		var501 := "bar"
-		var502 := make_Option_Some
-		var503 := var502(var501)
-		var504 := Debug_assert_eq
-		var505 := var504(var500, var503)
-		_ = var505
-		var506 := Map_new
-		var507 := var506()
-		var508 := 99
-		var509 := "baz"
-		var510 := Map_insert
-		var511 := var510(var507, var508, var509)
-		var512 := 99
-		var513 := Map_get
-		var514 := var513(var511, var512)
-		var515 := "baz"
-		var516 := make_Option_Some
-		var517 := var516(var515)
-		var518 := Debug_assert_eq
-		var519 := var518(var514, var517)
-		_ = var519
-		var520 := "a"
-		var521 := 1
-		var522 := func(base any) any {
-			data := base.(Tuple2)
-			data.First = var520
-			data.Second = var521
-			return data
-		}(Tuple2{})
-		var523 := "b"
-		var524 := 2
-		var525 := func(base any) any {
-			data := base.(Tuple2)
-			data.First = var523
-			data.Second = var524
-			return data
-		}(Tuple2{})
-		var526 := borgo.List(var522, var525)
-		var527 := List_seq
-		var528 := var527(var526)
-		var529 := to_map
-		var530 := var529(var528)
-		var531 := Map_len
-		var532 := var531(var530)
-		var533 := 2
-		var534 := Debug_assert_eq
-		var535 := var534(var532, var533)
-		_ = var535
-		var536 := Set_new
-		var537 := var536()
-		var538 := 1
-		var539 := Set_insert
-		var540 := var539(var537, var538)
-		var541 := 2
-		var542 := Set_insert
-		var543 := var542(var540, var541)
-		var544 := var543
-		var545 := borgo.Unit
-		_ = var545
-		var546 := var544
-		var547 := 1
-		var548 := Set_contains
-		var549 := var548(var546, var547)
-		var550 := true
-		var551 := Debug_assert_eq
-		var552 := var551(var549, var550)
-		_ = var552
-		var553 := var544
-		var554 := 3
-		var555 := Set_contains
-		var556 := var555(var553, var554)
-		var557 := false
-		var558 := Debug_assert_eq
-		var559 := var558(var556, var557)
-		_ = var559
-		var560 := var544
-		var561 := 2
-		var562 := Set_delete
-		var563 := var562(var560, var561)
-		var564 := Set_new
-		var565 := var564()
-		var566 := 1
-		var567 := Set_insert
-		var568 := var567(var565, var566)
-		var569 := Debug_assert_eq
-		var570 := var569(var563, var568)
-		_ = var570
-		var571 := 1
-		var572 := 2
-		var573 := 3
-		var574 := borgo.List(var571, var572, var573)
-		var575 := List_seq
-		var576 := var575(var574)
-		var577 := to_set
-		var578 := var577(var576)
-		var579 := Set_new
-		var580 := var579()
-		var581 := 1
-		var582 := Set_insert
-		var583 := var582(var580, var581)
-		var584 := 2
-		var585 := Set_insert
-		var586 := var585(var583, var584)
-		var587 := 3
-		var588 := Set_insert
-		var589 := var588(var586, var587)
-		var590 := Debug_assert_eq
-		var591 := var590(var578, var589)
-		_ = var591
-		var592 := make_Option_None
-		var594 := func() any {
 
-			var593 := 4
-			return var593
+			var chained any = Seq_to_list(Seq_take(Seq_chain(Seq_take(Seq_drop(s, 100), 5), s), 10))
+
+			Debug_assert_eq(List_get(chained, 4), make_Option_Some(312))
+
+			Debug_assert_eq(List_get(chained, 6), make_Option_Some(3))
 		}
 
-		var595 := var594
-		var596 := Option_unwrap_or_else
-		var597 := var596(var592, var595)
-		var598 := 4
-		var599 := Debug_assert_eq
-		var600 := var599(var597, var598)
-		var1_block = var600
+		var m any = Map_insert(Map_insert(Map_new(), "foo", 6), "bar", 8)
+
+		Debug_assert_eq(Map_len(m), 2)
+
+		Debug_assert_eq(Map_get(m, "bar"), make_Option_Some(8))
+
+		Debug_assert_eq(Map_get(m, "xyz"), make_Option_None)
+
+		Debug_assert_eq(List_get(Seq_to_list(Map_seq(m)), 0), make_Option_Some(func(base any) any {
+			data := base.(Tuple2)
+			data.First = "foo"
+			data.Second = 6
+			return data
+		}(Tuple2{})))
+
+		Debug_assert_eq(List_get(Seq_to_list(Map_seq_keys(m)), 1), make_Option_Some("bar"))
+
+		Debug_assert_eq(Map_get(Map_insert(Map_new(), 99, "baz"), 99), make_Option_Some("baz"))
+
+		Debug_assert_eq(Map_len(to_map(List_seq(borgo.List(func(base any) any {
+			data := base.(Tuple2)
+			data.First = "a"
+			data.Second = 1
+			return data
+		}(Tuple2{}), func(base any) any {
+			data := base.(Tuple2)
+			data.First = "b"
+			data.Second = 2
+			return data
+		}(Tuple2{}))))), 2)
+
+		var set any = Set_insert(Set_insert(Set_new(), 1), 2)
+
+		Debug_assert_eq(Set_contains(set, 1), true)
+
+		Debug_assert_eq(Set_contains(set, 3), false)
+
+		Debug_assert_eq(Set_delete(set, 2), Set_insert(Set_new(), 1))
+
+		Debug_assert_eq(to_set(List_seq(borgo.List(1, 2, 3))), Set_insert(Set_insert(Set_insert(Set_new(), 1), 2), 3))
+
+		return Debug_assert_eq(Option_unwrap_or_else(make_Option_None, func() any {
+
+			{
+
+				return 4
+			}
+		}), 4)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

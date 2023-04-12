@@ -45,131 +45,65 @@ type Bar struct {
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := "yo"
-		var4 := func(base any) any {
-			data := base.(Foo)
-			data.A = var2
-			data.B = var3
-			return data
-		}(Foo{})
-		var5 := var4
-		var6 := borgo.Unit
-		_ = var6
-		var7 := 1
-		var8 := "yo"
-		var9 := func(base any) any {
-			data := base.(Foo)
-			data.A = var7
-			data.B = var8
-			return data
-		}(Foo{})
-		var10 := var9
-		var11 := borgo.Unit
-		_ = var11
-		var12 := var5
-		var13 := var10
-		var14 := equals
-		var15 := var14(var12, var13)
-		var16 := true
-		var17 := Debug_assert_eq
-		var18 := var17(var15, var16)
-		_ = var18
-		var19 := var5
-		var20 := var10
-		var21 := 2
-		var22 := func(base any) any {
-			data := base.(Foo)
-			data.A = var21
-			return data
-		}(var20)
-		var23 := equals
-		var24 := var23(var19, var22)
-		var25 := false
-		var26 := Debug_assert_eq
-		var27 := var26(var24, var25)
-		_ = var27
-		var28 := var5
-		var29 := var10
-		var30 := borgo.List(var28, var29)
-		var31 := func(base any) any {
-			data := base.(Bar)
-			data.C = var30
-			return data
-		}(Bar{})
-		var32 := var5
-		var33 := var10
-		var34 := borgo.List(var32, var33)
-		var35 := func(base any) any {
-			data := base.(Bar)
-			data.C = var34
-			return data
-		}(Bar{})
-		var36 := equals
-		var37 := var36(var31, var35)
-		var38 := true
-		var39 := Debug_assert_eq
-		var40 := var39(var37, var38)
-		_ = var40
-		var41 := var5
-		var42 := borgo.List(var41)
-		var43 := func(base any) any {
-			data := base.(Bar)
-			data.C = var42
-			return data
-		}(Bar{})
-		var44 := var5
-		var45 := var10
-		var46 := borgo.List(var44, var45)
-		var47 := func(base any) any {
-			data := base.(Bar)
-			data.C = var46
-			return data
-		}(Bar{})
-		var48 := equals
-		var49 := var48(var43, var47)
-		var50 := false
-		var51 := Debug_assert_eq
-		var52 := var51(var49, var50)
-		_ = var52
-		var53 := var5
-		var54 := borgo.List(var53)
-		var55 := var54
-		var56 := borgo.Unit
-		_ = var56
-		var57 := var55
-		var58 := var10
-		var59 := List_push
-		var60 := var59(var57, var58)
-		var61 := func(base any) any {
-			data := base.(Bar)
-			data.C = var60
-			return data
-		}(Bar{})
-		var62 := var61
-		var63 := borgo.Unit
-		_ = var63
-		var64 := var62
-		var65 := var5
-		var66 := var10
-		var67 := borgo.List(var65, var66)
-		var68 := func(base any) any {
-			data := base.(Bar)
-			data.C = var67
-			return data
-		}(Bar{})
-		var69 := equals
-		var70 := var69(var64, var68)
-		var71 := true
-		var72 := Debug_assert_eq
-		var73 := var72(var70, var71)
-		var1_block = var73
-	}
-	return var1_block
-}
 
+		var x any = func(base any) any {
+			data := base.(Foo)
+			data.A = 1
+			data.B = "yo"
+			return data
+		}(Foo{})
+
+		var y any = func(base any) any {
+			data := base.(Foo)
+			data.A = 1
+			data.B = "yo"
+			return data
+		}(Foo{})
+
+		Debug_assert_eq(equals(x, y), true)
+
+		Debug_assert_eq(equals(x, func(base any) any {
+			data := base.(Foo)
+			data.A = 2
+			return data
+		}(y)), false)
+
+		Debug_assert_eq(equals(func(base any) any {
+			data := base.(Bar)
+			data.C = borgo.List(x, y)
+			return data
+		}(Bar{}), func(base any) any {
+			data := base.(Bar)
+			data.C = borgo.List(x, y)
+			return data
+		}(Bar{})), true)
+
+		Debug_assert_eq(equals(func(base any) any {
+			data := base.(Bar)
+			data.C = borgo.List(x)
+			return data
+		}(Bar{}), func(base any) any {
+			data := base.(Bar)
+			data.C = borgo.List(x, y)
+			return data
+		}(Bar{})), false)
+
+		var xs any = borgo.List(x)
+
+		var a any = func(base any) any {
+			data := base.(Bar)
+			data.C = List_push(xs, y)
+			return data
+		}(Bar{})
+
+		return Debug_assert_eq(equals(a, func(base any) any {
+			data := base.(Bar)
+			data.C = borgo.List(x, y)
+			return data
+		}(Bar{})), true)
+	}
+}
 func Bar_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }

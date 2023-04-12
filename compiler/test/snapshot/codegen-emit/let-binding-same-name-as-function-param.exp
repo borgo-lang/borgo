@@ -21,41 +21,19 @@ var _ = borgo.Unit
 
 func foo(xs any) any {
 
-	var var1_block any
 	{
-		var2 := xs
-		var3 := List_seq
-		var4 := var3(var2)
-		var5 := Seq_sum
-		var6 := var5(var4)
-		var7 := var6
-		var8 := borgo.Unit
-		_ = var8
-		var9 := var7
-		var10 := 10
-		var11 := borgo.Ops.IAdd
-		var12 := var11(var9, var10)
-		var1_block = var12
-	}
-	return var1_block
-}
 
+		var xs any = Seq_sum(List_seq(xs))
+
+		return borgo.Ops.IAdd(xs, 10)
+	}
+}
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := 2
-		var4 := 3
-		var5 := borgo.List(var2, var3, var4)
-		var6 := foo
-		var7 := var6(var5)
-		var8 := 16
-		var9 := Debug_assert_eq
-		var10 := var9(var7, var8)
-		var1_block = var10
+
+		return Debug_assert_eq(foo(borgo.List(1, 2, 3)), 16)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

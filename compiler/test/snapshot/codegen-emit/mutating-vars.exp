@@ -38,91 +38,40 @@ var _ = borgo.Unit
 
 func foo(a any) any {
 
-	var var1_block any
 	{
 		for {
-			var var2_block any
 			{
-				var4 := a
-				var5 := 5
-				var6 := borgo.Ops.IGt
-				var7 := var6(var4, var5)
-				var var3_result any
 
-				if borgo.Ops.Eq(var7, true).(bool) {
-					var var8_block any
-					{
-						break
-						var9 := borgo.Unit
-						var8_block = var9
-					}
-					var3_result = var8_block
-				} else {
-					var10 := borgo.Unit
-					var3_result = var10
+				if borgo.Ops.Eq(borgo.Ops.IGt(a, 5), true).(bool) {
+					break
+
 				}
-				var11 := var3_result
-				_ = var11
-				var12 := a
-				var13 := 1
-				var14 := borgo.Ops.IAdd
-				var15 := var14(var12, var13)
-				a = var15
-				var16 := borgo.Unit
-				var2_block = var16
-			}
-			_ = var2_block
-		}
-		var17 := borgo.Unit
-		_ = var17
-		var18 := a
-		var1_block = var18
-	}
-	return var1_block
-}
 
+				a = borgo.Ops.IAdd(a, 1)
+			}
+		}
+
+		return a
+	}
+}
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var var3 any = var2
-		var4 := borgo.Unit
-		_ = var4
-		var5 := var3
-		var6 := 3
-		var7 := borgo.Ops.IAdd
-		var8 := var7(var5, var6)
-		var3 = var8
-		var9 := borgo.Unit
-		_ = var9
-		var10 := var3
-		var11 := 4
-		var12 := Debug_assert_eq
-		var13 := var12(var10, var11)
-		_ = var13
-		var var14_block any
+
+		var x any = 1
+
+		x = borgo.Ops.IAdd(x, 3)
+
+		Debug_assert_eq(x, 4)
 		{
-			var15 := 5
-			var16 := var15
-			var17 := borgo.Unit
-			_ = var17
-			var18 := var16
-			var19 := 5
-			var20 := Debug_assert_eq
-			var21 := var20(var18, var19)
-			var14_block = var21
+
+			var x any = 5
+
+			Debug_assert_eq(x, 5)
 		}
-		_ = var14_block
-		var22 := 0
-		var23 := foo
-		var24 := var23(var22)
-		var25 := 6
-		var26 := Debug_assert_eq
-		var27 := var26(var24, var25)
-		var1_block = var27
+
+		return Debug_assert_eq(foo(0), 6)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

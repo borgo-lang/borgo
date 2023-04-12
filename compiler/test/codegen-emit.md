@@ -1062,3 +1062,32 @@ fn borgo_main() {
   // x.assert_eq(10);
 }
 ```
+
+Nested if and match maintain context.
+
+```rust
+fn foo() -> Int {
+  if 1 > 2 {
+    1
+  } else if 2 > 3  {
+    2
+  } else {
+    3
+  }
+}
+
+fn bar() -> Int {
+  match 1 {
+    1 => match 2 {
+      3 => 4,
+      _ => 5,
+    },
+    _ => 9,
+  }
+}
+
+fn borgo_main() {
+  foo().assert_eq(3);
+  bar().assert_eq(5);
+}
+```

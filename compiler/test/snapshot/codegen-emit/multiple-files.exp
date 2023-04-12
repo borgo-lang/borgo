@@ -43,26 +43,12 @@ func make_Foo_X(arg_0 any) any {
 }
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 2
-		var3 := make_Bar_A
-		var4 := var3(var2)
-		var5 := var4
-		var6 := borgo.Unit
-		_ = var6
-		var7 := var5
-		var8 := make_Foo_X
-		var9 := var8(var7)
-		var10 := 3
-		var11 := with_foo
-		var12 := var11(var9, var10)
-		var13 := 5
-		var14 := Debug_assert_eq
-		var15 := var14(var12, var13)
-		var1_block = var15
+
+		var bar any = make_Bar_A(2)
+
+		return Debug_assert_eq(with_foo(make_Foo_X(bar), 3), 5)
 	}
-	return var1_block
 }
 
 type Bar_A struct {
@@ -72,71 +58,65 @@ type Bar any
 
 func with_foo(f any, m any) any {
 
-	var var1_block any
 	{
-		var2 := f
-		var var3_result any
-		var4_subject := var2
-		var5_matches := 0
+		var var1 any
+		_ = var1
 
-		if var5_matches != 2 {
-			var5_matches = 0
+		var3_subject := f
+		var4_matches := borgo.MatchNone
 
-			var7_match_pat := 0
+		if var4_matches != borgo.MatchOk {
+			var4_matches = borgo.MatchNone
 
-			var6_pat, constructor_check := var4_subject.(Foo_X)
-			_ = var6_pat
+			var6_match_pat := borgo.MatchNone
 
-			var8 := var6_pat.Field0
+			var5_pat, constructor_check := var3_subject.(Foo_X)
+			_ = var5_pat
 
-			if var7_match_pat != 1 && constructor_check {
-				var5_matches = 2
+			b := var5_pat.Field0
+
+			if var6_match_pat != borgo.MatchErr && constructor_check {
+				var4_matches = borgo.MatchOk
 			} else {
-				var5_matches = 1
+				var4_matches = borgo.MatchErr
 			}
 
-			_ = var4_subject
+			_ = var3_subject
 
-			if var5_matches == 2 {
-				var9 := var8
-				var var10_result any
-				var11_subject := var9
-				var12_matches := 0
+			if var4_matches == borgo.MatchOk {
 
-				if var12_matches != 2 {
-					var12_matches = 0
+				var8_subject := b
+				var9_matches := borgo.MatchNone
 
-					var14_match_pat := 0
+				if var9_matches != borgo.MatchOk {
+					var9_matches = borgo.MatchNone
 
-					var13_pat, constructor_check := var11_subject.(Bar_A)
-					_ = var13_pat
+					var11_match_pat := borgo.MatchNone
 
-					var15 := var13_pat.Field0
+					var10_pat, constructor_check := var8_subject.(Bar_A)
+					_ = var10_pat
 
-					if var14_match_pat != 1 && constructor_check {
-						var12_matches = 2
+					n := var10_pat.Field0
+
+					if var11_match_pat != borgo.MatchErr && constructor_check {
+						var9_matches = borgo.MatchOk
 					} else {
-						var12_matches = 1
+						var9_matches = borgo.MatchErr
 					}
 
-					_ = var11_subject
+					_ = var8_subject
 
-					if var12_matches == 2 {
-						var16 := var15
-						var17 := m
-						var18 := borgo.Ops.IAdd
-						var19 := var18(var16, var17)
-						var10_result = var19
+					if var9_matches == borgo.MatchOk {
+
+						var1 = borgo.Ops.IAdd(n, m)
 					}
 				}
 
-				var3_result = var10_result
 			}
 		}
 
-		var1_block = var3_result
+		return var1
 	}
-	return var1_block
 }
 
 type Foo_X struct {

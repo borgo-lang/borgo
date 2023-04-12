@@ -33,108 +33,96 @@ type Foo struct {
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := func(base any) any {
+
+		var x any = func(base any) any {
 			data := base.(Foo)
-			data.A = var2
+			data.A = 1
 			return data
 		}(Foo{})
-		var4 := var3
-		var5 := borgo.Unit
-		_ = var5
-		var6 := var4
-		var var7_result any
-		var8_subject := var6
-		var9_matches := 0
+		var var3 any
+		_ = var3
 
-		if var9_matches != 2 {
-			var9_matches = 0
+		var5_subject := x
+		var6_matches := borgo.MatchNone
 
-			var10_match_pat := 0
-			var11 := 2
+		if var6_matches != borgo.MatchOk {
+			var6_matches = borgo.MatchNone
 
-			if var10_match_pat != 1 && borgo.Ops.Eq(var11, var8_subject.(Foo).A).(bool) {
-				var10_match_pat = 2
+			var7_match_pat := borgo.MatchNone
+
+			if var7_match_pat != borgo.MatchErr && borgo.Ops.Eq(2, var5_subject.(Foo).A).(bool) {
+				var7_match_pat = borgo.MatchOk
 			} else {
-				var10_match_pat = 1
+				var7_match_pat = borgo.MatchErr
 			}
 
-			if var10_match_pat != 1 {
-				var9_matches = 2
+			if var7_match_pat != borgo.MatchErr {
+				var6_matches = borgo.MatchOk
 			} else {
-				var9_matches = 1
+				var6_matches = borgo.MatchErr
 			}
 
-			_ = var8_subject
+			_ = var5_subject
 
-			if var9_matches == 2 {
-				var12 := false
-				var7_result = var12
+			if var6_matches == borgo.MatchOk {
+
+				var3 = false
 			}
 		}
 
-		if var9_matches != 2 {
-			var9_matches = 0
+		if var6_matches != borgo.MatchOk {
+			var6_matches = borgo.MatchNone
 
-			var13_match_pat := 0
-			var14 := 1
+			var9_match_pat := borgo.MatchNone
 
-			if var13_match_pat != 1 && borgo.Ops.Eq(var14, var8_subject.(Foo).A).(bool) {
-				var13_match_pat = 2
+			if var9_match_pat != borgo.MatchErr && borgo.Ops.Eq(1, var5_subject.(Foo).A).(bool) {
+				var9_match_pat = borgo.MatchOk
 			} else {
-				var13_match_pat = 1
+				var9_match_pat = borgo.MatchErr
 			}
 
-			if var13_match_pat != 1 {
-				var9_matches = 2
+			if var9_match_pat != borgo.MatchErr {
+				var6_matches = borgo.MatchOk
 			} else {
-				var9_matches = 1
+				var6_matches = borgo.MatchErr
 			}
 
-			_ = var8_subject
+			_ = var5_subject
 
-			if var9_matches == 2 {
-				var15 := true
-				var7_result = var15
+			if var6_matches == borgo.MatchOk {
+
+				var3 = true
 			}
 		}
 
-		if var9_matches != 2 {
-			var9_matches = 0
+		if var6_matches != borgo.MatchOk {
+			var6_matches = borgo.MatchNone
 
-			var16_match_pat := 0
-			if var16_match_pat != 1 {
-				var16_match_pat = 2 /* wildcard */
+			var11_match_pat := borgo.MatchNone
+			if var11_match_pat != borgo.MatchErr {
+				var11_match_pat = borgo.MatchOk /* wildcard */
 			}
 
-			if var16_match_pat != 1 {
-				var9_matches = 2
+			if var11_match_pat != borgo.MatchErr {
+				var6_matches = borgo.MatchOk
 			} else {
-				var9_matches = 1
+				var6_matches = borgo.MatchErr
 			}
 
-			_ = var8_subject
+			_ = var5_subject
 
-			if var9_matches == 2 {
-				var17 := false
-				var7_result = var17
+			if var6_matches == borgo.MatchOk {
+
+				var3 = false
 			}
 		}
 
-		var18 := var7_result
-		var19 := borgo.Unit
-		_ = var19
-		var20 := var18
-		var21 := true
-		var22 := Debug_assert_eq
-		var23 := var22(var20, var21)
-		var1_block = var23
+		var res any = var3
+
+		return Debug_assert_eq(res, true)
 	}
-	return var1_block
 }
-
 func Foo_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }

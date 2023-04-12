@@ -23,35 +23,23 @@ var _ = borgo.Unit
 var foo any
 
 func init_const_foo() any {
-	var30 := 1
-	var31 := 1
-	var32 := borgo.Ops.IAdd
-	var33 := var32(var30, var31)
-	return var33
+
+	return borgo.Ops.IAdd(1, 1)
 }
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := check
-		var3 := var2()
-		var1_block = var3
-	}
-	return var1_block
-}
 
+		return check()
+	}
+}
 func check() any {
 
-	var var1_block any
 	{
-		var2 := foo
-		var3 := 2
-		var4 := borgo.Ops.Eq
-		var5 := var4(var2, var3)
-		var1_block = var5
+
+		return borgo.Ops.Eq(foo, 2)
 	}
-	return var1_block
 }
 
 func pkg_user_init() {

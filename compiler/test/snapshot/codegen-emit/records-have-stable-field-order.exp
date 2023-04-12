@@ -31,36 +31,26 @@ type Foo struct {
 
 func borgo_main() any {
 
-	var var1_block any
 	{
-		var2 := 1
-		var3 := "a"
-		var4 := true
-		var5 := func(base any) any {
-			data := base.(Tuple3)
-			data.First = var2
-			data.Second = var3
-			data.Third = var4
-			return data
-		}(Tuple3{})
-		var6 := Debug_inspect(var5)
-		_ = var6
-		var7 := 1
-		var8 := "b"
-		var9 := func(base any) any {
-			data := base.(Foo)
-			data.X = var7
-			data.Y = var8
-			return data
-		}(Foo{})
-		var10 := Debug_inspect(var9)
-		_ = var10
-		var11 := borgo.Unit
-		var1_block = var11
-	}
-	return var1_block
-}
 
+		Debug_inspect(func(base any) any {
+			data := base.(Tuple3)
+			data.First = 1
+			data.Second = "a"
+			data.Third = true
+			return data
+		}(Tuple3{}))
+
+		Debug_inspect(func(base any) any {
+			data := base.(Foo)
+			data.X = 1
+			data.Y = "b"
+			return data
+		}(Foo{}))
+
+		return borgo.Unit
+	}
+}
 func Foo_equals(values ...any) any {
 	return borgo.OverloadImpl("equals", values)
 }
