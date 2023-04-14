@@ -552,35 +552,7 @@ return borgo.OverloadImpl(\"{trait_name}\", values)
         out.render()
     }
 
-    /*
-        fn emit_local_with_ctx(&mut self, ctx: &Ctx, expr: &Expr, out: &mut Emitter) -> String {
-            let res = self.emit_expr(ctx.to_mode(), expr);
-            let value = res.value.unwrap_or_default();
-            out.emit(res.output);
-            //res.value.unwrap()
-            value
-        }
-    */
-
     fn emit_local(&mut self, expr: &Expr, out: &mut Emitter) -> String {
-        /*
-         *
-        emit_local(expr, &mut out)
-          var = fresh()
-          ctx = Var(var)
-
-          if !expr.is_standalone()
-            out.emit("var {var} any")
-
-          // always pass ctx.Var, because standalone nodes will ignore it anyway
-          res = emit_expr(ctx.no_return(), expr)
-          out.emit(res.output)
-
-          // emit_local only called outside of blocks, so should always expect value
-          assert(res.value != None)
-          res.value
-
-         */
         let var = self.fresh_var();
         let ctx = Ctx::Var(var.clone());
 
@@ -602,15 +574,7 @@ _ = {var}"
 
         let value = res.value.unwrap_or_default();
 
-        // if res.value.is_none() {
-        // panic!(
-        // "emit_local works with expressions, was expecting a value {:#?}",
-        // &res,
-        // );
-        // }
-
         out.emit(res.output);
-        //res.value.unwrap()
         value
     }
 
@@ -818,16 +782,11 @@ if {new_is_matching} != borgo.MatchErr {{
             span: Span::dummy(),
         };
 
-        /*
-        - take the last statement
-        - if there is none, insert Unit
-        - if it's return, then exit
-        - if there is but is not standalone:
-            - if mode is not return: insert Unit
-            - if mode is return:
-        - if there is one and it's standalone and mode is return but it's not wrapped in return, then wrap it
-        */
         let mut last = stmts.pop().unwrap_or(unit.clone());
+
+        // The logic here is a bit involved.
+        // We're basically trying to emit the cleanest output possible, while allowing for values
+        // to be discarded
 
         if !is_standalone(&last) && !mode.should_return && !mode.ctx.is_discard() {
             stmts.push(last);
@@ -870,11 +829,11 @@ if {new_is_matching} != borgo.MatchErr {{
             }
         };
 
+        self.scope.exit();
+
         if needs_braces {
             out.emit("}".to_string());
         }
-
-        self.scope.exit();
 
         out.try_emit(result)
     }
