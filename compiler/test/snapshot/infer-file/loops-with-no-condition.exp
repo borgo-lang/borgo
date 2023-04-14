@@ -62,7 +62,10 @@ No errors.
                               }
                             ],
                             "ty": {
-                              "Var": 99
+                              "Con": {
+                                "name": "Unit",
+                                "args": []
+                              }
                             },
                             "span": {
                               "start": {

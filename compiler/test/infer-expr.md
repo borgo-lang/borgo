@@ -289,17 +289,6 @@ if true {
 }
 ```
 
-If expression without else branch always evaluate to ().
-
-> errorContains("mismatch")
-
-```rust
-if true {
-  let x = "hello";
-  1
-}
-```
-
 Condition must be a Bool.
 
 > errorContains("mismatch")
@@ -1631,5 +1620,24 @@ Functions can take mutable params
   }
 
   foo(1)
+}
+```
+
+If statements skip unification
+
+> infer("Int")
+
+```rust
+{
+  let n = 0;
+
+  if true {
+    n + 1;
+  }
+
+  if false {
+  }
+
+  1
 }
 ```

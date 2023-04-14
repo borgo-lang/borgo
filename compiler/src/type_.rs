@@ -127,6 +127,11 @@ impl Type {
         Self::Var(-1)
     }
 
+    // Magic value used during inference to evaluate if expressions as statements
+    pub fn discard() -> Self {
+        Self::Var(-333)
+    }
+
     pub fn is_result(&self) -> bool {
         match self {
             Type::Con { name, .. } => name == "Result",

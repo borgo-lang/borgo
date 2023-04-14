@@ -412,3 +412,23 @@ fn borgo_main() {
     }
 }
 ```
+
+If expression with an expected type must have an else block
+
+> errorContains("else branch")
+
+```rust
+fn borgo_main() {
+  if true {
+    let x = "hello";
+    1
+  }
+
+  let a = if false {
+    let y = "yo";
+    2
+  };
+
+  ()
+}
+```

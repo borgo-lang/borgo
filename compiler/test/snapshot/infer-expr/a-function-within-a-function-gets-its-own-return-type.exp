@@ -147,7 +147,7 @@ No errors.
                                       ],
                                       "ty": {
                                         "Con": {
-                                          "name": "Unit",
+                                          "name": "String",
                                           "args": []
                                         }
                                       },
@@ -185,10 +185,7 @@ No errors.
                                     }
                                   },
                                   "ty": {
-                                    "Con": {
-                                      "name": "Unit",
-                                      "args": []
-                                    }
+                                    "Var": 99
                                   },
                                   "span": {
                                     "start": {

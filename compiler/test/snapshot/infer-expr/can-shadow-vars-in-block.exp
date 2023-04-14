@@ -162,7 +162,10 @@ No errors.
             }
           ],
           "ty": {
-            "Var": 99
+            "Con": {
+              "name": "String",
+              "args": []
+            }
           },
           "span": {
             "start": {

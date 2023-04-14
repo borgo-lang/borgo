@@ -182,27 +182,41 @@ impl Infer {
             Expr::Block {
                 ref stmts, span, ..
             } => {
+                let mut stmts = stmts.to_vec();
+                let was_empty = stmts.is_empty();
+
+                // Take the last statement so we can run inference on it later
+                let last = stmts
+                    .pop()
+                    .unwrap_or_else(|| Expr::Unit { span: span.clone() });
+
                 stmts.iter().for_each(|e| self.declare_type(e));
 
-                let new_stmts: Vec<_> = stmts
+                let mut new_stmts: Vec<_> = stmts
                     .iter()
-                    // Generate a new type variable for each statement, as we don't care what the actual type is
                     .map(|e| {
-                        let var = self.fresh_ty_var();
-                        let expr = self.infer_expr(e.clone(), &var);
-                        (var, expr)
+                        let is_if_statement = matches!(e, Expr::If { .. });
+
+                        let var = if is_if_statement {
+                            Type::discard()
+                        } else {
+                            self.fresh_ty_var()
+                        };
+
+                        self.infer_expr(e.clone(), &var)
                     })
                     .collect();
 
-                let (last_ty, last_span) = new_stmts
-                    .last()
-                    .map(|(ty, e): &(Type, Expr)| (ty.clone(), e.get_span()))
-                    .unwrap_or_else(|| (Type::unit(), span.clone()));
+                // Finally run inference on the last expression
+                let new_last = self.infer_expr(last, expected);
+                let last_ty = new_last.get_type();
 
-                self.add_constraint(expected, &last_ty, &last_span);
+                if !was_empty {
+                    new_stmts.push(new_last);
+                }
 
                 Expr::Block {
-                    stmts: new_stmts.into_iter().map(|(_, e)| e).collect(),
+                    stmts: new_stmts,
                     ty: last_ty,
                     span,
                 }
@@ -523,18 +537,40 @@ impl Infer {
                 span,
                 ..
             } => {
-                let ret = self.fresh_ty_var();
-                let new_cond = self.infer_expr(*cond, &Type::bool());
-                let new_then = self.infer_expr(*then, &ret);
-                let new_els = self.infer_expr(*els, &ret);
+                let then_ty = self.fresh_ty_var();
+                let else_ty = self.fresh_ty_var();
 
-                self.add_constraint(expected, &ret, &span);
+                let has_else = match *els {
+                    Expr::Block { ref stmts, .. } => !stmts.is_empty(),
+                    _ => true,
+                };
+
+                let new_cond = self.infer_expr(*cond, &Type::bool());
+                let new_then = self.infer_expr(*then, &then_ty);
+                let new_els = self.infer_expr(*els, &else_ty);
+
+                // Check if we are in discard mode (ie. block statements, loop bodies)
+                let discard_mode = expected == &Type::discard();
+
+                // In case we are not discarding, then we need an else block
+                // and the types of the then and else branches must unify
+                if !discard_mode {
+                    if !has_else && expected != &Type::unit() {
+                        self.generic_error(
+                            "If expression must have an else branch".to_string(),
+                            span.clone(),
+                        );
+                    }
+
+                    self.add_constraint(&expected, &then_ty, &new_then.get_span());
+                    self.add_constraint(&expected, &else_ty, &new_els.get_span());
+                }
 
                 Expr::If {
                     cond: new_cond.into(),
                     then: new_then.into(),
                     els: new_els.into(),
-                    ty: ret,
+                    ty: then_ty,
                     span,
                 }
             }
@@ -1292,7 +1328,7 @@ has no method:
 
                 // Inference for body must run after constraining the binding, otherwise there will
                 // be a loose type variable that won't unify.
-                let body_ty = self.fresh_ty_var();
+                let body_ty = Type::discard();
                 let new_body = self.infer_expr(*body, &body_ty);
 
                 let new_kind = match kind {

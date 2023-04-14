@@ -14,5 +14,5 @@ Expected:
 Got:
     String
 
-4|    "hello"
-      ^^^^^^^
+3|  } else {
+           ^--

@@ -165,6 +165,8 @@ fn main() {
             let json = project::PackageJSON(new_pkg.clone());
             let json = serde_json::to_string_pretty(&json).unwrap();
 
+            // TODO this doesn't check for std errors...
+
             let expr = if new_pkg.first_error().is_none() {
                 new_pkg.files.first().unwrap().decls.last().unwrap().clone()
             } else {
