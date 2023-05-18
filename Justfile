@@ -29,8 +29,9 @@ playground-wasm mode="--debug":
   cp -R pkg ../playground/static
   rm ../playground/static/pkg/.gitignore
 
-playground-prod: playground-js playground-wasm
+playground-prod: playground-js
   #!/usr/bin/env bash
+  just playground-wasm --release
   cd playground/static
   cat bundle.js | npx esbuild --minify > prod.js
   mv prod.js bundle.js
