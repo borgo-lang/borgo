@@ -1,9 +1,9 @@
 If statements
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   let x = if true { 6 } else { 0 };
-  x.assert_eq(6);
+  assert_eq(x, 6);
 }
 
 OUTPUT:
@@ -11,29 +11,14 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	var x int
 
-var _ = borgo.Unit
-
-func borgo_main() any {
-
-	{
-		var var1 any
-		_ = var1
-
-		if borgo.Ops.Eq(true, true).(bool) {
-
-			var1 = 6
-		} else {
-
-			var1 = 0
-		}
-		var x any = var1
-
-		return Debug_assert_eq(x, 6)
+	if true {
+		x = 6
+	} else {
+		x = 0
 	}
-}
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](x, 6)
 }

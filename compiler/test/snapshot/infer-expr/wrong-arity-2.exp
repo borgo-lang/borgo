@@ -7,9 +7,9 @@ OUTPUT:
 Wrong arity
 
 Expected:
-    (Int, Int)
+    (int, int)
 Got:
-    (Int)
+    (int)
 
 1|  { sum(1) }
       ^^^^^^

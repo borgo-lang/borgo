@@ -9,9 +9,9 @@ SOURCE:
 OUTPUT:
 Type mismatch
 Expected:
-    fn (String) -> Int
+    fn (string) -> int
 Got:
-    fn (Int) -> Int
+    fn (int) -> int
 
 3|    list_map(x, inc)
                   ^^^

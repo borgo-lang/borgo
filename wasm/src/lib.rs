@@ -1,14 +1,14 @@
 use compiler::ast::UnparsedFile;
+use compiler::codegen;
 use compiler::infer;
-use compiler::project::{self, Project};
-
+use compiler::project;
 
 use wasm_bindgen::prelude::*;
 
 extern crate console_error_panic_hook;
 
 #[wasm_bindgen]
-pub fn compile_wasm(contents: &str, std_source: &str) -> Result<Vec<u8>, String> {
+pub fn compile_wasm(contents: &str, std_source: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
     let mut instance = infer::Infer::new();
@@ -32,28 +32,9 @@ pub fn compile_wasm(contents: &str, std_source: &str) -> Result<Vec<u8>, String>
         return Err(err.msg);
     }
 
-    let encoded = bincode::serialize(&project).unwrap();
-    Ok(encoded)
-}
+    let mut gen = codegen::Codegen::new(&instance.gs);
+    project.build(&mut gen);
 
-#[wasm_bindgen]
-pub fn on_hover(bytes: Vec<u8>, line: u32, character: u32) -> Option<String> {
-    let project: Project = bincode::deserialize(&bytes).unwrap();
-
-    let span = compiler::ast::Span::from_position(line, character);
-
-    let pkg = project.user_package().unwrap();
-    let file = pkg.files.first().unwrap();
-    let expr = file.find_expr_at_position(&span);
-
-    if expr.is_none() {
-        eprintln!("hover, can't find expr at {:?}", span);
-        return None;
-    }
-
-    let ty = expr.unwrap().get_type();
-
-    let contents = format!("{}", ty);
-
-    Some(contents)
+    let json = serde_json::to_string(&project.output).unwrap();
+    Ok(json)
 }

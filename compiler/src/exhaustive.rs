@@ -447,7 +447,7 @@ pub type Region = usize;
 pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
     match expr {
         Expr::Literal { lit, .. } => match lit {
-            Literal::List(expr) => expr.iter().try_for_each(|e| check(e, instance)),
+            Literal::Slice(expr) => expr.iter().try_for_each(|e| check(e, instance)),
             _ => Ok(()),
         },
 
@@ -501,7 +501,7 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
             }
             Ok(())
         }
-        Expr::StructAccess { expr, .. } => check(expr, instance),
+        Expr::FieldAccess { expr, .. } => check(expr, instance),
         Expr::VarUpdate { .. } => Ok(()),
         Expr::MethodCall { .. } => Ok(()),
 
@@ -509,6 +509,8 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
         Expr::Try { expr, .. } => check(expr, instance),
 
         Expr::ExternDecl { .. } => Ok(()),
+        Expr::Trait { .. } => Ok(()),
+        Expr::Mod { .. } => Ok(()),
         Expr::ImplBlock { items, .. } => items.iter().try_for_each(|a| check(a, instance)),
 
         Expr::Binary { left, right, .. } => {
@@ -522,18 +524,27 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
         Expr::Debug { expr, .. } => check(expr, instance),
         Expr::Spawn { expr, .. } => check(expr, instance),
         Expr::Select { arms, .. } => arms.iter().try_for_each(|a| check(&a.expr, instance)),
+        Expr::Reference { expr, .. } => check(expr, instance),
+        Expr::Index { expr, index, .. } => {
+            check(expr, instance)?;
+            check(index, instance)
+        }
 
         Expr::Loop { kind, body, .. } => {
             match kind {
                 crate::ast::Loop::NoCondition => Ok(()),
                 crate::ast::Loop::WithCondition { expr, .. } => check(expr, instance),
+                crate::ast::Loop::While { expr } => check(expr, instance),
             }?;
 
             check(body, instance)
         }
 
         Expr::Flow { .. } => Ok(()),
+        Expr::TypeAlias { .. } => Ok(()),
+        Expr::UsePackage { .. } => Ok(()),
         Expr::Unit { .. } => Ok(()),
+        Expr::Raw { .. } => Ok(()),
         Expr::Noop => Ok(()),
         Expr::Todo => Ok(()),
     }

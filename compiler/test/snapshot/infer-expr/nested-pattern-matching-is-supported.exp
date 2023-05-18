@@ -3,21 +3,21 @@ Nested pattern matching is supported.
 SOURCE:
 {
   enum Maybe<T> { Just(T), None }
-  enum Color { Red, Blue(String, Bool) }
+  enum Color { Red, Blue(string, bool) }
 
   let c = Color::Blue("foo", false);
   let x = Maybe::Just(c);
 
   let n = match x {
     Maybe::Just(Color::Blue(s, b)) => {
-      s as String;
-      b as Bool;
+      s as string;
+      b as bool;
       1
     },
     Maybe::None => 2,
   };
 
-  n as Int;
+  n as int;
 
   match x {
     Maybe::Just(x) => x,
@@ -29,8 +29,6 @@ OUTPUT:
 Color
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -98,13 +96,13 @@ No errors.
                     "name": "field0",
                     "ann": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
                     "ty": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     }
@@ -113,13 +111,13 @@ No errors.
                     "name": "field1",
                     "ann": {
                       "Con": {
-                        "name": "Bool",
+                        "name": "bool",
                         "args": []
                       }
                     },
                     "ty": {
                       "Con": {
-                        "name": "Bool",
+                        "name": "bool",
                         "args": []
                       }
                     }
@@ -189,18 +187,19 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Fun": {
                       "args": [
                         {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         },
                         {
                           "Con": {
-                            "name": "Bool",
+                            "name": "bool",
                             "args": []
                           }
                         }
@@ -212,7 +211,7 @@ No errors.
                           "args": []
                         }
                       },
-                      "fx": []
+                      "id": -1
                     }
                   },
                   "span": {
@@ -231,11 +230,14 @@ No errors.
                 {
                   "Literal": {
                     "lit": {
-                      "String": "foo"
+                      "String": [
+                        "foo",
+                        null
+                      ]
                     },
                     "ty": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
@@ -258,7 +260,7 @@ No errors.
                     },
                     "ty": {
                       "Con": {
-                        "name": "Bool",
+                        "name": "bool",
                         "args": []
                       }
                     },
@@ -367,6 +369,14 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [
+                    {
+                      "Con": {
+                        "name": "Color",
+                        "args": []
+                      }
+                    }
+                  ],
                   "ty": {
                     "Fun": {
                       "args": [
@@ -391,7 +401,7 @@ No errors.
                           ]
                         }
                       },
-                      "fx": []
+                      "id": -1
                     }
                   },
                   "span": {
@@ -426,6 +436,7 @@ No errors.
                         }
                       }
                     },
+                    "generics_instantiated": [],
                     "ty": {
                       "Con": {
                         "name": "Color",
@@ -518,7 +529,7 @@ No errors.
             "ann": "Unknown",
             "ty": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             }
@@ -544,6 +555,7 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Con": {
                       "name": "Maybe",
@@ -682,9 +694,10 @@ No errors.
                                     }
                                   }
                                 },
+                                "generics_instantiated": [],
                                 "ty": {
                                   "Con": {
-                                    "name": "String",
+                                    "name": "string",
                                     "args": []
                                   }
                                 },
@@ -702,13 +715,13 @@ No errors.
                             },
                             "ann": {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             },
                             "ty": {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             },
@@ -745,9 +758,10 @@ No errors.
                                     }
                                   }
                                 },
+                                "generics_instantiated": [],
                                 "ty": {
                                   "Con": {
-                                    "name": "Bool",
+                                    "name": "bool",
                                     "args": []
                                   }
                                 },
@@ -765,13 +779,13 @@ No errors.
                             },
                             "ann": {
                               "Con": {
-                                "name": "Bool",
+                                "name": "bool",
                                 "args": []
                               }
                             },
                             "ty": {
                               "Con": {
-                                "name": "Bool",
+                                "name": "bool",
                                 "args": []
                               }
                             },
@@ -794,7 +808,7 @@ No errors.
                             },
                             "ty": {
                               "Con": {
-                                "name": "Int",
+                                "name": "int",
                                 "args": []
                               }
                             },
@@ -813,7 +827,7 @@ No errors.
                       ],
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -867,7 +881,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -887,7 +901,7 @@ No errors.
               ],
               "ty": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
@@ -905,7 +919,7 @@ No errors.
           },
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -942,9 +956,10 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
@@ -962,13 +977,13 @@ No errors.
           },
           "ann": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -1005,6 +1020,7 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
                   "name": "Maybe",
@@ -1098,6 +1114,7 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Con": {
                       "name": "Color",
@@ -1166,6 +1183,7 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Con": {
                       "name": "Color",

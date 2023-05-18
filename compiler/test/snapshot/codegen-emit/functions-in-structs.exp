@@ -2,12 +2,12 @@ Functions in structs
 
 SOURCE:
 struct Foo {
-  bar: fn (Int) -> Int
+  bar: fn (int) -> int
 }
 
-fn borgo_main() {
-  let foo = Foo { bar: |x: Int| x + 2 };
-  foo.bar(1).assert_eq(3);
+fn main() {
+  let foo = Foo { bar: |x: int| x + 2 };
+  assert_eq(foo.bar(1), 3);
 }
 
 OUTPUT:
@@ -15,42 +15,14 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Foo(arg_0 any) any {
-	return Foo{arg_0.(func(any) any)}
-}
-
 type Foo struct {
-	Bar func(any) any
+	bar func(int) int
 }
 
-func borgo_main() any {
+func main() {
+	foo := Foo{bar: func(x int) int {
+		return x + 2
+	}}
 
-	{
-
-		var foo any = func(base any) any {
-			data := base.(Foo)
-			data.Bar = func(x any) any {
-
-				{
-
-					return borgo.Ops.IAdd(x, 2)
-				}
-			}
-			return data
-		}(Foo{})
-
-		return Debug_assert_eq(foo.(Foo).Bar(1), 3)
-	}
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterStruct("Foo", "Foo", []string{"bar"})
-	borgo.RegisterMakeFunction("Foo", make_Foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](foo.bar(1), 3)
 }

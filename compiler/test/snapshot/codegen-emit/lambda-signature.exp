@@ -1,0 +1,25 @@
+Lambda signature
+
+SOURCE:
+fn compute(f: fn(int, int) -> int) -> int {
+    f(3, 4)
+}
+
+fn main() {
+  assert_eq(compute(|a, b| a + b), 7)
+}
+
+OUTPUT:
+
+---
+package main
+
+func compute(f func(int, int) int) int {
+	return f(3, 4)
+}
+
+func main() {
+	assert_eq[int](compute(func(a int, b int) int {
+		return a + b
+	}), 7)
+}

@@ -1,14 +1,14 @@
 Tuples with wrong arity.
 
 SOURCE:
-(1, 2, 3) as (Int, Int)
+(1, 2, 3) as (int, int)
 
 OUTPUT:
 Type mismatch
 Expected:
-    (Int, Int, Int)
+    (int, int, int)
 Got:
-    (Int, Int)
+    (int, int)
 
-1|  (1, 2, 3) as (Int, Int)
+1|  (1, 2, 3) as (int, int)
     ^^^^^^^^^^^^^^^^^^^^^^^

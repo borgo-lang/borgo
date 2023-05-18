@@ -2,17 +2,15 @@ Tuples as return type.
 
 SOURCE:
 {
-  fn foo() -> (String, Bool) {
+  fn foo() -> (string, bool) {
     ("foo", true)
   }
 }
 
 OUTPUT:
-fn () -> (String, Bool)
+fn () -> (string, bool)
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -30,13 +28,13 @@ No errors.
                 "args": [
                   {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
                   {
                     "Con": {
-                      "name": "Bool",
+                      "name": "bool",
                       "args": []
                     }
                   }
@@ -49,13 +47,13 @@ No errors.
                 "args": [
                   {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
                   {
                     "Con": {
-                      "name": "Bool",
+                      "name": "bool",
                       "args": []
                     }
                   }
@@ -74,11 +72,14 @@ No errors.
                           "value": {
                             "Literal": {
                               "lit": {
-                                "String": "foo"
+                                "String": [
+                                  "foo",
+                                  null
+                                ]
                               },
                               "ty": {
                                 "Con": {
-                                  "name": "String",
+                                  "name": "string",
                                   "args": []
                                 }
                               },
@@ -104,7 +105,7 @@ No errors.
                               },
                               "ty": {
                                 "Con": {
-                                  "name": "Bool",
+                                  "name": "bool",
                                   "args": []
                                 }
                               },
@@ -129,13 +130,13 @@ No errors.
                           "args": [
                             {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             },
                             {
                               "Con": {
-                                "name": "Bool",
+                                "name": "bool",
                                 "args": []
                               }
                             }
@@ -161,13 +162,13 @@ No errors.
                     "args": [
                       {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
                       {
                         "Con": {
-                          "name": "Bool",
+                          "name": "bool",
                           "args": []
                         }
                       }
@@ -185,6 +186,35 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [],
+              "ty": {
+                "Fun": {
+                  "args": [],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Tuple2",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "bool",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -198,20 +228,20 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
                     {
                       "Con": {
-                        "name": "Bool",
+                        "name": "bool",
                         "args": []
                       }
                     }
                   ]
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -237,20 +267,20 @@ No errors.
             "args": [
               {
                 "Con": {
-                  "name": "String",
+                  "name": "string",
                   "args": []
                 }
               },
               {
                 "Con": {
-                  "name": "Bool",
+                  "name": "bool",
                   "args": []
                 }
               }
             ]
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

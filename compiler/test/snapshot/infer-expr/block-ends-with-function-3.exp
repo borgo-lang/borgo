@@ -1,14 +1,12 @@
 Block ends with function 3
 
 SOURCE:
-{ fn foo(foo: Int, bar: Bool) -> Int { foo } }
+{ fn foo(foo: int, bar: bool) -> int { foo } }
 
 OUTPUT:
-fn (Int, Bool) -> Int
+fn (int, bool) -> int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -40,13 +38,13 @@ No errors.
                 },
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -71,13 +69,13 @@ No errors.
                 },
                 "ann": {
                   "Con": {
-                    "name": "Bool",
+                    "name": "bool",
                     "args": []
                   }
                 },
                 "ty": {
                   "Con": {
-                    "name": "Bool",
+                    "name": "bool",
                     "args": []
                   }
                 }
@@ -85,13 +83,13 @@ No errors.
             ],
             "ret": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
             "ann": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -117,9 +115,10 @@ No errors.
                           }
                         }
                       },
+                      "generics_instantiated": [],
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -138,7 +137,7 @@ No errors.
                 ],
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -153,6 +152,35 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "bool",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -161,13 +189,13 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 {
                   "Con": {
-                    "name": "Bool",
+                    "name": "bool",
                     "args": []
                   }
                 }
@@ -175,11 +203,11 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -200,13 +228,13 @@ No errors.
         "args": [
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
           {
             "Con": {
-              "name": "Bool",
+              "name": "bool",
               "args": []
             }
           }
@@ -214,11 +242,11 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

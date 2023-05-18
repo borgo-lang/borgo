@@ -2,7 +2,7 @@ Recursion across files
 
 SOURCE:
 file: a.brg
-fn a(n: Int) -> Int {
+fn a(n: int) -> int {
   if n == 100 {
     return n
   }
@@ -11,7 +11,7 @@ fn a(n: Int) -> Int {
 }
 
 file: b.brg
-fn b(n: Int) -> Int {
+fn b(n: int) -> int {
   if n == 200 {
     return n
   }
@@ -20,53 +20,29 @@ fn b(n: Int) -> Int {
 }
 
 file: main.brg
-fn borgo_main() -> Int { a(40) }
+fn main() { assert_eq(a(40), 100) }
 
 OUTPUT:
 
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func borgo_main() any {
-
-	{
-
-		return a(40)
+func b(n int) int {
+	if n == 200 {
+		return n
 	}
-}
-func b(n any) any {
 
-	{
-
-		if borgo.Ops.Eq(borgo.Ops.Eq(n, 200), true).(bool) {
-
-			return n
-
-		}
-
-		return a(borgo.Ops.IAdd(n, 20))
-	}
-}
-func a(n any) any {
-
-	{
-
-		if borgo.Ops.Eq(borgo.Ops.Eq(n, 100), true).(bool) {
-
-			return n
-
-		}
-
-		return b(borgo.Ops.IAdd(n, 10))
-	}
+	return a(n + 20)
 }
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
-	borgo.RegisterGlobalFunction("b", b)
-	borgo.RegisterGlobalFunction("a", a)
+func a(n int) int {
+	if n == 100 {
+		return n
+	}
+
+	return b(n + 10)
+}
+
+func main() {
+	assert_eq[int](a(40), 100)
 }

@@ -1,0 +1,436 @@
+Slices are polymorphic
+
+SOURCE:
+{
+  let x = [1,2,3];
+  list_push(x, 4);
+  ["hello"]
+}
+
+OUTPUT:
+[string]
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "is_mut": false,
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 6
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 7
+                  }
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "name": "Slice",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Slice": [
+                  {
+                    "Literal": {
+                      "lit": {
+                        "Int": 1
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 11
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 12
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Literal": {
+                      "lit": {
+                        "Int": 2
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 13
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 14
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Literal": {
+                      "lit": {
+                        "Int": 3
+                      },
+                      "ty": {
+                        "Con": {
+                          "name": "int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 15
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 16
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "ty": {
+                "Con": {
+                  "name": "Slice",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "int",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 10
+                },
+                "end": {
+                  "line": 2,
+                  "col": 17
+                }
+              }
+            }
+          },
+          "ty": {
+            "Con": {
+              "name": "Slice",
+              "args": [
+                {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 18
+            }
+          }
+        }
+      },
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "list_push",
+              "decl": {
+                "file_id": {
+                  "package": "std",
+                  "filename": "builtin.brg"
+                },
+                "span": {
+                  "start": {
+                    "line": 0,
+                    "col": 0
+                  },
+                  "end": {
+                    "line": 0,
+                    "col": 0
+                  }
+                }
+              },
+              "generics_instantiated": [
+                {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              ],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Slice",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "int",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "int",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Slice",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "id": -1
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 3,
+                  "col": 2
+                },
+                "end": {
+                  "line": 3,
+                  "col": 11
+                }
+              }
+            }
+          },
+          "args": [
+            {
+              "Var": {
+                "value": "x",
+                "decl": {
+                  "file_id": {
+                    "package": "dummy",
+                    "filename": "dummy"
+                  },
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "col": 6
+                    },
+                    "end": {
+                      "line": 2,
+                      "col": 7
+                    }
+                  }
+                },
+                "generics_instantiated": [],
+                "ty": {
+                  "Con": {
+                    "name": "Slice",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "int",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 12
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 13
+                  }
+                }
+              }
+            },
+            {
+              "Literal": {
+                "lit": {
+                  "Int": 4
+                },
+                "ty": {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 15
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ty": {
+            "Con": {
+              "name": "Slice",
+              "args": [
+                {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 2
+            },
+            "end": {
+              "line": 3,
+              "col": 17
+            }
+          }
+        }
+      },
+      {
+        "Literal": {
+          "lit": {
+            "Slice": [
+              {
+                "Literal": {
+                  "lit": {
+                    "String": [
+                      "hello",
+                      null
+                    ]
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 3
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 10
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "ty": {
+            "Con": {
+              "name": "Slice",
+              "args": [
+                {
+                  "Con": {
+                    "name": "string",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 11
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "name": "Slice",
+        "args": [
+          {
+            "Con": {
+              "name": "string",
+              "args": []
+            }
+          }
+        ]
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 5,
+        "col": 1
+      }
+    }
+  }
+}

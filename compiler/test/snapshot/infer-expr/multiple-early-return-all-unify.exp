@@ -2,7 +2,7 @@ Multiple early return all unify.
 
 SOURCE:
 {
-  fn foo() -> Int {
+  fn foo() -> int {
     if true {
       return 1
     }
@@ -18,9 +18,9 @@ SOURCE:
 OUTPUT:
 Type mismatch
 Expected:
-    Int
+    int
 Got:
-    String
+    string
 
 8|        return "bar"
                  ^^^^^

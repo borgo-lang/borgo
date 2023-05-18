@@ -2,7 +2,7 @@ Bidirectional inference for closure params
 
 SOURCE:
 {
-  struct Foo { a: Int }
+  struct Foo { a: int }
 
   fn bar<T, Y>(start: T, f: fn (x: T) -> Y) -> Y {
     f(start)
@@ -12,11 +12,9 @@ SOURCE:
 }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -31,14 +29,17 @@ No errors.
                 "name": "a",
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Int",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -150,7 +151,7 @@ No errors.
                         "args": []
                       }
                     },
-                    "fx": []
+                    "id": -1
                   }
                 }
               }
@@ -191,6 +192,7 @@ No errors.
                               }
                             }
                           },
+                          "generics_instantiated": [],
                           "ty": {
                             "Fun": {
                               "args": [
@@ -208,7 +210,7 @@ No errors.
                                   "args": []
                                 }
                               },
-                              "fx": []
+                              "id": -1
                             }
                           },
                           "span": {
@@ -243,6 +245,7 @@ No errors.
                                 }
                               }
                             },
+                            "generics_instantiated": [],
                             "ty": {
                               "Con": {
                                 "name": "T",
@@ -298,6 +301,52 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [
+                "T",
+                "Y"
+              ],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Fun": {
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "T",
+                              "args": []
+                            }
+                          }
+                        ],
+                        "bounds": [],
+                        "ret": {
+                          "Con": {
+                            "name": "Y",
+                            "args": []
+                          }
+                        },
+                        "id": -1
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Y",
+                      "args": []
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -318,7 +367,7 @@ No errors.
                     "ret": {
                       "Var": 99
                     },
-                    "fx": []
+                    "id": -1
                   }
                 }
               ],
@@ -326,7 +375,7 @@ No errors.
               "ret": {
                 "Var": 99
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -362,6 +411,20 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [
+                {
+                  "Con": {
+                    "name": "Foo",
+                    "args": []
+                  }
+                },
+                {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              ],
               "ty": {
                 "Fun": {
                   "args": [
@@ -384,22 +447,22 @@ No errors.
                         "bounds": [],
                         "ret": {
                           "Con": {
-                            "name": "Int",
+                            "name": "int",
                             "args": []
                           }
                         },
-                        "fx": []
+                        "id": -1
                       }
                     }
                   ],
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
-                  "fx": []
+                  "id": -1
                 }
               },
               "span": {
@@ -428,7 +491,7 @@ No errors.
                         },
                         "ty": {
                           "Con": {
-                            "name": "Int",
+                            "name": "int",
                             "args": []
                           }
                         },
@@ -501,13 +564,13 @@ No errors.
                   ],
                   "ret": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
                   "ann": "Unknown",
                   "body": {
-                    "StructAccess": {
+                    "FieldAccess": {
                       "expr": {
                         "Var": {
                           "value": "x",
@@ -527,6 +590,7 @@ No errors.
                               }
                             }
                           },
+                          "generics_instantiated": [],
                           "ty": {
                             "Con": {
                               "name": "Foo",
@@ -548,7 +612,7 @@ No errors.
                       "field": "a",
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -561,6 +625,23 @@ No errors.
                           "line": 8,
                           "col": 27
                         }
+                      }
+                    }
+                  },
+                  "bounded_ty": {
+                    "generics": [],
+                    "ty": {
+                      "Fun": {
+                        "args": [
+                          {
+                            "Var": 99
+                          }
+                        ],
+                        "bounds": [],
+                        "ret": {
+                          "Var": 99
+                        },
+                        "id": -1
                       }
                     }
                   }
@@ -579,11 +660,11 @@ No errors.
                     "bounds": [],
                     "ret": {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     },
-                    "fx": []
+                    "id": -1
                   }
                 },
                 "span": {
@@ -601,7 +682,7 @@ No errors.
           ],
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -620,7 +701,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

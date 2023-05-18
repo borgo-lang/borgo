@@ -1,19 +1,19 @@
 Rebind variables
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   let x = 1;
-  x.assert_eq(1);
+  assert_eq(x, 1);
 
   let x = 1 + 1;
-  x.assert_eq(2);
+  assert_eq(x, 2);
 
   {
     let x = x + 5;
-    x.assert_eq(7);
+    assert_eq(x, 7);
   }
 
-  x.assert_eq(2);
+  assert_eq(x, 2);
 }
 
 OUTPUT:
@@ -21,32 +21,20 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	x := 1
 
-var _ = borgo.Unit
+	assert_eq[int](x, 1)
 
-func borgo_main() any {
+	x = 1 + 1
 
+	assert_eq[int](x, 2)
 	{
 
-		var x any = 1
+		x := x + 5
 
-		Debug_assert_eq(x, 1)
-
-		x = borgo.Ops.IAdd(1, 1)
-
-		Debug_assert_eq(x, 2)
-		{
-
-			var x any = borgo.Ops.IAdd(x, 5)
-
-			Debug_assert_eq(x, 7)
-		}
-
-		return Debug_assert_eq(x, 2)
+		assert_eq[int](x, 7)
 	}
-}
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](x, 2)
 }

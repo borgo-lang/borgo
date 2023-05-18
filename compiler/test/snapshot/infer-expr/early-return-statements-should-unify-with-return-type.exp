@@ -2,7 +2,7 @@ Early return statements should unify with return type.
 
 SOURCE:
 {
-  fn foo() -> Int {
+  fn foo() -> int {
     if true {
       return "foo"
     }
@@ -14,9 +14,9 @@ SOURCE:
 OUTPUT:
 Type mismatch
 Expected:
-    Int
+    int
 Got:
-    String
+    string
 
 4|        return "foo"
                  ^^^^^

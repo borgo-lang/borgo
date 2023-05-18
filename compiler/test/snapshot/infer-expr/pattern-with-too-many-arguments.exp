@@ -2,16 +2,16 @@ Pattern with too many arguments
 
 SOURCE:
 {
-  fn foo((x, y, z): (Bool, Bool)) -> Bool { x }
+  fn foo((x, y, z): (bool, bool)) -> bool { x }
   foo((false, false))
 }
 
 OUTPUT:
 Type mismatch
 Expected:
-    (Bool, Bool)
+    (bool, bool)
 Got:
     (A, B, C)
 
-2|    fn foo((x, y, z): (Bool, Bool)) -> Bool { x }
+2|    fn foo((x, y, z): (bool, bool)) -> bool { x }
              ^^^^^^^^^

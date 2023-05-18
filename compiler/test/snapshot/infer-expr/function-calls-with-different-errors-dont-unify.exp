@@ -2,9 +2,9 @@ Function calls with different errors don't unify.
 
 SOURCE:
 {
-  fn foo1() -> Result<Int, ErrFoo> { Err(ErrFoo::A) }
-  fn foo2() -> Result<Int, ErrFoo> { Err(ErrBar::X) }
-  fn bar() -> Result<Int> {
+  fn foo1() -> Result<int, ErrFoo> { Err(ErrFoo::A) }
+  fn foo2() -> Result<int, ErrFoo> { Err(ErrBar::X) }
+  fn bar() -> Result<int, ErrFoo> {
     foo1()?;
     foo2()?;
     Ok(1)
@@ -14,9 +14,9 @@ SOURCE:
 OUTPUT:
 Type mismatch
 Expected:
-    Result<Int, ErrFoo>
+    Result<int, ErrFoo>
 Got:
-    Result<Int, ErrBar>
+    Result<int, ErrBar>
 
-3|    fn foo2() -> Result<Int, ErrFoo> { Err(ErrBar::X) }
+3|    fn foo2() -> Result<int, ErrFoo> { Err(ErrBar::X) }
                                          ^^^^^^^^^^^^^^

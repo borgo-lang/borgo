@@ -1,30 +1,40 @@
 Lists
 
 SOURCE:
-fn borgo_main() {
-  let x = [1, 2, 5 + 5];
-  x.len().assert_eq(3);
+fn main() {
+  let mut x = [1, 2, 5 + 5];
+
+  inspect(x);
+  assert_eq(x.len(), 3);
+  assert_eq(x[1], 2);
+
+  x[1] = 8;
+  assert_eq(x[1], 8);
+
+  x = x.append(9);
+  assert_eq(x[3], 9);
 }
 
 OUTPUT:
+[1 2 10]
 
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	x := []int{1, 2, 5 + 5}
 
-var _ = borgo.Unit
+	inspect[[]int](x)
 
-func borgo_main() any {
+	assert_eq[int](Slice_len[int](x), 3)
 
-	{
+	assert_eq[int](x[1], 2)
 
-		var x any = borgo.List(1, 2, borgo.Ops.IAdd(5, 5))
+	x[1] = 8
 
-		return Debug_assert_eq(List_len(x), 3)
-	}
-}
+	assert_eq[int](x[1], 8)
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	x = Slice_append[int](x, 9)
+
+	assert_eq[int](x[3], 9)
 }

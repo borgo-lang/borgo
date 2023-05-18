@@ -1,0 +1,499 @@
+Generics in extern blocks
+
+SOURCE:
+fn borgo_main() {
+  let a = reflect.DeepEqual(1, false);
+  let b = reflect.DeepEqual(1, 1);
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "borgo_main",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Let": {
+                        "binding": {
+                          "pat": {
+                            "Type": {
+                              "ident": "a",
+                              "is_mut": false,
+                              "ann": "Unknown",
+                              "span": {
+                                "start": {
+                                  "line": 2,
+                                  "col": 6
+                                },
+                                "end": {
+                                  "line": 2,
+                                  "col": 7
+                                }
+                              }
+                            }
+                          },
+                          "ann": "Unknown",
+                          "ty": {
+                            "Con": {
+                              "name": "bool",
+                              "args": []
+                            }
+                          }
+                        },
+                        "value": {
+                          "Call": {
+                            "func": {
+                              "FieldAccess": {
+                                "expr": {
+                                  "Var": {
+                                    "value": "reflect",
+                                    "decl": {
+                                      "file_id": {
+                                        "package": "dummy",
+                                        "filename": "dummy"
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 0,
+                                          "col": 0
+                                        },
+                                        "end": {
+                                          "line": 0,
+                                          "col": 0
+                                        }
+                                      }
+                                    },
+                                    "generics_instantiated": [],
+                                    "ty": {
+                                      "Con": {
+                                        "name": "__Packagereflect",
+                                        "args": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 2,
+                                        "col": 10
+                                      },
+                                      "end": {
+                                        "line": 2,
+                                        "col": 17
+                                      }
+                                    }
+                                  }
+                                },
+                                "field": "DeepEqual",
+                                "ty": {
+                                  "Fun": {
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "int",
+                                          "args": []
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "bool",
+                                          "args": []
+                                        }
+                                      }
+                                    ],
+                                    "bounds": [],
+                                    "ret": {
+                                      "Con": {
+                                        "name": "bool",
+                                        "args": []
+                                      }
+                                    },
+                                    "id": -1
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 2,
+                                    "col": 18
+                                  },
+                                  "end": {
+                                    "line": 2,
+                                    "col": 27
+                                  }
+                                }
+                              }
+                            },
+                            "args": [
+                              {
+                                "Literal": {
+                                  "lit": {
+                                    "Int": 1
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 2,
+                                      "col": 28
+                                    },
+                                    "end": {
+                                      "line": 2,
+                                      "col": 29
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "Literal": {
+                                  "lit": {
+                                    "Bool": false
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "name": "bool",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 2,
+                                      "col": 31
+                                    },
+                                    "end": {
+                                      "line": 2,
+                                      "col": 36
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "ty": {
+                              "Con": {
+                                "name": "bool",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 18
+                              },
+                              "end": {
+                                "line": 2,
+                                "col": 27
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "bool",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 2,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 2,
+                            "col": 38
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Let": {
+                        "binding": {
+                          "pat": {
+                            "Type": {
+                              "ident": "b",
+                              "is_mut": false,
+                              "ann": "Unknown",
+                              "span": {
+                                "start": {
+                                  "line": 3,
+                                  "col": 6
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "col": 7
+                                }
+                              }
+                            }
+                          },
+                          "ann": "Unknown",
+                          "ty": {
+                            "Con": {
+                              "name": "bool",
+                              "args": []
+                            }
+                          }
+                        },
+                        "value": {
+                          "Call": {
+                            "func": {
+                              "FieldAccess": {
+                                "expr": {
+                                  "Var": {
+                                    "value": "reflect",
+                                    "decl": {
+                                      "file_id": {
+                                        "package": "dummy",
+                                        "filename": "dummy"
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 0,
+                                          "col": 0
+                                        },
+                                        "end": {
+                                          "line": 0,
+                                          "col": 0
+                                        }
+                                      }
+                                    },
+                                    "generics_instantiated": [],
+                                    "ty": {
+                                      "Con": {
+                                        "name": "__Packagereflect",
+                                        "args": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 3,
+                                        "col": 10
+                                      },
+                                      "end": {
+                                        "line": 3,
+                                        "col": 17
+                                      }
+                                    }
+                                  }
+                                },
+                                "field": "DeepEqual",
+                                "ty": {
+                                  "Fun": {
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "int",
+                                          "args": []
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "int",
+                                          "args": []
+                                        }
+                                      }
+                                    ],
+                                    "bounds": [],
+                                    "ret": {
+                                      "Con": {
+                                        "name": "bool",
+                                        "args": []
+                                      }
+                                    },
+                                    "id": -1
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 3,
+                                    "col": 18
+                                  },
+                                  "end": {
+                                    "line": 3,
+                                    "col": 27
+                                  }
+                                }
+                              }
+                            },
+                            "args": [
+                              {
+                                "Literal": {
+                                  "lit": {
+                                    "Int": 1
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 3,
+                                      "col": 28
+                                    },
+                                    "end": {
+                                      "line": 3,
+                                      "col": 29
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "Literal": {
+                                  "lit": {
+                                    "Int": 1
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 3,
+                                      "col": 31
+                                    },
+                                    "end": {
+                                      "line": 3,
+                                      "col": 32
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "ty": {
+                              "Con": {
+                                "name": "bool",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 3,
+                                "col": 18
+                              },
+                              "end": {
+                                "line": 3,
+                                "col": 27
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "bool",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 3,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 3,
+                            "col": 34
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 1,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Unit",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 4,
+                "col": 1
+              }
+            }
+          }
+        }
+      ],
+      "source": "fn borgo_main() {\n  let a = reflect.DeepEqual(1, false);\n  let b = reflect.DeepEqual(1, 1);\n}"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}

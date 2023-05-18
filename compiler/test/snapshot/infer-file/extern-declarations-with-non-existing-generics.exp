@@ -2,8 +2,12 @@ Extern declarations with non existing generics
 
 SOURCE:
 struct Foo {}
-extern "native/Foo" {
-  fn bar<T>(x: T, k: K);
+
+#[package(path = github.com:yo/test, name = test::pkg)]
+mod f {
+  extern {
+    fn bar<T>(x: T, k: K);
+  }
 }
 
 fn borgo_main() {
@@ -13,5 +17,5 @@ fn borgo_main() {
 OUTPUT:
 Type not found: K
 
-3|    fn bar<T>(x: T, k: K);
-      ^^^^^^^^^^^^^^^^^^^^^^
+6|      fn bar<T>(x: T, k: K);
+        ^^^^^^^^^^^^^^^^^^^^^^

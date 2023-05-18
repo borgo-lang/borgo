@@ -2,17 +2,15 @@ Tuples as function arguments.
 
 SOURCE:
 {
-  fn foo(t: (Int, Bool)) -> Int {
+  fn foo(t: (int, bool)) -> int {
     fst(t)
   }
 }
 
 OUTPUT:
-fn ((Int, Bool)) -> Int
+fn ((int, bool)) -> int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -48,13 +46,13 @@ No errors.
                     "args": [
                       {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
                       {
                         "Con": {
-                          "name": "Bool",
+                          "name": "bool",
                           "args": []
                         }
                       }
@@ -67,13 +65,13 @@ No errors.
                     "args": [
                       {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
                       {
                         "Con": {
-                          "name": "Bool",
+                          "name": "bool",
                           "args": []
                         }
                       }
@@ -84,13 +82,13 @@ No errors.
             ],
             "ret": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
             "ann": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -118,6 +116,20 @@ No errors.
                               }
                             }
                           },
+                          "generics_instantiated": [
+                            {
+                              "Con": {
+                                "name": "int",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "bool",
+                                "args": []
+                              }
+                            }
+                          ],
                           "ty": {
                             "Fun": {
                               "args": [
@@ -127,13 +139,13 @@ No errors.
                                     "args": [
                                       {
                                         "Con": {
-                                          "name": "Int",
+                                          "name": "int",
                                           "args": []
                                         }
                                       },
                                       {
                                         "Con": {
-                                          "name": "Bool",
+                                          "name": "bool",
                                           "args": []
                                         }
                                       }
@@ -144,11 +156,11 @@ No errors.
                               "bounds": [],
                               "ret": {
                                 "Con": {
-                                  "name": "Int",
+                                  "name": "int",
                                   "args": []
                                 }
                               },
-                              "fx": []
+                              "id": -1
                             }
                           },
                           "span": {
@@ -183,19 +195,20 @@ No errors.
                                 }
                               }
                             },
+                            "generics_instantiated": [],
                             "ty": {
                               "Con": {
                                 "name": "Tuple2",
                                 "args": [
                                   {
                                     "Con": {
-                                      "name": "Int",
+                                      "name": "int",
                                       "args": []
                                     }
                                   },
                                   {
                                     "Con": {
-                                      "name": "Bool",
+                                      "name": "bool",
                                       "args": []
                                     }
                                   }
@@ -217,7 +230,7 @@ No errors.
                       ],
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -236,7 +249,7 @@ No errors.
                 ],
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -251,6 +264,42 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Tuple2",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "int",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "bool",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -263,13 +312,13 @@ No errors.
                     "args": [
                       {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
                       {
                         "Con": {
-                          "name": "Bool",
+                          "name": "bool",
                           "args": []
                         }
                       }
@@ -280,11 +329,11 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -309,13 +358,13 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 {
                   "Con": {
-                    "name": "Bool",
+                    "name": "bool",
                     "args": []
                   }
                 }
@@ -326,11 +375,11 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

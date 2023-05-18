@@ -3,47 +3,28 @@ Const expressions are visible from other files
 SOURCE:
 file: foo.brg
 
-fn check() -> Bool {
+fn check() -> bool {
   foo == 2
 }
 
 file: main.brg
 
-const foo: Int = 1 + 1;
-fn borgo_main() -> Bool { check() }
+const foo: int = 1 + 1;
+fn main() { assert_eq(check(), true) }
 
 OUTPUT:
 
 ---
 package main
 
-import borgo "borgo/runtime"
+var foo = func() int {
+	return 1 + 1
+}()
 
-var _ = borgo.Unit
-var foo any
-
-func init_const_foo() any {
-
-	return borgo.Ops.IAdd(1, 1)
+func check() bool {
+	return foo == 2
 }
 
-func borgo_main() any {
-
-	{
-
-		return check()
-	}
-}
-func check() any {
-
-	{
-
-		return borgo.Ops.Eq(foo, 2)
-	}
-}
-
-func pkg_user_init() {
-	foo = init_const_foo()
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
-	borgo.RegisterGlobalFunction("check", check)
+func main() {
+	assert_eq[bool](check(), true)
 }

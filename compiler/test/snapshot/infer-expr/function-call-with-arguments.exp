@@ -4,11 +4,9 @@ SOURCE:
 { sum(1, 4) }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -34,18 +32,19 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Fun": {
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     },
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     }
@@ -53,11 +52,11 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
-                  "fx": []
+                  "id": -1
                 }
               },
               "span": {
@@ -80,7 +79,7 @@ No errors.
                 },
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -103,7 +102,7 @@ No errors.
                 },
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -122,7 +121,7 @@ No errors.
           ],
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -141,7 +140,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

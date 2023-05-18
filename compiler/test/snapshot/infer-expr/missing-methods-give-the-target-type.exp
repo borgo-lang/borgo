@@ -9,8 +9,8 @@ SOURCE:
 
 OUTPUT:
 Type:
-    Foo<Int>
-has no method:
+    Foo<int>
+has no field or method:
     bar
 
 4|    f.bar();

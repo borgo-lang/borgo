@@ -3,7 +3,7 @@ Exhaustive check
 SOURCE:
 enum Color { Blue, Red, Green }
 
-fn borgo_main() -> Int {
+fn borgo_main() -> int {
   let x = Color::Red;
   match x {
     Color::Red => 1,

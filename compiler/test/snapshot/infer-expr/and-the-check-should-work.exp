@@ -3,16 +3,16 @@ And the check should work!
 SOURCE:
 {
   let x = [1,2,3];
-  x as Bool;
+  x as bool;
   1
 }
 
 OUTPUT:
 Type mismatch
 Expected:
-    List<Int>
+    [int]
 Got:
-    Bool
+    bool
 
-3|    x as Bool;
+3|    x as bool;
       ^^^^^^^^^

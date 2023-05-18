@@ -1,13 +1,12 @@
 Destructure function params
 
 SOURCE:
-fn foo((_, b): (Int, String)) -> String {
+fn foo((_, b): (int, string)) -> string {
   b
 }
 
-fn borgo_main() {
-  foo((1, "yo")).assert_eq("yo");
-  ()
+fn main() {
+  assert_eq(foo((1, "yo")), "yo");
 }
 
 OUTPUT:
@@ -15,44 +14,15 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func foo(arg_0 Tuple2[int, string]) string {
+	b := arg_0.second
 
-var _ = borgo.Unit
-
-func foo(arg_0 any) any {
-	var1_match_pat := borgo.MatchNone
-	if var1_match_pat != borgo.MatchErr {
-		var1_match_pat = borgo.MatchOk /* wildcard */
-	}
-	b := arg_0.(Tuple2).Second
-
-	if var1_match_pat != borgo.MatchErr {
-		_ = borgo.MatchOk
-	} else {
-		_ = borgo.MatchErr
-	}
-
-	{
-
-		return b
-	}
-}
-func borgo_main() any {
-
-	{
-
-		Debug_assert_eq(foo(func(base any) any {
-			data := base.(Tuple2)
-			data.First = 1
-			data.Second = "yo"
-			return data
-		}(Tuple2{})), "yo")
-
-		return borgo.Unit
-	}
+	return b
 }
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	assert_eq[string](foo(Tuple2[int, string]{
+		first:  1,
+		second: "yo",
+	}), "yo")
 }

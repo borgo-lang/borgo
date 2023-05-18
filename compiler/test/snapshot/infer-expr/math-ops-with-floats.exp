@@ -4,11 +4,9 @@ SOURCE:
 1.3 + 5.2
 
 OUTPUT:
-Float
+float64
 ---
 No errors.
----
-[]
 ---
 {
   "Binary": {
@@ -20,7 +18,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "Float",
+            "name": "float64",
             "args": []
           }
         },
@@ -43,7 +41,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "Float",
+            "name": "float64",
             "args": []
           }
         },
@@ -61,7 +59,7 @@ No errors.
     },
     "ty": {
       "Con": {
-        "name": "Float",
+        "name": "float64",
         "args": []
       }
     },

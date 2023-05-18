@@ -4,11 +4,9 @@ SOURCE:
 list_map
 
 OUTPUT:
-fn <A, B>(List<A>, fn (A) -> B) -> List<B>
+fn <A, B>([A], fn (A) -> B) -> [B]
 ---
 No errors.
----
-[]
 ---
 {
   "Var": {
@@ -29,12 +27,20 @@ No errors.
         }
       }
     },
+    "generics_instantiated": [
+      {
+        "Var": 99
+      },
+      {
+        "Var": 99
+      }
+    ],
     "ty": {
       "Fun": {
         "args": [
           {
             "Con": {
-              "name": "List",
+              "name": "Slice",
               "args": [
                 {
                   "Var": 99
@@ -53,14 +59,14 @@ No errors.
               "ret": {
                 "Var": 99
               },
-              "fx": []
+              "id": -1
             }
           }
         ],
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "List",
+            "name": "Slice",
             "args": [
               {
                 "Var": 99
@@ -68,7 +74,7 @@ No errors.
             ]
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

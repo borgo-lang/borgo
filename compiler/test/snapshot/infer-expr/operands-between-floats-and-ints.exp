@@ -1,0 +1,77 @@
+Operands between floats and ints
+
+SOURCE:
+3.1 * 4
+
+OUTPUT:
+float64
+---
+No errors.
+---
+{
+  "Binary": {
+    "op": "Mul",
+    "left": {
+      "Literal": {
+        "lit": {
+          "Float": 3.1
+        },
+        "ty": {
+          "Con": {
+            "name": "float64",
+            "args": []
+          }
+        },
+        "span": {
+          "start": {
+            "line": 1,
+            "col": 0
+          },
+          "end": {
+            "line": 1,
+            "col": 3
+          }
+        }
+      }
+    },
+    "right": {
+      "Literal": {
+        "lit": {
+          "Int": 4
+        },
+        "ty": {
+          "Con": {
+            "name": "int",
+            "args": []
+          }
+        },
+        "span": {
+          "start": {
+            "line": 1,
+            "col": 6
+          },
+          "end": {
+            "line": 1,
+            "col": 7
+          }
+        }
+      }
+    },
+    "ty": {
+      "Con": {
+        "name": "float64",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 1,
+        "col": 7
+      }
+    }
+  }
+}

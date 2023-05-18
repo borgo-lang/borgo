@@ -1,0 +1,46 @@
+Types implement interfaces
+
+SOURCE:
+use fmt;
+
+struct Foo {}
+
+impl Foo {
+  fn Write(&mut self, bytes: [byte]) -> Result<int> {
+    Ok(3)
+  }
+}
+
+fn main() {
+    let n = fmt.Fprintf(&mut Foo{}, "%d", 1).unwrap();
+    assert_eq(n, 3);
+}
+
+OUTPUT:
+
+---
+package main
+
+import (
+	"fmt"
+)
+
+type Foo struct{}
+
+func (self *Foo) Write(bytes []byte) (int, error) {
+	return 3, nil
+}
+
+func main() {
+	var3_result := func() Result[int, error] {
+		var1_check, var2_err := fmt.Fprintf(&Foo{}, "%d", 1)
+		if var2_err != nil {
+			return make_Result_Err[int, error](var2_err)
+		}
+		return make_Result_Ok[int, error](var1_check)
+	}()
+
+	n := var3_result.unwrap()
+
+	assert_eq[int](n, 3)
+}

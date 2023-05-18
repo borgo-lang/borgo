@@ -1,34 +1,18 @@
 Let bindings
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   let a = 5 + 5;
-
-  Debug::inspect(a);
-  ()
+  assert_eq(a, 10);
 }
 
 OUTPUT:
-10
 
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	a := 5 + 5
 
-var _ = borgo.Unit
-
-func borgo_main() any {
-
-	{
-
-		var a any = borgo.Ops.IAdd(5, 5)
-		Debug_inspect(a)
-
-		return borgo.Unit
-	}
-}
-
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](a, 10)
 }

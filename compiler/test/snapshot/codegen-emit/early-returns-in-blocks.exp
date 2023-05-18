@@ -1,7 +1,7 @@
 Early returns in blocks.
 
 SOURCE:
-fn foo() -> Int {
+fn foo() -> int {
   {
     return 5;
   }
@@ -9,8 +9,8 @@ fn foo() -> Int {
   999
 }
 
-fn borgo_main() {
-  foo().assert_eq(5);
+fn main() {
+  assert_eq(foo(), 5);
 }
 
 OUTPUT:
@@ -18,28 +18,12 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func foo() int {
+	return 5
 
-var _ = borgo.Unit
-
-func foo() any {
-
-	{
-
-		return 5
-
-		return 999
-	}
-}
-func borgo_main() any {
-
-	{
-
-		return Debug_assert_eq(foo(), 5)
-	}
+	return 999
 }
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	assert_eq[int](foo(), 5)
 }

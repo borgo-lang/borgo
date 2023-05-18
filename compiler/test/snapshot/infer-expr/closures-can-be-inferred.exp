@@ -4,11 +4,9 @@ SOURCE:
 |n| sum(n, 1)
 
 OUTPUT:
-fn (Int) -> Int
+fn (int) -> int
 ---
 No errors.
----
-[]
 ---
 {
   "Closure": {
@@ -38,7 +36,7 @@ No errors.
           "ann": "Unknown",
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           }
@@ -46,7 +44,7 @@ No errors.
       ],
       "ret": {
         "Con": {
-          "name": "Int",
+          "name": "int",
           "args": []
         }
       },
@@ -72,18 +70,19 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Fun": {
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     },
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     }
@@ -91,11 +90,11 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
-                  "fx": []
+                  "id": -1
                 }
               },
               "span": {
@@ -130,9 +129,10 @@ No errors.
                     }
                   }
                 },
+                "generics_instantiated": [],
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -155,7 +155,7 @@ No errors.
                 },
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -174,7 +174,7 @@ No errors.
           ],
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -189,6 +189,23 @@ No errors.
             }
           }
         }
+      },
+      "bounded_ty": {
+        "generics": [],
+        "ty": {
+          "Fun": {
+            "args": [
+              {
+                "Var": 99
+              }
+            ],
+            "bounds": [],
+            "ret": {
+              "Var": 99
+            },
+            "id": -1
+          }
+        }
       }
     },
     "kind": "Lambda",
@@ -197,7 +214,7 @@ No errors.
         "args": [
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           }
@@ -205,11 +222,11 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

@@ -1,14 +1,12 @@
 Block ends with generic list
 
 SOURCE:
-{ fn foo<Y>(foo: Y) -> List<Y> { [foo, foo] } }
+{ fn foo<Y>(foo: Y) -> [Y] { [foo, foo] } }
 
 OUTPUT:
-fn <A>(A) -> List<A>
+fn <A>(A) -> [A]
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -56,7 +54,7 @@ No errors.
             ],
             "ret": {
               "Con": {
-                "name": "List",
+                "name": "Slice",
                 "args": [
                   {
                     "Con": {
@@ -69,7 +67,7 @@ No errors.
             },
             "ann": {
               "Con": {
-                "name": "List",
+                "name": "Slice",
                 "args": [
                   {
                     "Con": {
@@ -86,7 +84,7 @@ No errors.
                   {
                     "Literal": {
                       "lit": {
-                        "List": [
+                        "Slice": [
                           {
                             "Var": {
                               "value": "foo",
@@ -106,6 +104,7 @@ No errors.
                                   }
                                 }
                               },
+                              "generics_instantiated": [],
                               "ty": {
                                 "Con": {
                                   "name": "Y",
@@ -115,11 +114,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 1,
-                                  "col": 34
+                                  "col": 30
                                 },
                                 "end": {
                                   "line": 1,
-                                  "col": 37
+                                  "col": 33
                                 }
                               }
                             }
@@ -143,6 +142,7 @@ No errors.
                                   }
                                 }
                               },
+                              "generics_instantiated": [],
                               "ty": {
                                 "Con": {
                                   "name": "Y",
@@ -152,11 +152,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 1,
-                                  "col": 39
+                                  "col": 35
                                 },
                                 "end": {
                                   "line": 1,
-                                  "col": 42
+                                  "col": 38
                                 }
                               }
                             }
@@ -165,7 +165,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "List",
+                          "name": "Slice",
                           "args": [
                             {
                               "Con": {
@@ -179,11 +179,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 1,
-                          "col": 33
+                          "col": 29
                         },
                         "end": {
                           "line": 1,
-                          "col": 43
+                          "col": 39
                         }
                       }
                     }
@@ -191,7 +191,7 @@ No errors.
                 ],
                 "ty": {
                   "Con": {
-                    "name": "List",
+                    "name": "Slice",
                     "args": [
                       {
                         "Con": {
@@ -205,12 +205,44 @@ No errors.
                 "span": {
                   "start": {
                     "line": 1,
-                    "col": 31
+                    "col": 27
                   },
                   "end": {
                     "line": 1,
-                    "col": 45
+                    "col": 41
                   }
+                }
+              }
+            },
+            "bounded_ty": {
+              "generics": [
+                "Y"
+              ],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Y",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Slice",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Y",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "id": -1
                 }
               }
             }
@@ -226,7 +258,7 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "List",
+                  "name": "Slice",
                   "args": [
                     {
                       "Var": 99
@@ -234,7 +266,7 @@ No errors.
                   ]
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -244,7 +276,7 @@ No errors.
             },
             "end": {
               "line": 1,
-              "col": 45
+              "col": 41
             }
           }
         }
@@ -260,7 +292,7 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "List",
+            "name": "Slice",
             "args": [
               {
                 "Var": 99
@@ -268,7 +300,7 @@ No errors.
             ]
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {
@@ -278,7 +310,7 @@ No errors.
       },
       "end": {
         "line": 1,
-        "col": 47
+        "col": 43
       }
     }
   }

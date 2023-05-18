@@ -1,0 +1,80 @@
+Native call to result
+
+SOURCE:
+use os;
+use fmt;
+
+fn main() {
+  match os.ReadFile("go.mod") {
+    Ok(s) => fmt.Println(string(s)),
+    Err(_) => unreachable!(),
+  }
+}
+
+OUTPUT:
+
+module borgo_test
+go 1.19
+
+
+
+---
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	var3_result := func() Result[[]byte, error] {
+		var1_check, var2_err := os.ReadFile("go.mod")
+		if var2_err != nil {
+			return make_Result_Err[[]byte, error](var2_err)
+		}
+		return make_Result_Ok[[]byte, error](var1_check)
+	}()
+
+	var4_subject := var3_result
+	var5_matches := 0
+
+	if var5_matches != 2 {
+		var5_matches = 0
+
+		var6_match_pat := 0
+		s := var4_subject.Ok
+
+		if var6_match_pat != 1 && var4_subject.tag == Result_Ok {
+			var5_matches = 2
+		} else {
+			var5_matches = 1
+		}
+
+		_ = var4_subject
+
+		if var5_matches == 2 {
+			fmt.Println(string(s))
+		}
+	}
+
+	if var5_matches != 2 {
+		var5_matches = 0
+
+		var8_match_pat := 0
+		if var8_match_pat != 1 {
+			var8_match_pat = 2 /* wildcard */
+		}
+
+		if var8_match_pat != 1 && var4_subject.tag == Result_Err {
+			var5_matches = 2
+		} else {
+			var5_matches = 1
+		}
+
+		_ = var4_subject
+
+		if var5_matches == 2 {
+			Debug_unreachable[struct{}]()
+		}
+	}
+}

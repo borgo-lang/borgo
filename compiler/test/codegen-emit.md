@@ -7,46 +7,45 @@ Process files and emit Go code
 Standalone expressions
 
 ```rust
-fn borgo_main() {
-  4.inspect();
-  ()
+use fmt;
+
+fn main() {
+  fmt.Printf("hello %v", 4);
 }
 ```
 
 Function calls
 
 ```rust
-fn foo(b: Bool, x: Int) -> Bool { b }
-fn bar(x: Int) -> Int { x }
+fn foo(b: bool, x: int) -> bool { b }
+fn bar(x: int) -> int { x }
+fn baz() {}
 
-fn borgo_main() {
-  foo(match 1 {
+fn main() {
+  let val = foo(match 1 {
     1 => true,
     _ => false,
-  }, bar(5))
-  .assert_eq(true);
+  }, bar(5));
 
-  ()
+  assert_eq(val, true);
 }
 ```
 
 Let bindings
 
 ```rust
-fn borgo_main() {
+fn main() {
   let a = 5 + 5;
-
-  Debug::inspect(a);
-  ()
+  assert_eq(a, 10);
 }
 ```
 
 If statements
 
 ```rust
-fn borgo_main() {
+fn main() {
   let x = if true { 6 } else { 0 };
-  x.assert_eq(6);
+  assert_eq(x, 6);
 }
 ```
 
@@ -54,14 +53,13 @@ Enums
 
 ```rust
 enum Foo {
-  Bar(Int, Bool),
+  Bar(int, bool),
   Baz,
 }
 
-fn borgo_main() {
-  Foo::Bar(2, false).inspect();
-  Foo::Baz.inspect();
-  ()
+fn main() {
+  inspect(Foo::Bar(2, false));
+  inspect(Foo::Baz);
 }
 ```
 
@@ -69,29 +67,28 @@ Structs
 
 ```rust
 struct Bar<T> {
-  name: String,
-  age: Int,
+  name: string,
+  age: int,
   v: T,
 }
 
-fn borgo_main() {
+fn main() {
   let x = Bar { name: "yo", age: 99, v: false };
-  x.inspect();
-  ()
+  inspect(x);
 }
 ```
 
 Return statement
 
 ```rust
-fn foo() -> Int {
+fn foo() -> int {
   let x = match 1 {
     1 => return 12,
     _ => 5,
   };
 
   if true {
-    x + 40
+    let _ = x + 40;
   } else {
     return 9
   }
@@ -99,8 +96,14 @@ fn foo() -> Int {
   return 4
 }
 
-fn borgo_main() {
-  foo().assert_eq(12);
+fn bar() {
+    if false {
+        return
+    }
+}
+
+fn main() {
+  assert_eq(foo(), 12);
 }
 ```
 
@@ -108,349 +111,197 @@ Struct access
 
 ```rust
 struct Foo {
-  a: Int,
-  b: String,
-  c: Bool,
+  a: int,
+  b: string,
+  c: bool,
 }
 
-fn borgo_main() {
+fn main() {
   let x = Foo { a: 1, b: "hi", c: true };
-  x.a.assert_eq(1);
+  assert_eq(x.a, 1);
   let y = Foo { a: 5, c: false, ..x };
-  y.a.assert_eq(5);
-  x.a.assert_eq(1);
-  ()
+  assert_eq(y.a, 5);
+  assert_eq(x.a, 1);
 }
 ```
 
 Try operator
 
 ```rust
-enum Error { Foo(String) }
+use errors;
 
-fn foo(b: Bool) -> Result<Int> { bar("a") }
+fn foo(b: bool) -> Result<int> { bar("a") }
 
-fn bar(s: String) -> Result<Int> {
-  return Err(Error::Foo("boom"));
-  Ok(4)
+fn bar(s: string) -> Result<int> {
+  Err(errors.New("boom"));
 }
 
-fn baz() -> Result<Int> {
+fn baz() -> Result<int> {
   let _ = foo(false)?;
 
   unreachable!();
   Ok(1)
 }
 
-fn borgo_main() {
-  baz().assert_eq(Err(Error::Foo("boom")));
+fn as_value() -> Result<int> {
+  let a = baz();
+  a
+}
+
+fn as_param(r: Result<int>) -> bool {
+   r.IsOk()
+}
+
+fn main() {
+  assert_eq(baz(), Err(errors.New("boom")));
+  assert_eq(as_value().IsOk(), false);
+  assert_eq(as_param(Ok(1)), true);
 }
 ```
 
 Destructure function params
 
 ```rust
-fn foo((_, b): (Int, String)) -> String {
+fn foo((_, b): (int, string)) -> string {
   b
 }
 
-fn borgo_main() {
-  foo((1, "yo")).assert_eq("yo");
-  ()
+fn main() {
+  assert_eq(foo((1, "yo")), "yo");
 }
 ```
 
 Lists
 
 ```rust
-fn borgo_main() {
-  let x = [1, 2, 5 + 5];
-  x.len().assert_eq(3);
+fn main() {
+  let mut x = [1, 2, 5 + 5];
+
+  inspect(x);
+  assert_eq(x.len(), 3);
+  assert_eq(x[1], 2);
+
+  x[1] = 8;
+  assert_eq(x[1], 8);
+
+  x = x.append(9);
+  assert_eq(x[3], 9);
 }
 ```
 
 Impl blocks
 
 ```rust
-struct Foo { a: Int }
+struct Foo { a: int }
 
 impl Foo {
-  fn bar(self, x: Int) -> Int {
+  fn bar(self, x: int) -> int {
     self.a + x
   }
 }
 
-fn borgo_main() {
+fn main() {
   let f = Foo { a: 1 };
-  f.bar(5).assert_eq(6);
+  assert_eq(f.bar(5), 6);
 }
 ```
 
 Rebind variables
 
 ```rust
-fn borgo_main() {
+fn main() {
   let x = 1;
-  x.assert_eq(1);
+  assert_eq(x, 1);
 
   let x = 1 + 1;
-  x.assert_eq(2);
+  assert_eq(x, 2);
 
   {
     let x = x + 5;
-    x.assert_eq(7);
+    assert_eq(x, 7);
   }
 
-  x.assert_eq(2);
+  assert_eq(x, 2);
 }
 ```
 
-Stdlib
+Concurrency
 
 ```rust
-fn borgo_main() {
-  let x = [1,2,3];
+use sync;
+use fmt;
 
-  x.push(4).assert_eq([1,2,3,4]);
-  x.pop().assert_eq([1,2]);
-  x.pop().pop().pop().pop().is_empty().assert_eq(true);
+fn main() {
+  let (sender, receiver) = Channel::new();
 
-  //
-  // Sequence
-  //
-  let s = Seq::infinite(0, |n| n + 3);
-
-  s.take(3).len().assert_eq(3);
-
-  s
-    .take(50)
-    .to_list()
-    .get(4)
-    .assert_eq(Some(12));
-
-  x
-    .seq()
-    .filter(|n| n > 1)
-    .map(|n| n * 8)
-    .to_list()
-    .get(1)
-    .inspect();
-
-  s
-    .take(10)
-    .sum()
-    .assert_eq(135);
-
-  s
-    .drop(10)
-    .take(1)
-    .to_list()
-    .get(0)
-    .assert_eq(Some(30));
-
-  {
-    let (first, last) = s.split_at(5);
-    first.sum().assert_eq(30);
-    last.take(5).to_list().assert_eq([15, 18, 21, 24, 27]);
+  fn foo(x: int) {
+    sender.send(x)
   }
 
-  {
-    let foo = s.chunks(2);
-    foo.get(0).unwrap().sum().assert_eq(3);
-    foo.get(1).unwrap().sum().assert_eq(15);
-    foo.get(2).unwrap().sum().assert_eq(27);
+  spawn!((|| { sender.send(5) })());
 
-    let bar = s.take(5).chunks(3);
-    bar.get(0).unwrap().sum().assert_eq(9);
-    bar.get(1).unwrap().sum().assert_eq(21);
-    bar.get(2).assert_eq(None);
-  }
+  let val = receiver.recv();
+  assert_eq(val, 5);
+
+  spawn!(foo(10));
+
+  let val = receiver.recv();
+  assert_eq(val, 10);
 
   {
-    let foo = s.windows(2);
-    foo.get(0).unwrap().sum().assert_eq(3);
-    foo.get(1).unwrap().sum().assert_eq(9);
-    foo.get(2).unwrap().sum().assert_eq(15);
+    let desired = 5;
 
-    let bar = s.take(5).windows(3);
-    bar.get(0).unwrap().sum().assert_eq(9);
-    bar.get(1).unwrap().sum().assert_eq(18);
-    bar.get(2).is_some().assert_eq(true);
-    bar.get(3).is_none().assert_eq(true);
+    let wg: sync::WaitGroup = zero_value();
+    wg.Add(desired);
+
+    let (done_tx, done_rx) = Channel::new();
+
+    // receiver goroutine
+    spawn!((|| {
+      let mut count = 0;
+
+      for n in receiver {
+        count = count + n;
+      }
+
+      assert_eq(count, 10);
+      fmt.Printf("count: %v", count);
+
+      done_tx.send(());
+    })());
+
+    let mut i = 0;
+
+    // start `desired` goroutines
+    while (i < desired) {
+      spawn!((|i| {
+        sender.send(i);
+        wg.Done()
+      })(i));
+
+      i = i + 1;
+    }
+
+    wg.Wait();
+    sender.close();          // close(sender)
+    done_rx.recv(); // <-done
   }
-
-  s
-    .find_map(|x| if x == 21 { Some(x) } else { None })
-    .assert_eq(Some(21));
-
-  s
-    .take(10)
-    .max_by(Int::cmp)
-    .assert_eq(Some(27));
-
-
-  {
-    let other = ["a", "b", "c"];
-    let zipped = s.zip(other.seq());
-    zipped.get(1).assert_eq(Some((3, "b")));
-    zipped.get(3).assert_eq(None);
-  }
-
-  ["a", "b", "c"]
-    .seq()
-    .enumerate()
-    .get(2).unwrap().assert_eq((2, "c"));
-
-  {
-    let chained = s.drop(100).take(5)
-      .chain(s)
-      .take(10)
-      .to_list();
-
-    chained
-      .get(4)
-      .assert_eq(Some(312));
-
-    chained
-      .get(6) // one after the initial sequence
-      .assert_eq(Some(3));
-  }
-
-  //
-  // Map
-  //
-  let m = Map::new()
-    .insert("foo", 6)
-    .insert("bar", 8);
-
-  m.len().assert_eq(2);
-  m.get("bar").assert_eq(Some(8));
-  m.get("xyz").assert_eq(None);
-
-  m
-    .seq()
-    .to_list()
-    .get(0)
-    .assert_eq(Some(("foo", 6)));
-
-  m
-    .seq_keys()
-    .to_list()
-    .get(1)
-    .assert_eq(Some("bar"));
-
-  Map::new()
-    .insert(99, "baz")
-    .get(99)
-    .assert_eq(Some("baz"));
-
-  [("a", 1), ("b", 2)]
-  .seq()
-  .to_map()
-  .len()
-  .assert_eq(2);
-
-  //
-  // Set
-  //
-  let set = Set::new()
-    .insert(1)
-    .insert(2);
-
-  set.contains(1).assert_eq(true);
-  set.contains(3).assert_eq(false);
-
-  set.delete(2).assert_eq(Set::new().insert(1));
-
-  [1,2,3].seq().to_set().assert_eq(
-    Set::new()
-        .insert(1)
-        .insert(2)
-        .insert(3)
-  );
-
-
-  //
-  // Option
-  //
-  Option::None.unwrap_or_else(|| 4).assert_eq(4);
-}
-```
-
-Select statement
-
-```rust
-fn foo(x: Sender<Int>) {
-  x.send(3)
-}
-
-fn borgo_main() {
-  let (x_send, x_recv) = Channel::new();
-  let (_, y_recv) = Channel::new();
-
-  spawn!((|| { x_send.send(5) })());
-
-  let val = x_recv.recv();
-  val.unwrap().assert_eq(5);
-
-  spawn!(foo(x_send));
-
-  match select!() {
-    ChannelOp::Recv(x_recv, val) => val.unwrap().assert_eq(3),
-    ChannelOp::Recv(y_recv, _) => unreachable!(),
-  };
-}
-```
-
-Strings
-
-```rust
-fn borgo_main() {
-  "hello ".append("world").assert_eq("hello world");
-  "a b c".split(" ").to_list().assert_eq(["a", "b", "c"]);
-  "foobarbaz".slice(0, 6).assert_eq("foobar");
-  "foobarbaz".slice(3, -3).assert_eq("bar");
-
-  {
-    let x = "foo".chars().to_list();
-    x.len().assert_eq(3);
-    x.get(0).assert_eq(Some('f'));
-  }
-
-  "foobarbaz".contains("bar").assert_eq(true);
-  "abcd".index_of("c").assert_eq(Some(2));
-  "abcd".index_of("z").assert_eq(None);
-
-  'f'.to_int().assert_eq(102);
-  'f'.to_string().assert_eq("'f'");
-  ()
-}
-```
-
-Refs
-
-```rust
-fn borgo_main() {
-  let count = 0.to_ref();
-  [0, 0, 0].seq().for_each(|_| count.mutate(|c| c + 1));
-  count.get().assert_eq(3);
-  ()
 }
 ```
 
 Math with floats
 
 ```rust
-fn borgo_main() {
+fn main() {
   let x = 5.3 * 1.2;
-  Debug::assert_eq(true, x > 6.35 && x < 6.36);
+  assert_eq(true, x > 6.35 && x <= 6.36);
 }
 ```
 
 Early returns in blocks.
 
 ```rust
-fn foo() -> Int {
+fn foo() -> int {
   {
     return 5;
   }
@@ -458,8 +309,8 @@ fn foo() -> Int {
   999
 }
 
-fn borgo_main() {
-  foo().assert_eq(5);
+fn main() {
+  assert_eq(foo(), 5);
 }
 ```
 
@@ -468,7 +319,7 @@ Recursive functions are supported in files.
 ```rust
 file: main.brg
 
-fn foo(n: Int) -> Int {
+fn foo(n: int) -> int {
   if n != 5 {
     return foo(n + 1)
   }
@@ -476,19 +327,9 @@ fn foo(n: Int) -> Int {
   n
 }
 
-fn borgo_main() {
-  foo(1).assert_eq(5)
+fn main() {
+  assert_eq(foo(1), 5);
 }
-```
-
-Ingest enums and structs
-
-```rust
-file: main.brg
-
-enum Color { Red, Green }
-struct Foo { name: String }
-fn borgo_main() -> Int { 1 }
 ```
 
 Mutually recursive functions
@@ -496,24 +337,29 @@ Mutually recursive functions
 ```rust
 file: main.brg
 
-fn even(n: Int) -> Bool {
+fn abs(n: int) -> int {
+  if n < 0 { return -n }
+  n
+}
+
+fn even(n: int) -> bool {
   if n == 0 {
     return true
   }
 
-  odd(Int::abs(n) - 1)
+  odd(abs(n) - 1)
 }
 
-fn odd(n: Int) -> Bool {
+fn odd(n: int) -> bool {
   if n == 0 {
     return false
   }
 
-  even(Int::abs(n) - 1)
+  even(abs(n) - 1)
 }
 
-fn borgo_main() {
-  even(10).assert_eq(true);
+fn main() {
+  assert_eq(even(10), true);
 }
 ```
 
@@ -527,10 +373,10 @@ enum Foo {
 
 file: bar.brg
 enum Bar {
-  A(Int),
+  A(int),
 }
 
-fn with_foo(f: Foo, m: Int) -> Int {
+fn with_foo(f: Foo, m: int) -> int {
   match f {
     Foo::X(b) => match b {
       Bar::A(n) => n + m
@@ -539,9 +385,9 @@ fn with_foo(f: Foo, m: Int) -> Int {
 }
 
 file: main.brg
-fn borgo_main() {
+fn main() {
   let bar = Bar::A(2);
-  with_foo(Foo::X(bar), 3).assert_eq(5);
+  assert_eq(with_foo(Foo::X(bar), 3), 5);
 }
 ```
 
@@ -549,7 +395,7 @@ Recursion across files
 
 ```rust
 file: a.brg
-fn a(n: Int) -> Int {
+fn a(n: int) -> int {
   if n == 100 {
     return n
   }
@@ -558,7 +404,7 @@ fn a(n: Int) -> Int {
 }
 
 file: b.brg
-fn b(n: Int) -> Int {
+fn b(n: int) -> int {
   if n == 200 {
     return n
   }
@@ -567,15 +413,15 @@ fn b(n: Int) -> Int {
 }
 
 file: main.brg
-fn borgo_main() -> Int { a(40) }
+fn main() { assert_eq(a(40), 100) }
 ```
 
 Match on structs
 
 ```rust
-struct Foo { a: Int }
+struct Foo { a: int }
 
-fn borgo_main() {
+fn main() {
     let x = Foo { a: 1 };
     let res = match x {
         Foo { a: 2 } => false,
@@ -583,7 +429,7 @@ fn borgo_main() {
         Foo { a: _ } => false,
     };
 
-    res.assert_eq(true);
+    assert_eq(res, true);
 }
 ```
 
@@ -592,9 +438,9 @@ Const expressions are global
 ```rust
 file: main.brg
 
-const a: Int = 1;
+const a: int = 1;
 
-fn borgo_main() -> Int { a + 5 }
+fn main() { assert_eq(a + 5, 6) }
 ```
 
 Const expressions are visible from other files
@@ -602,39 +448,21 @@ Const expressions are visible from other files
 ```rust
 file: foo.brg
 
-fn check() -> Bool {
+fn check() -> bool {
   foo == 2
 }
 
 file: main.brg
 
-const foo: Int = 1 + 1;
-fn borgo_main() -> Bool { check() }
-```
-
-Global refs
-
-```rust
-file: main.brg
-
-const state: Ref<Int> = 5.to_ref();
-
-fn foo() {
-  state.mutate(|x| x + 80);
-}
-
-fn borgo_main() -> Int {
-  foo();
-  state.get()
-}
+const foo: int = 1 + 1;
+fn main() { assert_eq(check(), true) }
 ```
 
 Paren expressions
 
 ```rust
-fn borgo_main() {
-  (1 + 4).assert_eq(5);
-  ()
+fn main() {
+  assert_eq((1 + 4), 5);
 }
 ```
 
@@ -642,33 +470,43 @@ Recursive types
 
 ```rust
 enum Expr {
-  Add(Expr, Expr),
-  Number(Int),
+  Add(&Expr, &Expr),
+  Number(int),
+}
+
+impl Expr {
+  fn sum(self) -> int {
+    match self {
+      Add(a, b) => a.sum() + b.sum(),
+      Number(n) => n,
+    }
+  }
 }
 
 struct Foo {
-  n: String,
-  f: Option<Foo>,
+  n: string,
+  f: &Option<Foo>,
 }
 
-fn borgo_main() {
+fn main() {
   let one = Expr::Number(1);
   let two = Expr::Number(2);
-  let e = Expr::Add(one, two);
-  e.inspect();
+  let e = Expr::Add(&one, &two);
+  assert_eq(e.sum(), 3);
 
-  let f = Foo { n: "a", f: None };
-  let ok = Foo { n: "b", f: Some(f) };
-  ok.inspect();
-  ()
+  let f1 = None;
+  let nope = Foo { n: "a", f: &f1 };
+  let f2 = Some(nope);
+  let yep = Foo { n: "b", f: &f2 };
+  assert_eq(yep.n, "b");
 }
 ```
 
 Recursive functions should work even when not declared at the top-level.
 
 ```rust
-fn borgo_main() {
-  fn foo(n: Int, acc: Int) -> Int {
+fn main() {
+  fn foo(n: int, acc: int) -> int {
     if n == 0 {
       return acc
     }
@@ -682,29 +520,19 @@ fn borgo_main() {
     foo(n - 1, new_acc)
   }
 
-  foo(10, 0).assert_eq(30)
+  assert_eq(foo(10, 0), 30)
 }
 ```
 
 Exhaustiveness checking on bools
 
 ```rust
-fn borgo_main() {
+fn main() {
   let x = match false {
     true => unreachable!(),
     false => 2,
   };
-  x.assert_eq(2);
-}
-```
-
-String parsing
-
-```rust
-fn borgo_main() {
-  "2".parse_int().assert_eq(Some(2));
-  "abc".parse_int().assert_eq(None);
-  "3.4".parse_float().assert_eq(Some(3.4));
+  assert_eq(x, 2);
 }
 ```
 
@@ -712,33 +540,20 @@ Primitive types are casted in struct call
 
 ```rust
 struct Foo {
-  bar: Int
+  bar: int
 }
 
-fn borgo_main() {
+fn main() {
   let x = 1;
   let y = Foo { bar: x };
-  y.bar.assert_eq(1);
-}
-```
-
-Newlines in strings
-
-```rust
-fn borgo_main() {
-  let s = "a
-b
-c";
-
-  let s = s.split("\n");
-  s.to_list().assert_eq(["a", "b", "c"]);
+  assert_eq(y.bar, 1);
 }
 ```
 
 Match on tuples
 
 ```rust
-fn borgo_main() {
+fn main() {
     let res = match (1, "foo") {
         (3, _) => 5,
         (1, "bar") => 6,
@@ -746,13 +561,13 @@ fn borgo_main() {
         _ => unreachable!(),
     };
 
-    res.assert_eq(1);
+    assert_eq(res, 1);
 
     let res = match () {
       () => 2,
     };
 
-    res.assert_eq(2);
+    assert_eq(res, 2);
 }
 ```
 
@@ -761,27 +576,31 @@ Enums in tuples
 ```rust
 enum Foo { Bar, Baz }
 
-fn borgo_main() {
+fn main() {
     let res = match (Bar, Baz) {
         (Bar, Bar) => 0,
         (Bar, Baz) => 2,
         _ => unreachable!(),
     };
 
-    res.assert_eq(2);
+    assert_eq(res, 2);
 }
 ```
 
 Let binding same name as function param
 
 ```rust
-fn foo(xs: List<Int>) -> Int {
-  let xs = xs.seq().sum();
-  xs + 10
+fn foo(xs: [int]) -> int {
+  // TODO asdf make sure params are put in scope so they can be rebound
+  // let xs = xs.len();
+  // xs + 10
+
+  let xxxs = xs.len();
+  xxxs + 10
 }
 
-fn borgo_main() {
-  foo([1,2,3]).assert_eq(16);
+fn main() {
+  assert_eq(foo([1,2,3]), 13);
 }
 ```
 
@@ -789,13 +608,23 @@ Maps in structs
 
 ```rust
 struct Foo {
-  bar: Map<String, Int>
+  bar: Map<string, int>
 }
 
-fn borgo_main() {
-  let bar = Map::new();
+fn main() {
+  let mut bar = Map::new();
   let foo = Foo { bar };
-  foo.bar.len().assert_eq(0);
+  assert_eq(foo.bar.len(), 0);
+
+  bar.insert("yo", 1);
+  assert_eq(foo.bar.len(), 1);
+
+  assert_eq(bar.get("yo"), Some(1));
+  assert_eq(bar.get("nope"), None);
+  assert_eq(bar["yo"], 1);
+
+  bar["yo"] = 3;
+  assert_eq(bar["yo"], 3);
 }
 ```
 
@@ -803,213 +632,95 @@ Functions in structs
 
 ```rust
 struct Foo {
-  bar: fn (Int) -> Int
+  bar: fn (int) -> int
 }
 
-fn borgo_main() {
-  let foo = Foo { bar: |x: Int| x + 2 };
-  foo.bar(1).assert_eq(3);
-}
-```
-
-Hashing with Hash trait
-
-```rust
-fn borgo_main() {
-  let a = "yo";
-  let b = "y".append("o");
-
-  a.to_hash().assert_eq(b.to_hash());
-}
-```
-
-Equality with Eq trait
-
-```rust
-struct Foo { a: Int, b: String }
-
-struct Bar { c: List<Foo> }
-
-fn borgo_main() {
-  let x = Foo { a: 1, b: "yo" };
-  let y = Foo { a: 1, b: "yo" };
-  equals(x, y).assert_eq(true);
-  equals(x, Foo { a: 2, ..y}).assert_eq(false);
-
-  equals(Bar { c: [x, y] }, Bar { c: [x, y] }).assert_eq(true);
-  equals(Bar { c: [x] }, Bar { c: [x, y] }).assert_eq(false);
-
-  let xs = [x];
-  let a = Bar { c: xs.push(y) };
-  equals(a, Bar { c: [x, y] }).assert_eq(true);
-}
-```
-
-Display trait
-
-```rust
-struct Foo { a: Int, b: String }
-struct Bar { baz: fn () -> Int }
-enum Color { Blue, Red }
-
-fn borgo_main() {
-  to_string(1).inspect();
-  to_string(false).inspect();
-  to_string("yo").inspect();
-  to_string('a').inspect();
-
-  let x = Foo { a: 1, b: "yo" };
-  to_string(x).inspect();
-
-  to_string([1,2,3]).inspect();
-  to_string(Ok(Color::Red)).inspect();
-  to_string((1, 2.3)).inspect();
-  to_string((1, false, "yo")).inspect();
-  to_string(()).inspect();
-
-  let m = Map::new()
-    .insert("a", Color::Blue)
-    .insert("b", Color::Red);
-  to_string(m).inspect();
-
-  to_string(5.to_ref()).inspect();
-
-  to_string(Bar { baz: || 1 }).inspect();
-
-  to_string([1,2,3].seq()).inspect();
-
-  let s = Seq::infinite(0, |x| x + 1);
-  to_string(s).inspect();
-
-  to_string(Set::new()
-    .insert("a")
-    .insert("b"))
-    .inspect();
-
-  ()
+fn main() {
+  let foo = Foo { bar: |x: int| x + 2 };
+  assert_eq(foo.bar(1), 3);
 }
 ```
 
 Records have stable field order.
 
 ```rust
-struct Foo { x: Int, y: String }
+struct Foo { x: int, y: string }
 
-fn borgo_main() {
-  (1, "a", true).inspect();
-  Foo { x: 1, y: "b" }.inspect();
-  ()
-}
-```
-
-Custom overload implementations.
-
-```rust
-struct Foo<T> { x: Int, y: Bar<T> }
-
-struct Bar<T> {
-  a: String,
-  b: T,
-}
-
-struct Baz<T> { one: Int, two: T }
-
-impl<T> Baz<T> {
-  fn to_string<T: to_string>(self) -> String {
-    "BAZ [ \n ONE: "
-      .append(self.one.to_string())
-      .append(", TWO: ")
-      .append(to_string(self.two))
-      .append("\n ]")
-  }
-}
-
-struct Bad { bad: Bool }
-
-fn borgo_main() {
-  let bar: Bar<Baz<Bad>> = Bar {
-    a: "yo",
-    b: Baz {
-      one: 1,
-      two: Bad { bad: false },
-    }
-  };
-
-  bar.inspect();
-  ()
-}
-```
-
-Native types have builtin overload implementations.
-
-```rust
-fn borgo_main() {
-  1.to_string().inspect();
-  1.to_hash().inspect();
-  1.equals(1).inspect();
-
-  "hello".to_string().inspect();
-  "hello".to_hash().inspect();
-  "hello".equals("hello").inspect();
-
-  (1.34).to_string().inspect();
-  (1.34).to_hash().inspect();
-  (1.34).equals(1.34).inspect();
-
-  'f'.to_string().inspect();
-  'f'.to_hash().inspect();
-  'f'.equals('f').inspect();
-
-  false.to_string().inspect();
-  false.to_hash().inspect();
-  false.equals(false).inspect();
-
-  [1, 2, 3].to_string().inspect();
-  [1, 2, 3].to_hash().inspect();
-  [1, 2, 3].equals([1, 2, 3]).inspect();
-
-  ().to_string().inspect();
-  ().to_hash().inspect();
-  ().equals(()).inspect();
-
-  ()
+fn main() {
+  inspect((1, "a", true));
+  inspect(Foo { x: 1, y: "b" });
 }
 ```
 
 Using for loops.
 
 ```rust
-fn borgo_main() {
-  for x in [1, 2, 3].seq() {
-    x.inspect();
-  }
+fn main() {
+    {
+        let mut sum = 0;
 
-  let mut n = 20;
+        // this should iterate over values
+        for x in [1, 2, 3] {
+            sum = sum + x;
+        }
 
-  match true {
-    true => { n = 25; },
-    false => (),
-  }
+        assert_eq(sum, 6);
+    }
 
-  loop {
-    if n > 27 { break; }
-    n.inspect();
-    n = n + 1;
-  }
+    {
+        let mut sum = 0;
+
+        for (i, x) in [1, 2, 3].enumerate() {
+            sum = sum + i + x;
+        }
+
+        assert_eq(sum, 9);
+    }
+
+    let mut n = 20;
+
+    match true {
+        true => {
+            n = 25;
+        }
+        false => (),
+    }
+
+    loop {
+        if n > 27 {
+            break;
+        }
+        inspect(n);
+        n = n + 1;
+    }
+
+    n = 0;
+    while n < 10 {
+        n = n + 1;
+    }
+    inspect(n);
+
+    let m = Map::new();
+    m.insert("a", 1);
+
+    for (k, v) in m {
+        inspect(k);
+        inspect(v);
+    }
 }
 ```
 
 Control flow in loops
 
 ```rust
-fn borgo_main() {
+fn main() {
   let mut n = 0;
   let mut check = false;
 
-  for _ in Seq::infinite(0, |count| count + 1) {
+  loop {
     if n <= 5 {
       n = n + 1;
-      check.assert_eq(false);
+      assert_eq(check, false);
       continue;
     }
 
@@ -1017,26 +728,26 @@ fn borgo_main() {
     break;
   }
 
-  check.assert_eq(true);
-  n.assert_eq(6);
+  assert_eq(check, true);
+  assert_eq(n, 6);
 
   n = 0;
 
-  for x in [1,2,3].seq() {
+  for x in [1,2,3] {
     if x == 2 {
       continue;
     }
     n = n + 1;
   }
 
-  n.assert_eq(2);
+  assert_eq(n, 2);
 }
 ```
 
 Mutating vars
 
 ```rust
-fn foo(mut a: Int) -> Int {
+fn foo(mut a: int) -> int {
   loop {
     if a > 5 { break; }
     a = a + 1;
@@ -1045,17 +756,17 @@ fn foo(mut a: Int) -> Int {
   a
 }
 
-fn borgo_main() {
+fn main() {
   let mut x = 1;
   x = x + 3;
-  x.assert_eq(4);
+  assert_eq(x, 4);
 
   {
     let x = 5;
-    x.assert_eq(5);
+    assert_eq(x, 5);
   }
 
-  foo(0).assert_eq(6);
+  assert_eq(foo(0), 6);
 
   // TODO this doesn't type check :/
   // x = x + 6;
@@ -1066,7 +777,7 @@ fn borgo_main() {
 Nested if and match maintain context.
 
 ```rust
-fn foo() -> Int {
+fn foo() -> int {
   if 1 > 2 {
     1
   } else if 2 > 3  {
@@ -1076,7 +787,7 @@ fn foo() -> Int {
   }
 }
 
-fn bar() -> Int {
+fn bar() -> int {
   match 1 {
     1 => match 2 {
       3 => 4,
@@ -1086,8 +797,315 @@ fn bar() -> Int {
   }
 }
 
-fn borgo_main() {
-  foo().assert_eq(3);
-  bar().assert_eq(5);
+fn main() {
+  assert_eq(foo(), 3);
+  assert_eq(bar(), 5);
+}
+```
+
+Lambda signature
+
+```rust
+fn compute(f: fn(int, int) -> int) -> int {
+	f(3, 4)
+}
+
+fn main() {
+  assert_eq(compute(|a, b| a + b), 7)
+}
+```
+
+Read file
+
+```rust
+use os;
+use fmt;
+
+fn read() -> Result<()> {
+  let f = os.ReadFile("go.mod")?;
+  fmt.Println(string(f));
+  Ok(())
+}
+
+fn main() {
+  read().unwrap();
+}
+```
+
+Native call to result
+
+```rust
+use os;
+use fmt;
+
+fn main() {
+  match os.ReadFile("go.mod") {
+    Ok(s) => fmt.Println(string(s)),
+    Err(_) => unreachable!(),
+  }
+}
+```
+
+Compile references
+
+```rust
+use fmt;
+
+struct Foo {
+  x: int
+}
+
+fn bar(f: &Foo) -> int {
+  f.x + 2
+}
+
+fn baz(i: &mut int) {
+    *i = 99;
+}
+
+fn main() {
+  fmt.Printf("%v", bar(&Foo { x: 1 }));
+
+  let mut n = 1;
+  baz(&mut n);
+  assert_eq(n, 99);
+}
+```
+
+References in structs
+
+```rust
+use fmt;
+
+struct Foo {
+  x: int
+}
+
+struct Bar {
+  f: &Foo
+}
+
+fn update(mut b: &Bar) {
+  b.f.x = 99;
+}
+
+fn main() {
+  let f = Foo { x: 1 };
+  let mut b = Bar { f: &f };
+  update(&b);
+  assert_eq(b.f.x, 99);
+  fmt.Printf("%+v", b.f)
+}
+```
+
+References in methods
+
+```rust
+struct Foo {
+  x: int
+}
+
+impl Foo {
+  fn update(&mut self, x: int) {
+    self.x = x
+  }
+}
+
+fn main() {
+  let f = Foo { x: 1 };
+  f.update(5);
+  assert_eq(f.x, 5);
+}
+```
+
+Interfaces
+
+```rust
+trait Foo {
+  fn foo() -> int;
+}
+
+struct Bar { x: int }
+
+impl Bar {
+  fn foo(self) -> int {
+    self.x
+  }
+}
+
+fn baz(f: Foo) -> int {
+  f.foo() + 4
+}
+
+trait Composite: Foo {}
+
+fn check_composite(c: Composite) {
+    c.foo();
+}
+
+fn main() {
+  assert_eq(baz(&Bar { x: 6 }), 10);
+}
+```
+
+Types implement interfaces
+
+```rust
+use fmt;
+
+struct Foo {}
+
+impl Foo {
+  fn Write(&mut self, bytes: [byte]) -> Result<int> {
+    Ok(3)
+  }
+}
+
+fn main() {
+    let n = fmt.Fprintf(&mut Foo{}, "%d", 1).unwrap();
+    assert_eq(n, 3);
+}
+```
+
+Net http
+
+```rust
+use fmt;
+use net::http;
+use sync;
+
+struct Counter { m: sync::Mutex, count: int }
+
+impl Counter {
+  fn ServeHTTP(&mut self, w: http::ResponseWriter, r: &http::Request) {
+    self.m.Lock();
+    self.count = self.count + 1;
+    let _ = fmt.Fprintf(w, "<h1>count %d</h1>", self.count);
+    self.m.Unlock();
+  }
+}
+
+fn main() {
+  let c = Counter { m: zero_value(), count: 0 };
+  http.Handle("/", &mut c);
+  // http.ListenAndServe(":3333", zero_value());
+  fmt.Println("ok");
+}
+```
+
+Trait bounds without methods are not checked
+
+```rust
+// Let the Go compiler figure out if a type satisfies a constraint
+fn foo<T: comparable>(x: T, y: T) -> bool {
+    x == y
+}
+
+trait Foo {
+  fn check() -> int;
+}
+
+struct Bar {}
+impl Bar {
+  fn check(self) -> int { 3 }
+}
+
+// Check that multiple constraints are correctly emitted
+fn bar<T: comparable + Foo>(x: T, y: T) -> int {
+  if x == y {
+    x.check()
+  } else {
+    -1
+  }
+}
+
+fn main() {
+  assert_eq(foo(1.0, 2.0), false);
+  assert_eq(foo(1, 1), true);
+  assert_eq(bar(Bar{}, Bar{}), 3);
+}
+```
+
+Variadic function calls
+
+```rust
+use fmt;
+
+fn foo(a: bool, x: VarArgs<int>) {}
+
+fn main() {
+  fmt.Printf("yep %s, %d", "hi", 3);
+  foo(false, 1, 2);
+}
+```
+
+Package structs
+
+```rust
+use net::http;
+
+fn main() {
+  let _ = http::Request{};
+}
+```
+
+Options
+
+```rust
+use os;
+
+fn foo() -> Option<int> {
+  Some(3)
+}
+
+fn main() {
+  let x = foo();
+  assert_eq(x.IsSome(), true);
+
+  match os.LookupEnv("HOME") {
+    Some(_) => (),
+    None => unreachable!(),
+  }
+}
+```
+
+Errors as custom types
+
+```rust
+fn foo() -> Result<(), FooErr> {
+  Ok(())
+}
+
+struct FooErr {}
+
+impl FooErr {
+  fn Error(self) -> string { "b" }
+}
+
+fn bar() -> Result<(), error> {
+  let x = foo()?;
+  Ok(x);
+}
+
+fn main() {
+  let x = foo();
+  let y = bar();
+  assert_eq(x, Ok(()));
+  assert_eq(y, Ok(()));
+}
+```
+
+Blocks used as expressions
+
+```rust
+use math;
+
+fn main() {
+  let block_result = {
+    let a = math.Pi;
+    let b = 2.01;
+    a + b
+  };
+  assert_eq(block_result > 4.0, true);
 }
 ```

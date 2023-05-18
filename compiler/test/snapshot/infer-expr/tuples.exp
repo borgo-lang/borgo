@@ -4,11 +4,9 @@ SOURCE:
 (1, 2)
 
 OUTPUT:
-(Int, Int)
+(int, int)
 ---
 No errors.
----
-[]
 ---
 {
   "StructCall": {
@@ -23,7 +21,7 @@ No errors.
             },
             "ty": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -49,7 +47,7 @@ No errors.
             },
             "ty": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -74,13 +72,13 @@ No errors.
         "args": [
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           }

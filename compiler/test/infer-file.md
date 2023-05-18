@@ -6,96 +6,32 @@ What's the type of a full formed source file?
 
 Simple check
 
-> infer("fn () -> Int")
+> infer("fn () -> int")
 
 ```rust
-fn foo() -> Int { 1 }
-```
-
-Trait bounds
-
-> infer("fn <A: equals>(A) -> Bool")
-
-```rust
-fn foo<T: equals>(x: T) -> Bool {
-  true
-}
-
-fn bar<Y: equals>(x: Y) -> Bool {
-  foo(x)
-}
-```
-
-Missing constraint
-
-> errorContains("Constraint equals not satisfied for type Y")
-
-```rust
-fn foo<T: equals>(x: T) -> Bool {
-  true
-}
-
-fn bar<Y>(x: Y) -> Bool {
-  foo(x)
-}
+fn foo() -> int { 1 }
 ```
 
 Methods are resolved in nested function.
 
-> infer("fn () -> Int")
+> infer("fn () -> int")
 
 ```rust
-struct Foo { a: Int }
+struct Foo { a: int }
 
 impl Foo {
-  fn method(self) -> Int {
+  fn method(self) -> int {
     self.a + 5
   }
 }
 
-fn foo() -> Int {
-  fn bar() -> Int {
+fn foo() -> int {
+  fn bar() -> int {
     let x = Foo { a: 1 };
     x.method()
   }
 
   bar()
-}
-```
-
-Traits bring functions in scope
-
-> infer("fn () -> Int")
-
-```rust
-fn foo() -> Int {
-  let x = equals;
-  1
-}
-```
-
-Instances for built-in types are automatically derived
-
-> infer("fn () -> Bool")
-
-```rust
-fn foo() -> Bool {
-  equals(1, 1) as Bool;
-  equals(false, true) as Bool;
-  equals("yo", "bo") as Bool;
-  equals([1], [2,3]) as Bool;
-}
-```
-
-Deriving will error on functions
-
-> errorContains("overload `equals`")
-
-```rust
-fn bar() {}
-
-fn foo() -> Bool {
-  equals(bar, bar) as Bool;
 }
 ```
 
@@ -106,7 +42,7 @@ Exhaustive check
 ```rust
 enum Color { Blue, Red, Green }
 
-fn borgo_main() -> Int {
+fn borgo_main() -> int {
   let x = Color::Red;
   match x {
     Color::Red => 1,
@@ -122,7 +58,7 @@ Exhaustive check works with unqualified constructors.
 ```rust
 enum Foo { A, B, Baz }
 
-fn borgo_main() -> Int {
+fn borgo_main() -> int {
   match Foo::B {
     A => 1,
     Foo::Baz => 2,
@@ -132,26 +68,13 @@ fn borgo_main() -> Int {
 
 Type checking still works.
 
-> errorContains('Int or Float')
+> errorContains("mismatch")
 
 ```rust
 enum Foo { A, B, Baz }
 
-fn foo(a: Foo) -> Int { a + 1 }
+fn foo(a: Foo) -> int { a + 1 }
 fn borgo_main() {}
-```
-
-Keys in Maps must be hashable
-
-> errorContains("overload `to_hash`")
-
-```rust
-fn foo<K: to_hash>(k: K) {}
-
-fn borgo_main() {
-  foo(|| {});
-  unreachable!();
-}
 ```
 
 Const expressions are type checked
@@ -159,7 +82,7 @@ Const expressions are type checked
 > errorContains('mismatch')
 
 ```rust
-const a: String = 1;
+const a: string = 1;
 ```
 
 Catch exhaustiveness errors.
@@ -184,8 +107,12 @@ Extern declarations with non existing generics
 
 ```rust
 struct Foo {}
-extern "native/Foo" {
-  fn bar<T>(x: T, k: K);
+
+#[package(path = github.com:yo/test, name = test::pkg)]
+mod f {
+  extern {
+    fn bar<T>(x: T, k: K);
+  }
 }
 
 fn borgo_main() {
@@ -205,75 +132,30 @@ fn borgo_main() {
 }
 ```
 
-Functions in structs aren't comparable
-
-> errorContains("compared")
-
-```rust
-struct Foo {
-  bar: fn (Int) -> Int
-}
-
-fn borgo_main() {
-  let foo = Foo { bar: |x: Int| x + 2 };
-  let bar = Foo { bar: |x: Int| x + 2 };
-  foo == bar;
-  ()
-}
-```
-
-Functions in enums aren't comparable
-
-> errorContains("compared")
-
-```rust
-enum Foo {
-  Bar(Int, fn (Int) -> Int)
-}
-
-fn borgo_main() {
-  let foo = Foo::Bar(0, |x: Int| x + 2);
-  let bar = Foo::Bar(0, |x: Int| x + 2);
-  foo == bar;
-  ()
-}
-```
-
 Prevent usage of reserved words
 
 > errorContains("reserved")
 
 ```rust
-fn foo(default: Int) -> Int {
+fn foo(default: int) -> int {
   default
 }
 ```
 
 Inference of numeric operators
 
-> errorContains("Int or Float")
+> errorContains("numeric type")
 
 ```rust
-fn borgo_main() -> Int {
+fn borgo_main() -> int {
   false > true;
   1
 }
 ```
 
-Declaration ordering doesn't mess up inference.
+Pattern matching on slice literals.
 
-> errorContains("Ordering")
-
-```rust
-fn borgo_main() {
-  Seq::max_by as Int;
-  ()
-}
-```
-
-Pattern matching on list literals.
-
-> errorContains("pattern match on list literals")
+> errorContains("pattern match on slice literals")
 
 ```rust
 fn borgo_main() {
@@ -291,96 +173,30 @@ fn borgo_main() {
 }
 ```
 
-Overloads can be used as methods.
-
-> infer("fn () -> String")
-
-```rust
-struct Foo {
-  x: Int,
-}
-
-fn borgo_main() -> String {
-  let f = Foo { x: 1 };
-  Foo::to_string(f)
-}
-```
-
-Overloaded functions check for instances
-
-> errorContains("No overload `equals` found for type `Foo`")
-
-```rust
-struct Foo {
-  x: Int,
-  y: fn() -> Int,
-}
-
-fn borgo_main() -> Bool {
-  let f = Foo { x: 1, y: || 2 };
-  let _ = Foo::to_string(f); // this is ok
-  equals(f, f)
-}
-```
-
-Users can override derived overload implementations
-
-> infer("fn () -> Bool")
-
-```rust
-struct Foo {
-  x: Int,
-  y: fn() -> Int,
-}
-
-impl Foo {
-  fn equals(a: Foo, b: Foo) -> Bool {
-    return a.x == b.x
-  }
-}
-
-fn borgo_main() -> Bool {
-  let f = Foo { x: 1, y: || 2 };
-  equals(f, f)
-}
-```
-
-Calling overloads as methods.
-
-> infer("fn () -> ()")
-
-```rust
-struct Foo<T> {
-  x: T,
-}
-
-fn borgo_main() {
-  let f = Foo { x: 1 };
-  let m = Map::new().insert(1, f);
-  m.to_string();
-  ()
-}
-```
-
 For loops.
 
 > infer("fn () -> ()")
 
 ```rust
 fn borgo_main() {
-  for x in [1].seq() {
-    x as Int;
+  for x in ["a"] {
+    x as string;
+  }
+
+  for (index, value) in ["a"].enumerate() {
+      index as int;
+      value as string;
   }
 }
 ```
 
-Expr in loops must be seq.
+Expr in loops must be rangeable.
 
-> errorContains("mismatch")
+> errorContains("iterate")
 
 ```rust
 fn borgo_main() {
-  for x in [1] {
+  for x in 1 {
   }
 }
 ```
@@ -397,25 +213,9 @@ fn borgo_main() {
 }
 ```
 
-Inference in loops
-
-> infer("fn () -> ()")
-
-```rust
-fn borgo_main() {
-    let rows = "yo"
-      .split("\n")
-      .map(|row| row.chars());
-
-    for row in rows {
-      row.enumerate();
-    }
-}
-```
-
 If expression with an expected type must have an else block
 
-> errorContains("else branch")
+> errorContains("if false")
 
 ```rust
 fn borgo_main() {
@@ -430,5 +230,259 @@ fn borgo_main() {
   };
 
   ()
+}
+```
+
+Method calls work for enums.
+
+> infer("fn () -> int")
+
+```rust
+enum Foo {
+  Bar(int)
+}
+
+impl Foo {
+  fn method(self, s: string, b: int) -> int {
+    match self {
+      Bar(a) => a + b,
+    }
+  }
+}
+
+fn borgo_main() -> int {
+  let f = Foo::Bar(1);
+  f.method("a", 2) as int;
+
+  let m = f.method;
+  m("a", 2)
+}
+```
+
+Generics in extern blocks
+
+> infer("fn () -> ()")
+
+```rust
+fn borgo_main() {
+  let a = reflect.DeepEqual(1, false);
+  let b = reflect.DeepEqual(1, 1);
+}
+```
+
+Parse package info
+
+> infer("fn () -> f::Foo")
+
+```rust
+#[package(path = github.com:yo/test, name = test::pkg)]
+mod f {
+  struct Foo { a: int }
+}
+
+use test::pkg;
+
+fn borgo_main() -> f::Foo {
+  f::Foo { a: 1 }
+}
+```
+
+While loops.
+
+> infer("fn () -> ()")
+
+```rust
+fn borgo_main() {
+  let x = 1;
+  while x < 10 {
+    x as int;
+  }
+}
+```
+
+Enumeration in loops expect a tuple.
+
+> errorContains("Use tuple literals")
+
+```rust
+fn borgo_main() {
+  let m = Map::new();
+  for e in m {
+      e.0;
+  }
+}
+```
+
+Access slices by index
+
+> infer("fn () -> string")
+
+```rust
+fn borgo_main() -> string {
+    let xs = ["a"];
+    xs[0]
+}
+```
+
+Index must be int for slices
+
+> errorContains("mismatch")
+
+```rust
+fn borgo_main() {
+    let xs = ["a"];
+    xs[false]
+}
+```
+
+Access maps by index
+
+> infer("fn () -> int")
+
+```rust
+fn borgo_main() -> int {
+    let xs = Map::new();
+    xs.insert("a", 1);
+    xs["a"]
+}
+```
+
+Index must be K for maps
+
+> errorContains("mismatch")
+
+```rust
+fn borgo_main() {
+    let xs = Map::new();
+    xs.insert("a", 1);
+    xs[false]
+}
+```
+
+Parse traits
+
+> infer("fn () -> ()")
+
+```rust
+fn borgo_main() {
+  trait Foo {
+    fn bar(x: string) -> int;
+  }
+
+  fn check(f: Foo) -> int {
+    f.bar("yo")
+  }
+
+  ()
+}
+```
+
+Check if type implements trait
+
+> infer("fn () -> int")
+
+```rust
+fn borgo_main() -> int {
+  trait Foo {
+    fn bar(x: string) -> int;
+  }
+
+  fn check(f: Foo) -> int {
+    f.bar("yo")
+  }
+
+  struct Baz { x: int }
+
+  impl Baz {
+    fn bar(self, _: string) -> int {
+      self.x
+    }
+  }
+
+  check(Baz { x: 1 })
+}
+```
+
+Trait bounds
+
+> infer("fn () -> int")
+
+```rust
+fn borgo_main() -> int {
+  trait Foo {
+    fn bar(x: string) -> int;
+  }
+
+  fn check<T: Foo>(f: T) -> int {
+    f.bar("yo")
+  }
+
+  struct Baz { x: int }
+
+  impl Baz {
+    fn bar(self, _: string) -> int {
+      self.x
+    }
+  }
+
+  check(Baz { x: 1 })
+}
+```
+
+Trait bounds checked at call site
+
+> errorContains("method foo not found on type int")
+
+```rust
+fn borgo_main() {
+  trait Foo { fn foo() -> int; }
+  fn check<T: Foo>(f: T) {}
+  check(1)
+}
+```
+
+Variadic functions
+
+> infer("fn () -> ()")
+
+```rust
+fn borgo_main() {
+  fn foo(a: int, b: VarArgs<string>) {}
+
+  foo(1);
+  foo(1, "a");
+  foo(1, "a", "b", "c");
+}
+```
+
+Variadic functions arity error
+
+> errorContains("Wrong arity")
+
+```rust
+fn borgo_main() {
+  fn foo(a: int, b: VarArgs<string>) {}
+  foo();
+}
+```
+
+References are maintained after try call
+
+> infer("fn () -> ()")
+
+```rust
+use os;
+
+fn foo() -> Result<()> {
+  let f = os.Open("file")?;
+  Ok(bar(f))
+}
+
+fn bar(f: &mut os::File) {
+
+}
+
+fn borgo_main() {
+  foo();
 }
 ```

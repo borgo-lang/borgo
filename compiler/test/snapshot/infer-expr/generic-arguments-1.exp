@@ -1,15 +1,15 @@
 Generic arguments 1
 
 SOURCE:
-{ fn foo(foo: List<Int, Bool>) {} }
+{ fn foo(foo: Result<string, int, bool>) {} }
 
 OUTPUT:
 Wrong arity
 
 Expected:
-    (A)
+    (A, A)
 Got:
-    (Int, Bool)
+    (string, int, bool)
 
-1|  { fn foo(foo: List<Int, Bool>) {} }
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1|  { fn foo(foo: Result<string, int, bool>) {} }
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

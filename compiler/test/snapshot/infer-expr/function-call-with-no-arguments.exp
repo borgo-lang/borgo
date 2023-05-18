@@ -4,11 +4,9 @@ SOURCE:
 { hello() }
 
 OUTPUT:
-String
+string
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -34,17 +32,18 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Fun": {
                   "args": [],
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
-                  "fx": []
+                  "id": -1
                 }
               },
               "span": {
@@ -62,7 +61,7 @@ No errors.
           "args": [],
           "ty": {
             "Con": {
-              "name": "String",
+              "name": "string",
               "args": []
             }
           },
@@ -81,7 +80,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "String",
+        "name": "string",
         "args": []
       }
     },

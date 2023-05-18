@@ -1,13 +1,13 @@
 Inference of numeric operators
 
 SOURCE:
-fn borgo_main() -> Int {
+fn borgo_main() -> int {
   false > true;
   1
 }
 
 OUTPUT:
-Was expecting Int or Float, got Bool
+Expected numeric type
 
 2|    false > true;
-      ^^^^^
+      ^^^^^^^^^^^^

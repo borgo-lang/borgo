@@ -8,11 +8,9 @@ if true {
 }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "If": {
@@ -23,7 +21,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "Bool",
+            "name": "bool",
             "args": []
           }
         },
@@ -49,7 +47,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
@@ -68,7 +66,7 @@ No errors.
         ],
         "ty": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
@@ -94,7 +92,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
@@ -113,7 +111,7 @@ No errors.
         ],
         "ty": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
@@ -131,7 +129,7 @@ No errors.
     },
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

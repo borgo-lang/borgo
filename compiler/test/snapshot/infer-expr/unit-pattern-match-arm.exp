@@ -6,11 +6,9 @@ match () {
 }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Match": {
@@ -51,7 +49,7 @@ No errors.
             },
             "ty": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -71,7 +69,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

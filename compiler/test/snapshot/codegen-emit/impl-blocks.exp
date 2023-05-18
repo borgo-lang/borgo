@@ -1,17 +1,17 @@
 Impl blocks
 
 SOURCE:
-struct Foo { a: Int }
+struct Foo { a: int }
 
 impl Foo {
-  fn bar(self, x: Int) -> Int {
+  fn bar(self, x: int) -> int {
     self.a + x
   }
 }
 
-fn borgo_main() {
+fn main() {
   let f = Foo { a: 1 };
-  f.bar(5).assert_eq(6);
+  assert_eq(f.bar(5), 6);
 }
 
 OUTPUT:
@@ -19,50 +19,16 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Foo(arg_0 any) any {
-	return Foo{arg_0}
-}
-
 type Foo struct {
-	A any
+	a int
 }
 
-func Foo_bar(self any, x any) any {
-
-	{
-
-		return borgo.Ops.IAdd(self.(Foo).A, x)
-	}
+func (self Foo) bar(x int) int {
+	return self.a + x
 }
-func borgo_main() any {
 
-	{
+func main() {
+	f := Foo{a: 1}
 
-		var f any = func(base any) any {
-			data := base.(Foo)
-			data.A = 1
-			return data
-		}(Foo{})
-
-		return Debug_assert_eq(Foo_bar(f, 5), 6)
-	}
-}
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterStruct("Foo", "Foo", []string{"a"})
-	borgo.RegisterMakeFunction("Foo", make_Foo)
-	borgo.RegisterGlobalFunction("Foo::bar", Foo_bar)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](f.bar(5), 6)
 }

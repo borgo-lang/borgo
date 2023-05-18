@@ -1,7 +1,7 @@
 Match on tuples
 
 SOURCE:
-fn borgo_main() {
+fn main() {
     let res = match (1, "foo") {
         (3, _) => 5,
         (1, "bar") => 6,
@@ -9,13 +9,13 @@ fn borgo_main() {
         _ => unreachable!(),
     };
 
-    res.assert_eq(1);
+    assert_eq(res, 1);
 
     let res = match () {
       () => 2,
     };
 
-    res.assert_eq(2);
+    assert_eq(res, 2);
 }
 
 OUTPUT:
@@ -23,152 +23,127 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	var res int
 
-var _ = borgo.Unit
-
-func borgo_main() any {
-
-	{
-		var var1 any
-		_ = var1
-
-		var5_subject := func(base any) any {
-			data := base.(Tuple2)
-			data.First = 1
-			data.Second = "foo"
-			return data
-		}(Tuple2{})
-		var6_matches := borgo.MatchNone
-
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
-
-			var7_match_pat := borgo.MatchNone
-
-			if var7_match_pat != borgo.MatchErr && borgo.Ops.Eq(3, var5_subject.(Tuple2).First).(bool) {
-				var7_match_pat = borgo.MatchOk
-			} else {
-				var7_match_pat = borgo.MatchErr
-			}
-			if var7_match_pat != borgo.MatchErr {
-				var7_match_pat = borgo.MatchOk /* wildcard */
-			}
-
-			if var7_match_pat != borgo.MatchErr {
-				var6_matches = borgo.MatchOk
-			} else {
-				var6_matches = borgo.MatchErr
-			}
-
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var1 = 5
-			}
-		}
-
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
-
-			var9_match_pat := borgo.MatchNone
-
-			if var9_match_pat != borgo.MatchErr && borgo.Ops.Eq(1, var5_subject.(Tuple2).First).(bool) {
-				var9_match_pat = borgo.MatchOk
-			} else {
-				var9_match_pat = borgo.MatchErr
-			}
-
-			if var9_match_pat != borgo.MatchErr && borgo.Ops.Eq("bar", var5_subject.(Tuple2).Second).(bool) {
-				var9_match_pat = borgo.MatchOk
-			} else {
-				var9_match_pat = borgo.MatchErr
-			}
-
-			if var9_match_pat != borgo.MatchErr {
-				var6_matches = borgo.MatchOk
-			} else {
-				var6_matches = borgo.MatchErr
-			}
-
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var1 = 6
-			}
-		}
-
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
-
-			var12_match_pat := borgo.MatchNone
-			x := var5_subject.(Tuple2).First
-
-			if var12_match_pat != borgo.MatchErr && borgo.Ops.Eq("foo", var5_subject.(Tuple2).Second).(bool) {
-				var12_match_pat = borgo.MatchOk
-			} else {
-				var12_match_pat = borgo.MatchErr
-			}
-
-			if var12_match_pat != borgo.MatchErr {
-				var6_matches = borgo.MatchOk
-			} else {
-				var6_matches = borgo.MatchErr
-			}
-
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var1 = x
-			}
-		}
-
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
-
-			if var6_matches != borgo.MatchErr {
-				var6_matches = borgo.MatchOk /* wildcard */
-			}
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var1 = Debug_unreachable()
-			}
-		}
-
-		var res any = var1
-
-		Debug_assert_eq(res, 1)
-		var var17 any
-		_ = var17
-
-		var19_subject := borgo.Unit
-		var20_matches := borgo.MatchNone
-
-		if var20_matches != borgo.MatchOk {
-			var20_matches = borgo.MatchNone
-
-			if var20_matches != borgo.MatchErr {
-				var20_matches = borgo.MatchOk /* Unit */
-			}
-			_ = var19_subject
-
-			if var20_matches == borgo.MatchOk {
-
-				var17 = 2
-			}
-		}
-
-		res = var17
-
-		return Debug_assert_eq(res, 2)
+	var1_subject := Tuple2[int, string]{
+		first:  1,
+		second: "foo",
 	}
-}
+	var2_matches := 0
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		var3_match_pat := 0
+
+		if var3_match_pat != 1 && 3 == var1_subject.first {
+			var3_match_pat = 2
+		} else {
+			var3_match_pat = 1
+		}
+		if var3_match_pat != 1 {
+			var3_match_pat = 2 /* wildcard */
+		}
+
+		if var3_match_pat != 1 {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = 5
+		}
+	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		var6_match_pat := 0
+
+		if var6_match_pat != 1 && 1 == var1_subject.first {
+			var6_match_pat = 2
+		} else {
+			var6_match_pat = 1
+		}
+
+		if var6_match_pat != 1 && "bar" == var1_subject.second {
+			var6_match_pat = 2
+		} else {
+			var6_match_pat = 1
+		}
+
+		if var6_match_pat != 1 {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = 6
+		}
+	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		var9_match_pat := 0
+		x := var1_subject.first
+
+		if var9_match_pat != 1 && "foo" == var1_subject.second {
+			var9_match_pat = 2
+		} else {
+			var9_match_pat = 1
+		}
+
+		if var9_match_pat != 1 {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = x
+		}
+	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		if var2_matches != 1 {
+			var2_matches = 2 /* wildcard */
+		}
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = Debug_unreachable[int]()
+		}
+	}
+
+	assert_eq[int](res, 1)
+
+	var13_subject := struct{}{}
+	var14_matches := 0
+
+	if var14_matches != 2 {
+		var14_matches = 0
+
+		if var14_matches != 1 {
+			var14_matches = 2 /* Unit */
+		}
+		_ = var13_subject
+
+		if var14_matches == 2 {
+			res = 2
+		}
+	}
+
+	assert_eq[int](res, 2)
 }

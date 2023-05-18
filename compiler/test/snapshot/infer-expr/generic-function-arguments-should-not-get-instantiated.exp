@@ -2,7 +2,7 @@ Generic function arguments should not get instantiated
 
 SOURCE:
 {
-  fn foo<T>(x: T) -> Int {
+  fn foo<T>(x: T) -> int {
     x as T;
     match x {
       1 => 1
@@ -15,7 +15,7 @@ Type mismatch
 Expected:
     T
 Got:
-    Int
+    int
 
 5|        1 => 1
           ^

@@ -10,9 +10,9 @@ if true {
 OUTPUT:
 Type mismatch
 Expected:
-    Int
+    int
 Got:
-    String
+    string
 
 3|  } else {
            ^--

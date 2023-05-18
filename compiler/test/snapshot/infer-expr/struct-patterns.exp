@@ -2,7 +2,7 @@ Struct patterns
 
 SOURCE:
 {
-  struct Foo { x: Int, y: String }
+  struct Foo { x: int, y: string }
 
   let f = Foo { x: 1, y: "a" };
   match f {
@@ -11,11 +11,9 @@ SOURCE:
 }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -30,14 +28,17 @@ No errors.
                 "name": "x",
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Int",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
                   }
                 }
               },
@@ -45,14 +46,17 @@ No errors.
                 "name": "y",
                 "ann": {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "String",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -111,7 +115,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -133,11 +137,14 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "a"
+                        "String": [
+                          "a",
+                          null
+                        ]
                       },
                       "ty": {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
@@ -213,6 +220,7 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
                   "name": "Foo",
@@ -315,9 +323,10 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
@@ -337,7 +346,7 @@ No errors.
           ],
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -356,7 +365,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

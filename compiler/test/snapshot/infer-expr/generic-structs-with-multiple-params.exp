@@ -8,11 +8,9 @@ SOURCE:
 }
 
 OUTPUT:
-Foo<Int, Bool>
+Foo<int, bool>
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -35,9 +33,12 @@ No errors.
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "T",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "T",
+                      "args": []
+                    }
                   }
                 }
               },
@@ -50,9 +51,12 @@ No errors.
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Y",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "Y",
+                      "args": []
+                    }
                   }
                 }
               },
@@ -65,9 +69,12 @@ No errors.
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "T",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "T",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -98,7 +105,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
@@ -124,7 +131,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "Bool",
+                      "name": "bool",
                       "args": []
                     }
                   },
@@ -150,7 +157,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
@@ -175,13 +182,13 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 {
                   "Con": {
-                    "name": "Bool",
+                    "name": "bool",
                     "args": []
                   }
                 }
@@ -207,13 +214,13 @@ No errors.
         "args": [
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
           {
             "Con": {
-              "name": "Bool",
+              "name": "bool",
               "args": []
             }
           }

@@ -1,14 +1,12 @@
 Block ends with list
 
 SOURCE:
-{ fn foo() -> List<Int> { [1] } }
+{ fn foo() -> [int] { [1] } }
 
 OUTPUT:
-fn () -> List<Int>
+fn () -> [int]
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -22,11 +20,11 @@ No errors.
             "args": [],
             "ret": {
               "Con": {
-                "name": "List",
+                "name": "Slice",
                 "args": [
                   {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   }
@@ -35,11 +33,11 @@ No errors.
             },
             "ann": {
               "Con": {
-                "name": "List",
+                "name": "Slice",
                 "args": [
                   {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   }
@@ -52,7 +50,7 @@ No errors.
                   {
                     "Literal": {
                       "lit": {
-                        "List": [
+                        "Slice": [
                           {
                             "Literal": {
                               "lit": {
@@ -60,18 +58,18 @@ No errors.
                               },
                               "ty": {
                                 "Con": {
-                                  "name": "Int",
+                                  "name": "int",
                                   "args": []
                                 }
                               },
                               "span": {
                                 "start": {
                                   "line": 1,
-                                  "col": 27
+                                  "col": 23
                                 },
                                 "end": {
                                   "line": 1,
-                                  "col": 28
+                                  "col": 24
                                 }
                               }
                             }
@@ -80,11 +78,11 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "List",
+                          "name": "Slice",
                           "args": [
                             {
                               "Con": {
-                                "name": "Int",
+                                "name": "int",
                                 "args": []
                               }
                             }
@@ -94,11 +92,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 1,
-                          "col": 26
+                          "col": 22
                         },
                         "end": {
                           "line": 1,
-                          "col": 29
+                          "col": 25
                         }
                       }
                     }
@@ -106,11 +104,11 @@ No errors.
                 ],
                 "ty": {
                   "Con": {
-                    "name": "List",
+                    "name": "Slice",
                     "args": [
                       {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       }
@@ -120,12 +118,35 @@ No errors.
                 "span": {
                   "start": {
                     "line": 1,
-                    "col": 24
+                    "col": 20
                   },
                   "end": {
                     "line": 1,
-                    "col": 31
+                    "col": 27
                   }
+                }
+              }
+            },
+            "bounded_ty": {
+              "generics": [],
+              "ty": {
+                "Fun": {
+                  "args": [],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Slice",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "id": -1
                 }
               }
             }
@@ -137,18 +158,18 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "List",
+                  "name": "Slice",
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     }
                   ]
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -158,7 +179,7 @@ No errors.
             },
             "end": {
               "line": 1,
-              "col": 31
+              "col": 27
             }
           }
         }
@@ -170,18 +191,18 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "List",
+            "name": "Slice",
             "args": [
               {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               }
             ]
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {
@@ -191,7 +212,7 @@ No errors.
       },
       "end": {
         "line": 1,
-        "col": 33
+        "col": 29
       }
     }
   }

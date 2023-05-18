@@ -4,11 +4,7 @@ SOURCE:
 { 1 + false }
 
 OUTPUT:
-Type mismatch
-Expected:
-    Int
-Got:
-    Bool
+Expected numeric type
 
 1|  { 1 + false }
       ^^^^^^^^^

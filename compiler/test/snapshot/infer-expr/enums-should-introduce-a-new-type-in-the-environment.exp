@@ -11,8 +11,6 @@ Color
 ---
 No errors.
 ---
-[]
----
 {
   "Block": {
     "stmts": [
@@ -59,6 +57,7 @@ No errors.
               }
             }
           },
+          "generics_instantiated": [],
           "ty": {
             "Con": {
               "name": "Color",

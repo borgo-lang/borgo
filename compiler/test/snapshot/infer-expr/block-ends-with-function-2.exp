@@ -1,14 +1,12 @@
 Block ends with function 2
 
 SOURCE:
-{ fn foo(foo: Int) -> Int { foo } }
+{ fn foo(foo: int) -> int { foo } }
 
 OUTPUT:
-fn (Int) -> Int
+fn (int) -> int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -40,13 +38,13 @@ No errors.
                 },
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -54,13 +52,13 @@ No errors.
             ],
             "ret": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
             "ann": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -86,9 +84,10 @@ No errors.
                           }
                         }
                       },
+                      "generics_instantiated": [],
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -107,7 +106,7 @@ No errors.
                 ],
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -122,6 +121,29 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "int",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -130,7 +152,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -138,11 +160,11 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -163,7 +185,7 @@ No errors.
         "args": [
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           }
@@ -171,11 +193,11 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

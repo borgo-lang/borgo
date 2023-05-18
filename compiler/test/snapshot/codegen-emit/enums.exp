@@ -2,64 +2,45 @@ Enums
 
 SOURCE:
 enum Foo {
-  Bar(Int, Bool),
+  Bar(int, bool),
   Baz,
 }
 
-fn borgo_main() {
-  Foo::Bar(2, false).inspect();
-  Foo::Baz.inspect();
-  ()
+fn main() {
+  inspect(Foo::Bar(2, false));
+  inspect(Foo::Baz);
 }
 
 OUTPUT:
-Foo::Bar(2, false)
-Foo::Baz
+{tag:0 Bar0:2 Bar1:false}
+{tag:1 Bar0:0 Bar1:false}
 
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Foo_Bar(arg_0 any, arg_1 any) any {
-	return Foo_Bar{arg_0, arg_1}
+func make_Foo_Bar(arg_0 int, arg_1 bool) Foo {
+	return Foo{tag: Foo_Bar, Bar0: arg_0, Bar1: arg_1}
 }
 
-var make_Foo_Baz = Foo_Baz{}
+func make_Foo_Baz() Foo {
+	return Foo{tag: Foo_Baz}
+}
 
-type Foo_Bar struct {
-	Field0 any
-	Field1 any
-}
-type Foo_Baz struct {
-}
-type Foo any
+type FooTag int
 
-func borgo_main() any {
+const (
+	Foo_Bar FooTag = iota
+	Foo_Baz
+)
 
-	{
+type Foo struct {
+	tag  FooTag
+	Bar0 int
+	Bar1 bool
+}
 
-		Debug_inspect(make_Foo_Bar(2, false))
-		Debug_inspect(make_Foo_Baz)
+func main() {
+	inspect[Foo](make_Foo_Bar(2, false))
 
-		return borgo.Unit
-	}
-}
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterTypeConstructor("Foo::Bar", "Foo_Bar")
-	borgo.RegisterMakeFunction("Foo::Bar", make_Foo_Bar)
-	borgo.RegisterTypeConstructor("Foo::Baz", "Foo_Baz")
-	borgo.RegisterMakeFunction("Foo::Baz", make_Foo_Baz)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	inspect[Foo](make_Foo_Baz())
 }

@@ -1,14 +1,12 @@
 Block ends with function 4
 
 SOURCE:
-{ fn foo<T>(foo: T, bar: Bool) -> T { foo } }
+{ fn foo<T>(foo: T, bar: bool) -> T { foo } }
 
 OUTPUT:
-fn <A>(A, Bool) -> A
+fn <A>(A, bool) -> A
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -73,13 +71,13 @@ No errors.
                 },
                 "ann": {
                   "Con": {
-                    "name": "Bool",
+                    "name": "bool",
                     "args": []
                   }
                 },
                 "ty": {
                   "Con": {
-                    "name": "Bool",
+                    "name": "bool",
                     "args": []
                   }
                 }
@@ -119,6 +117,7 @@ No errors.
                           }
                         }
                       },
+                      "generics_instantiated": [],
                       "ty": {
                         "Con": {
                           "name": "T",
@@ -155,6 +154,37 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [
+                "T"
+              ],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "bool",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "T",
+                      "args": []
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -166,7 +196,7 @@ No errors.
                 },
                 {
                   "Con": {
-                    "name": "Bool",
+                    "name": "bool",
                     "args": []
                   }
                 }
@@ -175,7 +205,7 @@ No errors.
               "ret": {
                 "Var": 99
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -199,7 +229,7 @@ No errors.
           },
           {
             "Con": {
-              "name": "Bool",
+              "name": "bool",
               "args": []
             }
           }
@@ -208,7 +238,7 @@ No errors.
         "ret": {
           "Var": 99
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

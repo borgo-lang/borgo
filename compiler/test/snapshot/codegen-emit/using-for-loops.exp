@@ -1,107 +1,154 @@
 Using for loops.
 
 SOURCE:
-fn borgo_main() {
-  for x in [1, 2, 3].seq() {
-    x.inspect();
-  }
+fn main() {
+    {
+        let mut sum = 0;
 
-  let mut n = 20;
+        // this should iterate over values
+        for x in [1, 2, 3] {
+            sum = sum + x;
+        }
 
-  match true {
-    true => { n = 25; },
-    false => (),
-  }
+        assert_eq(sum, 6);
+    }
 
-  loop {
-    if n > 27 { break; }
-    n.inspect();
-    n = n + 1;
-  }
+    {
+        let mut sum = 0;
+
+        for (i, x) in [1, 2, 3].enumerate() {
+            sum = sum + i + x;
+        }
+
+        assert_eq(sum, 9);
+    }
+
+    let mut n = 20;
+
+    match true {
+        true => {
+            n = 25;
+        }
+        false => (),
+    }
+
+    loop {
+        if n > 27 {
+            break;
+        }
+        inspect(n);
+        n = n + 1;
+    }
+
+    n = 0;
+    while n < 10 {
+        n = n + 1;
+    }
+    inspect(n);
+
+    let m = Map::new();
+    m.insert("a", 1);
+
+    for (k, v) in m {
+        inspect(k);
+        inspect(v);
+    }
 }
 
 OUTPUT:
-1
-2
-3
 25
 26
 27
+10
+a
+1
 
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func borgo_main() any {
-
+func main() {
 	{
 
-		var1 := List_seq(borgo.List(1, 2, 3))
-		for !borgo.ValuesIsOfType(var1, "Seq::Nil") {
-			var8 := var1.(Seq_Cons).Field0
+		sum := 0
 
-			var x any = var8
-			Debug_inspect(x)
-
-			var1 = var1.(Seq_Cons).Field1()
+		for _, x := range []int{1, 2, 3} {
+			sum = sum + x
 		}
 
-		var n any = 20
-
-		var13_subject := true
-		var14_matches := borgo.MatchNone
-
-		if var14_matches != borgo.MatchOk {
-			var14_matches = borgo.MatchNone
-
-			if var14_matches != borgo.MatchErr && borgo.Ops.Eq(true, var13_subject).(bool) {
-				var14_matches = borgo.MatchOk
-			} else {
-				var14_matches = borgo.MatchErr
-			}
-			_ = var13_subject
-
-			if var14_matches == borgo.MatchOk {
-
-				n = 25
-
-			}
-		}
-
-		if var14_matches != borgo.MatchOk {
-			var14_matches = borgo.MatchNone
-
-			if var14_matches != borgo.MatchErr && borgo.Ops.Eq(false, var13_subject).(bool) {
-				var14_matches = borgo.MatchOk
-			} else {
-				var14_matches = borgo.MatchErr
-			}
-			_ = var13_subject
-
-			if var14_matches == borgo.MatchOk {
-
-			}
-		}
-
-		for {
-			{
-
-				if borgo.Ops.Eq(borgo.Ops.IGt(n, 27), true).(bool) {
-					break
-
-				}
-				Debug_inspect(n)
-
-				n = borgo.Ops.IAdd(n, 1)
-			}
-		}
-		return borgo.Unit
+		assert_eq[int](sum, 6)
 	}
-}
+	{
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+		sum := 0
+
+		for i, x := range Slice_enumerate[int]([]int{1, 2, 3}) {
+			sum = sum + i + x
+		}
+
+		assert_eq[int](sum, 9)
+	}
+
+	n := 20
+
+	var1_subject := true
+	var2_matches := 0
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		if var2_matches != 1 && true == var1_subject {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			n = 25
+		}
+	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		if var2_matches != 1 && false == var1_subject {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+		_ = var1_subject
+
+		if var2_matches == 2 {
+		}
+	}
+
+	for {
+
+		if n > 27 {
+			break
+		}
+
+		inspect[int](n)
+
+		n = n + 1
+	}
+
+	n = 0
+
+	for n < 10 {
+		n = n + 1
+	}
+
+	inspect[int](n)
+
+	m := Map_new[string, int]()
+
+	Map_insert[string, int](m, "a", 1)
+
+	for k, v := range m {
+
+		inspect[string](k)
+
+		inspect[int](v)
+	}
 }

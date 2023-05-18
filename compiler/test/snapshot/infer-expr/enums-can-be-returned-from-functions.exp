@@ -8,8 +8,8 @@ SOURCE:
     Maybe::Just(v)
   }
 
-  ok(1) as Maybe<Int>;
-  ok("foo") as Maybe<String>;
+  ok(1) as Maybe<int>;
+  ok("foo") as Maybe<string>;
 
   ok
 }
@@ -18,8 +18,6 @@ OUTPUT:
 fn <A>(A) -> Maybe<A>
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -161,6 +159,14 @@ No errors.
                               }
                             }
                           },
+                          "generics_instantiated": [
+                            {
+                              "Con": {
+                                "name": "T",
+                                "args": []
+                              }
+                            }
+                          ],
                           "ty": {
                             "Fun": {
                               "args": [
@@ -185,7 +191,7 @@ No errors.
                                   ]
                                 }
                               },
-                              "fx": []
+                              "id": -1
                             }
                           },
                           "span": {
@@ -220,6 +226,7 @@ No errors.
                                 }
                               }
                             },
+                            "generics_instantiated": [],
                             "ty": {
                               "Con": {
                                 "name": "T",
@@ -289,6 +296,38 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [
+                "T"
+              ],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Maybe",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "T",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -310,7 +349,7 @@ No errors.
                   ]
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -348,12 +387,20 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [
+                    {
+                      "Con": {
+                        "name": "int",
+                        "args": []
+                      }
+                    }
+                  ],
                   "ty": {
                     "Fun": {
                       "args": [
                         {
                           "Con": {
-                            "name": "Int",
+                            "name": "int",
                             "args": []
                           }
                         }
@@ -365,14 +412,14 @@ No errors.
                           "args": [
                             {
                               "Con": {
-                                "name": "Int",
+                                "name": "int",
                                 "args": []
                               }
                             }
                           ]
                         }
                       },
-                      "fx": []
+                      "id": -1
                     }
                   },
                   "span": {
@@ -395,7 +442,7 @@ No errors.
                     },
                     "ty": {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     },
@@ -418,7 +465,7 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     }
@@ -443,7 +490,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -456,7 +503,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -498,12 +545,20 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [
+                    {
+                      "Con": {
+                        "name": "string",
+                        "args": []
+                      }
+                    }
+                  ],
                   "ty": {
                     "Fun": {
                       "args": [
                         {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         }
@@ -515,14 +570,14 @@ No errors.
                           "args": [
                             {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             }
                           ]
                         }
                       },
-                      "fx": []
+                      "id": -1
                     }
                   },
                   "span": {
@@ -541,11 +596,14 @@ No errors.
                 {
                   "Literal": {
                     "lit": {
-                      "String": "foo"
+                      "String": [
+                        "foo",
+                        null
+                      ]
                     },
                     "ty": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
@@ -568,7 +626,7 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     }
@@ -593,7 +651,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 }
@@ -606,7 +664,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 }
@@ -644,6 +702,11 @@ No errors.
               }
             }
           },
+          "generics_instantiated": [
+            {
+              "Var": 99
+            }
+          ],
           "ty": {
             "Fun": {
               "args": [
@@ -662,7 +725,7 @@ No errors.
                   ]
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -696,7 +759,7 @@ No errors.
             ]
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

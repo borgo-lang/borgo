@@ -1,0 +1,391 @@
+use fmt;
+use reflect;
+
+type Map<K, V> = ();
+
+type EnumerateSlice<T> = ();
+
+type VarArgs<T> = ();
+
+type Channel<T> = ();
+type Sender<T> = ();
+type Receiver<T> = ();
+
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+impl<T, E> Result<T, E> {
+    fn IsOk(self) -> bool {
+        match self {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
+    fn unwrap(self) -> T {
+        rawgo!(
+            "
+      if self.tag == Result_Err {
+        inspect(self.Err)
+        panic(\"Unwrapped Err value\")
+      }
+
+      return self.Ok
+    "
+        )
+    }
+}
+
+enum Option<T> {
+    Some(T),
+    None,
+}
+
+impl<T> Option<T> {
+    fn IsSome(self) -> bool {
+        match self {
+            Some(_) => true,
+            None => false,
+        }
+    }
+
+    fn IsNone(self) -> bool {
+        !self.IsSome()
+    }
+
+    fn unwrap_or(self, def: T) -> T {
+        match self {
+            Some(x) => x,
+            None => def,
+        }
+    }
+
+    fn unwrap_or_else(self, f: fn() -> T) -> T {
+        match self {
+            Some(x) => x,
+            None => f(),
+        }
+    }
+
+    fn unwrap(self) -> T {
+        rawgo!(
+            "
+        if self.tag == Option_None {
+          panic(\"Unwrapped None value\")
+        }
+
+        return self.Some
+      "
+        )
+    }
+
+    fn ToOption<T>(value: T, check: bool) -> Option<T> {
+        if check {
+            Some(value)
+        } else {
+            None
+        }
+    }
+}
+
+struct Tuple2<T, Y> {
+    first: T,
+    second: Y,
+}
+
+struct Tuple3<T, Y, Z> {
+    first: T,
+    second: Y,
+    third: Z,
+}
+
+fn zero_value<T>() -> T {
+    rawgo!(
+        "
+    var m T
+    return m
+  "
+    )
+}
+
+fn assert_eq<T>(a: T, b: T) {
+    if !reflect.DeepEqual(a, b) {
+        inspect(a);
+        inspect(b);
+        rawgo!("panic(\"something wrong\")")
+    }
+}
+
+fn inspect<T>(a: T) -> T {
+    fmt.Printf("%+v\n", a);
+    a
+}
+
+fn Debug_unreachable<T>() -> T {
+    rawgo!("panic(\"unreachable code\")")
+}
+
+fn to_result(e: error) -> Result<()> {
+  rawgo!("if e != nil {
+    return struct{}{}, e
+  }
+  return struct{}{}, nil
+  ")
+}
+
+impl<T> [T] {
+    fn len(self) -> int {
+        rawgo!("return len(self)")
+    }
+
+    fn enumerate(self) -> EnumerateSlice<T> {
+        rawgo!("return self")
+    }
+
+    fn set(&mut self, index: int, item: T) {
+        rawgo!("self[index] = item")
+    }
+
+    fn append(&mut self, item: T) -> [T] {
+        rawgo!("return append(self, item)")
+    }
+
+    fn get(self, i: int) -> Option<T> {
+        rawgo!(
+            "
+            if i < 0 || i >= len(self) {
+              return *new(T), false
+            }
+
+      return self[i], true
+    "
+        )
+    }
+}
+
+impl<K: comparable, V> Map<K, V> {
+    fn new() -> Map<K, V> {
+        rawgo!("return map[K]V{}")
+    }
+
+    fn len(self) -> int {
+        rawgo!("return len(self)")
+    }
+
+    fn insert(self, k: K, v: V) {
+        rawgo!("self[k] = v")
+    }
+
+    fn get(self, k: K) -> Option<V> {
+        rawgo!("
+        v, ok := self[k]
+        return v, ok
+        ")
+    }
+}
+
+impl<T> Channel<T> {
+  fn new() -> (Sender<T>, Receiver<T>) {
+    rawgo!("
+    ch := make(chan T)
+    return Tuple2[chan<- T, <-chan T]{ first: ch, second: ch }
+    ")
+  }
+}
+
+impl<T> Sender<T> {
+  fn send(&mut self, value: T) {
+    rawgo!("self <- value")
+  }
+
+  fn close(&mut self) {
+    rawgo!("close(self)")
+  }
+}
+
+impl<T> Receiver<T> {
+  fn recv(&self) -> T {
+    rawgo!("return <- self")
+  }
+}
+
+#[package(path = __global, name = __global)]
+mod global {
+    trait ComplexType {}
+    trait FloatType {}
+    trait IntegerType {}
+    trait any {}
+    type bool = ();
+    type byte = ();
+    trait comparable {}
+    type complex128 = ();
+    type complex64 = ();
+    type string = (); // TODO move in appropriate place
+    trait error {
+        fn Error() -> string;
+    }
+    type float32 = ();
+    type float64 = ();
+    type int = ();
+    type int16 = ();
+    type int32 = ();
+    type int64 = ();
+    type int8 = ();
+    type rune = ();
+    type uint = ();
+    type uint16 = ();
+    type uint32 = ();
+    type uint64 = ();
+    type uint8 = ();
+    type uintptr = ();
+
+    extern "C" {
+        fn string(bytes: [byte]) -> string;
+    }
+}
+
+#[package(path = io/fs, name = io::fs)]
+mod fs {
+  struct FileMode {}
+
+  trait FileInfo {
+  	fn Name() -> string;
+    fn Size() -> int64 ;
+    fn Mode() -> FileMode;
+    // fn ModTime() -> time.Time;
+    fn IsDir() -> bool;
+    fn Sys() -> any;
+  }
+
+  extern {
+    fn IsRegular(m: FileMode) -> bool;
+  }
+}
+
+#[package(path = errors, name = errors)]
+mod errors {
+    extern "C" {
+        fn New(text: string) -> error;
+    }
+}
+
+#[package(path = io, name = io)]
+mod io {
+    trait Writer {
+        fn Write(bytes: [byte]) -> Result<int>;
+    }
+    trait Reader {
+        fn Read(p: [byte]) -> Result<int>;
+    }
+
+    trait ReadWriter: Reader + Writer {}
+
+    extern {
+      fn Copy(dst: &mut Writer, src: &Reader) -> Result<int64>;
+    }
+}
+
+#[package(path = fmt, name = fmt)]
+mod fmt {
+    use io;
+    extern "C" {
+        fn Printf(format: string, a: VarArgs<any>);
+        fn Fprintf(w: io::Writer, format: string, a: VarArgs<any>) -> Result<int>;
+        fn Errorf(format: string, a: VarArgs<any>) -> error;
+        fn Println(a: VarArgs<any>);
+    }
+}
+
+
+
+
+#[package(path = net/http, name = net::http)]
+mod http {
+    struct Request {}
+
+    trait ResponseWriter {
+        fn Write(bytes: [byte]) -> Result<int>;
+    }
+
+    trait Handler {
+        fn ServeHTTP(w: ResponseWriter, r: &Request);
+    }
+
+    extern "C" {
+        fn Handle(pattern: string, handler: Handler);
+        fn ListenAndServe(addr: string, handler: Handler);
+    }
+}
+
+#[package(path = log, name = log)]
+mod log {
+    extern "C" {
+        fn Fatalf(format: string, a: VarArgs<any>);
+    }
+}
+
+#[package(path = math, name = math)]
+mod math {
+  const Pi: float64 = 0;
+}
+
+#[package(path = math/rand, name = math::rand)]
+mod rand {
+    extern "C" {
+        fn Int() -> int;
+        fn Float64() -> float64;
+    }
+}
+
+#[package(path = os, name = os)]
+mod os {
+    // TODO fix when type aliases work
+    // struct FileInfo {}
+
+    struct File {}
+
+    use io::fs;
+
+    extern "C" {
+        fn Close(f: &mut File) -> error;
+        fn Create(name: string) -> Result<&mut File>;
+        fn LookupEnv(key: string) -> Option<string>;
+        fn Open(name: string) -> Result<&mut File>;
+        fn ReadFile(path: string) -> Result<[byte]>;
+        fn Stat(name: string) -> Result<fs::FileInfo>;
+        fn Write(f: &mut File, b: [byte]) -> Result<int>;
+        fn Read(f: &File, b: [byte]) -> Result<int>;
+    }
+}
+
+#[package(path = reflect, name = reflect)]
+mod reflect {
+    extern "C" {
+        fn DeepEqual<T, Y>(a: T, b: Y) -> bool;
+    }
+}
+
+#[package(path = strings, name = strings)]
+mod strings {
+    extern "C" {
+        fn HasPrefix(s: string, prefix: string) -> bool;
+    }
+}
+
+#[package(path = sync, name = sync)]
+mod sync {
+    struct Mutex {}
+    struct WaitGroup {}
+
+    extern "C" {
+        fn Lock(m: &mut Mutex);
+        fn Unlock(m: &mut Mutex);
+        fn Add(wg: &mut WaitGroup, delta: int);
+        fn Done(wg: &mut WaitGroup);
+        fn Wait(wg: &mut WaitGroup);
+    }
+}
+

@@ -1,0 +1,21 @@
+Package structs
+
+SOURCE:
+use net::http;
+
+fn main() {
+  let _ = http::Request{};
+}
+
+OUTPUT:
+
+---
+package main
+
+import (
+	http "net/http"
+)
+
+func main() {
+	_ = http.Request{}
+}

@@ -1,0 +1,133 @@
+Concurrency
+
+SOURCE:
+use sync;
+use fmt;
+
+fn main() {
+  let (sender, receiver) = Channel::new();
+
+  fn foo(x: int) {
+    sender.send(x)
+  }
+
+  spawn!((|| { sender.send(5) })());
+
+  let val = receiver.recv();
+  assert_eq(val, 5);
+
+  spawn!(foo(10));
+
+  let val = receiver.recv();
+  assert_eq(val, 10);
+
+  {
+    let desired = 5;
+
+    let wg: sync::WaitGroup = zero_value();
+    wg.Add(desired);
+
+    let (done_tx, done_rx) = Channel::new();
+
+    // receiver goroutine
+    spawn!((|| {
+      let mut count = 0;
+
+      for n in receiver {
+        count = count + n;
+      }
+
+      assert_eq(count, 10);
+      fmt.Printf("count: %v", count);
+
+      done_tx.send(());
+    })());
+
+    let mut i = 0;
+
+    // start `desired` goroutines
+    while (i < desired) {
+      spawn!((|i| {
+        sender.send(i);
+        wg.Done()
+      })(i));
+
+      i = i + 1;
+    }
+
+    wg.Wait();
+    sender.close();          // close(sender)
+    done_rx.recv(); // <-done
+  }
+}
+
+OUTPUT:
+count: 10
+---
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	var1 := Channel_new[int]()
+	sender := var1.first
+	receiver := var1.second
+	var foo func(int)
+	foo = func(x int) {
+		Sender_send[int](sender, x)
+	}
+	go (func() {
+		Sender_send[int](sender, 5)
+	})()
+
+	val := Receiver_recv[int](receiver)
+
+	assert_eq[int](val, 5)
+	go foo(10)
+
+	val = Receiver_recv[int](receiver)
+
+	assert_eq[int](val, 10)
+	{
+
+		desired := 5
+
+		wg := zero_value[sync.WaitGroup]()
+
+		wg.Add(desired)
+
+		var2 := Channel_new[struct{}]()
+		done_tx := var2.first
+		done_rx := var2.second
+		go (func() {
+			count := 0
+
+			for n := range receiver {
+				count = count + n
+			}
+
+			assert_eq[int](count, 10)
+
+			fmt.Printf("count: %v", count)
+
+			Sender_send[struct{}](done_tx, struct{}{})
+		})()
+
+		i := 0
+
+		for i < desired {
+			go (func(i int) {
+				Sender_send[int](sender, i)
+				wg.Done()
+			})(i)
+
+			i = i + 1
+		}
+		wg.Wait()
+		Sender_close[int](sender)
+		Receiver_recv[struct{}](done_rx)
+	}
+}

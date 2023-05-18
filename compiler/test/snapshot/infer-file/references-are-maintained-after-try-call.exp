@@ -1,0 +1,1032 @@
+References are maintained after try call
+
+SOURCE:
+use os;
+
+fn foo() -> Result<()> {
+  let f = os.Open("file")?;
+  Ok(bar(f))
+}
+
+fn bar(f: &mut os::File) {
+
+}
+
+fn borgo_main() {
+  foo();
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "UsePackage": {
+            "import": {
+              "name": "os"
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 1,
+                "col": 7
+              }
+            }
+          }
+        },
+        {
+          "Closure": {
+            "fun": {
+              "name": "foo",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Result",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Unit",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "error",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Result",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Unit",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Let": {
+                        "binding": {
+                          "pat": {
+                            "Type": {
+                              "ident": "f",
+                              "is_mut": false,
+                              "ann": "Unknown",
+                              "span": {
+                                "start": {
+                                  "line": 4,
+                                  "col": 6
+                                },
+                                "end": {
+                                  "line": 4,
+                                  "col": 7
+                                }
+                              }
+                            }
+                          },
+                          "ann": "Unknown",
+                          "ty": {
+                            "Con": {
+                              "name": "RefMut",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "os::File",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "value": {
+                          "Try": {
+                            "expr": {
+                              "Call": {
+                                "func": {
+                                  "FieldAccess": {
+                                    "expr": {
+                                      "Var": {
+                                        "value": "os",
+                                        "decl": {
+                                          "file_id": {
+                                            "package": "std",
+                                            "filename": "core.brg"
+                                          },
+                                          "span": {
+                                            "start": {
+                                              "line": 0,
+                                              "col": 0
+                                            },
+                                            "end": {
+                                              "line": 0,
+                                              "col": 0
+                                            }
+                                          }
+                                        },
+                                        "generics_instantiated": [],
+                                        "ty": {
+                                          "Con": {
+                                            "name": "__Packageos",
+                                            "args": []
+                                          }
+                                        },
+                                        "span": {
+                                          "start": {
+                                            "line": 4,
+                                            "col": 10
+                                          },
+                                          "end": {
+                                            "line": 4,
+                                            "col": 12
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "field": "Open",
+                                    "ty": {
+                                      "Fun": {
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "string",
+                                              "args": []
+                                            }
+                                          }
+                                        ],
+                                        "bounds": [],
+                                        "ret": {
+                                          "Con": {
+                                            "name": "Result",
+                                            "args": [
+                                              {
+                                                "Con": {
+                                                  "name": "RefMut",
+                                                  "args": [
+                                                    {
+                                                      "Con": {
+                                                        "name": "os::File",
+                                                        "args": []
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "Con": {
+                                                  "name": "error",
+                                                  "args": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "id": -1
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 4,
+                                        "col": 13
+                                      },
+                                      "end": {
+                                        "line": 4,
+                                        "col": 17
+                                      }
+                                    }
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "Literal": {
+                                      "lit": {
+                                        "String": [
+                                          "file",
+                                          null
+                                        ]
+                                      },
+                                      "ty": {
+                                        "Con": {
+                                          "name": "string",
+                                          "args": []
+                                        }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 4,
+                                          "col": 18
+                                        },
+                                        "end": {
+                                          "line": 4,
+                                          "col": 24
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "ty": {
+                                  "Con": {
+                                    "name": "Result",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "RefMut",
+                                          "args": [
+                                            {
+                                              "Con": {
+                                                "name": "os::File",
+                                                "args": []
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "error",
+                                          "args": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 4,
+                                    "col": 13
+                                  },
+                                  "end": {
+                                    "line": 4,
+                                    "col": 17
+                                  }
+                                }
+                              }
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "RefMut",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "os::File",
+                                      "args": []
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 4,
+                                "col": 10
+                              },
+                              "end": {
+                                "line": 4,
+                                "col": 26
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "RefMut",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "os::File",
+                                  "args": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 4,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 4,
+                            "col": 27
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Call": {
+                        "func": {
+                          "Var": {
+                            "value": "Ok",
+                            "decl": {
+                              "file_id": {
+                                "package": "std",
+                                "filename": "core.brg"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 15,
+                                  "col": 0
+                                },
+                                "end": {
+                                  "line": 18,
+                                  "col": 1
+                                }
+                              }
+                            },
+                            "generics_instantiated": [
+                              {
+                                "Con": {
+                                  "name": "Unit",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "error",
+                                  "args": []
+                                }
+                              }
+                            ],
+                            "ty": {
+                              "Fun": {
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "Unit",
+                                      "args": []
+                                    }
+                                  }
+                                ],
+                                "bounds": [],
+                                "ret": {
+                                  "Con": {
+                                    "name": "Result",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "Unit",
+                                          "args": []
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "error",
+                                          "args": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "id": -1
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 2
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 4
+                              }
+                            }
+                          }
+                        },
+                        "args": [
+                          {
+                            "Call": {
+                              "func": {
+                                "Var": {
+                                  "value": "bar",
+                                  "decl": {
+                                    "file_id": {
+                                      "package": "std",
+                                      "filename": "core.brg"
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 8,
+                                        "col": 0
+                                      },
+                                      "end": {
+                                        "line": 10,
+                                        "col": 1
+                                      }
+                                    }
+                                  },
+                                  "generics_instantiated": [],
+                                  "ty": {
+                                    "Fun": {
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "name": "RefMut",
+                                            "args": [
+                                              {
+                                                "Con": {
+                                                  "name": "os::File",
+                                                  "args": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "bounds": [],
+                                      "ret": {
+                                        "Con": {
+                                          "name": "Unit",
+                                          "args": []
+                                        }
+                                      },
+                                      "id": -1
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 5,
+                                      "col": 5
+                                    },
+                                    "end": {
+                                      "line": 5,
+                                      "col": 8
+                                    }
+                                  }
+                                }
+                              },
+                              "args": [
+                                {
+                                  "Var": {
+                                    "value": "f",
+                                    "decl": {
+                                      "file_id": {
+                                        "package": "user",
+                                        "filename": "test.brg"
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 4,
+                                          "col": 6
+                                        },
+                                        "end": {
+                                          "line": 4,
+                                          "col": 7
+                                        }
+                                      }
+                                    },
+                                    "generics_instantiated": [],
+                                    "ty": {
+                                      "Con": {
+                                        "name": "RefMut",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "os::File",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 5,
+                                        "col": 9
+                                      },
+                                      "end": {
+                                        "line": 5,
+                                        "col": 10
+                                      }
+                                    }
+                                  }
+                                }
+                              ],
+                              "ty": {
+                                "Con": {
+                                  "name": "Unit",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 5,
+                                  "col": 5
+                                },
+                                "end": {
+                                  "line": 5,
+                                  "col": 11
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "ty": {
+                          "Con": {
+                            "name": "Result",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "Unit",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "error",
+                                  "args": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 5,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 5,
+                            "col": 12
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Unit",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "error",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 23
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Unit",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "error",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Result",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Unit",
+                          "args": []
+                        }
+                      },
+                      {
+                        "Con": {
+                          "name": "error",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 3,
+                "col": 0
+              },
+              "end": {
+                "line": 6,
+                "col": 1
+              }
+            }
+          }
+        },
+        {
+          "Closure": {
+            "fun": {
+              "name": "bar",
+              "generics": [],
+              "bounds": [],
+              "args": [
+                {
+                  "pat": {
+                    "Type": {
+                      "ident": "f",
+                      "is_mut": false,
+                      "ann": "Unknown",
+                      "span": {
+                        "start": {
+                          "line": 8,
+                          "col": 7
+                        },
+                        "end": {
+                          "line": 8,
+                          "col": 8
+                        }
+                      }
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "RefMut",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "os::File",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "RefMut",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "os::File",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [],
+                  "ty": {
+                    "Con": {
+                      "name": "Unit",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 8,
+                      "col": 25
+                    },
+                    "end": {
+                      "line": 10,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "RefMut",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "os::File",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Unit",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [
+                  {
+                    "Con": {
+                      "name": "RefMut",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "os::File",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 8,
+                "col": 0
+              },
+              "end": {
+                "line": 10,
+                "col": 1
+              }
+            }
+          }
+        },
+        {
+          "Closure": {
+            "fun": {
+              "name": "borgo_main",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Call": {
+                        "func": {
+                          "Var": {
+                            "value": "foo",
+                            "decl": {
+                              "file_id": {
+                                "package": "std",
+                                "filename": "core.brg"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 3,
+                                  "col": 0
+                                },
+                                "end": {
+                                  "line": 6,
+                                  "col": 1
+                                }
+                              }
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Fun": {
+                                "args": [],
+                                "bounds": [],
+                                "ret": {
+                                  "Con": {
+                                    "name": "Result",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "Unit",
+                                          "args": []
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "error",
+                                          "args": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "id": -1
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 13,
+                                "col": 2
+                              },
+                              "end": {
+                                "line": 13,
+                                "col": 5
+                              }
+                            }
+                          }
+                        },
+                        "args": [],
+                        "ty": {
+                          "Con": {
+                            "name": "Result",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "Unit",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "error",
+                                  "args": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 13,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 13,
+                            "col": 7
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "Unit",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "error",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 14,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Unit",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 12,
+                "col": 0
+              },
+              "end": {
+                "line": 14,
+                "col": 1
+              }
+            }
+          }
+        }
+      ],
+      "source": "use os;\n\nfn foo() -> Result<()> {\n  let f = os.Open(\"file\")?;\n  Ok(bar(f))\n}\n\nfn bar(f: &mut os::File) {\n\n}\n\nfn borgo_main() {\n  foo();\n}"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}

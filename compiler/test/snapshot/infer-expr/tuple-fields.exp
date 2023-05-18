@@ -7,11 +7,9 @@ SOURCE:
 }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -43,13 +41,13 @@ No errors.
                 "args": [
                   {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
                   {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   }
@@ -70,7 +68,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -92,11 +90,14 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "a"
+                        "String": [
+                          "a",
+                          null
+                        ]
                       },
                       "ty": {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
@@ -121,13 +122,13 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     },
                     {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     }
@@ -152,13 +153,13 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 }
@@ -178,7 +179,7 @@ No errors.
         }
       },
       {
-        "StructAccess": {
+        "FieldAccess": {
           "expr": {
             "Var": {
               "value": "a",
@@ -198,19 +199,20 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
                   "name": "Tuple2",
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     },
                     {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     }
@@ -232,7 +234,7 @@ No errors.
           "field": "first",
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -251,7 +253,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

@@ -1,8 +1,8 @@
 Recursive functions should work even when not declared at the top-level.
 
 SOURCE:
-fn borgo_main() {
-  fn foo(n: Int, acc: Int) -> Int {
+fn main() {
+  fn foo(n: int, acc: int) -> int {
     if n == 0 {
       return acc
     }
@@ -16,7 +16,7 @@ fn borgo_main() {
     foo(n - 1, new_acc)
   }
 
-  foo(10, 0).assert_eq(30)
+  assert_eq(foo(10, 0), 30)
 }
 
 OUTPUT:
@@ -24,43 +24,22 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	var foo func(int, int) int
+	foo = func(n int, acc int) int {
+		if n == 0 {
+			return acc
+		}
+		var new_acc int
 
-var _ = borgo.Unit
-
-func borgo_main() any {
-
-	{
-		var foo func(any, any) any
-		foo = func(n any, acc any) any {
-
-			{
-
-				if borgo.Ops.Eq(borgo.Ops.Eq(n, 0), true).(bool) {
-
-					return acc
-
-				}
-				var var6 any
-				_ = var6
-
-				if borgo.Ops.Eq(borgo.Ops.Eq(borgo.Ops.IRem(n, 2), 0), true).(bool) {
-
-					var6 = borgo.Ops.IAdd(acc, n)
-				} else {
-
-					var6 = acc
-				}
-				var new_acc any = var6
-
-				return foo(borgo.Ops.ISub(n, 1), new_acc)
-			}
+		if n%2 == 0 {
+			new_acc = acc + n
+		} else {
+			new_acc = acc
 		}
 
-		return Debug_assert_eq(foo(10, 0), 30)
+		return foo(n-1, new_acc)
 	}
-}
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](foo(10, 0), 30)
 }

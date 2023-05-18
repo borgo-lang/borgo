@@ -2,7 +2,7 @@ Pattern matching works on enums.
 
 SOURCE:
 {
-  enum Color { Red, Blue(String) }
+  enum Color { Red, Blue(string) }
 
   let x = Color::Blue("foo");
   match x {
@@ -12,11 +12,9 @@ SOURCE:
 }
 
 OUTPUT:
-String
+string
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -38,13 +36,13 @@ No errors.
                     "name": "field0",
                     "ann": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
                     "ty": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     }
@@ -114,12 +112,13 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Fun": {
                       "args": [
                         {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         }
@@ -131,7 +130,7 @@ No errors.
                           "args": []
                         }
                       },
-                      "fx": []
+                      "id": -1
                     }
                   },
                   "span": {
@@ -150,11 +149,14 @@ No errors.
                 {
                   "Literal": {
                     "lit": {
-                      "String": "foo"
+                      "String": [
+                        "foo",
+                        null
+                      ]
                     },
                     "ty": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
@@ -228,6 +230,7 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
                   "name": "Color",
@@ -273,11 +276,14 @@ No errors.
               "expr": {
                 "Literal": {
                   "lit": {
-                    "String": "bar"
+                    "String": [
+                      "bar",
+                      null
+                    ]
                   },
                   "ty": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
@@ -356,18 +362,19 @@ No errors.
                           }
                         }
                       },
+                      "generics_instantiated": [],
                       "ty": {
                         "Fun": {
                           "args": [
                             {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             },
                             {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             }
@@ -375,11 +382,11 @@ No errors.
                           "bounds": [],
                           "ret": {
                             "Con": {
-                              "name": "String",
+                              "name": "string",
                               "args": []
                             }
                           },
-                          "fx": []
+                          "id": -1
                         }
                       },
                       "span": {
@@ -414,9 +421,10 @@ No errors.
                             }
                           }
                         },
+                        "generics_instantiated": [],
                         "ty": {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         },
@@ -435,11 +443,14 @@ No errors.
                     {
                       "Literal": {
                         "lit": {
-                          "String": "!"
+                          "String": [
+                            "!",
+                            null
+                          ]
                         },
                         "ty": {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         },
@@ -458,7 +469,7 @@ No errors.
                   ],
                   "ty": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
@@ -478,7 +489,7 @@ No errors.
           ],
           "ty": {
             "Con": {
-              "name": "String",
+              "name": "string",
               "args": []
             }
           },
@@ -497,7 +508,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "String",
+        "name": "string",
         "args": []
       }
     },

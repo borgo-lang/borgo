@@ -1,14 +1,12 @@
-Math operands on Ints
+Math operands on ints
 
 SOURCE:
 { 1 + 5 }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -23,7 +21,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
@@ -46,7 +44,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
@@ -64,7 +62,7 @@ No errors.
           },
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -83,7 +81,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

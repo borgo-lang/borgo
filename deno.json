@@ -1,5 +1,0 @@
-{
-  "tasks": {
-    "test-runner": "cargo build --bin compiler && cd compiler/ && deno run -A test/runner.ts"
-  }
-}

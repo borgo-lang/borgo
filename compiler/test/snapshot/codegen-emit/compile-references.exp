@@ -1,0 +1,55 @@
+Compile references
+
+SOURCE:
+use fmt;
+
+struct Foo {
+  x: int
+}
+
+fn bar(f: &Foo) -> int {
+  f.x + 2
+}
+
+fn baz(i: &mut int) {
+    *i = 99;
+}
+
+fn main() {
+  fmt.Printf("%v", bar(&Foo { x: 1 }));
+
+  let mut n = 1;
+  baz(&mut n);
+  assert_eq(n, 99);
+}
+
+OUTPUT:
+3
+---
+package main
+
+import (
+	"fmt"
+)
+
+type Foo struct {
+	x int
+}
+
+func bar(f *Foo) int {
+	return f.x + 2
+}
+
+func baz(i *int) {
+	*i = 99
+}
+
+func main() {
+	fmt.Printf("%v", bar(&Foo{x: 1}))
+
+	n := 1
+
+	baz(&n)
+
+	assert_eq[int](n, 99)
+}

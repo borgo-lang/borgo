@@ -2,7 +2,7 @@ Defining structs.
 
 SOURCE:
 {
-  struct Foo { a: Int }
+  struct Foo { a: int }
 
   Foo { a: 1 }
 }
@@ -11,8 +11,6 @@ OUTPUT:
 Foo
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -27,14 +25,17 @@ No errors.
                 "name": "a",
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Int",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -65,7 +66,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },

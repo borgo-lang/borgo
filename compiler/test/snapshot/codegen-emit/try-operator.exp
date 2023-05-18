@@ -1,24 +1,34 @@
 Try operator
 
 SOURCE:
-enum Error { Foo(String) }
+use errors;
 
-fn foo(b: Bool) -> Result<Int> { bar("a") }
+fn foo(b: bool) -> Result<int> { bar("a") }
 
-fn bar(s: String) -> Result<Int> {
-  return Err(Error::Foo("boom"));
-  Ok(4)
+fn bar(s: string) -> Result<int> {
+  Err(errors.New("boom"));
 }
 
-fn baz() -> Result<Int> {
+fn baz() -> Result<int> {
   let _ = foo(false)?;
 
   unreachable!();
   Ok(1)
 }
 
-fn borgo_main() {
-  baz().assert_eq(Err(Error::Foo("boom")));
+fn as_value() -> Result<int> {
+  let a = baz();
+  a
+}
+
+fn as_param(r: Result<int>) -> bool {
+   r.IsOk()
+}
+
+fn main() {
+  assert_eq(baz(), Err(errors.New("boom")));
+  assert_eq(as_value().IsOk(), false);
+  assert_eq(as_param(Ok(1)), true);
 }
 
 OUTPUT:
@@ -26,77 +36,70 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+import (
+	"errors"
+)
 
-var _ = borgo.Unit
-
-func make_Error_Foo(arg_0 any) any {
-	return Error_Foo{arg_0}
+func foo(b bool) (int, error) {
+	return bar("a")
 }
 
-type Error_Foo struct {
-	Field0 any
+func bar(s string) (int, error) {
+	return *new(int), errors.New("boom")
 }
-type Error any
 
-func foo(b any) any {
-
-	{
-
-		return bar("a")
+func baz() (int, error) {
+	_, var1_err := foo(false)
+	if var1_err != nil {
+		return *new(int), var1_err
 	}
+
+	Debug_unreachable[struct{}]()
+
+	return 1, nil
 }
-func bar(s any) any {
 
-	{
-
-		return make_Result_Err(make_Error_Foo("boom"))
-
-		return make_Result_Ok(4)
-	}
-}
-func baz() any {
-
-	{
-		var var1 any
-		_ = var1
-
-		var2_check := foo(false)
-
-		if ret, ok := var2_check.(Result_Ok); ok {
-			// $ret = ret.Field0
-			var1 = ret.Field0
-		} else {
-			return var2_check
+func as_value() (int, error) {
+	var3_result := func() Result[int, error] {
+		var1_check, var2_err := baz()
+		if var2_err != nil {
+			return make_Result_Err[int, error](var2_err)
 		}
+		return make_Result_Ok[int, error](var1_check)
+	}()
 
-		_ = var1
-		Debug_unreachable()
+	a := var3_result
 
-		return make_Result_Ok(1)
+	if a.IsOk() {
+		return a.Ok, nil
 	}
+	return *new(int), a.Err
 }
-func borgo_main() any {
 
-	{
+func as_param(r Result[int, error]) bool {
+	return r.IsOk()
+}
 
-		return Debug_assert_eq(baz(), make_Result_Err(make_Error_Foo("boom")))
-	}
-}
-func Error_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Error_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Error_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterTypeConstructor("Error::Foo", "Error_Foo")
-	borgo.RegisterMakeFunction("Error::Foo", make_Error_Foo)
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("bar", bar)
-	borgo.RegisterGlobalFunction("baz", baz)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	var3_result := func() Result[int, error] {
+		var1_check, var2_err := baz()
+		if var2_err != nil {
+			return make_Result_Err[int, error](var2_err)
+		}
+		return make_Result_Ok[int, error](var1_check)
+	}()
+
+	assert_eq[Result[int, error]](var3_result, make_Result_Err[int, error](errors.New("boom")))
+
+	var6_result := func() Result[int, error] {
+		var4_check, var5_err := as_value()
+		if var5_err != nil {
+			return make_Result_Err[int, error](var5_err)
+		}
+		return make_Result_Ok[int, error](var4_check)
+	}()
+
+	assert_eq[bool](var6_result.IsOk(), false)
+
+	assert_eq[bool](as_param(make_Result_Ok[int, error](1)), true)
 }

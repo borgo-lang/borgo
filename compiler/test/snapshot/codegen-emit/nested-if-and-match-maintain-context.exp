@@ -1,7 +1,7 @@
 Nested if and match maintain context.
 
 SOURCE:
-fn foo() -> Int {
+fn foo() -> int {
   if 1 > 2 {
     1
   } else if 2 > 3  {
@@ -11,7 +11,7 @@ fn foo() -> Int {
   }
 }
 
-fn bar() -> Int {
+fn bar() -> int {
   match 1 {
     1 => match 2 {
       3 => 4,
@@ -21,9 +21,9 @@ fn bar() -> Int {
   }
 }
 
-fn borgo_main() {
-  foo().assert_eq(3);
-  bar().assert_eq(5);
+fn main() {
+  assert_eq(foo(), 3);
+  assert_eq(bar(), 5);
 }
 
 OUTPUT:
@@ -31,119 +31,89 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func foo() any {
-
-	{
-		var var1 any
-		_ = var1
-
-		if borgo.Ops.Eq(borgo.Ops.IGt(1, 2), true).(bool) {
-
-			var1 = 1
+func foo() int {
+	var var1 int
+	if 1 > 2 {
+		var1 = 1
+	} else {
+		if 2 > 3 {
+			var1 = 2
 		} else {
-
-			if borgo.Ops.Eq(borgo.Ops.IGt(2, 3), true).(bool) {
-
-				var1 = 2
-			} else {
-
-				var1 = 3
-			}
-
+			var1 = 3
 		}
-		return var1
 	}
+	return var1
 }
-func bar() any {
 
-	{
-		var var1 any
-		_ = var1
+func bar() int {
+	var var3 int
+	var1_subject := 1
+	var2_matches := 0
 
-		var3_subject := 1
-		var4_matches := borgo.MatchNone
+	if var2_matches != 2 {
+		var2_matches = 0
 
-		if var4_matches != borgo.MatchOk {
-			var4_matches = borgo.MatchNone
+		if var2_matches != 1 && 1 == var1_subject {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+		_ = var1_subject
 
-			if var4_matches != borgo.MatchErr && borgo.Ops.Eq(1, var3_subject).(bool) {
-				var4_matches = borgo.MatchOk
-			} else {
-				var4_matches = borgo.MatchErr
-			}
-			_ = var3_subject
+		if var2_matches == 2 {
 
-			if var4_matches == borgo.MatchOk {
+			var5_subject := 2
+			var6_matches := 0
 
-				var7_subject := 2
-				var8_matches := borgo.MatchNone
+			if var6_matches != 2 {
+				var6_matches = 0
 
-				if var8_matches != borgo.MatchOk {
-					var8_matches = borgo.MatchNone
-
-					if var8_matches != borgo.MatchErr && borgo.Ops.Eq(3, var7_subject).(bool) {
-						var8_matches = borgo.MatchOk
-					} else {
-						var8_matches = borgo.MatchErr
-					}
-					_ = var7_subject
-
-					if var8_matches == borgo.MatchOk {
-
-						var1 = 4
-					}
+				if var6_matches != 1 && 3 == var5_subject {
+					var6_matches = 2
+				} else {
+					var6_matches = 1
 				}
+				_ = var5_subject
 
-				if var8_matches != borgo.MatchOk {
-					var8_matches = borgo.MatchNone
-
-					if var8_matches != borgo.MatchErr {
-						var8_matches = borgo.MatchOk /* wildcard */
-					}
-					_ = var7_subject
-
-					if var8_matches == borgo.MatchOk {
-
-						var1 = 5
-					}
+				if var6_matches == 2 {
+					var3 = 4
 				}
-
 			}
+
+			if var6_matches != 2 {
+				var6_matches = 0
+
+				if var6_matches != 1 {
+					var6_matches = 2 /* wildcard */
+				}
+				_ = var5_subject
+
+				if var6_matches == 2 {
+					var3 = 5
+				}
+			}
+
 		}
+	}
 
-		if var4_matches != borgo.MatchOk {
-			var4_matches = borgo.MatchNone
+	if var2_matches != 2 {
+		var2_matches = 0
 
-			if var4_matches != borgo.MatchErr {
-				var4_matches = borgo.MatchOk /* wildcard */
-			}
-			_ = var3_subject
-
-			if var4_matches == borgo.MatchOk {
-
-				var1 = 9
-			}
+		if var2_matches != 1 {
+			var2_matches = 2 /* wildcard */
 		}
+		_ = var1_subject
 
-		return var1
+		if var2_matches == 2 {
+			var3 = 9
+		}
 	}
-}
-func borgo_main() any {
 
-	{
-
-		Debug_assert_eq(foo(), 3)
-
-		return Debug_assert_eq(bar(), 5)
-	}
+	return var3
 }
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("bar", bar)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	assert_eq[int](foo(), 3)
+
+	assert_eq[int](bar(), 5)
 }

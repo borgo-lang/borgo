@@ -1,0 +1,15 @@
+Enumeration in loops expect a tuple.
+
+SOURCE:
+fn borgo_main() {
+  let m = Map::new();
+  for e in m {
+      e.0;
+  }
+}
+
+OUTPUT:
+Use tuple literals "(k, v)" in loops.
+
+3|    for e in m {
+      ^--

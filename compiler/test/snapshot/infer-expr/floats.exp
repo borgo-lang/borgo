@@ -4,11 +4,9 @@ SOURCE:
 9.12
 
 OUTPUT:
-Float
+float64
 ---
 No errors.
----
-[]
 ---
 {
   "Literal": {
@@ -17,7 +15,7 @@ No errors.
     },
     "ty": {
       "Con": {
-        "name": "Float",
+        "name": "float64",
         "args": []
       }
     },

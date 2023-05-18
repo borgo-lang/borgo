@@ -7,11 +7,9 @@ match 1 {
 }
 
 OUTPUT:
-String
+string
 ---
 No errors.
----
-[]
 ---
 {
   "Match": {
@@ -22,7 +20,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
@@ -47,7 +45,7 @@ No errors.
             },
             "ty": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -66,11 +64,14 @@ No errors.
         "expr": {
           "Literal": {
             "lit": {
-              "String": "foo"
+              "String": [
+                "foo",
+                null
+              ]
             },
             "ty": {
               "Con": {
-                "name": "String",
+                "name": "string",
                 "args": []
               }
             },
@@ -126,12 +127,13 @@ No errors.
                     }
                   }
                 },
+                "generics_instantiated": [],
                 "ty": {
                   "Fun": {
                     "args": [
                       {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       }
@@ -139,11 +141,11 @@ No errors.
                     "bounds": [],
                     "ret": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
-                    "fx": []
+                    "id": -1
                   }
                 },
                 "span": {
@@ -178,9 +180,10 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
@@ -199,7 +202,7 @@ No errors.
             ],
             "ty": {
               "Con": {
-                "name": "String",
+                "name": "string",
                 "args": []
               }
             },
@@ -219,7 +222,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "String",
+        "name": "string",
         "args": []
       }
     },

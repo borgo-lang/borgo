@@ -6,9 +6,9 @@ SOURCE:
 OUTPUT:
 Type mismatch
 Expected:
-    Int
+    int
 Got:
-    String
+    string
 
 1|  { sum("asdf", 1) }
           ^^^^^^

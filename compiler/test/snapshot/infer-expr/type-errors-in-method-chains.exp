@@ -2,24 +2,25 @@ Type errors in method chains
 
 SOURCE:
 {
-  fn foo(x: Int) -> Int { 1 }
-  fn bar(x: String) -> String { x }
-  fn baz(x: String) -> String { x }
+  struct Foo {}
+  struct Bar {}
+  struct Baz {}
 
-  let input = "yo";
+  impl Foo { fn foo(self) -> int { 1 } }
+  impl Bar { fn bar(self) -> Baz { Baz{} } }
+  impl Baz { fn baz(self) -> Bar { Bar{} } }
 
-  input
+  Bar{}
   .bar()
   .baz()
   .foo()
 }
 
 OUTPUT:
-Type mismatch
-Expected:
-    Int
-Got:
-    String
+Type:
+    Bar
+has no field or method:
+    foo
 
-11|    .foo()
+13|    .foo()
         ^^^

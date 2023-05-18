@@ -1,14 +1,14 @@
 Tuples with wrong type annotation.
 
 SOURCE:
-("foo", 2) as (Bool, Int)
+("foo", 2) as (bool, int)
 
 OUTPUT:
 Type mismatch
 Expected:
-    (String, Int)
+    (string, int)
 Got:
-    (Bool, Int)
+    (bool, int)
 
-1|  ("foo", 2) as (Bool, Int)
+1|  ("foo", 2) as (bool, int)
     ^^^^^^^^^^^^^^^^^^^^^^^^^

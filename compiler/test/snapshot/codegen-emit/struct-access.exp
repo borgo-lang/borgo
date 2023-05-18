@@ -2,18 +2,17 @@ Struct access
 
 SOURCE:
 struct Foo {
-  a: Int,
-  b: String,
-  c: Bool,
+  a: int,
+  b: string,
+  c: bool,
 }
 
-fn borgo_main() {
+fn main() {
   let x = Foo { a: 1, b: "hi", c: true };
-  x.a.assert_eq(1);
+  assert_eq(x.a, 1);
   let y = Foo { a: 5, c: false, ..x };
-  y.a.assert_eq(5);
-  x.a.assert_eq(1);
-  ()
+  assert_eq(y.a, 5);
+  assert_eq(x.a, 1);
 }
 
 OUTPUT:
@@ -21,59 +20,28 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Foo(arg_0 any, arg_1 any, arg_2 any) any {
-	return Foo{arg_0, arg_1, arg_2}
-}
-
 type Foo struct {
-	A any
-	B any
-	C any
+	a int
+	b string
+	c bool
 }
 
-func borgo_main() any {
-
-	{
-
-		var x any = func(base any) any {
-			data := base.(Foo)
-			data.A = 1
-			data.B = "hi"
-			data.C = true
-			return data
-		}(Foo{})
-
-		Debug_assert_eq(x.(Foo).A, 1)
-
-		var y any = func(base any) any {
-			data := base.(Foo)
-			data.A = 5
-			data.C = false
-			return data
-		}(x)
-
-		Debug_assert_eq(y.(Foo).A, 5)
-
-		Debug_assert_eq(x.(Foo).A, 1)
-
-		return borgo.Unit
+func main() {
+	x := Foo{
+		a: 1,
+		b: "hi",
+		c: true,
 	}
-}
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterStruct("Foo", "Foo", []string{"a", "b", "c"})
-	borgo.RegisterMakeFunction("Foo", make_Foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+
+	assert_eq[int](x.a, 1)
+
+	y := func(data Foo) Foo {
+		data.a = 5
+		data.c = false
+		return data
+	}(x)
+
+	assert_eq[int](y.a, 5)
+
+	assert_eq[int](x.a, 1)
 }

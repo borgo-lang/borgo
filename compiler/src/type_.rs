@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Type {
@@ -9,10 +9,9 @@ pub enum Type {
     },
     Fun {
         args: Vec<Type>,
-        bounds: Vec<Type>,
+        bounds: Vec<Bound>,
         ret: Box<Type>,
-        #[serde(serialize_with = "ordered_set")]
-        fx: HashSet<String>,
+        id: TypeId,
     },
     Var(i32),
 }
@@ -20,6 +19,12 @@ pub enum Type {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BoundedType {
     pub generics: Vec<String>,
+    pub ty: Type,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Bound {
+    pub generic: Type,
     pub ty: Type,
 }
 
@@ -33,42 +38,42 @@ impl Type {
 
     pub fn bool() -> Self {
         Self::Con {
-            name: "Bool".into(),
+            name: "bool".into(),
             args: vec![],
         }
     }
 
     pub fn int() -> Self {
         Self::Con {
-            name: "Int".into(),
+            name: "int".into(),
             args: vec![],
         }
     }
 
     pub fn float() -> Type {
         Self::Con {
-            name: "Float".into(),
+            name: "float64".into(),
             args: vec![],
         }
     }
 
     pub fn string() -> Self {
         Self::Con {
-            name: "String".into(),
+            name: "string".into(),
             args: vec![],
         }
     }
 
     pub fn char() -> Self {
         Self::Con {
-            name: "Char".into(),
+            name: "rune".into(),
             args: vec![],
         }
     }
 
-    pub fn list(typ: Type) -> Self {
+    pub fn slice(typ: Type) -> Self {
         Self::Con {
-            name: "List".into(),
+            name: "Slice".into(),
             args: vec![typ],
         }
     }
@@ -83,6 +88,13 @@ impl Type {
     pub fn never() -> Type {
         Type::Con {
             name: "Never".to_string(),
+            args: vec![],
+        }
+    }
+
+    pub fn any() -> Type {
+        Type::Con {
+            name: "any".to_string(),
             args: vec![],
         }
     }
@@ -139,6 +151,13 @@ impl Type {
         }
     }
 
+    pub fn is_option(&self) -> bool {
+        match self {
+            Type::Con { name, .. } => name == "Option",
+            _ => false,
+        }
+    }
+
     pub fn stringify(&self, generics: &[String], skip_generics: bool) -> String {
         match self {
             Type::Con { name, args } => {
@@ -153,9 +172,24 @@ impl Type {
                     return "()".to_string();
                 }
 
+                // Special case slices
+                if name.starts_with("Slice") {
+                    return format!("[{}]", args_formatted);
+                }
+
                 // Special case tuples
                 if name.starts_with("Tuple") {
                     return format!("({})", args_formatted);
+                }
+
+                // Special case Ref
+                if name == "Ref" {
+                    return format!("&{}", args_formatted);
+                }
+
+                // Special case RefMut
+                if name == "RefMut" {
+                    return format!("&mut {}", args_formatted);
                 }
 
                 // All other types
@@ -200,6 +234,10 @@ impl Type {
     }
 
     pub fn get_name(&self) -> Option<String> {
+        if self.is_reference() {
+            return self.inner().unwrap().get_name();
+        }
+
         match self {
             Type::Con { name, .. } => Some(name.clone()),
             _ => None,
@@ -262,7 +300,7 @@ impl Type {
                 args,
                 bounds,
                 ret,
-                fx,
+                id: fx,
             } => Type::Fun {
                 args: args
                     .iter()
@@ -270,10 +308,13 @@ impl Type {
                     .collect(),
                 bounds: bounds
                     .iter()
-                    .map(|a| Self::remove_vars_impl(a, vars))
+                    .map(|b| Bound {
+                        generic: Self::remove_vars_impl(&b.generic, vars),
+                        ty: Self::remove_vars_impl(&b.ty, vars),
+                    })
                     .collect(),
                 ret: Self::remove_vars_impl(ret, vars).into(),
-                fx: fx.clone(),
+                id: fx.clone(),
             },
 
             Type::Var(v) => match vars.get(v) {
@@ -291,7 +332,7 @@ impl Type {
         }
     }
 
-    pub fn get_bounds(&self) -> Vec<Type> {
+    pub fn get_bounds(&self) -> Vec<Bound> {
         match self {
             Type::Con { .. } => vec![],
             Type::Var(_) => vec![],
@@ -306,22 +347,130 @@ impl Type {
             Type::Fun { .. } => true,
         }
     }
+
+    pub fn is_unit(&self) -> bool {
+        self == &Type::unit()
+    }
+
+    pub fn is_reference(&self) -> bool {
+        match self {
+            Type::Con { name, .. } => name == "Ref",
+            _ => false,
+        }
+    }
+
+    pub fn is_mut_reference(&self) -> bool {
+        match self {
+            Type::Con { name, .. } => name == "RefMut",
+            _ => false,
+        }
+    }
+
+    pub fn is_receiver(&self) -> bool {
+        match self {
+            Type::Con { name, .. } => name == "Receiver",
+            _ => false,
+        }
+    }
+
+    pub fn inner(&self) -> Option<Type> {
+        self.get_args().and_then(|args| args.get(0).cloned())
+    }
+
+    pub fn reference(typ: Type) -> Self {
+        Self::Con {
+            name: "Ref".into(),
+            args: vec![typ],
+        }
+    }
+
+    pub fn add_any_receiver(&self) -> Type {
+        match self {
+            Type::Fun {
+                args,
+                bounds,
+                ret,
+                id,
+            } => {
+                let mut new_args = vec![Type::any()];
+                new_args.extend_from_slice(args);
+
+                Type::Fun {
+                    args: new_args,
+                    bounds: bounds.clone(),
+                    ret: ret.clone(),
+                    id: id.clone(),
+                }
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn remove_references(&self) -> Type {
+        if self.is_reference() || self.is_mut_reference() {
+            return self.inner().unwrap().remove_references();
+        }
+
+        return self.clone();
+    }
+
+    pub fn remove_receiver(&mut self) {
+        match self {
+            Type::Fun { ref mut args, .. } => {
+                args.remove(0);
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn is_discard(&self) -> bool {
+        self == &Type::discard()
+    }
+
+    pub fn is_variadic(&self) -> Option<Type> {
+        let args = self.get_function_args()?;
+        let last = args.last()?;
+
+        if last.get_name()? == "VarArgs" {
+            return last.inner();
+        }
+
+        None
+    }
+
+    // temporary hacky function to gather together all numeric types.
+    // conversions between the specific types are left as an exercises to the go compiler.
+    pub fn is_numeric(&self) -> bool {
+        match self {
+            Type::Con { name, .. } => NUMERIC_TYPES.contains(&name.as_str()),
+            _ => false,
+        }
+    }
+
+    pub fn is_string(&self) -> bool {
+        match self {
+            Type::Con { name, .. } => name == "string",
+            _ => false,
+        }
+    }
+
+    pub fn is_var(&self) -> bool {
+        match self {
+            Type::Var(_) => true,
+            _ => false,
+        }
+    }
 }
 
-fn stringify_bounds(g: &str, bounds: &[Type]) -> String {
+fn stringify_bounds(g: &str, bounds: &[Bound]) -> String {
     let matching_bounds = bounds
         .iter()
-        .filter_map(|b| match b {
-            Type::Con { name, args } => {
-                let type_arg = args.first().unwrap().get_name().unwrap();
-                if type_arg == g {
-                    return Some(name.to_string());
-                }
-
-                None
+        .filter_map(|b| {
+            if b.generic.get_name().unwrap() == g {
+                return Some(b.ty.to_string());
             }
-            Type::Fun { .. } => None,
-            Type::Var(_) => None,
+
+            None
         })
         .collect::<Vec<_>>();
 
@@ -339,12 +488,30 @@ impl std::fmt::Display for Type {
     }
 }
 
-// used to serialize `fx` so that the order in the expectation files remains stable.
-fn ordered_set<S>(value: &HashSet<String>, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    let mut ordered = Vec::from_iter(value.iter());
-    ordered.sort();
-    ordered.serialize(serializer)
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct TypeId(pub i32);
+
+impl TypeId {
+    pub fn unset() -> TypeId {
+        TypeId(-1)
+    }
 }
+
+const NUMERIC_TYPES: &[&str] = &[
+    "byte",
+    "complex128",
+    "complex64",
+    "float32",
+    "float64",
+    "int",
+    "int16",
+    "int32",
+    "int64",
+    "int8",
+    "rune",
+    "uint",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uint8",
+];

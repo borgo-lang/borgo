@@ -4,11 +4,9 @@ SOURCE:
 'a'
 
 OUTPUT:
-Char
+rune
 ---
 No errors.
----
-[]
 ---
 {
   "Literal": {
@@ -17,7 +15,7 @@ No errors.
     },
     "ty": {
       "Con": {
-        "name": "Char",
+        "name": "rune",
         "args": []
       }
     },

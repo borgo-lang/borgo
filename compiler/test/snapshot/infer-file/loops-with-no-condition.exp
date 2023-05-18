@@ -109,6 +109,22 @@ No errors.
                     }
                   }
                 }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Unit",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
               }
             },
             "kind": "TopLevel",
@@ -122,7 +138,7 @@ No errors.
                     "args": []
                   }
                 },
-                "fx": []
+                "id": -1
               }
             },
             "span": {

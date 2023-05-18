@@ -1,0 +1,18 @@
+Variadic functions arity error
+
+SOURCE:
+fn borgo_main() {
+  fn foo(a: int, b: VarArgs<string>) {}
+  foo();
+}
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    (int)
+Got:
+    ()
+
+3|    foo();
+      ^^^^^

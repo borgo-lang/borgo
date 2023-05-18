@@ -2,8 +2,8 @@ Error when spreading in different structs.
 
 SOURCE:
 {
-  struct Foo { a: Int, b: String }
-  struct Bar { a: Int, b: String }
+  struct Foo { a: int, b: string }
+  struct Bar { a: int, b: string }
 
   let x = Foo { a: 1, b: "foo" };
   let y = Bar { a: 1, b: "bar" };

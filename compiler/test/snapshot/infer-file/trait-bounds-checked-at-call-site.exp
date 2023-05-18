@@ -1,0 +1,18 @@
+Trait bounds checked at call site
+
+SOURCE:
+fn borgo_main() {
+  trait Foo { fn foo() -> int; }
+  fn check<T: Foo>(f: T) {}
+  check(1)
+}
+
+OUTPUT:
+method foo not found on type int
+Expected:
+    int
+Got:
+    Foo
+
+4|    check(1)
+      ^^^^^^^^

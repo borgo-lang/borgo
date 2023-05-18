@@ -4,11 +4,9 @@ SOURCE:
 5 * -3
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Binary": {
@@ -20,7 +18,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
@@ -46,7 +44,7 @@ No errors.
             },
             "ty": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -64,7 +62,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
@@ -82,7 +80,7 @@ No errors.
     },
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

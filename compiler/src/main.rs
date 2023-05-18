@@ -5,7 +5,6 @@ use compiler::codegen;
 use compiler::infer;
 use compiler::prelude;
 use compiler::project::{self, Package, Project};
-use compiler::type_::{self, Type};
 
 use serde::Deserialize;
 
@@ -73,28 +72,17 @@ fn build_project() -> project::Project {
 
 fn emit_files(project: Project) {
     project.output.iter().for_each(|(_, file)| {
-        std::fs::write(&file.name, &file.source).unwrap();
+        std::fs::write(&file.name, &file.render_source()).unwrap();
     });
 }
 
-fn emit_typed_project(project: Project) {
-    let encoded = bincode::serialize(&project.packages).unwrap();
-    std::fs::write("project.bin", encoded).unwrap();
-}
-
 fn main() {
+    // TODO use a proper parsing lib
     let args = std::env::args().last().unwrap();
 
     if args == "build" {
         let project = build_project();
         emit_files(project);
-        println!("done");
-        return;
-    }
-
-    if args == "dump-binary-ast" {
-        let project = build_project();
-        emit_typed_project(project);
         println!("done");
         return;
     }
@@ -110,35 +98,15 @@ fn main() {
 
             prelude::init(&mut instance);
 
-            // Set the error type explicitely, as there's no package to grab it from
-            let err_ty = Type::Con {
-                name: "ErrFoo".to_string(),
-                args: vec![],
-            };
-
-            let (new_expr, errors, typ) = instance.infer_expr_with_error(&expr, err_ty);
+            let (new_expr, errors, typ) = instance.infer_expr_with_error(&expr);
 
             let err = errors
                 .first()
                 .map(|e| e.stringify(Some(&source)))
                 .unwrap_or_else(|| "No errors.".to_string());
 
-            let fx = match typ {
-                type_::Type::Fun { ref fx, .. } => {
-                    // convert to a set so that duplicate entries can be removed
-                    let fx = fx.iter().collect::<std::collections::HashSet<_>>();
-
-                    // then sort
-                    let mut fx = fx.iter().collect::<Vec<_>>();
-                    fx.sort();
-
-                    format!("{:?}", fx)
-                }
-                _ => "[]".to_string(), // empty vec
-            };
-
             let json = serde_json::to_string_pretty(&new_expr).unwrap();
-            println!("{}\n---\n{}\n---\n{}\n---\n{}", typ, err, fx, json);
+            println!("{}\n---\n{}\n---\n{}", typ, err, json);
         }
 
         Input::InferPackage(source) => {
@@ -149,7 +117,7 @@ fn main() {
                 contents: source,
             }];
 
-            let std = scan_folder("std", "../runtime/std");
+            let std = scan_folder("std", "../std");
             let pkg = Package::from_file_contents(project::Project::user(), files);
 
             let mut project = Project::from_packages(vec![std, pkg]);
@@ -165,7 +133,17 @@ fn main() {
             let json = project::PackageJSON(new_pkg.clone());
             let json = serde_json::to_string_pretty(&json).unwrap();
 
-            // TODO this doesn't check for std errors...
+            // Check for errors in stdlib first
+            let new_std = project
+                .packages
+                .get(&project::Project::std())
+                .cloned()
+                .unwrap();
+
+            if let Some((file, err)) = new_std.first_error() {
+                println!("a\n---\n{}\n---\n", err.stringify(Some(&file.source)));
+                std::process::exit(0);
+            }
 
             let expr = if new_pkg.first_error().is_none() {
                 new_pkg.files.first().unwrap().decls.last().unwrap().clone()

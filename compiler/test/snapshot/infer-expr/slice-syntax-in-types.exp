@@ -1,0 +1,212 @@
+Slice syntax in types
+
+SOURCE:
+{
+  fn foo(x: [int]) {}
+}
+
+OUTPUT:
+fn ([int]) -> ()
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "foo",
+            "generics": [],
+            "bounds": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "x",
+                    "is_mut": false,
+                    "ann": "Unknown",
+                    "span": {
+                      "start": {
+                        "line": 2,
+                        "col": 9
+                      },
+                      "end": {
+                        "line": 2,
+                        "col": 10
+                      }
+                    }
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "Slice",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "int",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "ty": {
+                  "Con": {
+                    "name": "Slice",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "int",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [],
+                "ty": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 19
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 21
+                  }
+                }
+              }
+            },
+            "bounded_ty": {
+              "generics": [],
+              "ty": {
+                "Fun": {
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "Slice",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "int",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Unit",
+                      "args": []
+                    }
+                  },
+                  "id": -1
+                }
+              }
+            }
+          },
+          "kind": "Inline",
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Con": {
+                    "name": "Slice",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "int",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "id": -1
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 2
+            },
+            "end": {
+              "line": 2,
+              "col": 21
+            }
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Fun": {
+        "args": [
+          {
+            "Con": {
+              "name": "Slice",
+              "args": [
+                {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "bounds": [],
+        "ret": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "id": -1
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 0
+      },
+      "end": {
+        "line": 3,
+        "col": 1
+      }
+    }
+  }
+}

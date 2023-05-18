@@ -2,8 +2,8 @@ Nested updates.
 
 SOURCE:
 {
-  struct Foo { a: Int, b: String }
-  struct Bar { a: Int, b: String, f: Foo }
+  struct Foo { a: int, b: string }
+  struct Bar { a: int, b: string, f: Foo }
 
   let x = Foo { a: 1, b: "foo" };
   let y = Bar { a: 1, b: "bar", f: x };
@@ -14,8 +14,6 @@ OUTPUT:
 Bar
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -30,14 +28,17 @@ No errors.
                 "name": "a",
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Int",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
                   }
                 }
               },
@@ -45,14 +46,17 @@ No errors.
                 "name": "b",
                 "ann": {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "String",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -80,14 +84,17 @@ No errors.
                 "name": "a",
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Int",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
                   }
                 }
               },
@@ -95,14 +102,17 @@ No errors.
                 "name": "b",
                 "ann": {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "String",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
                   }
                 }
               },
@@ -115,9 +125,12 @@ No errors.
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Foo",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -176,7 +189,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -198,11 +211,14 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "foo"
+                        "String": [
+                          "foo",
+                          null
+                        ]
                       },
                       "ty": {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
@@ -298,7 +314,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -320,11 +336,14 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "bar"
+                        "String": [
+                          "bar",
+                          null
+                        ]
                       },
                       "ty": {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
@@ -362,6 +381,7 @@ No errors.
                           }
                         }
                       },
+                      "generics_instantiated": [],
                       "ty": {
                         "Con": {
                           "name": "Foo",
@@ -432,7 +452,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
@@ -454,11 +474,14 @@ No errors.
               "value": {
                 "Literal": {
                   "lit": {
-                    "String": "baz"
+                    "String": [
+                      "baz",
+                      null
+                    ]
                   },
                   "ty": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
@@ -490,7 +513,7 @@ No errors.
                           },
                           "ty": {
                             "Con": {
-                              "name": "Int",
+                              "name": "int",
                               "args": []
                             }
                           },
@@ -527,6 +550,7 @@ No errors.
                           }
                         }
                       },
+                      "generics_instantiated": [],
                       "ty": {
                         "Con": {
                           "name": "Foo",

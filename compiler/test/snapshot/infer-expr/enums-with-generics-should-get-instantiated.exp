@@ -7,11 +7,9 @@ SOURCE:
 }
 
 OUTPUT:
-Maybe<Int>
+Maybe<int>
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -83,12 +81,20 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [
+                {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              ],
               "ty": {
                 "Fun": {
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     }
@@ -100,14 +106,14 @@ No errors.
                       "args": [
                         {
                           "Con": {
-                            "name": "Int",
+                            "name": "int",
                             "args": []
                           }
                         }
                       ]
                     }
                   },
-                  "fx": []
+                  "id": -1
                 }
               },
               "span": {
@@ -130,7 +136,7 @@ No errors.
                 },
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -153,7 +159,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -179,7 +185,7 @@ No errors.
         "args": [
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           }

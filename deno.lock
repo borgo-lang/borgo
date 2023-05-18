@@ -1,0 +1,12 @@
+{
+  "version": "2",
+  "remote": {
+    "https://deno.land/std@0.154.0/fmt/colors.ts": "ff7dc9c9f33a72bd48bc24b21bbc1b4545d8494a431f17894dbc5fe92a938fc4",
+    "https://deno.land/std@0.154.0/testing/_diff.ts": "141f978a283defc367eeee3ff7b58aa8763cf7c8e0c585132eae614468e9d7b8",
+    "https://deno.land/std@0.154.0/testing/_format.ts": "cd11136e1797791045e639e9f0f4640d5b4166148796cad37e6ef75f7d7f3832",
+    "https://deno.land/std@0.154.0/testing/asserts.ts": "ac295f7fd22a7af107580e2475402a8c386cb1bf18bf837ae266ac0665786026",
+    "https://esm.sh/marked@4.0.18": "48abadf2d5640696a682be72e215df7fbbc99fd654b4cf79eb7fafb983d8f485",
+    "https://esm.sh/v95/@types/marked@4.0.7/index.d.ts": "c51eb515e127bb15087a6ad404c9c38121f1ccac85ea247baa554c43942ee07c",
+    "https://esm.sh/v95/marked@4.0.18/deno/marked.js": "225ee1b74220208e146798b2f6a825974e30abed690b4f6ae526166e8e8b17cb"
+  }
+}

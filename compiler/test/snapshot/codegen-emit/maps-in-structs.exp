@@ -2,13 +2,23 @@ Maps in structs
 
 SOURCE:
 struct Foo {
-  bar: Map<String, Int>
+  bar: Map<string, int>
 }
 
-fn borgo_main() {
-  let bar = Map::new();
+fn main() {
+  let mut bar = Map::new();
   let foo = Foo { bar };
-  foo.bar.len().assert_eq(0);
+  assert_eq(foo.bar.len(), 0);
+
+  bar.insert("yo", 1);
+  assert_eq(foo.bar.len(), 1);
+
+  assert_eq(bar.get("yo"), Some(1));
+  assert_eq(bar.get("nope"), None);
+  assert_eq(bar["yo"], 1);
+
+  bar["yo"] = 3;
+  assert_eq(bar["yo"], 3);
 }
 
 OUTPUT:
@@ -16,44 +26,44 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Foo(arg_0 any) any {
-	return Foo{arg_0}
-}
-
 type Foo struct {
-	Bar any
+	bar map[string]int
 }
 
-func borgo_main() any {
+func main() {
+	bar := Map_new[string, int]()
 
-	{
+	foo := Foo{bar: bar}
 
-		var bar any = Map_new()
+	assert_eq[int](Map_len[string, int](foo.bar), 0)
 
-		var foo any = func(base any) any {
-			data := base.(Foo)
-			data.Bar = bar
-			return data
-		}(Foo{})
+	Map_insert[string, int](bar, "yo", 1)
 
-		return Debug_assert_eq(Map_len(foo.(Foo).Bar), 0)
-	}
-}
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterStruct("Foo", "Foo", []string{"bar"})
-	borgo.RegisterMakeFunction("Foo", make_Foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](Map_len[string, int](foo.bar), 1)
+
+	var3_result := func() Option[int] {
+		var1_check, var2_err := Map_get[string, int](bar, "yo")
+		if var2_err == false {
+			return make_Option_None[int]()
+		}
+		return make_Option_Some[int](var1_check)
+	}()
+
+	assert_eq[Option[int]](var3_result, make_Option_Some[int](1))
+
+	var6_result := func() Option[int] {
+		var4_check, var5_err := Map_get[string, int](bar, "nope")
+		if var5_err == false {
+			return make_Option_None[int]()
+		}
+		return make_Option_Some[int](var4_check)
+	}()
+
+	assert_eq[Option[int]](var6_result, make_Option_None[int]())
+
+	assert_eq[int](bar["yo"], 1)
+
+	bar["yo"] = 3
+
+	assert_eq[int](bar["yo"], 3)
 }

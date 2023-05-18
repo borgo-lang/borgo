@@ -1,30 +1,21 @@
 Standalone expressions
 
 SOURCE:
-fn borgo_main() {
-  4.inspect();
-  ()
+use fmt;
+
+fn main() {
+  fmt.Printf("hello %v", 4);
 }
 
 OUTPUT:
-4
-
+hello 4
 ---
 package main
 
-import borgo "borgo/runtime"
+import (
+	"fmt"
+)
 
-var _ = borgo.Unit
-
-func borgo_main() any {
-
-	{
-		Debug_inspect(4)
-
-		return borgo.Unit
-	}
-}
-
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	fmt.Printf("hello %v", 4)
 }

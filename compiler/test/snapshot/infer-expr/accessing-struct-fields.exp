@@ -2,18 +2,16 @@ Accessing struct fields.
 
 SOURCE:
 {
-  struct Foo { a: Int }
+  struct Foo { a: int }
 
   let x = Foo { a: 1 };
   x.a
 }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -28,14 +26,17 @@ No errors.
                 "name": "a",
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Int",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -94,7 +95,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -150,7 +151,7 @@ No errors.
         }
       },
       {
-        "StructAccess": {
+        "FieldAccess": {
           "expr": {
             "Var": {
               "value": "x",
@@ -170,6 +171,7 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
                   "name": "Foo",
@@ -191,7 +193,7 @@ No errors.
           "field": "a",
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -210,7 +212,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

@@ -1,0 +1,56 @@
+References in structs
+
+SOURCE:
+use fmt;
+
+struct Foo {
+  x: int
+}
+
+struct Bar {
+  f: &Foo
+}
+
+fn update(mut b: &Bar) {
+  b.f.x = 99;
+}
+
+fn main() {
+  let f = Foo { x: 1 };
+  let mut b = Bar { f: &f };
+  update(&b);
+  assert_eq(b.f.x, 99);
+  fmt.Printf("%+v", b.f)
+}
+
+OUTPUT:
+&{x:99}
+---
+package main
+
+import (
+	"fmt"
+)
+
+type Foo struct {
+	x int
+}
+type Bar struct {
+	f *Foo
+}
+
+func update(b *Bar) {
+	b.f.x = 99
+}
+
+func main() {
+	f := Foo{x: 1}
+
+	b := Bar{f: &f}
+
+	update(&b)
+
+	assert_eq[int](b.f.x, 99)
+
+	fmt.Printf("%+v", b.f)
+}

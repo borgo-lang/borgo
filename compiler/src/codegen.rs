@@ -2,12 +2,12 @@ use std::collections::{HashMap, VecDeque};
 
 use crate::{
     ast::{
-        Arm, Binding, Constructor, DebugKind, EnumDefinition, Expr, ExternKind, Function,
+        Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, Function,
         FunctionKind, Literal, Loop, LoopFlow, Operator, Pat, Span, StructDefinition, StructField,
-        UnOp,
+        TypeAst, UnOp,
     },
-    global_state::{self, Declaration, DerivedOverload},
-    project::{Package, Project},
+    global_state,
+    project::Package,
     type_::Type,
 };
 
@@ -17,6 +17,27 @@ use serde::{Deserialize, Serialize};
 pub struct EmittedFile {
     pub name: String,
     pub source: String,
+    pub imports: HashMap<String, String>, // "full/path" => name
+}
+
+impl EmittedFile {
+    pub fn render_source(&self) -> String {
+        let mut out = emitter();
+
+        out.emit("package main".to_string());
+
+        out.emit("import (".to_string());
+
+        for (path, name) in &self.imports {
+            out.emit(format!("{name} \"{path}\""));
+        }
+
+        out.emit(")".to_string());
+
+        out.emit(self.source.to_string());
+
+        out.render()
+    }
 }
 
 struct Emitter {
@@ -77,7 +98,7 @@ impl EmitResult {
     fn unit() -> EmitResult {
         EmitResult {
             output: "".to_string(),
-            value: Some("borgo.Unit".to_string()),
+            value: Some(empty_struct()),
         }
     }
 
@@ -90,10 +111,15 @@ impl EmitResult {
     }
 }
 
+fn empty_struct() -> String {
+    "struct{}{}".to_string()
+}
+
 #[derive(Debug, Clone)]
 enum Ctx {
-    Discard,
-    Var(String),
+    Discard,     // dont' care about the result
+    Var(String), // emit to this specific var
+    Arg,         // emit to a new var and tell me which it is
 }
 impl Ctx {
     fn to_mode(self) -> EmitMode {
@@ -107,6 +133,7 @@ impl Ctx {
         match self {
             Ctx::Discard => None,
             Ctx::Var(s) => Some(s.to_string()),
+            Ctx::Arg => None,
         }
     }
 
@@ -114,6 +141,7 @@ impl Ctx {
         match self {
             Ctx::Discard => true,
             Ctx::Var(_) => false,
+            Ctx::Arg => false,
         }
     }
 }
@@ -130,6 +158,14 @@ impl EmitMode {
             should_return: false,
         }
     }
+}
+
+#[derive(Debug, PartialEq)]
+enum CallWrapMode {
+    // function returns (ok, err) tuple, so needs to be wrapped in a Result
+    Wrapped,
+    // just call the function, return type doesn't need modifications
+    Unwrapped,
 }
 
 // A stack of IDENT => VAR bindings
@@ -182,9 +218,6 @@ pub struct Codegen {
     // resolve type aliases
     pub gs: global_state::GlobalState,
 
-    // LIFO stack of results of evaluating expressions
-    stack: VecDeque<String>,
-
     // let bindings are re-bound to temporary vars
     // ie. let x = 1
     // becomes `var varN any; varN = 1`
@@ -192,15 +225,8 @@ pub struct Codegen {
     // IDENT => VAR
     scope: Scope,
 
-    // For loops can iterate over Seq values
-    // `continue` statements need to advance the iterator
-    // for the proper loop
-    current_loop: Option<String>,
-}
-
-enum CallMode {
-    Push,
-    Bare,
+    // The return type of the current function being generated
+    current_fn_ret_ty: Option<Type>,
 }
 
 impl Codegen {
@@ -209,48 +235,21 @@ impl Codegen {
             next_var: 0,
             make_functions: Default::default(),
             gs: gs.clone(),
-            stack: Default::default(),
             scope: Scope::new(),
-            current_loop: None,
+            current_fn_ret_ty: None,
         }
     }
 
     pub fn compile_package(&mut self, pkg: &Package) -> EmittedFile {
         let mut source = emitter();
 
-        source.emit("package main".to_string());
-        source.emit("import borgo \"borgo/runtime\"".to_string());
-
-        // prevent 'imported and not used' errors
-        source.emit("var _ = borgo.Unit".to_string());
+        let imports = self.collect_imports(pkg);
 
         // emit make functions first
         pkg.files.iter().for_each(|file| {
             file.decls.iter().for_each(|expr| {
                 if let Expr::EnumDef { def, .. } = expr {
                     source.emit(self.create_make_function(def));
-                }
-
-                if let Expr::StructDef { def, .. } = expr {
-                    source.emit(self.create_struct_make_function(def));
-                }
-
-                if let Expr::ExternDecl { items, kind, .. } = expr {
-                    if kind == &ExternKind::Overload {
-                        return;
-                    }
-
-                    items.iter().for_each(|item| match &item {
-                        Expr::Closure { fun, ty, .. } => {
-                            let mangled = to_name(&fun.name);
-                            // TODO note that the type signature here for overloads is wrong.
-                            // The dummy type doesn't get replaced during inference.
-                            let sig = to_loose_type_signature(ty);
-                            source.emit(format!("var {mangled} {sig}"));
-                        }
-
-                        _ => unreachable!(),
-                    });
                 }
 
                 if let Expr::Const { ident, expr, .. } = expr {
@@ -264,10 +263,8 @@ impl Codegen {
                         )
                         .to_statement();
 
-                    source.emit(format!(
-                        "var {ident} any
-func init_const_{ident}() any {body}"
-                    ));
+                    let instantiated = to_type(&expr.get_type());
+                    source.emit(format!("var {ident} = func () {instantiated} {body}()"));
                 }
             });
         });
@@ -275,7 +272,6 @@ func init_const_{ident}() any {body}"
         pkg.files.iter().for_each(|file| {
             file.decls.iter().for_each(|expr| {
                 self.next_var = 0;
-                self.stack = Default::default();
                 self.scope.reset();
 
                 let value = self.emit_expr(EmitMode::top_level(), expr);
@@ -283,113 +279,11 @@ func init_const_{ident}() any {body}"
             });
         });
 
-        // Generate automatically derived overloads
-        source.emit(self.emit_derived_overloads(&pkg.name));
-
-        // emit `init` function to populate known types
-        source.emit(self.emit_init_function(pkg));
-
-        // emit blanket implementation for overloads.
-        // TODO we need to store the FileId for each overload declaration.
-        // For now we do this once in the std package, bit hacky.
-        if pkg.name == Project::std() {
-            source.emit(self.emit_blanket_overloads());
-        }
-
         EmittedFile {
             name: pkg.name.to_string() + ".go",
+            imports,
             source: source.render(),
         }
-    }
-
-    fn emit_init_function(&self, pkg: &Package) -> String {
-        let mut out = emitter();
-
-        let register_global_fn = |out: &mut Emitter, expr: &Expr| match expr {
-            Expr::Closure { fun, .. } => {
-                let name = &fun.name;
-                let mangled = to_name(&fun.name);
-                out.emit(format!(
-                    "borgo.RegisterGlobalFunction(\"{name}\", {mangled})"
-                ));
-            }
-
-            _ => unreachable!(),
-        };
-
-        pkg.files.iter().for_each(|file| {
-            file.decls.iter().for_each(|expr| {
-                if let Expr::EnumDef { def, .. } = expr {
-                    def.cons.iter().for_each(|con| {
-                        let constructor = def.name.clone() + "::" + &con.name;
-                        let mangled = to_name(&constructor);
-                        out.emit(format!(
-                            "borgo.RegisterTypeConstructor(\"{constructor}\", \"{mangled}\")"
-                        ));
-
-                        let make_fn = "make_".to_string() + &mangled;
-                        out.emit(format!(
-                            "borgo.RegisterMakeFunction(\"{constructor}\", {make_fn})"
-                        ));
-                    })
-                }
-
-                if let Expr::StructDef { def, .. } = expr {
-                    let name = def.name.clone();
-                    let mangled = to_name(&name);
-                    let fields = def
-                        .fields
-                        .iter()
-                        .map(|f| format!("\"{name}\"", name = f.name))
-                        .collect::<Vec<_>>()
-                        .join(", ");
-
-                    out.emit(format!(
-                        "borgo.RegisterStruct(\"{name}\", \"{mangled}\", []string{{ {fields} }})"
-                    ));
-
-                    let make_fn = "make_".to_string() + &mangled;
-                    out.emit(format!("borgo.RegisterMakeFunction(\"{name}\", {make_fn})"));
-                }
-
-                if let Expr::ExternDecl { items, kind, .. } = expr {
-                    if kind == &ExternKind::Overload {
-                        return;
-                    }
-
-                    items.iter().for_each(|item| match &item {
-                        Expr::Closure { fun, ty, .. } => {
-                            let name = &fun.name;
-                            let mangled = to_name(&fun.name);
-                            let arity = ty.get_function_args().unwrap().len();
-                            out.emit(format!("{mangled} = borgo.GetNative{arity}(\"{name}\")"));
-                        }
-
-                        _ => unreachable!(),
-                    });
-                }
-
-                if let Expr::ImplBlock { items, .. } = expr {
-                    items.iter().for_each(|e| register_global_fn(&mut out, e));
-                }
-
-                if let Expr::Closure { .. } = expr {
-                    register_global_fn(&mut out, expr);
-                }
-
-                if let Expr::Const { ident, .. } = expr {
-                    out.emit(format!("{ident} = init_const_{ident}()"));
-                }
-            });
-        });
-
-        format!(
-            "func pkg_{name}_init() {{
-            {init}
-        }}",
-            name = pkg.name,
-            init = out.render()
-        )
     }
 
     fn fresh_var(&mut self) -> String {
@@ -397,69 +291,28 @@ func init_const_{ident}() any {body}"
         format!("var{next}", next = self.next_var)
     }
 
-    fn create_make_function(&mut self, def: &EnumDefinition) -> String {
-        let mut out = emitter();
-
-        def.cons.iter().for_each(|con| {
-            let constructor = def.name.clone() + "::" + &con.name;
-            let constructor = to_name(&constructor);
-            let name = format!("make_{constructor}");
-            out.emit(constructor_make_function(&name, &constructor, con));
-            self.make_functions.insert(constructor, name);
-        });
-
-        out.render()
-    }
-
-    fn create_struct_make_function(&mut self, def: &StructDefinition) -> String {
-        // Emitting a make function for structs is not strictly necessary because it just forwards
-        // all params to the actual struct ie. Option_Some { arg_0 }
-        // In fact, these make functions are not used in this module.
-        // However they still need to be around for the runtime and eventually the interpreter.
-        let struct_name = def.name.clone();
-        let name = to_name(&struct_name);
-
-        let params = def
-            .fields
-            .iter()
-            .enumerate()
-            .map(|(index, _)| format!("arg_{index} any"))
-            .collect::<Vec<_>>()
-            .join(", ");
-
-        let call_args = def
-            .fields
-            .iter()
-            .enumerate()
-            .map(|(index, field)| {
-                format!(
-                    "arg_{index}{cast}",
-                    cast = cast_to(&to_loose_type_signature(&field.ty)),
-                )
-            })
-            .collect::<Vec<_>>()
-            .join(", ");
-
-        format!(
-            "func make_{name} ({params}) any {{
-        return {struct_name} {{ {call_args} }}
-        }}"
-        )
-    }
-
     // Most expressions will ignore mode and ctx
     // Only if/match/block have to care about it
     fn emit_expr(&mut self, mode: EmitMode, expr: &Expr) -> EmitResult {
         match expr {
             Expr::Closure { fun, kind, .. } => self.emit_closure(fun, kind),
-            Expr::Block { stmts, .. } => self.emit_block(mode, stmts),
-            Expr::Call { func, args, .. } => self.emit_call(func, args, CallMode::Push),
-            Expr::Literal { lit, .. } => self.emit_literal(lit),
+            Expr::Block { stmts, .. } => self.emit_block(mode, stmts, false),
+            Expr::Call { func, args, ty, .. } => {
+                self.emit_call(func, args, self.call_wrap_mode(ty))
+            }
+            Expr::Literal { lit, ty, .. } => self.emit_literal(lit, ty),
             Expr::ExternDecl { .. } => EmitResult::empty(),
-            Expr::Debug { kind, expr, .. } => self.emit_debug(kind, expr),
+            Expr::Debug { kind, expr, ty, .. } => self.emit_debug(kind, expr, ty),
             Expr::Return { expr, .. } => self.emit_return(expr),
-            Expr::Var { value, .. } => self.emit_var(value),
-            Expr::Match { subject, arms, .. } => self.emit_match(&mode.ctx, subject, arms),
+            Expr::Var {
+                value,
+                ty,
+                generics_instantiated,
+                ..
+            } => self.emit_var(value, ty, generics_instantiated),
+            Expr::Match {
+                subject, arms, ty, ..
+            } => self.emit_match(&mode.ctx, subject, arms, ty),
             Expr::Let { binding, value, .. } => self.emit_let(binding, value),
             Expr::Binary {
                 op, left, right, ..
@@ -472,9 +325,9 @@ func init_const_{ident}() any {body}"
             Expr::StructDef { def, .. } => self.emit_struct(def),
             Expr::ImplBlock { items, .. } => self.emit_impl(items),
             Expr::StructCall {
-                name, fields, rest, ..
-            } => self.emit_struct_call(name, fields, rest),
-            Expr::StructAccess { expr, field, .. } => self.emit_struct_access(expr, field),
+                fields, rest, ty, ..
+            } => self.emit_struct_call(fields, rest, ty),
+            Expr::FieldAccess { expr, field, .. } => self.emit_struct_access(expr, field),
             Expr::Try { expr, .. } => self.emit_try(&mode.ctx, expr),
             Expr::Unary { op, expr, .. } => self.emit_unary(op, expr),
             Expr::Noop { .. } => EmitResult::unit(),
@@ -483,6 +336,7 @@ func init_const_{ident}() any {body}"
                 Loop::WithCondition { binding, expr } => {
                     self.emit_loop_with_condition(binding, expr, body)
                 }
+                Loop::While { expr } => self.emit_while_loop(expr, body),
             },
 
             Expr::Flow { kind, .. } => self.emit_loop_flow(kind),
@@ -492,6 +346,18 @@ func init_const_{ident}() any {body}"
             Expr::Paren { expr, .. } => self.emit_paren(expr),
             Expr::Spawn { expr, .. } => self.emit_spawn(expr),
             Expr::Select { arms, .. } => self.emit_select(arms),
+            Expr::Reference { expr, .. } => self.emit_reference(expr),
+            Expr::Index { expr, index, .. } => self.emit_index(expr, index),
+            Expr::Raw { text } => self.emit_raw(text),
+            Expr::TypeAlias { .. } => EmitResult::empty(),
+            Expr::UsePackage { .. } => EmitResult::empty(),
+            Expr::Mod { .. } => EmitResult::empty(),
+            Expr::Trait {
+                name,
+                items,
+                supertraits,
+                ..
+            } => self.emit_interface(name, items, supertraits),
 
             Expr::Tuple { .. } => unreachable!(),
             Expr::MethodCall { .. } => unreachable!(),
@@ -499,87 +365,26 @@ func init_const_{ident}() any {body}"
         }
     }
 
-    fn emit_trait_impelementation(&self, def: &DerivedOverload) -> String {
-        let trait_fn = format!("{ty}::{overload}", ty = def.ty, overload = def.overload);
-
-        format!(
-            "func {name}(values ...any) any {{
-return borgo.OverloadImpl(\"{trait_name}\", values)
-        }}",
-            name = to_name(&trait_fn),
-            trait_name = def.overload
-        )
-    }
-
-    fn emit_derived_overloads(&self, pkg: &str) -> String {
-        let mut out = emitter();
-
-        let overloads = self.gs.get_derived_overloads();
-        let mut overloads: Vec<_> = overloads.iter().collect();
-
-        overloads.sort();
-
-        overloads.iter().for_each(|d| {
-            let typ = self.gs.get_global_type_declaration(&d.ty).unwrap();
-
-            // Make sure type was declared in the current package
-            if typ.decl.file_id.package == pkg {
-                out.emit(self.emit_trait_impelementation(d));
-            }
-        });
-
-        out.render()
-    }
-
-    fn emit_blanket_overloads(&self) -> String {
-        let mut out = emitter();
-
-        let overloads = self.gs.get_overloads();
-        let mut overloads: Vec<_> = overloads.iter().collect();
-
-        overloads.sort();
-
-        overloads.iter().for_each(|overload| {
-            let mangled = to_name(&overload);
-
-            out.emit(format!(
-                "func {mangled} (values ...any) any {{
-    return borgo.OverloadImpl(\"{overload}\", values)
-}}"
-            ));
-        });
-
-        out.render()
-    }
-
     fn emit_local(&mut self, expr: &Expr, out: &mut Emitter) -> String {
-        let var = self.fresh_var();
-        let ctx = Ctx::Var(var.clone());
-
-        let res = self.emit_expr(ctx.to_mode(), expr);
-
-        // Only produce a variable binding if there is an output.
-        // An example where this is reduntant is a block like { 5 }
-        // which will only emit a value.
-        if !res.output.trim().is_empty() && res.value.is_some() {
-            // This is a bit of a mess.
-            // In theory, it'd be better if emit_local also got a Ctx
-            // so that it knows not to output a variable. Probably there's
-            // a good fix I just can't think of any right now.
-            out.emit(format!(
-                "var {var} any
-_ = {var}"
-            ));
-        }
-
+        let res = self.emit_expr(Ctx::Arg.to_mode(), expr);
         let value = res.value.unwrap_or_default();
-
         out.emit(res.output);
         value
     }
 
     fn emit_pattern(&mut self, subject: &str, is_matching: &str, pat: &Pat) -> String {
         let mut out = emitter();
+
+        // In let bindings, we still use emit_pattern to destructure the argument.
+        // But in that case, there's no parent matching context that we care about, as is the case
+        // in match expressions. So there's no point emitting all the if statements.
+        let cares_about_matching = is_matching != "_";
+
+        let new_is_matching = if cares_about_matching {
+            self.fresh_var() + "_match_pat"
+        } else {
+            is_matching.to_string()
+        };
 
         match pat {
             Pat::Lit { lit, ty, span } => {
@@ -593,10 +398,10 @@ _ = {var}"
 
                 out.emit(format!(
                     "
-if {is_matching} != borgo.MatchErr && borgo.Ops.Eq({value}, {subject}).(bool) {{
-    {is_matching} = borgo.MatchOk
+if {is_matching} != 1 && {value} == {subject} {{
+    {is_matching} = 2
 }} else {{
-    {is_matching} = borgo.MatchErr
+    {is_matching} = 1
 }}"
                 ));
             }
@@ -607,79 +412,81 @@ if {is_matching} != borgo.MatchErr && borgo.Ops.Eq({value}, {subject}).(bool) {{
             }
 
             Pat::Pat { ident, elems, .. } => {
-                let pat = self.fresh_var() + "_pat";
-
                 // Introduce a new sentinel matching value for the nested pattern match.
                 //
                 // For example, if we're trying to match (1, "foo")
                 // new_is_matching will be 2 if both fields match
                 // And then we can forward the success value to the parent is_matching
-                let new_is_matching = self.fresh_var() + "_match_pat";
-                out.emit(format!("{new_is_matching} := borgo.MatchNone"));
+                if cares_about_matching {
+                    out.emit(format!("{new_is_matching} := 0"));
+                }
 
-                let new_elems = elems
-                    .iter()
-                    .enumerate()
-                    .map(|(index, p)| {
-                        let new_subject = format!("{pat}.Field{index}");
-                        self.emit_pattern(&new_subject, &new_is_matching, p)
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n");
+                elems.iter().enumerate().for_each(|(index, p)| {
+                    let (_, con_name) = ident.split_once("::").unwrap();
+                    let field = constructor_field_name(con_name, elems.len(), index);
+                    let new_subject = format!("{subject}.{field}");
+                    let pat = self.emit_pattern(&new_subject, &new_is_matching, p);
+                    out.emit(pat);
+                });
 
                 let name = to_name(ident);
 
-                // Check against new_is_matching but override parent is_matching for final check
-                out.emit(format!(
-                    "
-{pat}, constructor_check := {subject}.({name})
-_ = {pat}
-
-{new_elems}
-
-if {new_is_matching} != borgo.MatchErr && constructor_check {{
-    {is_matching} = borgo.MatchOk
+                if cares_about_matching {
+                    // Check against new_is_matching but override parent is_matching for final check
+                    out.emit(format!(
+                        "
+if {new_is_matching} != 1 && {subject}.tag == {name} {{
+    {is_matching} = 2
 }} else {{
-    {is_matching} = borgo.MatchErr
+    {is_matching} = 1
 }}
 "
-                ));
+                    ));
+                }
             }
 
-            Pat::Struct { fields, ty, .. } => {
-                let ty = to_type(ty);
-
-                let new_is_matching = self.fresh_var() + "_match_pat";
-                out.emit(format!("{new_is_matching} := borgo.MatchNone"));
+            Pat::Struct { fields, .. } => {
+                if cares_about_matching {
+                    out.emit(format!("{new_is_matching} := 0"));
+                }
 
                 fields.iter().for_each(|f| {
-                    let field_name = to_struct_field(&f.name);
-                    let cast = cast_to(&ty);
                     let pat = self.emit_pattern(
-                        &format!("{subject}{cast}.{field_name}"),
+                        &format!("{subject}.{field_name}", field_name = f.name),
                         &new_is_matching,
                         &f.value,
                     );
                     out.emit(pat);
                 });
 
-                out.emit(format!(
-                    "
-if {new_is_matching} != borgo.MatchErr {{
-    {is_matching} = borgo.MatchOk
+                if cares_about_matching {
+                    out.emit(format!(
+                        "
+if {new_is_matching} != 1 {{
+    {is_matching} = 2
 }} else {{
-    {is_matching} = borgo.MatchErr
+    {is_matching} = 1
 }}
 "
-                ));
+                    ));
+                }
             }
 
-            Pat::Wild { .. } => out.emit(format!(
-                "if {is_matching} != borgo.MatchErr {{ {is_matching} = borgo.MatchOk /* wildcard */ }}"
-            )),
-            Pat::Unit { .. } => out.emit(format!(
-                "if {is_matching} != borgo.MatchErr {{ {is_matching} = borgo.MatchOk /* Unit */ }}"
-            )),
+            Pat::Wild { .. } => {
+                if cares_about_matching {
+                    out.emit(format!(
+                        "if {is_matching} != 1 {{ {is_matching} = 2 /* wildcard */ }}"
+                    ))
+                }
+            }
+
+            Pat::Unit { .. } => {
+                if cares_about_matching {
+                    out.emit(format!(
+                        "if {is_matching} != 1 {{ {is_matching} = 2 /* Unit */ }}"
+                    ))
+                }
+            }
         };
 
         out.render()
@@ -688,6 +495,11 @@ if {new_is_matching} != borgo.MatchErr {{
     fn emit_closure(&mut self, fun: &Function, kind: &FunctionKind) -> EmitResult {
         let mut out = emitter();
         let mut args_destructure = emitter();
+
+        let prev_ret_ty = self.current_fn_ret_ty.clone(); // nested functions, save context
+        self.current_fn_ret_ty = Some(fun.ret.clone());
+
+        let (fun, receiver_ty) = change_collection_methods(fun);
 
         let args = fun
             .args
@@ -709,26 +521,23 @@ if {new_is_matching} != borgo.MatchErr {{
                     }
                 };
 
-                name + " " + &to_loose_type_signature(&a.ty)
+                name + " " + &to_type(&a.ty)
             })
             .collect::<Vec<_>>()
             .join(", ");
 
+        let stmts = wrap_block_and_get_statements(&fun.body);
+
         let body = self
-            .emit_expr(
+            .emit_block(
                 EmitMode {
                     ctx: Ctx::Discard,
-                    should_return: true,
+                    should_return: !fun.ret.is_unit(),
                 },
-                &ensure_wrapped_in_block(&fun.body),
+                &stmts,
+                true,
             )
             .to_statement();
-
-        // If there's something left on the stack, then return it
-        // let ret = match self.stack.pop_front() {
-        // Some(var) => format!("return {var}"),
-        // None => "".to_string(),
-        // };
 
         // There are 3 cases here:
         // - Top level functions are always emitted as `func $name`
@@ -737,23 +546,42 @@ if {new_is_matching} != borgo.MatchErr {{
         //     `var $name func(..); $name =`
 
         let name = to_name(&fun.name);
+        let ret = if fun.ret.is_unit() {
+            "".to_string()
+        } else {
+            self.return_to_type(&fun.ret)
+        };
+
+        let generics = if receiver_ty.is_none() {
+            generics_to_string(&fun.generics, &fun.bounds)
+        } else {
+            "".to_string()
+        };
+
+        let receiver = if let Some(ty) = receiver_ty {
+            format!("(self {ty})", ty = to_type(&ty))
+        } else {
+            "".to_string()
+        };
 
         let binding = match kind {
-            FunctionKind::TopLevel => format!("func {name} ({args}) any"),
+            FunctionKind::TopLevel => format!("func {receiver} {name} {generics} ({args}) {ret}"),
 
-            FunctionKind::Lambda => format!("func ({args}) any"),
+            FunctionKind::Lambda => format!("func ({args}) {ret}"),
 
             FunctionKind::Inline => {
                 let typed_args = fun
                     .args
                     .iter()
-                    .map(|_| "any".to_string())
+                    .map(|t| to_type(&t.ty))
                     .collect::<Vec<_>>()
                     .join(", ");
 
                 let mut decl = emitter();
-                decl.emit(format!("var {name} func ({typed_args}) any"));
-                decl.emit(format!("{name} = func ({args}) any"));
+
+                // needs to be separate declaration to allow recursive functions.
+                decl.emit(format!("var {name} func ({typed_args}) {ret}"));
+                decl.emit(format!("{name} = func ({args}) {ret}"));
 
                 decl.render()
             }
@@ -767,16 +595,21 @@ if {new_is_matching} != borgo.MatchErr {{
             args_destructure = args_destructure.render()
         ));
 
-        // if let Some(to_push) = to_push {
-        // out.emit(self.push(to_push));
-        // }
+        self.current_fn_ret_ty = prev_ret_ty;
 
         out.as_value()
     }
 
-    fn emit_block(&mut self, mode: EmitMode, stmts: &[Expr]) -> EmitResult {
+    fn emit_block(&mut self, mode: EmitMode, stmts: &[Expr], skip_braces: bool) -> EmitResult {
         let mut out = emitter();
         let mut stmts = stmts.to_vec();
+
+        if stmts.is_empty() {
+            if !skip_braces {
+                out.emit("{}".to_string());
+            }
+            return out.no_value();
+        }
 
         let unit = Expr::Unit {
             span: Span::dummy(),
@@ -799,7 +632,7 @@ if {new_is_matching} != borgo.MatchErr {{
 
         let needs_braces = !stmts.is_empty() || mode.should_return;
 
-        if needs_braces {
+        if !skip_braces && needs_braces {
             out.emit("{".to_string());
         }
 
@@ -824,6 +657,13 @@ if {new_is_matching} != borgo.MatchErr {{
                 None
             }
             Ctx::Var(_) => {
+                let result = self.emit_expr(mode.clone(), &last);
+                out.emit(result.output);
+                let assign = assign_to_result(&mode.ctx, &result.value.unwrap_or_default());
+                out.emit(assign);
+                None
+            }
+            Ctx::Arg => {
                 let value = self.emit_local(&last, &mut out);
                 Some(value)
             }
@@ -831,64 +671,141 @@ if {new_is_matching} != borgo.MatchErr {{
 
         self.scope.exit();
 
-        if needs_braces {
+        if !skip_braces && needs_braces {
             out.emit("}".to_string());
         }
 
         out.try_emit(result)
     }
 
-    fn emit_call(&mut self, func: &Expr, args: &[Expr], call_mode: CallMode) -> EmitResult {
-        let mut output = emitter();
+    fn emit_call(&mut self, func: &Expr, args: &[Expr], mode: CallWrapMode) -> EmitResult {
+        if let Some(res) = self.emit_collection_method(func, args, &mode) {
+            return res;
+        }
+
+        let mut out = emitter();
 
         let new_args = args
             .iter()
-            .map(|a| self.emit_local(a, &mut output))
+            .map(|a| self.emit_local(a, &mut out))
             .collect::<Vec<_>>()
             .join(", ");
 
-        let new_func = self.emit_local(func, &mut output);
-        let call = format!("{new_func}({new_args})");
+        let new_func = self.emit_local(func, &mut out);
 
-        // Normal function calls are pushed to the stack.
-        // In case a bare function call is needed (when spawning a coroutine, which requires an
-        // explicit function call) then we only push the function call itself.
-        match call_mode {
-            CallMode::Push => {
-                // output.emit(self.push(call));
-            }
-            CallMode::Bare => {
-                // self.stack.push_front(call);
-            }
+        let instantiated = match func {
+            Expr::Var {
+                generics_instantiated,
+                ..
+            } => render_generics_instantiated(generics_instantiated),
+
+            _ => "".to_string(),
         };
 
-        output.emit_value(call)
+        let call = format!("{new_func}{instantiated}({new_args})");
+
+        return self.emit_wrapped_call(call, func, &mode, &mut out);
     }
 
-    fn emit_literal(&mut self, lit: &Literal) -> EmitResult {
+    fn emit_wrapped_call(
+        &mut self,
+        call: String,
+        func: &Expr,
+        mode: &CallWrapMode,
+        out: &mut Emitter,
+    ) -> EmitResult {
+        // if no wrapping needs to happen, then just return the call
+        if mode == &CallWrapMode::Unwrapped {
+            return out.emit_value(call);
+        }
+
+        // if the function is a call to the constructors Ok/Err or Some/None
+        // then we don't need to wrap and can emit the call as is
+        if func.as_result_constructor().is_some() || func.as_option_constructor().is_some() {
+            return out.emit_value(call);
+        }
+
+        // At this point we know that the function either needs to return (ok, err) or (ok, bool)
+        // The return type is either Result<T, E> or Option<T>
+        let ret = func.get_type().get_function_ret().unwrap();
+
+        // Instantiate return type
+        let instantiated = render_generics_instantiated(&ret.get_args().unwrap());
+
+        // Handle Result<T, E>
+        if ret.is_result() {
+            let check = self.fresh_var() + "_check";
+            let err = self.fresh_var() + "_err";
+            let result = self.fresh_var() + "_result";
+
+            out.emit(format!(
+                "{result} := func() Result{instantiated} {{
+    {check}, {err} := {call}
+    if {err} != nil {{
+        return make_Result_Err{instantiated}({err})
+    }}
+    return make_Result_Ok{instantiated}({check})
+}}()
+"
+            ));
+
+            return out.emit_value(result);
+        }
+
+        // Handle Option<T>
+        if ret.is_option() {
+            let check = self.fresh_var() + "_check";
+            let err = self.fresh_var() + "_err";
+            let result = self.fresh_var() + "_result";
+
+            out.emit(format!(
+                "{result} := func() Option{instantiated} {{
+    {check}, {err} := {call}
+    if {err} == false {{
+        return make_Option_None{instantiated}()
+    }}
+    return make_Option_Some{instantiated}({check})
+}}()
+"
+            ));
+
+            return out.emit_value(result);
+        }
+
+        unreachable!("should be either Result or Option");
+    }
+
+    fn emit_literal(&mut self, lit: &Literal, ty: &Type) -> EmitResult {
         let mut out = emitter();
 
         let value = match lit {
             Literal::Int(n) => n.to_string(),
             Literal::Float(n) => n.to_string(),
             Literal::Bool(b) => b.to_string(),
-            Literal::String(s) => format!("\"{}\"", s).replace('\n', "\\n"),
+            Literal::String(s, token) => {
+                if token.is_none() {
+                    format!("\"{}\"", s).replace('\n', "\\n")
+                } else {
+                    format!("`{}`", s)
+                }
+            }
             Literal::Char(s) => format!("\'{}\'", s),
-            Literal::List(elems) => {
+            Literal::Slice(elems) => {
                 let new_elems = elems
                     .iter()
                     .map(|e| self.emit_local(e, &mut out))
                     .collect::<Vec<_>>()
                     .join(", ");
 
-                format!("borgo.List({new_elems})")
+                let instantiated = to_type(ty.get_args().unwrap().first().unwrap());
+                format!("[]{instantiated} {{ {new_elems} }}")
             }
         };
 
         out.emit_value(value)
     }
 
-    fn emit_debug(&mut self, kind: &DebugKind, expr: &Expr) -> EmitResult {
+    fn emit_debug(&mut self, kind: &DebugKind, expr: &Expr, ty: &Type) -> EmitResult {
         let mut out = emitter();
 
         let var = match kind {
@@ -898,23 +815,32 @@ if {new_is_matching} != borgo.MatchErr {{
         };
 
         let fn_name = format!("{:#?}", kind).to_lowercase();
-        out.emit_value(format!("Debug_{fn_name}({var})"))
+        let instantiated = to_type(&ty);
+        out.emit_value(format!("Debug_{fn_name}[{instantiated}]({var})"))
     }
 
     fn emit_return(&mut self, expr: &Expr) -> EmitResult {
-        let mut out = emitter();
-        let mut value = self.emit_local(expr, &mut out);
-
-        // TODO this sucks
-        if value.is_empty() {
-            value = "borgo.Unit".to_string()
+        if let Some(ret) = self.return_value_is_result(expr) {
+            return ret;
         }
+
+        if let Some(ret) = self.return_value_is_option(expr) {
+            return ret;
+        }
+
+        let mut out = emitter();
+
+        let value = if self.current_fn_ret_ty == Some(Type::unit()) {
+            "".to_string()
+        } else {
+            self.emit_local(expr, &mut out)
+        };
 
         out.emit(format!("return {value}"));
         out.no_value()
     }
 
-    fn emit_match(&mut self, ctx: &Ctx, subject: &Expr, arms: &[Arm]) -> EmitResult {
+    fn emit_match(&mut self, ctx: &Ctx, subject: &Expr, arms: &[Arm], ty: &Type) -> EmitResult {
         let mut out = emitter();
 
         let subject = self.emit_local(subject, &mut out);
@@ -922,14 +848,16 @@ if {new_is_matching} != borgo.MatchErr {{
         let subject_var = self.fresh_var() + "_subject";
         let is_matching = self.fresh_var() + "_matches";
 
+        let new_ctx = self.generate_or_reuse(ctx, ty, &mut out);
+
         // Matching status:
-        //   None -> pattern matching hasn't started
-        //   Err  -> pattern matching failed
-        //   Ok   -> pattern matching succeeded
+        //   0 -> pattern matching hasn't started
+        //   1 -> pattern matching failed
+        //   2 -> pattern matching succeeded
 
         out.emit(format!(
             " {subject_var} := {subject}
-{is_matching} := borgo.MatchNone
+{is_matching} := 0
 
 ",
         ));
@@ -937,19 +865,19 @@ if {new_is_matching} != borgo.MatchErr {{
         arms.iter().for_each(|arm| {
             let if_statements = self.emit_pattern(&subject_var, &is_matching, &arm.pat);
 
-            let result = self.emit_expr(ctx.clone().to_mode(), &arm.expr);
-            let assign = assign_to_result(&ctx, &result.value.unwrap_or_default());
+            let result = self.emit_expr(new_ctx.clone().to_mode(), &arm.expr);
+            let assign = assign_to_result(&new_ctx, &result.value.unwrap_or_default());
             let preamble = result.output;
 
             out.emit(format!(
                 "
-if {is_matching} != borgo.MatchOk {{
-    {is_matching} = borgo.MatchNone
+if {is_matching} != 2 {{
+    {is_matching} = 0
 
     {if_statements}
     _ = {subject_var}
 
-    if {is_matching} == borgo.MatchOk {{
+    if {is_matching} == 2 {{
         {preamble}
         {assign}
     }}
@@ -958,110 +886,157 @@ if {is_matching} != borgo.MatchOk {{
             ))
         });
 
-        out.try_emit(ctx.to_var())
+        out.try_emit(new_ctx.to_var())
     }
 
-    fn emit_var(&mut self, value: &str) -> EmitResult {
+    fn emit_var(&mut self, value: &str, ty: &Type, generics_instantiated: &[Type]) -> EmitResult {
         let name = self
             .scope
             .get_binding(value)
-            .unwrap_or_else(|| to_name(&self.gs.resolve_name(value)));
+            .unwrap_or_else(|| self.gs.resolve_name(value));
 
-        let expr = self.make_functions.get(&name).cloned().unwrap_or(name);
+        let make_fn = self.make_functions.get(&name);
+
+        // Check if it's a constructor with no arguments (ie. Option::None)
+        // In that case, it's not sufficient to resolve it as a bare function.
+        // We need to actually call the function and instantiate the generics.
+        if matches!(ty, Type::Con { .. }) && make_fn.is_some() {
+            let generics = render_generics_instantiated(generics_instantiated);
+            let call = format!("{fun}{generics}()", fun = to_name(make_fn.unwrap()));
+            return EmitResult {
+                output: "".to_string(),
+                value: Some(call),
+            };
+        }
+
+        let name = to_name(make_fn.unwrap_or(&name));
 
         EmitResult {
             output: "".to_string(),
-            value: Some(expr),
+            value: Some(name),
         }
     }
 
     fn emit_let(&mut self, binding: &Binding, value: &Expr) -> EmitResult {
         let mut out = emitter();
 
-        let new_value = self.emit_local(value, &mut out);
+        let mut needs_declaration = true;
+        let mut pat_output = None;
 
-        match binding.pat {
+        let ctx = match binding.pat {
             Pat::Type { ref ident, .. } => {
                 if self.scope.is_defined_in_current_scope(ident) {
-                    out.emit(format!("{ident} = {new_value}"));
-                } else {
-                    out.emit(format!("var {ident} any = {new_value}"));
+                    needs_declaration = false;
                 }
 
                 self.scope.add_binding(ident.clone(), ident.clone());
+
+                Ctx::Var(ident.clone())
             }
 
-            Pat::Wild { .. } => {
-                out.emit(format!("_ = {new_value}"));
-            }
+            Pat::Wild { .. } => Ctx::Discard,
 
             _ => {
                 let var = self.fresh_var();
-                out.emit(format!("{var} := {new_value}"));
-
                 let pat = self.emit_pattern(&var, "_", &binding.pat);
-                out.emit(pat);
+                pat_output = Some(pat);
+                Ctx::Var(var)
             }
         };
+
+        // If it's a try expression, then a declaration is never necessary because it will define
+        // an ok, err := ... binding when calling the function
+        if matches!(value, Expr::Try { .. }) {
+            needs_declaration = false;
+        }
+
+        let new_expr = self.emit_expr(ctx.clone().to_mode(), value);
+        let new_value = new_expr.value.unwrap_or_default();
+
+        // If it's not a standalone expression (if, match) then declare the variable first, then
+        // emit the output
+        if !is_standalone(value) {
+            match ctx {
+                Ctx::Discard => {
+                    out.emit(new_expr.output);
+                    return out.no_value();
+                }
+
+                Ctx::Var(var) => {
+                    if needs_declaration {
+                        let instantiated = to_type(&value.get_type());
+                        out.emit(format!("var {var} {instantiated}"));
+                    };
+
+                    out.emit(new_expr.output);
+                    return out.no_value();
+                }
+
+                Ctx::Arg => unreachable!(),
+            }
+        }
+
+        // Otherwise emit the output first and then assign the new value
+        out.emit(new_expr.output);
+
+        match ctx {
+            Ctx::Discard => out.emit(format!("_ = {new_value}")),
+            Ctx::Var(var) => {
+                let assign = if needs_declaration { ":=" } else { "=" };
+                out.emit(format!("{var} {assign} {new_value}"));
+                out.emit(pat_output.unwrap_or_default());
+            }
+            Ctx::Arg => unreachable!(), // pretty sure this is right
+        }
 
         out.no_value()
     }
 
     fn emit_binary(&mut self, op: &Operator, left: &Expr, right: &Expr) -> EmitResult {
-        // Transform in function call
-
-        let prefix = match op {
-            Operator::Eq | Operator::Ne | Operator::Or | Operator::And => "".to_string(),
-            _ => self.math_op_prefix(left.get_type()),
+        let mut out = emitter();
+        let left = self.emit_local(left, &mut out);
+        let right = self.emit_local(right, &mut out);
+        let op = match op {
+            Operator::Add => "+",
+            Operator::Sub => "-",
+            Operator::Mul => "*",
+            Operator::Div => "/",
+            Operator::Lt => "<",
+            Operator::Le => "<=",
+            Operator::Gt => ">",
+            Operator::Ge => ">=",
+            Operator::Rem => "%",
+            Operator::Eq => "==",
+            Operator::Ne => "!=",
+            Operator::And => "&&",
+            Operator::Or => "||",
         };
 
-        let func = Expr::Var {
-            value: format!("borgo.Ops.{prefix}{:?}", op),
-            decl: Declaration::dummy(),
-            ty: Type::dummy(),
-            span: Span::dummy(),
-        };
-
-        self.emit_call(&func, &[left.clone(), right.clone()], CallMode::Push)
+        return out.emit_value(format!("{left} {op} {right}"));
     }
 
     fn emit_unary(&mut self, op: &UnOp, expr: &Expr) -> EmitResult {
-        // Transform in function call
+        let mut out = emitter();
+        let expr = self.emit_local(expr, &mut out);
 
-        let prefix = match op {
-            UnOp::Neg => self.math_op_prefix(expr.get_type()),
-            UnOp::Not => "".to_string(),
+        let op = match op {
+            UnOp::Neg => "-".to_string(),
+            UnOp::Not => "!".to_string(),
+            UnOp::Deref => "*".to_string(),
         };
 
-        let func = Expr::Var {
-            value: format!("borgo.Ops.{prefix}{:?}", op),
-            decl: Declaration::dummy(),
-            ty: Type::dummy(),
-            span: Span::dummy(),
-        };
-
-        self.emit_call(&func, &[expr.clone()], CallMode::Push)
-    }
-
-    fn math_op_prefix(&self, ty: Type) -> String {
-        let ty = ty.get_name().unwrap();
-        if ty == "Int" {
-            "I".to_string()
-        } else if ty == "Float" {
-            "F".to_string()
-        } else {
-            unreachable!()
-        }
+        return out.emit_value(format!("{op}{expr}"));
     }
 
     fn emit_if(&mut self, ctx: &Ctx, cond: &Expr, then: &Expr, els: &Expr) -> EmitResult {
         let mut out = emitter();
 
         let new_cond = self.emit_local(cond, &mut out);
+        let new_ctx = self.generate_or_reuse(ctx, &then.get_type(), &mut out);
 
         let mut wrap_and_assign = |expr: &Expr| {
-            let result = self.emit_expr(ctx.clone().to_mode(), &expr);
-            let assign = assign_to_result(&ctx, &result.value.unwrap_or_default());
+            let result = self.emit_expr(new_ctx.clone().to_mode(), &expr);
+            let assign = assign_to_result(&new_ctx, &result.value.unwrap_or_default());
             let preamble = result.output;
 
             format!(
@@ -1080,23 +1055,71 @@ if {is_matching} != borgo.MatchOk {{
             _ => format!("else {}", wrap_and_assign(els)),
         };
 
-        out.emit(format!(
-            "if borgo.Ops.Eq({new_cond}, true).(bool) {new_then} {new_else}",
-        ));
+        out.emit(format!("if {new_cond} {new_then} {new_else}",));
 
-        out.try_emit(ctx.to_var())
+        out.try_emit(new_ctx.to_var())
     }
 
     fn emit_enum(&self, def: &EnumDefinition) -> EmitResult {
         let mut out = emitter();
 
+        let name = &def.name;
+
+        // Emit tag
+        let tag = format!("{name}Tag");
+        out.emit(format!("type {tag} int"));
+
+        // Emit const declaration for tag
+        out.emit("const (".to_string());
+
+        let make_cons = |cons: &str| -> String { format!("{name}_{cons}") };
+
+        let first = def.cons.first().unwrap();
+        out.emit(format!(
+            "{cons} {tag} = iota",
+            cons = make_cons(&first.name)
+        ));
+
+        for c in &def.cons[1..] {
+            out.emit(format!("{cons}", cons = make_cons(&c.name)));
+        }
+
+        out.emit(")".to_string());
+
+        // Emit type
+        let generics = generics_to_string(&def.generics, &[]);
+
+        out.emit(format!(
+            "type {name}{generics} struct {{
+            tag {tag}"
+        ));
+
         def.cons.iter().for_each(|con| {
-            let constructor = def.name.clone() + "_" + &con.name;
-            out.emit(enum_constructor(&constructor, con));
+            if con.fields.is_empty() {
+                return;
+            }
+
+            let emit_constructor = |field: &EnumFieldDef, index: Option<usize>| -> String {
+                format!(
+                    "{field_name}{index} {typ}",
+                    field_name = con.name,
+                    index = index.map(|i| format!("{i}")).unwrap_or("".to_string()),
+                    typ = to_type(&field.ty)
+                )
+            };
+
+            if con.fields.len() == 1 {
+                let field = con.fields.first().unwrap();
+                out.emit(emit_constructor(field, None));
+                return;
+            }
+
+            for (index, field) in con.fields.iter().enumerate() {
+                out.emit(emit_constructor(field, Some(index)));
+            }
         });
 
-        // also emit an alias for the type name
-        out.emit(format!("type {name} any", name = def.name));
+        out.emit("}".to_string());
 
         out.no_value()
     }
@@ -1105,11 +1128,13 @@ if {is_matching} != borgo.MatchOk {{
         let mut out = emitter();
 
         let name = def.name.clone();
-        out.emit(format!("type {name} struct {{"));
+
+        let generics = generics_to_string(&def.generics, &[]);
+        out.emit(format!("type {name}{generics} struct {{"));
 
         def.fields.iter().for_each(|f| {
-            let field = to_struct_field(&f.name);
-            let ty = to_loose_type_signature(&f.ty);
+            let field = &f.name;
+            let ty = to_type(&f.ty.ty);
             out.emit(format!("  {field} {ty}"));
         });
 
@@ -1122,7 +1147,6 @@ if {is_matching} != borgo.MatchOk {{
 
         items.iter().for_each(|e| {
             self.next_var = 0;
-            self.stack = Default::default();
             self.scope.reset();
 
             let value = self.emit_expr(EmitMode::top_level(), e);
@@ -1134,34 +1158,39 @@ if {is_matching} != borgo.MatchOk {{
 
     fn emit_struct_call(
         &mut self,
-        name: &str,
         fields: &[StructField],
         rest: &Option<Expr>,
+        ty: &Type,
     ) -> EmitResult {
-        // because of `rest` we can't just inline the call, it needs to be wrapped in a func so that the stuff from `rest` can be copied over. If there's no `rest`, then start with the actual name ie. `Seq_Cons{}`
-
         let mut out = emitter();
 
-        let ty = to_name(name);
-
-        let new_rest = match rest {
-            Some(rest) => self.emit_local(rest, &mut out),
-            None => ty.to_string() + "{}",
-        };
+        let has_rest = rest.is_some();
+        let instantiated = to_type(ty);
 
         let new_fields = fields
             .iter()
             .map(|f| {
-                let name = to_struct_field(&f.name);
+                let name = &f.name;
                 let value = self.emit_local(&f.value, &mut out);
-                format!("data.{name} = {value}")
+
+                if has_rest {
+                    format!("data.{name} = {value}")
+                } else {
+                    format!("{name}: {value}, ")
+                }
             })
             .collect::<Vec<_>>()
             .join("\n");
 
+        if !has_rest {
+            return out.emit_value(format!("{instantiated} {{ {new_fields} }}"));
+        }
+
+        // Generate a self-invoking function
+        let new_rest = self.emit_local(rest.as_ref().unwrap(), &mut out);
+
         out.emit_value(format!(
-            "func (base any) any {{
-    data := base.({ty})
+            "func (data {instantiated}) {instantiated} {{
     {new_fields}
     return data
 }}({new_rest})"
@@ -1171,29 +1200,41 @@ if {is_matching} != borgo.MatchOk {{
     fn emit_struct_access(&mut self, expr: &Expr, field: &str) -> EmitResult {
         let mut out = emitter();
         let new_expr = self.emit_local(expr, &mut out);
-        let cast = cast_to(&to_type(&expr.get_type()));
-        let field = to_struct_field(field);
-        out.emit_value(format!("{new_expr}{cast}.{field}"))
+        out.emit_value(format!("{new_expr}.{field}"))
     }
 
     fn emit_try(&mut self, ctx: &Ctx, expr: &Expr) -> EmitResult {
+        // Check if we're dealing with a wrapped function that returns (ok, err)
+        if let Expr::Call { func, args, ty, .. } = expr {
+            if self.call_wrap_mode(ty) == CallWrapMode::Wrapped {
+                return self.emit_wrapped_try(ctx, func, args);
+            }
+        }
+
+        // In all other cases we're dealing with a function that will return a Result value
         let mut out = emitter();
 
         let check = self.fresh_var() + "_check";
+        let call = self.emit_local(expr, &mut out);
+        // let assign = assign_to_result(&ctx, &format!("{check}.Ok"));
 
-        let value = self.emit_local(expr, &mut out);
-        let assign = assign_to_result(&ctx, &format!("ret.Field0"));
+        // The error value we return depends on whether the return type of the current function is
+        // wrapped or not. TODO asdf check the jargon here, I think I have wrapped/unwrapped
+        // wrong, they mean the opposite of how I'm using them. :/
+        let return_error = match self.call_wrap_mode(self.current_fn_ret_ty.as_ref().unwrap()) {
+            CallWrapMode::Unwrapped => format!("return {check}"),
+            CallWrapMode::Wrapped => {
+                format!("return {nil}, {check}.Err", nil = self.current_zero_value())
+            }
+        };
 
         out.emit(format!(
-            "{check} := {value}
-
-  if ret, ok := {check}.(Result_Ok); ok {{
-    // $ret = ret.Field0
-    {assign}
-  }} else {{
-    return {check}
-  }}
-"
+            "{check} := {call}
+             {var} := {check}.Ok
+             if !{check}.IsOk() {{
+               {return_error}
+             }}",
+            var = ctx.to_var().unwrap_or_else(|| "_".to_string())
         ));
 
         out.try_emit(ctx.to_var())
@@ -1202,18 +1243,17 @@ if {is_matching} != borgo.MatchOk {{
     fn emit_loop(&mut self, body: &Expr) -> EmitResult {
         let mut out = emitter();
 
-        let prev_loop_expr = self.current_loop.clone();
-        self.current_loop = None;
+        let stmts = wrap_block_and_get_statements(&body);
         let body = self
-            .emit_expr(
+            .emit_block(
                 EmitMode {
                     ctx: Ctx::Discard,
                     should_return: false,
                 },
-                &ensure_wrapped_in_block(&body),
+                &stmts,
+                true,
             )
             .to_statement();
-        self.current_loop = prev_loop_expr;
 
         out.emit(format!(
             "for {{
@@ -1232,46 +1272,80 @@ if {is_matching} != borgo.MatchOk {{
     ) -> EmitResult {
         let mut out = emitter();
 
-        let expr_var = self.fresh_var();
-        let sequence = self.emit_local(expr, &mut out);
+        let rangeable = self.emit_local(expr, &mut out);
 
-        let prev_loop_expr = self.current_loop.clone();
-        let current_loop_value = self.fresh_var();
+        let mut extract_binding = |pat: &Pat| match pat {
+            Pat::Type { ident, .. } => {
+                self.scope.add_binding(ident.clone(), ident.clone());
+                ident.clone()
+            }
 
-        // Create a fake let binding so that patterns are destructured correctly
-        let loop_var = self
-            .emit_let(
-                &binding,
-                &Expr::Var {
-                    value: current_loop_value.clone(),
-                    decl: Declaration::dummy(),
-                    ty: Type::dummy(),
-                    span: Span::dummy(),
-                },
-            )
-            .to_statement();
+            _ => unreachable!(),
+        };
 
-        self.current_loop = Some(expr_var.clone());
+        let mut k = "_".to_string();
+        let mut v = "_".to_string();
+
+        match &binding.pat {
+            Pat::Wild { .. } => {}
+            Pat::Type { .. } => v = extract_binding(&binding.pat),
+            Pat::Struct { fields, .. } => {
+                // there should be two fields
+                k = extract_binding(&fields[0].value);
+                v = extract_binding(&fields[1].value);
+            }
+            _ => {
+                panic!("unexpected pat in loop expr {:#?}", binding.pat);
+            }
+        };
+
+        let stmts = wrap_block_and_get_statements(&body);
         let body = self
-            .emit_expr(
+            .emit_block(
                 EmitMode {
                     ctx: Ctx::Discard,
                     should_return: false,
                 },
-                &ensure_wrapped_in_block(&body),
+                &stmts,
+                true,
             )
             .to_statement();
-        self.current_loop = prev_loop_expr;
+
+        let iteration_vars = if expr.get_type().is_receiver() {
+            v
+        } else {
+            format!("{k}, {v}")
+        };
 
         out.emit(format!(
-            "
-            {expr_var} := {sequence}
-            for !borgo.ValuesIsOfType({expr_var}, \"Seq::Nil\") {{
-    {current_loop_value} := {expr_var}.(Seq_Cons).Field0
-    {loop_var}
+            "for {iteration_vars} := range {rangeable} {{
     {body}
+}}",
+        ));
 
-    {expr_var} = {expr_var}.(Seq_Cons).Field1()
+        out.no_value()
+    }
+
+    fn emit_while_loop(&mut self, expr: &Expr, body: &Expr) -> EmitResult {
+        let mut out = emitter();
+
+        let expr = self.emit_local(expr, &mut out);
+
+        let stmts = wrap_block_and_get_statements(&body);
+        let body = self
+            .emit_block(
+                EmitMode {
+                    ctx: Ctx::Discard,
+                    should_return: false,
+                },
+                &stmts,
+                true,
+            )
+            .to_statement();
+
+        out.emit(format!(
+            "for ({expr}) {{
+    {body}
 }}",
         ));
 
@@ -1282,25 +1356,11 @@ if {is_matching} != borgo.MatchOk {{
         let mut out = emitter();
 
         let token = match kind {
-            LoopFlow::Break => "break".to_string(),
-            LoopFlow::Continue => {
-                // Make sure to update the loop condition first
-                let current_loop = match &self.current_loop {
-                    Some(expr_var) => {
-                        format!("{expr_var} = {expr_var}.(Seq_Cons).Field1()")
-                    }
-                    None => "".to_string(),
-                };
-
-                format!(
-                    "{current_loop}
-                continue "
-                )
-            }
+            LoopFlow::Break => "break",
+            LoopFlow::Continue => "continue",
         };
 
-        out.emit(token);
-
+        out.emit(token.to_string());
         out.no_value()
     }
 
@@ -1313,8 +1373,23 @@ if {is_matching} != borgo.MatchOk {{
             Expr::Var {
                 value: var_name, ..
             } => {
-                // let actual_var = self.scope.get_binding(var_name).unwrap();
                 out.emit(format!("{var_name} = {new_expr}"));
+            }
+
+            Expr::FieldAccess { expr, field, .. } => {
+                let target = self.emit_local(expr, &mut out);
+                out.emit(format!("{target}.{field} = {new_expr}"));
+            }
+
+            Expr::Index { expr, index, .. } => {
+                let target = self.emit_local(expr, &mut out);
+                let index = self.emit_local(index, &mut out);
+                out.emit(format!("{target}[{index}] = {new_expr}"));
+            }
+
+            Expr::Unary { expr, .. } => {
+                let target = self.emit_local(expr, &mut out);
+                out.emit(format!("*{target} = {new_expr}"));
             }
 
             e => panic!("unexpected expr in codegen var update {:#?}", e),
@@ -1334,7 +1409,7 @@ if {is_matching} != borgo.MatchOk {{
 
         let call = match expr {
             Expr::Call { func, args, .. } => {
-                let new_expr = self.emit_call(func, args, CallMode::Bare);
+                let new_expr = self.emit_call(func, args, CallWrapMode::Unwrapped);
                 new_expr.to_statement()
             }
 
@@ -1420,12 +1495,365 @@ if {is_matching} != borgo.MatchOk {{
 if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_Option_None }}"
         )
     }
+
+    fn emit_raw(&self, text: &str) -> EmitResult {
+        EmitResult {
+            output: text.to_string(),
+            value: None,
+        }
+    }
+
+    fn create_make_function(&mut self, def: &EnumDefinition) -> String {
+        let mut out = emitter();
+
+        def.cons.iter().for_each(|con| {
+            let constructor = def.name.clone() + "::" + &con.name;
+            let name = to_name(&format!("make_{constructor}"));
+            out.emit(constructor_make_function(&def, &name, con));
+            self.make_functions.insert(constructor, name);
+        });
+
+        out.render()
+    }
+
+    fn emit_wrapped_try(&mut self, ctx: &Ctx, func: &Expr, args: &[Expr]) -> EmitResult {
+        let mut out = emitter();
+
+        let new_ctx = self.generate_or_reuse(ctx, &func.get_type(), &mut out);
+        let check = new_ctx.to_var().unwrap_or_else(|| "_".to_string());
+
+        let err = self.fresh_var() + "_err";
+        let assign = assign_to_result(&new_ctx, &format!("{check}"));
+
+        // let ret = self.current_fn_ret_ty.as_ref().unwrap();
+        // let instantiated = render_generics_instantiated(&ret.get_args().unwrap());
+
+        // Emit function call as if it were unwrapped, so that we can deal with the two returned
+        // value appropriately.
+        let call = self.emit_call(func, args, CallWrapMode::Unwrapped);
+        out.emit(call.output);
+        out.emit(format!(
+            "{check}, {err} := {call}
+    if {err} != nil {{
+        return {nil}, {err}
+    }}
+    {assign}
+",
+            nil = self.current_zero_value(),
+            call = call.value.unwrap()
+        ));
+
+        return out.try_emit(new_ctx.to_var());
+    }
+
+    fn emit_reference(&mut self, expr: &Expr) -> EmitResult {
+        let mut out = emitter();
+        let expr = self.emit_local(expr, &mut out);
+
+        return out.emit_value(format!("&{expr}"));
+    }
+
+    fn emit_interface(&self, name: &str, items: &[Expr], supertraits: &[String]) -> EmitResult {
+        let mut out = emitter();
+        out.emit(format!("type {name} interface {{"));
+
+        for s in supertraits {
+            out.emit(s.clone());
+        }
+
+        for f in items {
+            let name = f.as_function().name;
+            let ty = f.get_type();
+
+            let args = ty
+                .get_function_args()
+                .unwrap()
+                .iter()
+                .map(to_type)
+                .collect::<Vec<_>>()
+                .join(", ");
+
+            let ret = to_type(&ty.get_function_ret().unwrap());
+
+            out.emit(format!("{name} ({args}) {ret}"));
+        }
+
+        out.emit("}".to_string());
+        return out.no_value();
+    }
+
+    // methods on Slice, Maps and Channels are actually function calls
+    fn emit_collection_method(
+        &mut self,
+        func: &Expr,
+        args: &[Expr],
+        mode: &CallWrapMode,
+    ) -> Option<EmitResult> {
+        if let Expr::FieldAccess { expr, field, .. } = func {
+            let ty_name = is_collection_type(&expr.get_type())?;
+
+            let mut new_args = vec![*expr.clone()];
+            new_args.extend_from_slice(args);
+
+            let mut out = emitter();
+
+            let new_args = new_args
+                .iter()
+                .map(|a| self.emit_local(a, &mut out))
+                .collect::<Vec<_>>()
+                .join(", ");
+
+            let instantiated = render_generics_instantiated(&expr.get_type().get_args().unwrap());
+
+            let fn_name = to_name(&format!("{ty_name}::{field}"));
+            let call = format!("{fn_name}{instantiated}({new_args})");
+
+            return Some(self.emit_wrapped_call(call, func, mode, &mut out));
+        }
+
+        None
+    }
+
+    fn current_zero_value(&self) -> String {
+        let ty = &self.current_fn_ret_ty.as_ref().unwrap().get_args().unwrap()[0];
+
+        format!("*new({ty})", ty = to_type(&ty))
+    }
+
+    fn return_value_is_result(&mut self, expr: &Expr) -> Option<EmitResult> {
+        let ret_ty = expr.get_type();
+        if !ret_ty.is_result() {
+            return None;
+        }
+
+        // If the error type is not an interface, then we can't wrap it.
+        // See explanation in call_wrap_mode
+        if self.call_wrap_mode(&ret_ty) == CallWrapMode::Unwrapped {
+            return None;
+        }
+
+        let mut out = emitter();
+
+        // Handle cases where return value is a Result
+
+        // 1. Function call to a Result constructor, ie. Ok() or Err()
+        // 2. Function call to any other function that produces a Result
+        // 3. A value (match expression, variable) that needs to be unwrapped
+
+        if let Expr::Call { func, args, .. } = expr {
+            let variant = func.as_result_constructor();
+
+            if variant == Some(Ok(())) {
+                // 1a. Function call to Result::Ok
+                let arg = self.emit_local(&args[0], &mut out);
+                out.emit(format!("return {arg}, nil"));
+                //
+            } else if variant == Some(Err(())) {
+                // 1b. Function call to Result::Err
+                let arg = self.emit_local(&args[0], &mut out);
+                out.emit(format!(
+                    "return {nil}, {arg}",
+                    nil = self.current_zero_value(),
+                ));
+                //
+            } else {
+                // 2. Function call to any other function that produces a Result
+                let call = self.emit_call(func, args, CallWrapMode::Unwrapped);
+                out.emit(call.output);
+                out.emit(format!("return {value}", value = call.value.unwrap()));
+            }
+
+            return Some(out.no_value());
+        };
+
+        // 3. A value (match expression, variable) that needs to be unwrapped
+        let value = self.emit_local(expr, &mut out);
+
+        out.emit(format!(
+            "
+        if {value}.IsOk() {{
+            return {value}.Ok, nil
+        }}
+        return {nil}, {value}.Err
+            ",
+            nil = self.current_zero_value(),
+        ));
+        return Some(out.no_value());
+    }
+
+    fn return_value_is_option(&mut self, expr: &Expr) -> Option<EmitResult> {
+        let ret_ty = expr.get_type();
+        if !ret_ty.is_option() {
+            return None;
+        }
+
+        let mut out = emitter();
+
+        // Handle cases where return value is an Option
+
+        // 1. Function call to a Option constructor, ie. Some() or None()
+        // 2. Function call to any other function that produces an Option
+        // 3. A value (match expression, variable) that needs to be unwrapped
+
+        if let Expr::Call { func, args, .. } = expr {
+            let variant = func.as_option_constructor();
+
+            if variant == Some(Ok(())) {
+                // 1a. Function call to Option::Some
+                let arg = self.emit_local(&args[0], &mut out);
+                out.emit(format!("return {arg}, true"));
+                //
+            } else if variant == Some(Err(())) {
+                // 1b. Function call to Option::None
+                out.emit(format!(
+                    "return {nil}, false",
+                    nil = self.current_zero_value(),
+                ));
+                //
+            } else {
+                // 2. Function call to any other function that produces an Option
+                let call = self.emit_call(func, args, CallWrapMode::Unwrapped);
+                out.emit(call.output);
+                out.emit(format!("return {value}", value = call.value.unwrap()));
+            }
+
+            return Some(out.no_value());
+        };
+
+        // 3. A value (match expression, variable) that needs to be unwrapped
+        let value = self.emit_local(expr, &mut out);
+
+        out.emit(format!(
+            "
+        if {value}.IsSome() {{
+            return {value}.Some, true
+        }}
+        return {nil}, false
+            ",
+            nil = self.current_zero_value(),
+        ));
+        return Some(out.no_value());
+    }
+
+    fn collect_imports(&self, pkg: &Package) -> HashMap<String, String> {
+        let mut ret = HashMap::new();
+
+        for file in &pkg.files {
+            for e in &file.decls {
+                if let Expr::UsePackage { import, .. } = e {
+                    let module = self.gs.get_module(&import.name).unwrap();
+
+                    let name = if module.name != module.pkg.path {
+                        module.name
+                    } else {
+                        "".to_string()
+                    };
+
+                    ret.insert(module.pkg.path, name);
+                }
+            }
+        }
+
+        ret
+    }
+
+    fn emit_index(&mut self, expr: &Expr, index: &Expr) -> EmitResult {
+        let mut out = emitter();
+        let new_expr = self.emit_local(expr, &mut out);
+        let new_index = self.emit_local(index, &mut out);
+        out.emit_value(format!("{new_expr}[{new_index}]"))
+    }
+
+    fn generate_or_reuse(&mut self, ctx: &Ctx, ty: &Type, out: &mut Emitter) -> Ctx {
+        match ctx {
+            Ctx::Discard => Ctx::Discard,
+            Ctx::Var(var) => Ctx::Var(var.to_string()),
+            Ctx::Arg => {
+                let var = self.fresh_var();
+                let instantiated = to_type(&ty);
+                out.emit(format!("var {var} {instantiated}"));
+                Ctx::Var(var.to_string())
+            }
+        }
+    }
+
+    // A function call needs to be wrapped when it returns (ok, err) or (ok, bool)
+    fn call_wrap_mode(&self, ret: &Type) -> CallWrapMode {
+        if ret.is_option() {
+            return CallWrapMode::Wrapped;
+        }
+
+        if ret.is_result() {
+            // A Result<T, E> can only be wrapped if the E is an interface
+            // otherwise the err != nil check would fail
+            let err_ty = ret.get_args().unwrap()[1].get_name().unwrap();
+
+            // TODO asdf this check is not even correct, it should be any type that implements
+            // the error interface or is an interface.
+            let is_interface = self.gs.get_interface(&err_ty);
+
+            return if is_interface.is_some() {
+                CallWrapMode::Wrapped
+            } else {
+                CallWrapMode::Unwrapped
+            };
+        }
+
+        CallWrapMode::Unwrapped
+    }
+
+    fn return_to_type(&self, ret: &Type) -> String {
+        if self.call_wrap_mode(ret) == CallWrapMode::Wrapped {
+            if ret.is_result() {
+                let args = ret.get_args().unwrap();
+                let ok = to_type(&args[0]);
+                let err = to_type(&args[1]);
+
+                return format!("({ok}, {err})");
+            }
+
+            if ret.is_option() {
+                let args = ret.get_args().unwrap();
+                let ok = to_type(&args[0]);
+
+                return format!("({ok}, bool)");
+            }
+        }
+
+        to_type(ret)
+    }
+}
+
+fn wrap_block_and_get_statements(expr: &Expr) -> Vec<Expr> {
+    let body = ensure_wrapped_in_block(&expr);
+    match body {
+        Expr::Block { stmts, .. } => stmts,
+        _ => unreachable!(),
+    }
+}
+
+fn render_generics_instantiated(generics_instantiated: &[Type]) -> String {
+    if generics_instantiated.is_empty() {
+        "".to_string()
+    } else {
+        let instantiated = generics_instantiated
+            .iter()
+            .map(|t| to_type(t))
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        format!("[{instantiated}]")
+    }
 }
 
 fn is_standalone(expr: &Expr) -> bool {
     !matches!(
         expr,
-        Expr::If { .. } | Expr::Match { .. } | Expr::Block { .. } | Expr::Loop { .. }
+        Expr::If { .. }
+            | Expr::Match { .. }
+            | Expr::Block { .. }
+            | Expr::Loop { .. }
+            | Expr::Try { .. }
     )
 }
 
@@ -1442,7 +1870,7 @@ fn ensure_wrapped_in_block(expr: &Expr) -> Expr {
 }
 
 fn ensure_wrapped_in_return(expr: &Expr) -> Expr {
-    if matches!(expr, Expr::Return { .. }) {
+    if matches!(expr, Expr::Return { .. }) || expr.get_type().is_unit() {
         return expr.clone();
     }
 
@@ -1454,7 +1882,7 @@ fn ensure_wrapped_in_return(expr: &Expr) -> Expr {
 }
 
 fn assign_to_result(ctx: &Ctx, value: &str) -> String {
-    if value.is_empty() {
+    if value.is_empty() || value == "_" {
         return "".to_string();
     }
 
@@ -1465,7 +1893,7 @@ fn assign_to_result(ctx: &Ctx, value: &str) -> String {
     };
 
     // this prevents empty blocks from being created
-    if result.is_none() && value == "borgo.Unit" {
+    if result.is_none() && value == empty_struct() {
         return "".to_string();
     }
 
@@ -1485,124 +1913,207 @@ fn assign_to_result(ctx: &Ctx, value: &str) -> String {
     format!("{result_assign} {value}")
 }
 
-// Reflection in Go only works for exported fields.
-fn to_struct_field(name: &str) -> String {
-    let mut chars = name.chars();
-    let first = chars.next().unwrap().to_uppercase().to_string();
-    let rest = chars.collect::<String>();
-    first + &rest
-}
-
 fn emitter() -> Emitter {
     Emitter { output: vec![] }
-}
-
-// TODO this is terrible
-// and maybe not even necessary?
-fn primitives(name: &str) -> Option<&str> {
-    let mut p = HashMap::new();
-    p.insert("List", "*immutable.List");
-    p.insert("Bool", "bool");
-    p.insert("String", "string");
-    p.insert("Int", "int");
-    p.insert("Float", "float64");
-
-    p.get(name).cloned()
 }
 
 fn to_name(value: &str) -> String {
     value.replace("::", "_")
 }
 
-fn cast_to(ty: &str) -> String {
-    if ty == "any" {
-        "".to_string()
-    } else {
-        format!(".({ty})")
-    }
-}
-
 fn to_type(ty: &Type) -> String {
     match ty {
-        Type::Con { name, .. } => primitives(name).map(|_| "any").unwrap_or(name).to_string(),
-        Type::Fun { args, .. } => {
+        Type::Con { name, args } => {
+            let name = name.replace("::", ".");
+            let new_args = args.iter().map(to_type).collect::<Vec<_>>().join(", ");
+
+            if name == "Unit" {
+                return "struct{}".to_string();
+            }
+
+            if let Some(coll) = is_collection_type(ty) {
+                let new_args = ty.remove_references().get_args().unwrap();
+
+                if coll == "Slice" {
+                    return format!("[]{k}", k = to_type(&new_args[0]));
+                }
+
+                if coll == "Map" {
+                    return format!(
+                        "map[{k}]{v}",
+                        k = to_type(&new_args[0]),
+                        v = to_type(&new_args[1])
+                    );
+                }
+
+                if coll == "Channel" {
+                    return format!("chan {k}", k = to_type(&new_args[0]));
+                }
+
+                if coll == "Sender" {
+                    return format!("chan<- {k}", k = to_type(&new_args[0]));
+                }
+
+                if coll == "Receiver" {
+                    return format!("<-chan {k}", k = to_type(&new_args[0]));
+                }
+            }
+
+            if name == "Ref" || name == "RefMut" {
+                return format!("*{new_args}");
+            }
+
+            if name == "EnumerateSlice" {
+                return format!("[]{new_args}");
+            }
+
+            if name == "VarArgs" {
+                return format!("...{new_args}");
+            }
+
+            if args.is_empty() {
+                return name.to_string();
+            }
+
+            format!("{name}[{new_args}]")
+        }
+
+        Type::Fun { args, ret, .. } => {
             let args = args.iter().map(to_type).collect::<Vec<_>>().join(", ");
-
-            // let ret = to_type(ret);
-            format!("func ({args}) any")
+            let ret = to_type(ret);
+            format!("func ({args}) {ret}")
         }
-        Type::Var(_) => "any".to_string(),
+
+        Type::Var(_) => panic!("unexpected Type::Var in to_type"),
     }
 }
 
-fn func_signature_or_any(ty: &Type) -> String {
-    match ty {
-        Type::Fun { .. } => to_type(ty),
-        _ => "any".to_string(),
-    }
-}
-
-fn to_loose_type_signature(ty: &Type) -> String {
-    match ty {
-        Type::Con { .. } => "any".to_string(),
-        Type::Fun { args, .. } => {
-            let args = args
-                .iter()
-                .map(|_| "any".to_string())
-                .collect::<Vec<_>>()
-                .join(", ");
-
-            format!("func ({args}) any")
-        }
-        Type::Var(_) => "any".to_string(),
-    }
-}
-
-fn enum_constructor(constructor: &str, con: &Constructor) -> String {
-    let mut out = emitter();
-    out.emit(format!("type {constructor} struct {{"));
-
-    con.fields.iter().enumerate().for_each(|(index, f)| {
-        let ty = func_signature_or_any(&f.ty);
-        out.emit(format!("  Field{index} {ty}"));
-    });
-
-    out.emit("}".to_string());
-    out.render()
-}
-
-fn constructor_make_function(name: &str, constructor: &str, con: &Constructor) -> String {
+fn constructor_make_function(def: &EnumDefinition, name: &str, con: &Constructor) -> String {
     let mut out = emitter();
 
-    if con.fields.is_empty() {
-        // no arguments in constructor, don't emit a func ie. Seq::Nil
-        return format!("var {name} = {constructor}{{}}");
-    }
+    let ty_name = &def.name;
+    let tag = format!("{ty_name}_{cons}", cons = con.name);
 
-    let (args, params): (Vec<_>, Vec<_>) = con
+    let (fields, params): (Vec<_>, Vec<_>) = con
         .fields
         .iter()
         .enumerate()
         .map(|(index, f)| {
             let arg = format!("arg_{index}");
-            let sig = "any"; //func_signature_or_any(ty);
+            let sig = to_type(&f.ty);
             let param = format!("{arg} {sig}");
 
-            let cast = cast_to(&to_loose_type_signature(&f.ty));
+            let field_name = constructor_field_name(&con.name, con.fields.len(), index);
+            let field = format!("{field_name}: {arg}");
 
-            (arg + &cast, param)
+            (field, param)
         })
         .unzip();
 
-    let args = args.join(", ");
+    let fields = fields.join(", ");
     let params = params.join(", ");
+
+    let (generic_params, generic_args) = if def.generics.is_empty() {
+        ("".to_string(), "".to_string())
+    } else {
+        let args = def.generics.clone().join(", ");
+        let generics = generics_to_string(&def.generics, &[]);
+        (generics, format!("[{args}]"))
+    };
+
+    let ret = Type::Con {
+        name: def.name.clone(),
+        args: def.generics.iter().map(|g| Type::generic(g)).collect(),
+    };
+    let ret = to_type(&ret);
 
     out.emit(format!(
         "
-func {name}({params}) any {{
-    return {constructor} {{ {args} }}
-}}"
+func {name} {generic_params} ({params}) {ret} {{
+    return {ty_name} {generic_args} {{ tag: {tag}, {fields} }}
+}}",
     ));
 
     out.render()
+}
+
+fn constructor_field_name(con_name: &str, fields_count: usize, index: usize) -> String {
+    format!(
+        "{field_name}{index}",
+        field_name = con_name,
+        index = if fields_count <= 1 {
+            "".to_string()
+        } else {
+            format!("{index}")
+        }
+    )
+}
+
+fn generics_to_string(generics: &[String], bounds: &[(String, TypeAst)]) -> String {
+    if generics.is_empty() {
+        return "".to_string();
+    }
+
+    let generics = generics
+        .iter()
+        .map(|g| {
+            let matching: Vec<_> = bounds
+                .iter()
+                .filter_map(
+                    |(generic, ann)| {
+                        if generic == g {
+                            ann.get_name()
+                        } else {
+                            None
+                        }
+                    },
+                )
+                .collect();
+
+            let constraint = match matching.len() {
+                0 => "any".to_string(),
+                1 => matching[0].to_string(),
+                _ => {
+                    let ifaces = matching.join("; ");
+                    format!("interface {{ {ifaces} }}")
+                }
+            };
+
+            format!("{g} {constraint}")
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    format!("[{generics}]")
+}
+
+fn change_collection_methods(fun: &Function) -> (Function, Option<Type>) {
+    let method = fun.as_method();
+
+    if method.is_none() {
+        return (fun.clone(), None);
+    }
+
+    let (new_func, receiver) = method.unwrap();
+
+    if let Some(ty_name) = is_collection_type(&receiver) {
+        // Use the old function
+        let mut updated = fun.clone();
+
+        // Update the function name
+        updated.name = format!("{ty_name}::{name}", name = new_func.name);
+
+        return (updated, None);
+    }
+
+    return (new_func, Some(receiver));
+}
+
+fn is_collection_type(ty: &Type) -> Option<String> {
+    let ty_name = ty.remove_references().get_name()?;
+    if ["Slice", "Map", "Channel", "Sender", "Receiver"].contains(&ty_name.as_str()) {
+        return Some(ty_name);
+    }
+
+    None
 }

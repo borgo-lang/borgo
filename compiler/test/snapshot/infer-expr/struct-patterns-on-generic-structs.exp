@@ -2,7 +2,7 @@ Struct patterns on generic structs
 
 SOURCE:
 {
-  struct Foo<T> { x: Int, y: List<T> }
+  struct Foo<T> { x: int, y: [T] }
   let a = Foo { x: 1, y: ["yo"] };
 
   match a {
@@ -12,11 +12,9 @@ SOURCE:
 }
 
 OUTPUT:
-List<String>
+[string]
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -33,14 +31,17 @@ No errors.
                 "name": "x",
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Int",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
                   }
                 }
               },
@@ -48,7 +49,7 @@ No errors.
                 "name": "y",
                 "ann": {
                   "Con": {
-                    "name": "List",
+                    "name": "Slice",
                     "args": [
                       {
                         "Con": {
@@ -60,16 +61,19 @@ No errors.
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "List",
-                    "args": [
-                      {
-                        "Con": {
-                          "name": "T",
-                          "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "Slice",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "T",
+                            "args": []
+                          }
                         }
-                      }
-                    ]
+                      ]
+                    }
                   }
                 }
               }
@@ -82,7 +86,7 @@ No errors.
             },
             "end": {
               "line": 2,
-              "col": 38
+              "col": 34
             }
           }
         }
@@ -114,7 +118,7 @@ No errors.
                 "args": [
                   {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   }
@@ -135,7 +139,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -157,15 +161,18 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "List": [
+                        "Slice": [
                           {
                             "Literal": {
                               "lit": {
-                                "String": "yo"
+                                "String": [
+                                  "yo",
+                                  null
+                                ]
                               },
                               "ty": {
                                 "Con": {
-                                  "name": "String",
+                                  "name": "string",
                                   "args": []
                                 }
                               },
@@ -185,11 +192,11 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "List",
+                          "name": "Slice",
                           "args": [
                             {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             }
@@ -217,7 +224,7 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     }
@@ -242,7 +249,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 }
@@ -282,13 +289,14 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
                   "name": "Foo",
                   "args": [
                     {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     }
@@ -322,7 +330,7 @@ No errors.
                           },
                           "ty": {
                             "Con": {
-                              "name": "Int",
+                              "name": "int",
                               "args": []
                             }
                           },
@@ -366,7 +374,7 @@ No errors.
                       "args": [
                         {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         }
@@ -404,13 +412,14 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Con": {
-                      "name": "List",
+                      "name": "Slice",
                       "args": [
                         {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         }
@@ -448,15 +457,18 @@ No errors.
               "expr": {
                 "Literal": {
                   "lit": {
-                    "List": [
+                    "Slice": [
                       {
                         "Literal": {
                           "lit": {
-                            "String": "asdf"
+                            "String": [
+                              "asdf",
+                              null
+                            ]
                           },
                           "ty": {
                             "Con": {
-                              "name": "String",
+                              "name": "string",
                               "args": []
                             }
                           },
@@ -476,11 +488,11 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "List",
+                      "name": "Slice",
                       "args": [
                         {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         }
@@ -503,11 +515,11 @@ No errors.
           ],
           "ty": {
             "Con": {
-              "name": "List",
+              "name": "Slice",
               "args": [
                 {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 }
@@ -529,11 +541,11 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "List",
+        "name": "Slice",
         "args": [
           {
             "Con": {
-              "name": "String",
+              "name": "string",
               "args": []
             }
           }

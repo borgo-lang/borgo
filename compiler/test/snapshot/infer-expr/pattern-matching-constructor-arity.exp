@@ -2,7 +2,7 @@ Pattern matching constructor arity.
 
 SOURCE:
 {
-  enum Color { Red, Blue(String) }
+  enum Color { Red, Blue(string) }
 
   match Color::Blue("foo") {
     Color::Red => "bar",
@@ -14,7 +14,7 @@ OUTPUT:
 Wrong arity
 
 Expected:
-    (String)
+    (string)
 Got:
     (A, A)
 

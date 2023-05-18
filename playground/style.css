@@ -1,0 +1,40 @@
+:root { --primary: #c30; }
+
+* { box-sizing: border-box; }
+html { font-family: sans-serif; color: #222; background: #fdfdfd; }
+
+h1 { font-size: 1.2em; }
+pre { white-space: pre-wrap; word-wrap: break-word; }
+hr { border: 1px solid #eee; }
+header { align-items: center; justify-content: space-between; }
+li { margin-bottom: 0.5em; }
+p, ul { margin-bottom: 1.5em; }
+p code, li code { padding: 4px 8px; background: #eee; border-radius: 3px; }
+p a { text-decoration: none; color: var(--primary); border-bottom: 2px solid; }
+footer { font-size: 0.75em; margin-bottom: 3em; padding-top: 0.5em; border-top: 1px solid #eee; }
+
+main { display: flex; align-items: top; justify-content: space-between; flex-wrap: wrap; margin-top: 3em; }
+
+
+
+/* Homepage */
+.home { max-width: 60em; margin: 0 auto 1.5em; }
+.home h1 { margin: 1.5em 0 3em; }
+
+
+/* Playground */
+.links-pane { width: 10%; }
+.links-pane a { display: inline-block; width: 100%; color: #333; padding: 0.5em; margin-bottom: 0.5em; text-decoration: none; font-size: 0.75em; }
+.links-pane .active { color: var(--primary); font-weight: bold; border-left: 3px solid var(--primary); }
+
+.content-pane { width: 40%; padding: 0 3em; line-height: calc(1ex / 0.32); }
+.content-pane h2 { padding: 0; margin: 0; }
+.content-pane pre { padding: 10px; background: #eee; border-radius: 3px; }
+
+.hint { margin: 3em 0; display: block; font-style: italic; border-left: 3px solid #eee; padding-left: 1em; font-size: 0.875em; }
+
+.editor-pane { width: 50%; }
+.actions { margin: 0.5em 0; }
+
+.cm-editor { height: 30em; }
+.cm-scroller { overflow: auto; }

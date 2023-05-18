@@ -6,9 +6,9 @@ SOURCE:
 OUTPUT:
 Type mismatch
 Expected:
-    Bool
+    bool
 Got:
-    String
+    string
 
 1|  !"asf"
      ^^^^^

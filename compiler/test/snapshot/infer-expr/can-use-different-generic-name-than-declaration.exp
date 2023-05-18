@@ -12,11 +12,9 @@ SOURCE:
 }
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -176,6 +174,38 @@ No errors.
                         }
                       }
                     }
+                  },
+                  "bounded_ty": {
+                    "generics": [
+                      "X",
+                      "Y"
+                    ],
+                    "ty": {
+                      "Fun": {
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "X",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "Y",
+                              "args": []
+                            }
+                          }
+                        ],
+                        "bounds": [],
+                        "ret": {
+                          "Con": {
+                            "name": "Unit",
+                            "args": []
+                          }
+                        },
+                        "id": -1
+                      }
+                    }
                   }
                 },
                 "kind": "TopLevel",
@@ -196,7 +226,7 @@ No errors.
                         "args": []
                       }
                     },
-                    "fx": []
+                    "id": -1
                   }
                 },
                 "span": {
@@ -234,7 +264,7 @@ No errors.
           },
           "ty": {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           },
@@ -253,7 +283,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

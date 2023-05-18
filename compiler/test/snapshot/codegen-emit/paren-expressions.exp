@@ -1,9 +1,8 @@
 Paren expressions
 
 SOURCE:
-fn borgo_main() {
-  (1 + 4).assert_eq(5);
-  ()
+fn main() {
+  assert_eq((1 + 4), 5);
 }
 
 OUTPUT:
@@ -11,20 +10,6 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func borgo_main() any {
-
-	{
-
-		Debug_assert_eq((borgo.Ops.IAdd(1, 4)), 5)
-
-		return borgo.Unit
-	}
-}
-
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	assert_eq[int]((1 + 4), 5)
 }

@@ -2,7 +2,7 @@ Spreading a struct into another.
 
 SOURCE:
 {
-  struct Foo { a: Int, b: String }
+  struct Foo { a: int, b: string }
 
   let x = Foo { a: 1, b: "foo" };
   Foo { b: "bar", ..x }
@@ -12,8 +12,6 @@ OUTPUT:
 Foo
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -28,14 +26,17 @@ No errors.
                 "name": "a",
                 "ann": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "Int",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
                   }
                 }
               },
@@ -43,14 +44,17 @@ No errors.
                 "name": "b",
                 "ann": {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "String",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -109,7 +113,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -131,11 +135,14 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "foo"
+                        "String": [
+                          "foo",
+                          null
+                        ]
                       },
                       "ty": {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
@@ -199,11 +206,14 @@ No errors.
               "value": {
                 "Literal": {
                   "lit": {
-                    "String": "bar"
+                    "String": [
+                      "bar",
+                      null
+                    ]
                   },
                   "ty": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
@@ -240,6 +250,7 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
                   "name": "Foo",

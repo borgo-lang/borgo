@@ -3,7 +3,7 @@ Recursive functions are supported in files.
 SOURCE:
 file: main.brg
 
-fn foo(n: Int) -> Int {
+fn foo(n: int) -> int {
   if n != 5 {
     return foo(n + 1)
   }
@@ -11,8 +11,8 @@ fn foo(n: Int) -> Int {
   n
 }
 
-fn borgo_main() {
-  foo(1).assert_eq(5)
+fn main() {
+  assert_eq(foo(1), 5);
 }
 
 OUTPUT:
@@ -20,32 +20,14 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func foo(n any) any {
-
-	{
-
-		if borgo.Ops.Eq(borgo.Ops.Ne(n, 5), true).(bool) {
-
-			return foo(borgo.Ops.IAdd(n, 1))
-
-		}
-
-		return n
+func foo(n int) int {
+	if n != 5 {
+		return foo(n + 1)
 	}
-}
-func borgo_main() any {
 
-	{
-
-		return Debug_assert_eq(foo(1), 5)
-	}
+	return n
 }
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	assert_eq[int](foo(1), 5)
 }

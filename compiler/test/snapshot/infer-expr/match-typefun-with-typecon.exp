@@ -2,8 +2,8 @@ Match Type::Fun with Type::Con
 
 SOURCE:
 {
-  fn bar() -> Bool { false }
-  fn foo() -> Int {
+  fn bar() -> bool { false }
+  fn foo() -> int {
     bar
   }
 }
@@ -11,9 +11,9 @@ SOURCE:
 OUTPUT:
 Type mismatch
 Expected:
-    Int
+    int
 Got:
-    fn () -> Bool
+    fn () -> bool
 
 4|      bar
         ^^^

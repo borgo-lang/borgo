@@ -2,16 +2,16 @@ Error when reassign to wrong type.
 
 SOURCE:
 {
-  let x = 1;
+  let mut x = 1;
   x = "foo"
 }
 
 OUTPUT:
 Type mismatch
 Expected:
-    Int
+    int
 Got:
-    String
+    string
 
 3|    x = "foo"
       ^^^^^^^^^

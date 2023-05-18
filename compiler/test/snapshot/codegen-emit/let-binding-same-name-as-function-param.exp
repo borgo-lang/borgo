@@ -1,13 +1,17 @@
 Let binding same name as function param
 
 SOURCE:
-fn foo(xs: List<Int>) -> Int {
-  let xs = xs.seq().sum();
-  xs + 10
+fn foo(xs: [int]) -> int {
+  // TODO asdf make sure params are put in scope so they can be rebound
+  // let xs = xs.len();
+  // xs + 10
+
+  let xxxs = xs.len();
+  xxxs + 10
 }
 
-fn borgo_main() {
-  foo([1,2,3]).assert_eq(16);
+fn main() {
+  assert_eq(foo([1,2,3]), 13);
 }
 
 OUTPUT:
@@ -15,28 +19,12 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func foo(xs []int) int {
+	xxxs := Slice_len[int](xs)
 
-var _ = borgo.Unit
-
-func foo(xs any) any {
-
-	{
-
-		var xs any = Seq_sum(List_seq(xs))
-
-		return borgo.Ops.IAdd(xs, 10)
-	}
-}
-func borgo_main() any {
-
-	{
-
-		return Debug_assert_eq(foo(borgo.List(1, 2, 3)), 16)
-	}
+	return xxxs + 10
 }
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	assert_eq[int](foo([]int{1, 2, 3}), 13)
 }

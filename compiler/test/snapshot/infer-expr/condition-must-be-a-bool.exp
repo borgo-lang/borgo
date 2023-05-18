@@ -1,4 +1,4 @@
-Condition must be a Bool.
+Condition must be a bool.
 
 SOURCE:
 if 12 {
@@ -8,9 +8,9 @@ if 12 {
 OUTPUT:
 Type mismatch
 Expected:
-    Bool
+    bool
 Got:
-    Int
+    int
 
 1|  if 12 {
        ^^

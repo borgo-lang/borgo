@@ -6,7 +6,7 @@ What's the type of an `ast::Expr`?
 
 Literals.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 1
@@ -22,34 +22,34 @@ Blocks get the type of the last expression.
 
 Block ends with function
 
-> infer("fn () -> Int")
+> infer("fn () -> int")
 
 ```rust
-{ fn foo() -> Int { 1 } }
+{ fn foo() -> int { 1 } }
 ```
 
 Block ends with function 2
 
-> infer("fn (Int) -> Int")
+> infer("fn (int) -> int")
 
 ```rust
-{ fn foo(foo: Int) -> Int { foo } }
+{ fn foo(foo: int) -> int { foo } }
 ```
 
 Block ends with function 3
 
-> infer("fn (Int, Bool) -> Int")
+> infer("fn (int, bool) -> int")
 
 ```rust
-{ fn foo(foo: Int, bar: Bool) -> Int { foo } }
+{ fn foo(foo: int, bar: bool) -> int { foo } }
 ```
 
 Block ends with function 4
 
-> infer("fn <A>(A, Bool) -> A")
+> infer("fn <A>(A, bool) -> A")
 
 ```rust
-{ fn foo<T>(foo: T, bar: Bool) -> T { foo } }
+{ fn foo<T>(foo: T, bar: bool) -> T { foo } }
 ```
 
 Sanity check: types must exist
@@ -62,18 +62,18 @@ Sanity check: types must exist
 
 Block ends with list
 
-> infer("fn () -> List<Int>")
+> infer("fn () -> [int]")
 
 ```rust
-{ fn foo() -> List<Int> { [1] } }
+{ fn foo() -> [int] { [1] } }
 ```
 
 Block ends with generic list
 
-> infer("fn <A>(A) -> List<A>")
+> infer("fn <A>(A) -> [A]")
 
 ```rust
-{ fn foo<Y>(foo: Y) -> List<Y> { [foo, foo] } }
+{ fn foo<Y>(foo: Y) -> [Y] { [foo, foo] } }
 ```
 
 Generic arguments 1
@@ -81,15 +81,15 @@ Generic arguments 1
 > errorContains("Wrong arity")
 
 ```rust
-{ fn foo(foo: List<Int, Bool>) {} }
+{ fn foo(foo: Result<string, int, bool>) {} }
 ```
 
 Generic arguments 2
 
-> infer("fn () -> List<List<Int>>")
+> infer("fn () -> [[int]]")
 
 ```rust
-{ fn foo() -> List<List<Int>> { [[1]]} }
+{ fn foo() -> [[int]] { [[1]]} }
 ```
 
 Generic arguments 3
@@ -97,7 +97,7 @@ Generic arguments 3
 > errorContains("Wrong arity")
 
 ```rust
-{ fn foo(foo: Int<Bool>) {} }
+{ fn foo(foo: int<bool>) {} }
 ```
 
 HKTs are not supported.
@@ -105,12 +105,12 @@ HKTs are not supported.
 > errorContains("Wrong arity")
 
 ```rust
-{ fn foo<T>(foo: T<Bool>) {} }
+{ fn foo<T>(foo: T<bool>) {} }
 ```
 
 Populate scope with let bindings.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
@@ -121,7 +121,7 @@ Populate scope with let bindings.
 
 Function call with no arguments.
 
-> infer("String")
+> infer("string")
 
 ```rust
 { hello() }
@@ -129,7 +129,7 @@ Function call with no arguments.
 
 Function call with arguments
 
-> infer("Int")
+> infer("int")
 
 ```rust
 { sum(1, 4) }
@@ -159,17 +159,17 @@ Wrong param type
 { sum("asdf", 1) }
 ```
 
-List literals
+Slice literals
 
-> infer("List<Int>")
+> infer("[int]")
 
 ```rust
 { [1,2,3] }
 ```
 
-Lists are polymorphic
+Slices are polymorphic
 
-> infer("List<String>")
+> infer("[string]")
 
 ```rust
 {
@@ -181,12 +181,13 @@ Lists are polymorphic
 
 It's possible to sanity-check the type of a value.
 
-> infer("List<Int>")
+> infer("[int]")
 
 ```rust
 {
   let x = [1,2,3];
-  x as List<Int>
+  x as [int];
+  x
 }
 ```
 
@@ -197,14 +198,14 @@ And the check should work!
 ```rust
 {
   let x = [1,2,3];
-  x as Bool;
+  x as bool;
   1
 }
 ```
 
 Functions should get inferred correctly.
 
-> infer("fn <A, B>(List<A>, fn (A) -> B) -> List<B>")
+> infer("fn <A, B>([A], fn (A) -> B) -> [B]")
 
 ```rust
 list_map
@@ -212,7 +213,7 @@ list_map
 
 Functions can take functions.
 
-> infer("List<Int>")
+> infer("[int]")
 
 ```rust
 {
@@ -234,7 +235,7 @@ Generics are applied correctly.
 
 Functions can be inlined.
 
-> infer("List<Int>")
+> infer("[int]")
 
 ```rust
 {
@@ -245,7 +246,7 @@ Functions can be inlined.
 
 Closures can be inferred.
 
-> infer("fn (Int) -> Int")
+> infer("fn (int) -> int")
 
 ```rust
 |n| sum(n, 1)
@@ -253,33 +254,34 @@ Closures can be inferred.
 
 Functions are in scope after declaration.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
-  fn foo(a: Int) -> Int { sum(a, 4) }
+  fn foo(a: int) -> int { sum(a, 4) }
   foo(1)
 }
 ```
 
 Generic functions get instantiated at each use site.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
   fn constant<T, Y>(a: T, b: Y) -> T { a }
 
   let x = constant("hello", 5);
-  x as String;
+  x as string;
   let y = sum(constant(1, false), 5);
-  y as Int
+  y as int;
+  y
 }
 ```
 
 If expressions.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 if true {
@@ -289,7 +291,7 @@ if true {
 }
 ```
 
-Condition must be a Bool.
+Condition must be a bool.
 
 > errorContains("mismatch")
 
@@ -313,7 +315,7 @@ if true {
 
 Match expressions.
 
-> infer("String")
+> infer("string")
 
 ```rust
 match 1 {
@@ -334,7 +336,7 @@ match 1 {
 
 Wildcard matches.
 
-> infer("String")
+> infer("string")
 
 ```rust
 match 1 {
@@ -356,7 +358,7 @@ match 1 {
 
 Aliasing in a match arm.
 
-> infer("String")
+> infer("string")
 
 ```rust
 match 1 {
@@ -367,7 +369,7 @@ match 1 {
 
 Match and If are still expressions.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
@@ -400,7 +402,7 @@ Unit type.
 
 Tuples.
 
-> infer("(Int, Int)")
+> infer("(int, int)")
 
 ```rust
 (1, 2)
@@ -411,7 +413,7 @@ Tuples with wrong type annotation.
 > errorContains("mismatch")
 
 ```rust
-("foo", 2) as (Bool, Int)
+("foo", 2) as (bool, int)
 ```
 
 Tuples with wrong arity.
@@ -419,16 +421,16 @@ Tuples with wrong arity.
 > errorContains("mismatch")
 
 ```rust
-(1, 2, 3) as (Int, Int)
+(1, 2, 3) as (int, int)
 ```
 
 Tuples as function arguments.
 
-> infer("fn ((Int, Bool)) -> Int")
+> infer("fn ((int, bool)) -> int")
 
 ```rust
 {
-  fn foo(t: (Int, Bool)) -> Int {
+  fn foo(t: (int, bool)) -> int {
     fst(t)
   }
 }
@@ -436,11 +438,11 @@ Tuples as function arguments.
 
 Tuples as return type.
 
-> infer("fn () -> (String, Bool)")
+> infer("fn () -> (string, bool)")
 
 ```rust
 {
-  fn foo() -> (String, Bool) {
+  fn foo() -> (string, bool) {
     ("foo", true)
   }
 }
@@ -448,11 +450,11 @@ Tuples as return type.
 
 Typing callbacks.
 
-> infer("String")
+> infer("string")
 
 ```rust
 {
-  fn foo( f: fn (i: Int) -> String, x: Int ) -> String {
+  fn foo( f: fn (i: int) -> string, x: int ) -> string {
     f(x)
   }
 
@@ -462,18 +464,18 @@ Typing callbacks.
 
 Callbacks with generics
 
-> infer("List<Int>")
+> infer("[int]")
 
 ```rust
 {
-  fn another_map<A, B>( f: fn (x: A) -> B, xs: List<A> ) -> List<B> {
+  fn another_map<A, B>( f: fn (x: A) -> B, xs: [A] ) -> [B] {
     // mimics implementation
     let first = list_head(xs);
     [f(first)]
   }
 
   let a = another_map(|x| int_to_string(x), [1,2,3]);
-  a as List<String>;
+  a as [string];
 
   another_map(|x| sum(x, 1), [1,2,3])
 }
@@ -492,7 +494,7 @@ Enums should introduce a new type in the environment.
 
 Enums with generics should get instantiated.
 
-> infer("Maybe<Int>")
+> infer("Maybe<int>")
 
 ```rust
 {
@@ -509,10 +511,10 @@ Enum variants get instantiated correctly.
 {
   enum Maybe<T> { Just(T), None }
 
-  Maybe::Just(1) as Maybe<Int>;
-  Maybe::Just("foo") as Maybe<String>;
-  Maybe::None as Maybe<Bool>;
-  Maybe::Just(Maybe::Just(1)) as Maybe<Maybe<Int>>;
+  Maybe::Just(1) as Maybe<int>;
+  Maybe::Just("foo") as Maybe<string>;
+  Maybe::None as Maybe<bool>;
+  Maybe::Just(Maybe::Just(1)) as Maybe<Maybe<int>>;
 
   Maybe::None
 }
@@ -520,11 +522,11 @@ Enum variants get instantiated correctly.
 
 Pattern matching works on enums.
 
-> infer("String")
+> infer("string")
 
 ```rust
 {
-  enum Color { Red, Blue(String) }
+  enum Color { Red, Blue(string) }
 
   let x = Color::Blue("foo");
   match x {
@@ -540,7 +542,7 @@ Pattern matching constructor arity.
 
 ```rust
 {
-  enum Color { Red, Blue(String) }
+  enum Color { Red, Blue(string) }
 
   match Color::Blue("foo") {
     Color::Red => "bar",
@@ -551,7 +553,7 @@ Pattern matching constructor arity.
 
 Generic enums can be pattern matched.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
@@ -572,21 +574,21 @@ Nested pattern matching is supported.
 ```rust
 {
   enum Maybe<T> { Just(T), None }
-  enum Color { Red, Blue(String, Bool) }
+  enum Color { Red, Blue(string, bool) }
 
   let c = Color::Blue("foo", false);
   let x = Maybe::Just(c);
 
   let n = match x {
     Maybe::Just(Color::Blue(s, b)) => {
-      s as String;
-      b as Bool;
+      s as string;
+      b as bool;
       1
     },
     Maybe::None => 2,
   };
 
-  n as Int;
+  n as int;
 
   match x {
     Maybe::Just(x) => x,
@@ -607,8 +609,8 @@ Enums can be returned from functions.
     Maybe::Just(v)
   }
 
-  ok(1) as Maybe<Int>;
-  ok("foo") as Maybe<String>;
+  ok(1) as Maybe<int>;
+  ok("foo") as Maybe<string>;
 
   ok
 }
@@ -616,23 +618,23 @@ Enums can be returned from functions.
 
 Enums from functions II.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
   enum Maybe<T> { Just(T), None }
 
-  fn foo(b: Int) -> Maybe<Int> {
+  fn foo(b: int) -> Maybe<int> {
     Maybe::None
   }
 
-  foo(1) as Maybe<Int>;
+  foo(1) as Maybe<int>;
 
-  fn bar(b: Int) -> Maybe<Int> {
+  fn bar(b: int) -> Maybe<int> {
     Maybe::Just(b)
   }
 
-  match foo(2) as Maybe<Int> {
+  match foo(2) as Maybe<int> {
     Maybe::Just(x) => x,
     Maybe::None => 3,
   }
@@ -647,7 +649,7 @@ Enums from functions (error).
 {
   enum Maybe<T> { Just(T), None }
 
-  fn foo(b: Int) -> Maybe<String> {
+  fn foo(b: int) -> Maybe<string> {
     Maybe::Just(b)
   }
 }
@@ -659,7 +661,7 @@ Defining structs.
 
 ```rust
 {
-  struct Foo { a: Int }
+  struct Foo { a: int }
 
   Foo { a: 1 }
 }
@@ -667,7 +669,7 @@ Defining structs.
 
 Generic structs.
 
-> infer("Foo<Int>")
+> infer("Foo<int>")
 
 ```rust
 {
@@ -679,7 +681,7 @@ Generic structs.
 
 Generic structs with multiple params.
 
-> infer("Foo<Int, Bool>")
+> infer("Foo<int, bool>")
 
 ```rust
 {
@@ -695,7 +697,7 @@ Structs with not enough arguments.
 
 ```rust
 {
-  struct Foo { a: Int, b: Int }
+  struct Foo { a: int, b: int }
 
   Foo { a: 1 }
 }
@@ -707,7 +709,7 @@ Structs with too many arguments.
 
 ```rust
 {
-  struct Foo { a: Int, b: Int }
+  struct Foo { a: int, b: int }
 
   Foo { a: 1, b: 2, c: 3 }
 }
@@ -715,11 +717,11 @@ Structs with too many arguments.
 
 Accessing struct fields.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
-  struct Foo { a: Int }
+  struct Foo { a: int }
 
   let x = Foo { a: 1 };
   x.a
@@ -732,21 +734,63 @@ Error when reassign to wrong type.
 
 ```rust
 {
-  let x = 1;
+  let mut x = 1;
   x = "foo"
 }
 ```
 
 Error when updating structs.
 
-> errorContains("re-assign instead")
+> errorContains("mismatch")
 
 ```rust
 {
-  struct Foo { a: Int }
+  struct Foo { a: int }
+
+  let mut x = Foo { a: 1 };
+  x.a = "foo"
+}
+```
+
+Structs can be updated
+
+> infer("Foo")
+
+```rust
+{
+  struct Foo { a: int }
+
+  let mut x = Foo { a: 1 };
+  x.a = 3;
+  x
+}
+```
+
+Structs need mutability
+
+> errorContains("mutable")
+
+```rust
+{
+  struct Foo { a: int }
 
   let x = Foo { a: 1 };
-  x.a = "foo"
+  x.a = 5;
+}
+```
+
+Nested struct update
+
+> infer("Bar")
+
+```rust
+{
+  struct Foo { x: int }
+  struct Bar { f: Foo }
+
+  let mut b = Bar { f: Foo { x: 1 } };
+  b.f.x = 99;
+  b
 }
 ```
 
@@ -756,7 +800,7 @@ Spreading a struct into another.
 
 ```rust
 {
-  struct Foo { a: Int, b: String }
+  struct Foo { a: int, b: string }
 
   let x = Foo { a: 1, b: "foo" };
   Foo { b: "bar", ..x }
@@ -769,8 +813,8 @@ Error when spreading in different structs.
 
 ```rust
 {
-  struct Foo { a: Int, b: String }
-  struct Bar { a: Int, b: String }
+  struct Foo { a: int, b: string }
+  struct Bar { a: int, b: string }
 
   let x = Foo { a: 1, b: "foo" };
   let y = Bar { a: 1, b: "bar" };
@@ -784,8 +828,8 @@ Nested updates.
 
 ```rust
 {
-  struct Foo { a: Int, b: String }
-  struct Bar { a: Int, b: String, f: Foo }
+  struct Foo { a: int, b: string }
+  struct Bar { a: int, b: string, f: Foo }
 
   let x = Foo { a: 1, b: "foo" };
   let y = Bar { a: 1, b: "bar", f: x };
@@ -799,41 +843,18 @@ Let bindings with annotation.
 
 ```rust
 {
-  let x: List<Int> = [1,2,3];
-  let y: List<Bool> = [1,2,3];
-}
-```
-
-Methods.
-
-> infer("String")
-
-```rust
-{
-  1.int_to_string() as String;
-  let x = 5;
-  x.sum(3) as Int;
-  hello().str_concat("foo")
-}
-```
-
-Wrong arguments in methods.
-
-> errorContains("arity")
-
-```rust
-{
-  hello().str_concat()
+  let x: [int] = [1,2,3];
+  let y: [bool] = [1,2,3];
 }
 ```
 
 Return statements should unify.
 
-> infer("fn () -> Int")
+> infer("fn () -> int")
 
 ```rust
 {
-  fn foo() -> Int {
+  fn foo() -> int {
     let x = 5;
     return x
   }
@@ -846,7 +867,7 @@ Early return statements should unify with return type.
 
 ```rust
 {
-  fn foo() -> Int {
+  fn foo() -> int {
     if true {
       return "foo"
     }
@@ -862,7 +883,7 @@ Multiple early return all unify.
 
 ```rust
 {
-  fn foo() -> Int {
+  fn foo() -> int {
     if true {
       return 1
     }
@@ -878,13 +899,13 @@ Multiple early return all unify.
 
 A function within a function gets its own return type.
 
-> infer("fn () -> Int")
+> infer("fn () -> int")
 
 ```rust
 {
-  fn foo() -> Int {
+  fn foo() -> int {
 
-    fn bar() -> String {
+    fn bar() -> string {
       if true {
         return "foo"
       }
@@ -893,7 +914,7 @@ A function within a function gets its own return type.
     }
 
 
-    bar() as String;
+    bar() as string;
 
     return 2
   }
@@ -916,7 +937,7 @@ Errors must be of the same type.
 
 ```rust
 {
-  fn foo() -> Result<()> {
+  fn foo() -> Result<(), ErrFoo> {
     if true {
       return Err(ErrFoo::A);
     }
@@ -932,9 +953,9 @@ Function calls with different errors don't unify.
 
 ```rust
 {
-  fn foo1() -> Result<Int, ErrFoo> { Err(ErrFoo::A) }
-  fn foo2() -> Result<Int, ErrFoo> { Err(ErrBar::X) }
-  fn bar() -> Result<Int> {
+  fn foo1() -> Result<int, ErrFoo> { Err(ErrFoo::A) }
+  fn foo2() -> Result<int, ErrFoo> { Err(ErrBar::X) }
+  fn bar() -> Result<int, ErrFoo> {
     foo1()?;
     foo2()?;
     Ok(1)
@@ -944,7 +965,7 @@ Function calls with different errors don't unify.
 
 Functions with no error get inferred ok.
 
-> infer("List<Int>")
+> infer("[int]")
 
 ```rust
 {
@@ -954,30 +975,30 @@ Functions with no error get inferred ok.
 
 Callbacks with errors are automatically wrapped into a Result.
 
-> infer("List<Result<Int, ErrFoo>>")
+> infer("[Result<int, ErrFoo>]")
 
 ```rust
 {
-  fn foo(x: Int) -> Result<Int> { return Err(ErrFoo::A); Ok(x) }
+  fn foo(x: int) -> Result<int, ErrFoo> { return Err(ErrFoo::A); Ok(x) }
   list_map([1,2,3], foo)
 }
 ```
 
 Callbacks with different error types can still be passed to the same function.
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 {
-  fn foo() -> Result<Int, ErrFoo> { Err(ErrFoo::A) }
-  fn bar() -> Result<Int, ErrBar> { Err(ErrBar::X) }
+  fn foo() -> Result<int, ErrFoo> { Err(ErrFoo::A) }
+  fn bar() -> Result<int, ErrBar> { Err(ErrBar::X) }
 
-  fn baz(f: fn () -> Result<Int, ErrFoo>, g: fn() -> Result<Int, ErrBar>) {
+  fn baz(f: fn () -> Result<int, ErrFoo>, g: fn() -> Result<int, ErrBar>) {
     ()
   }
 
-  foo as fn () -> Result<Int, ErrFoo>;
-  bar as fn () -> Result<Int, ErrBar>;
+  foo as fn () -> Result<int, ErrFoo>;
+  bar as fn () -> Result<int, ErrBar>;
 
   baz(foo, bar);
   true
@@ -986,13 +1007,13 @@ Callbacks with different error types can still be passed to the same function.
 
 A function that is already wrapped, doesn't get wrapped again.
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 {
-  fn foo(x: Int) -> Result<String, ErrFoo> { Err(ErrFoo::A) }
+  fn foo(x: int) -> Result<string, ErrFoo> { Err(ErrFoo::A) }
 
-  fn bar(f: fn (x: Int) -> Result<String, ErrFoo>) {
+  fn bar(f: fn (x: int) -> Result<string, ErrFoo>) {
     ()
   }
 
@@ -1007,7 +1028,7 @@ The `?` operator can only be used in functions that return a Result.
 
 ```rust
 {
-  fn foo() -> Result<Int, ErrFoo> { Ok(1) }
+  fn foo() -> Result<int, ErrFoo> { Ok(1) }
   fn bar() {
     let x = foo()?;
     ()
@@ -1017,7 +1038,7 @@ The `?` operator can only be used in functions that return a Result.
 
 Equality
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 {
@@ -1029,7 +1050,7 @@ Equality
 
 Can shadow vars in block
 
-> infer("String")
+> infer("string")
 
 ```rust
 {
@@ -1041,9 +1062,9 @@ Can shadow vars in block
 }
 ```
 
-Math operands on Ints
+Math operands on ints
 
-> infer("Int")
+> infer("int")
 
 ```rust
 { 1 + 5 }
@@ -1051,15 +1072,15 @@ Math operands on Ints
 
 Wrong type in operands
 
-> errorContains("mismatch")
+> errorContains("numeric type")
 
 ```rust
 { 1 + false }
 ```
 
-Boolean operators
+boolean operators
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 { (1 == 2) && (false || true) }
@@ -1067,14 +1088,14 @@ Boolean operators
 
 Impl blocks
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 {
     enum Color { Red, Blue }
 
     impl Color {
-        fn is_red(self) -> Bool {
+        fn is_red(self) -> bool {
             self == Color::Red
         }
     }
@@ -1085,7 +1106,7 @@ Impl blocks
 
 Impl blocks with generic types
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 {
@@ -1104,7 +1125,7 @@ Impl blocks with generic types
         }
     }
 
-    let foo: Foo<Int, Bool> = Foo::make_bar(1);
+    let foo: Foo<int, bool> = Foo::make_bar(1);
     foo.do_stuff(true)
 }
 ```
@@ -1132,7 +1153,7 @@ Impl with wrong generics
 
 Match weirdness
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 {
@@ -1152,8 +1173,8 @@ Match Type::Fun with Type::Con
 
 ```rust
 {
-  fn bar() -> Bool { false }
-  fn foo() -> Int {
+  fn bar() -> bool { false }
+  fn foo() -> int {
     bar
   }
 }
@@ -1161,7 +1182,7 @@ Match Type::Fun with Type::Con
 
 Negative numbers
 
-> infer("Int")
+> infer("int")
 
 ```rust
 5 * -3
@@ -1169,7 +1190,7 @@ Negative numbers
 
 Negate expressions
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 !false
@@ -1177,7 +1198,7 @@ Negate expressions
 
 Neg only works with numbers
 
-> errorContains("Int or Float")
+> errorContains("numeric type")
 
 ```rust
 -false
@@ -1197,7 +1218,7 @@ Generic function arguments should not get instantiated
 
 ```rust
 {
-  fn foo<T>(x: T) -> Int {
+  fn foo<T>(x: T) -> int {
     x as T;
     match x {
       1 => 1
@@ -1212,7 +1233,7 @@ Sanity check, can't make up types out of thin air
 
 ```rust
 {
-  fn foo<T>(x: Y) -> Int {
+  fn foo<T>(x: Y) -> int {
     1
   }
 }
@@ -1220,7 +1241,7 @@ Sanity check, can't make up types out of thin air
 
 Characters
 
-> infer("Char")
+> infer("rune")
 
 ```rust
 'a'
@@ -1228,7 +1249,7 @@ Characters
 
 Tuple fields
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
@@ -1254,11 +1275,11 @@ Sanity check: can't invent constructors in pattern match
 
 Struct inference in lambdas
 
-> infer("List<String>")
+> infer("[string]")
 
 ```rust
 {
-  struct Foo { a: Int, b: String }
+  struct Foo { a: int, b: string }
 
   let f = Foo { a: 1, b: "a" };
   list_map([f], |x| str_concat(x.b, "!"))
@@ -1267,17 +1288,17 @@ Struct inference in lambdas
 
 Generics in impl method
 
-> infer("String")
+> infer("string")
 
 ```rust
 {
   struct Foo<T> { bar: T }
   impl<T> Foo<T> {
-    fn map(self, f: fn (x: T) -> String) -> String {
+    fn map(self, f: fn (x: T) -> string) -> string {
       f(self.bar)
     }
 
-    fn other(self) -> String {
+    fn other(self) -> string {
       self.map(|x| "asdf")
     }
   }
@@ -1320,7 +1341,7 @@ Generics should get instantiated to the same type in pattern match
   match Foo::Bar(12) {
     Bar(x) => {
       let a = x + 1;
-      a.int_to_string()
+      int_to_string(a)
     },
 
     Baz(y) => str_concat(y, "doh"),
@@ -1330,7 +1351,7 @@ Generics should get instantiated to the same type in pattern match
 
 Floats
 
-> infer("Float")
+> infer("float64")
 
 ```rust
 9.12
@@ -1338,23 +1359,23 @@ Floats
 
 Math ops with floats
 
-> infer("Float")
+> infer("float64")
 
 ```rust
 1.3 + 5.2
 ```
 
-Can't mix floats with ints
+Operands between floats and ints
 
-> errorContains("mismatch")
+> infer("float64")
 
 ```rust
 3.1 * 4
 ```
 
-Can't use binary ops with random types
+Plus operator works with strings
 
-> errorContains("Int or Float")
+> infer("string")
 
 ```rust
 "a" + "b"
@@ -1362,11 +1383,11 @@ Can't use binary ops with random types
 
 Bidirectional inference for closure params
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
-  struct Foo { a: Int }
+  struct Foo { a: int }
 
   fn bar<T, Y>(start: T, f: fn (x: T) -> Y) -> Y {
     f(start)
@@ -1378,11 +1399,11 @@ Bidirectional inference for closure params
 
 Struct patterns
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
-  struct Foo { x: Int, y: String }
+  struct Foo { x: int, y: string }
 
   let f = Foo { x: 1, y: "a" };
   match f {
@@ -1393,11 +1414,11 @@ Struct patterns
 
 Tuple patterns
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
-  fn foo((x, y): (Int, String)) -> Int { x }
+  fn foo((x, y): (int, string)) -> int { x }
   foo((1, "a"))
 }
 ```
@@ -1408,14 +1429,14 @@ Pattern with too many arguments
 
 ```rust
 {
-  fn foo((x, y, z): (Bool, Bool)) -> Bool { x }
+  fn foo((x, y, z): (bool, bool)) -> bool { x }
   foo((false, false))
 }
 ```
 
 Tuple patterns in let bindings
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
@@ -1426,7 +1447,7 @@ Tuple patterns in let bindings
 
 Tuple patterns in match arms
 
-> infer("String")
+> infer("string")
 
 ```rust
 {
@@ -1460,7 +1481,7 @@ Unknown type in impl with generics
 
 Can use different generic name than declaration.
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
@@ -1476,7 +1497,7 @@ Can use different generic name than declaration.
 
 Missing methods give the target type.
 
-> errorContains("Foo<Int> has no method: bar")
+> errorContains("Foo<int> has no field or method: bar")
 
 ```rust
 {
@@ -1488,11 +1509,11 @@ Missing methods give the target type.
 
 Pattern matcihng on structs
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 {
-  struct Foo { x: Int, y: String }
+  struct Foo { x: int, y: string }
 
   let f = Foo{ x: 34, y: "yo" };
   match f {
@@ -1505,7 +1526,7 @@ Pattern matcihng on structs
 
 Not equal operator
 
-> infer("Bool")
+> infer("bool")
 
 ```rust
 {
@@ -1515,25 +1536,25 @@ Not equal operator
 
 Tuple fields II
 
-> infer("List<String>")
+> infer("[string]")
 
 ```rust
 {
-  struct Foo<T> { x: Int, y: List<T> }
+  struct Foo<T> { x: int, y: [T] }
   let a = Foo { x: 1, y: ["yo"] };
 
-  a.x as Int;
+  a.x as int;
   a.y
 }
 ```
 
 Struct patterns on generic structs
 
-> infer("List<String>")
+> infer("[string]")
 
 ```rust
 {
-  struct Foo<T> { x: Int, y: List<T> }
+  struct Foo<T> { x: int, y: [T] }
   let a = Foo { x: 1, y: ["yo"] };
 
   match a {
@@ -1545,7 +1566,7 @@ Struct patterns on generic structs
 
 Unit pattern match arm
 
-> infer("Int")
+> infer("int")
 
 ```rust
 match () {
@@ -1559,13 +1580,15 @@ Type errors in method chains
 
 ```rust
 {
-  fn foo(x: Int) -> Int { 1 }
-  fn bar(x: String) -> String { x }
-  fn baz(x: String) -> String { x }
+  struct Foo {}
+  struct Bar {}
+  struct Baz {}
 
-  let input = "yo";
+  impl Foo { fn foo(self) -> int { 1 } }
+  impl Bar { fn bar(self) -> Baz { Baz{} } }
+  impl Baz { fn baz(self) -> Bar { Bar{} } }
 
-  input
+  Bar{}
   .bar()
   .baz()
   .foo()
@@ -1587,7 +1610,7 @@ No method found error
 
 Mutable variables
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
@@ -1610,11 +1633,11 @@ Only mutable variables can be mutated
 
 Functions can take mutable params
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
-  fn foo (mut a: Int) -> Int {
+  fn foo (mut a: int) -> int {
     a = a + 1;
     a
   }
@@ -1625,7 +1648,7 @@ Functions can take mutable params
 
 If statements skip unification
 
-> infer("Int")
+> infer("int")
 
 ```rust
 {
@@ -1639,5 +1662,76 @@ If statements skip unification
   }
 
   1
+}
+```
+
+Reference types
+
+> infer("int")
+
+```rust
+{
+  struct Bar { x: int }
+
+  fn foo(a: &Bar) -> int {
+    a.x
+  }
+
+  foo(&Bar{ x: 1 })
+}
+```
+
+Mutable reference as method receiver
+
+> infer("()")
+
+```rust
+{
+  struct Foo { x: int }
+
+  impl Foo {
+    fn bar(&mut self) {
+      self.x = 5;
+    }
+  }
+
+  let mut f = Foo { x: 3 };
+  f.bar()
+}
+```
+
+Slice syntax in types
+
+> infer("fn ([int]) -> ()")
+
+```rust
+{
+  fn foo(x: [int]) {}
+}
+```
+
+Trait bounds
+
+> infer("int")
+
+```rust
+{
+  trait Foo {
+    fn bar(x: string) -> int;
+  }
+
+  fn check<T: Foo>(f: T) -> int {
+    f.bar("yo")
+  }
+
+  struct Baz { x: int }
+
+  impl Baz {
+    fn bar(self, _: string) -> int {
+      self.x
+    }
+  }
+
+  check(Baz { x: 1 })
 }
 ```

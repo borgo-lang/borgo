@@ -4,11 +4,9 @@ SOURCE:
 1
 
 OUTPUT:
-Int
+int
 ---
 No errors.
----
-[]
 ---
 {
   "Literal": {
@@ -17,7 +15,7 @@ No errors.
     },
     "ty": {
       "Con": {
-        "name": "Int",
+        "name": "int",
         "args": []
       }
     },

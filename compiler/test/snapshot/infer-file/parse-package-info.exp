@@ -1,0 +1,245 @@
+Parse package info
+
+SOURCE:
+#[package(path = github.com:yo/test, name = test::pkg)]
+mod f {
+  struct Foo { a: int }
+}
+
+use test::pkg;
+
+fn borgo_main() -> f::Foo {
+  f::Foo { a: 1 }
+}
+
+OUTPUT:
+fn () -> f::Foo
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "Mod": {
+            "name": "f",
+            "pkg": {
+              "name": "test::pkg",
+              "path": "github.com:yo/test"
+            },
+            "items": [
+              {
+                "StructDef": {
+                  "def": {
+                    "name": "Foo",
+                    "generics": [],
+                    "fields": [
+                      {
+                        "name": "a",
+                        "ann": {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        },
+                        "ty": {
+                          "generics": [],
+                          "ty": {
+                            "Con": {
+                              "name": "int",
+                              "args": []
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 23
+                    }
+                  }
+                }
+              }
+            ],
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 4,
+                "col": 1
+              }
+            }
+          }
+        },
+        {
+          "UsePackage": {
+            "import": {
+              "name": "test::pkg"
+            },
+            "span": {
+              "start": {
+                "line": 6,
+                "col": 0
+              },
+              "end": {
+                "line": 6,
+                "col": 14
+              }
+            }
+          }
+        },
+        {
+          "Closure": {
+            "fun": {
+              "name": "borgo_main",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "f::Foo",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "f::Foo",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "StructCall": {
+                        "name": "f::Foo",
+                        "fields": [
+                          {
+                            "name": "a",
+                            "value": {
+                              "Literal": {
+                                "lit": {
+                                  "Int": 1
+                                },
+                                "ty": {
+                                  "Con": {
+                                    "name": "int",
+                                    "args": []
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 9,
+                                    "col": 14
+                                  },
+                                  "end": {
+                                    "line": 9,
+                                    "col": 15
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "rest": null,
+                        "ty": {
+                          "Con": {
+                            "name": "f::Foo",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 9,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 9,
+                            "col": 17
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "f::Foo",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 8,
+                      "col": 26
+                    },
+                    "end": {
+                      "line": 10,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "f::Foo",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "f::Foo",
+                    "args": []
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 8,
+                "col": 0
+              },
+              "end": {
+                "line": 10,
+                "col": 1
+              }
+            }
+          }
+        }
+      ],
+      "source": "#[package(path = github.com:yo/test, name = test::pkg)]\nmod f {\n  struct Foo { a: int }\n}\n\nuse test::pkg;\n\nfn borgo_main() -> f::Foo {\n  f::Foo { a: 1 }\n}"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}

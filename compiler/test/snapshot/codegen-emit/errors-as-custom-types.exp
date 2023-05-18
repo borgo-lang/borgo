@@ -1,0 +1,67 @@
+Errors as custom types
+
+SOURCE:
+fn foo() -> Result<(), FooErr> {
+  Ok(())
+}
+
+struct FooErr {}
+
+impl FooErr {
+  fn Error(self) -> string { "b" }
+}
+
+fn bar() -> Result<(), error> {
+  let x = foo()?;
+  Ok(x);
+}
+
+fn main() {
+  let x = foo();
+  let y = bar();
+  assert_eq(x, Ok(()));
+  assert_eq(y, Ok(()));
+}
+
+OUTPUT:
+
+---
+package main
+
+func foo() Result[struct{}, FooErr] {
+	return make_Result_Ok[struct{}, FooErr](struct{}{})
+}
+
+type FooErr struct{}
+
+func (self FooErr) Error() string {
+	return "b"
+}
+
+func bar() (struct{}, error) {
+	var1_check := foo()
+	x := var1_check.Ok
+	if !var1_check.IsOk() {
+		return *new(struct{}), var1_check.Err
+	}
+
+	return x, nil
+}
+
+func main() {
+	x := foo()
+
+	var3_result := func() Result[struct{}, error] {
+		var1_check, var2_err := bar()
+		if var2_err != nil {
+			return make_Result_Err[struct{}, error](var2_err)
+		}
+		return make_Result_Ok[struct{}, error](var1_check)
+	}()
+
+	y := var3_result
+
+	assert_eq[Result[struct{}, FooErr]](x, make_Result_Ok[struct{}, FooErr](struct{}{}))
+
+	assert_eq[Result[struct{}, error]](y, make_Result_Ok[struct{}, error](struct{}{}))
+}

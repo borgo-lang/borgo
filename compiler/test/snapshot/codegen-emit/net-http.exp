@@ -1,0 +1,69 @@
+Net http
+
+SOURCE:
+use fmt;
+use net::http;
+use sync;
+
+struct Counter { m: sync::Mutex, count: int }
+
+impl Counter {
+  fn ServeHTTP(&mut self, w: http::ResponseWriter, r: &http::Request) {
+    self.m.Lock();
+    self.count = self.count + 1;
+    let _ = fmt.Fprintf(w, "<h1>count %d</h1>", self.count);
+    self.m.Unlock();
+  }
+}
+
+fn main() {
+  let c = Counter { m: zero_value(), count: 0 };
+  http.Handle("/", &mut c);
+  // http.ListenAndServe(":3333", zero_value());
+  fmt.Println("ok");
+}
+
+OUTPUT:
+ok
+
+---
+package main
+
+import (
+	"fmt"
+	http "net/http"
+	"sync"
+)
+
+type Counter struct {
+	m     sync.Mutex
+	count int
+}
+
+func (self *Counter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	self.m.Lock()
+
+	self.count = self.count + 1
+
+	var3_result := func() Result[int, error] {
+		var1_check, var2_err := fmt.Fprintf(w, "<h1>count %d</h1>", self.count)
+		if var2_err != nil {
+			return make_Result_Err[int, error](var2_err)
+		}
+		return make_Result_Ok[int, error](var1_check)
+	}()
+
+	_ = var3_result
+	self.m.Unlock()
+}
+
+func main() {
+	c := Counter{
+		m:     zero_value[sync.Mutex](),
+		count: 0,
+	}
+
+	http.Handle("/", &c)
+
+	fmt.Println("ok")
+}

@@ -2,7 +2,7 @@ Structs with too many arguments.
 
 SOURCE:
 {
-  struct Foo { a: Int, b: Int }
+  struct Foo { a: int, b: int }
 
   Foo { a: 1, b: 2, c: 3 }
 }

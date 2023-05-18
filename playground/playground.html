@@ -1,82 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Playground | The Borgo Programming Language</title>
+  <title>Borgo Programming Language</title>
   <meta charset="utf-8">
-  <style>
-    h1 { font-size: 1.2em; }
-    pre { white-space: pre-wrap; word-wrap: break-word; }
-    hr { border: 1px solid #eee; }
-    header { adisplay: flex; align-items: center; justify-content: space-between; }
-
-    .links a { margin: 0 0.5em 0.5em 0; }
-    .actions { margin: 0.5em 0; }
-
-    .cm-editor { height: 30em; }
-    .cm-scroller { overflow: auto; }
-  </style>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <header>
-    <h1>Borgo Playground</h1>
+    <h1>Borgo Programming Language</h1>
   </header>
 
-  <div class="links">
-    <section id="examples">
-    </section>
-  </div>
-
-  <hr>
-
-  <div class="actions">
-    <button onclick="compile()" title="Shift + Enter">Run</button>
-  </div>
-
-  <div id="editor">
-    <div>
-      Loading compiler...
+  <main>
+    <div class="links-pane">
+      <section id="examples">
+      </section>
     </div>
 
-    <textarea style="display: none;">/// What to expect:
-///   1. Loads of panics
-///   2. Somewhat working type system
-///   3. No side-effects for now
-///
-/// Have fun!
+    <section class="content-pane">
+      <h2 id="section-title"></h2>
+      <div id="section-description"></div>
+    </section>
 
-fn borgo_main() {
-  "Hello world".inspect();
-  ()
-}</textarea>
-  </div>
+    <section class="editor-pane">
+      <div class="actions">
+        <button onclick="Borgo.compile()" title="Shift + Enter">Run</button>
+      </div>
 
-  <pre id="output"></pre>
+      <div id="editor">
+        <div>
+          Loading compiler...
+        </div>
 
-  <hr>
+        <textarea style="display: none;">/// Start editing
+    fn main() {
+      inspect("Hello world");
+    }</textarea>
+      </div>
 
-  <pre id="errors"></pre>
-  <script src="/go-wasm-exec.js"></script> 
+      <pre id="output"></pre>
+      <pre id="errors"></pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      <a href="https://github.com/borgo-lang/borgo">Borgo on Github</a>
+    </p>
+  </footer>
+
   <script src="/bundle.js"></script> 
   <script type="module">
 
     // Rust compiler
-    import { default as initRust, compile_wasm, on_hover } from "/pkg/wasm.js";
+    import { default as initRust, compile_wasm } from "/pkg/wasm.js";
 
-    // Go evaluator
-    function initGo() {
-      const go = new Go();
+    await initRust()
 
-      return WebAssembly
-        .instantiateStreaming(fetch("/main.wasm"), go.importObject)
-        .then((result) => {
-          go.run(result.instance);
-        });
-    }
-
-    await Promise.all([initRust(), initGo()])
-
-    window.Borgo.compile = compile_wasm
-    window.Borgo.on_hover = on_hover
+    window.Borgo.compile_wasm = compile_wasm
 
     window.Borgo.main()
 

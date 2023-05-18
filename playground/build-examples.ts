@@ -1,5 +1,88 @@
-import { decode, markdownToCodeblocks } from "../compiler/test/runner.ts";
 import { marked } from "https://esm.sh/marked@4.0.18";
+import { slugify } from "../compiler/test/runner.ts";
+
+Deno.chdir(Deno.cwd() + "/playground");
+
+type TourBlock = {
+  title: string;
+  description: string;
+  code: string;
+};
+
+function markdownToTourblocks(content: string): Array<TourBlock> {
+  let tourBlocks: Array<TourBlock> = [];
+  let only: TourBlock | undefined;
+  let title = "";
+  let parsingHint = false;
+  let description: Array<string> = [];
+
+  marked.parse(content, {
+    walkTokens(token) {
+      if (token.type === "heading") {
+        title = token.text;
+        return;
+      }
+
+      if (token.type === "code" && !token.lang) {
+        // code blocks within description
+        description.push(marked.parse(token.raw));
+        return;
+      }
+
+      if (token.type === "code") {
+        const block = {
+          slug: slugify(title),
+          title,
+          description: description.join("\n"),
+          code: token.text,
+        };
+        description = [];
+        title = "";
+
+        if (token.lang === "rust-skip") {
+          // Skip this block
+          return;
+        }
+
+        if (token.lang === "rust-only") {
+          only = block;
+          return;
+        }
+
+        tourBlocks.push(block);
+        return;
+      }
+
+      if (token.type === "hr") {
+        parsingHint = !parsingHint;
+        return;
+      }
+
+      if (token.type === "paragraph") {
+        let html = marked.parse(token.raw);
+
+        if (parsingHint) {
+          html = `<blockquote class="hint">${html}</blockquote>`;
+        }
+
+        description.push(html);
+        return;
+      }
+
+      if (token.type === "list") {
+        description.push(marked.parse(token.raw));
+      }
+    },
+  });
+
+  if (only) tourBlocks = [only];
+
+  return tourBlocks;
+}
+
+function decode(s: any) {
+  return new TextDecoder().decode(s);
+}
 
 // --------------------
 // Build examples
@@ -7,11 +90,11 @@ import { marked } from "https://esm.sh/marked@4.0.18";
 
 {
   const content = Deno.readTextFileSync("./examples.md");
-  const codeBlocks = markdownToCodeblocks(content);
+  const tourBlocks = markdownToTourblocks(content);
 
   const result = [];
 
-  for (const b of codeBlocks) {
+  for (const b of tourBlocks) {
     // Run rustfmt
     const cmd = Deno.run({ cmd: ["rustfmt"], stdout: "piped", stdin: "piped" });
 
@@ -26,7 +109,7 @@ import { marked } from "https://esm.sh/marked@4.0.18";
       Deno.exit(1);
     }
 
-    result.push({ title: b.description, code: output });
+    result.push({ ...b, code: output });
   }
 
   Deno.writeTextFileSync("./static/examples.out.json", JSON.stringify(result));
@@ -41,17 +124,8 @@ import { marked } from "https://esm.sh/marked@4.0.18";
   const readme = Deno.readTextFileSync("../README.md");
 
   const md = marked.parse(readme);
-  let intro = md;
 
-  // Just keep Goals section?
-  // const needle = `<h2 id="goals"`;
-  // let intro = intro.split(needle)[1];
-  // intro = intro.split(`<h2 id="tour"`)[0];
-  // intro = needle + intro;
-
-  intro = md;
-
-  const content = tpl.replace("[content]", intro);
+  const content = tpl.replace("[content]", md);
   Deno.writeTextFileSync("./static/index.html", content);
 }
 

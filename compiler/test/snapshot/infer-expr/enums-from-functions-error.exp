@@ -4,7 +4,7 @@ SOURCE:
 {
   enum Maybe<T> { Just(T), None }
 
-  fn foo(b: Int) -> Maybe<String> {
+  fn foo(b: int) -> Maybe<string> {
     Maybe::Just(b)
   }
 }
@@ -12,9 +12,9 @@ SOURCE:
 OUTPUT:
 Type mismatch
 Expected:
-    Maybe<String>
+    Maybe<string>
 Got:
-    Maybe<Int>
+    Maybe<int>
 
 5|      Maybe::Just(b)
         ^^^^^^^^^^^^^^

@@ -9,11 +9,9 @@ SOURCE:
 }
 
 OUTPUT:
-String
+string
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -33,7 +31,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -55,11 +53,14 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "b"
+                        "String": [
+                          "b",
+                          null
+                        ]
                       },
                       "ty": {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
@@ -84,13 +85,13 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     },
                     {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     }
@@ -159,13 +160,13 @@ No errors.
                       "args": [
                         {
                           "Con": {
-                            "name": "Int",
+                            "name": "int",
                             "args": []
                           }
                         },
                         {
                           "Con": {
-                            "name": "String",
+                            "name": "string",
                             "args": []
                           }
                         }
@@ -203,9 +204,10 @@ No errors.
                       }
                     }
                   },
+                  "generics_instantiated": [],
                   "ty": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
@@ -240,11 +242,14 @@ No errors.
               "expr": {
                 "Literal": {
                   "lit": {
-                    "String": "c"
+                    "String": [
+                      "c",
+                      null
+                    ]
                   },
                   "ty": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
@@ -264,7 +269,7 @@ No errors.
           ],
           "ty": {
             "Con": {
-              "name": "String",
+              "name": "string",
               "args": []
             }
           },
@@ -283,7 +288,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "String",
+        "name": "string",
         "args": []
       }
     },

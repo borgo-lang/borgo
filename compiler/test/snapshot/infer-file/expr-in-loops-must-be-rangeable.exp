@@ -1,0 +1,13 @@
+Expr in loops must be rangeable.
+
+SOURCE:
+fn borgo_main() {
+  for x in 1 {
+  }
+}
+
+OUTPUT:
+Can't iterate on type int
+
+2|    for x in 1 {
+               ^

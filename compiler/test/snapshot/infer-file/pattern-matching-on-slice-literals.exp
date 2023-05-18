@@ -1,0 +1,22 @@
+Pattern matching on slice literals.
+
+SOURCE:
+fn borgo_main() {
+  match [[1]].seq().first() {
+    Some(x) => x,
+    None => [],
+  };
+
+  match xs {
+    [1,2] => false,
+    _ => true,
+  };
+
+  ()
+}
+
+OUTPUT:
+Can't pattern match on slice literals
+
+8|      [1,2] => false,
+        ^^^^^

@@ -1,0 +1,36 @@
+Blocks used as expressions
+
+SOURCE:
+use math;
+
+fn main() {
+  let block_result = {
+    let a = math.Pi;
+    let b = 2.01;
+    a + b
+  };
+  assert_eq(block_result > 4.0, true);
+}
+
+OUTPUT:
+
+---
+package main
+
+import (
+	"math"
+)
+
+func main() {
+	var block_result float64
+	{
+
+		a := math.Pi
+
+		b := 2.01
+
+		block_result = a + b
+	}
+
+	assert_eq[bool](block_result > 4, true)
+}

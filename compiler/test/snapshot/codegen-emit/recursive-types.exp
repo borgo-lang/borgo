@@ -2,115 +2,138 @@ Recursive types
 
 SOURCE:
 enum Expr {
-  Add(Expr, Expr),
-  Number(Int),
+  Add(&Expr, &Expr),
+  Number(int),
+}
+
+impl Expr {
+  fn sum(self) -> int {
+    match self {
+      Add(a, b) => a.sum() + b.sum(),
+      Number(n) => n,
+    }
+  }
 }
 
 struct Foo {
-  n: String,
-  f: Option<Foo>,
+  n: string,
+  f: &Option<Foo>,
 }
 
-fn borgo_main() {
+fn main() {
   let one = Expr::Number(1);
   let two = Expr::Number(2);
-  let e = Expr::Add(one, two);
-  e.inspect();
+  let e = Expr::Add(&one, &two);
+  assert_eq(e.sum(), 3);
 
-  let f = Foo { n: "a", f: None };
-  let ok = Foo { n: "b", f: Some(f) };
-  ok.inspect();
-  ()
+  let f1 = None;
+  let nope = Foo { n: "a", f: &f1 };
+  let f2 = Some(nope);
+  let yep = Foo { n: "b", f: &f2 };
+  assert_eq(yep.n, "b");
 }
 
 OUTPUT:
-Expr::Add(Expr::Number(1), Expr::Number(2))
-Foo { n: "b", f: Option::Some(Foo { n: "a", f: Option::None }) }
 
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Expr_Add(arg_0 any, arg_1 any) any {
-	return Expr_Add{arg_0, arg_1}
+func make_Expr_Add(arg_0 *Expr, arg_1 *Expr) Expr {
+	return Expr{tag: Expr_Add, Add0: arg_0, Add1: arg_1}
 }
 
-func make_Expr_Number(arg_0 any) any {
-	return Expr_Number{arg_0}
-}
-func make_Foo(arg_0 any, arg_1 any) any {
-	return Foo{arg_0, arg_1}
+func make_Expr_Number(arg_0 int) Expr {
+	return Expr{tag: Expr_Number, Number: arg_0}
 }
 
-type Expr_Add struct {
-	Field0 any
-	Field1 any
+type ExprTag int
+
+const (
+	Expr_Add ExprTag = iota
+	Expr_Number
+)
+
+type Expr struct {
+	tag    ExprTag
+	Add0   *Expr
+	Add1   *Expr
+	Number int
 }
-type Expr_Number struct {
-	Field0 any
-}
-type Expr any
-type Foo struct {
-	N any
-	F any
-}
 
-func borgo_main() any {
+func (self Expr) sum() int {
+	var var3 int
+	var1_subject := self
+	var2_matches := 0
 
-	{
+	if var2_matches != 2 {
+		var2_matches = 0
 
-		var one any = make_Expr_Number(1)
+		var4_match_pat := 0
+		a := var1_subject.Add0
+		b := var1_subject.Add1
 
-		var two any = make_Expr_Number(2)
+		if var4_match_pat != 1 && var1_subject.tag == Expr_Add {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
 
-		var e any = make_Expr_Add(one, two)
-		Debug_inspect(e)
+		_ = var1_subject
 
-		var f any = func(base any) any {
-			data := base.(Foo)
-			data.N = "a"
-			data.F = make_Option_None
-			return data
-		}(Foo{})
-
-		var ok any = func(base any) any {
-			data := base.(Foo)
-			data.N = "b"
-			data.F = make_Option_Some(f)
-			return data
-		}(Foo{})
-		Debug_inspect(ok)
-
-		return borgo.Unit
+		if var2_matches == 2 {
+			var3 = a.sum() + b.sum()
+		}
 	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		var7_match_pat := 0
+		n := var1_subject.Number
+
+		if var7_match_pat != 1 && var1_subject.tag == Expr_Number {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			var3 = n
+		}
+	}
+
+	return var3
 }
-func Expr_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
+
+type Foo struct {
+	n string
+	f *Option[Foo]
 }
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Expr_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Expr_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterTypeConstructor("Expr::Add", "Expr_Add")
-	borgo.RegisterMakeFunction("Expr::Add", make_Expr_Add)
-	borgo.RegisterTypeConstructor("Expr::Number", "Expr_Number")
-	borgo.RegisterMakeFunction("Expr::Number", make_Expr_Number)
-	borgo.RegisterStruct("Foo", "Foo", []string{"n", "f"})
-	borgo.RegisterMakeFunction("Foo", make_Foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+
+func main() {
+	one := make_Expr_Number(1)
+
+	two := make_Expr_Number(2)
+
+	e := make_Expr_Add(&one, &two)
+
+	assert_eq[int](e.sum(), 3)
+
+	f1 := make_Option_None[Foo]()
+
+	nope := Foo{
+		n: "a",
+		f: &f1,
+	}
+
+	f2 := make_Option_Some[Foo](nope)
+
+	yep := Foo{
+		n: "b",
+		f: &f2,
+	}
+
+	assert_eq[string](yep.n, "b")
 }

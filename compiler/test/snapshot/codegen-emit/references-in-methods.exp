@@ -1,0 +1,39 @@
+References in methods
+
+SOURCE:
+struct Foo {
+  x: int
+}
+
+impl Foo {
+  fn update(&mut self, x: int) {
+    self.x = x
+  }
+}
+
+fn main() {
+  let f = Foo { x: 1 };
+  f.update(5);
+  assert_eq(f.x, 5);
+}
+
+OUTPUT:
+
+---
+package main
+
+type Foo struct {
+	x int
+}
+
+func (self *Foo) update(x int) {
+	self.x = x
+}
+
+func main() {
+	f := Foo{x: 1}
+
+	f.update(5)
+
+	assert_eq[int](f.x, 5)
+}

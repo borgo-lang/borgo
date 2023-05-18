@@ -1,14 +1,14 @@
 Control flow in loops
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   let mut n = 0;
   let mut check = false;
 
-  for _ in Seq::infinite(0, |count| count + 1) {
+  loop {
     if n <= 5 {
       n = n + 1;
-      check.assert_eq(false);
+      assert_eq(check, false);
       continue;
     }
 
@@ -16,19 +16,19 @@ fn borgo_main() {
     break;
   }
 
-  check.assert_eq(true);
-  n.assert_eq(6);
+  assert_eq(check, true);
+  assert_eq(n, 6);
 
   n = 0;
 
-  for x in [1,2,3].seq() {
+  for x in [1,2,3] {
     if x == 2 {
       continue;
     }
     n = n + 1;
   }
 
-  n.assert_eq(2);
+  assert_eq(n, 2);
 }
 
 OUTPUT:
@@ -36,79 +36,41 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	n := 0
 
-var _ = borgo.Unit
+	check := false
 
-func borgo_main() any {
+	for {
 
-	{
-
-		var n any = 0
-
-		var check any = false
-
-		var3 := Seq_infinite(0, func(count any) any {
-
+		if n <= 5 {
 			{
 
-				return borgo.Ops.IAdd(count, 1)
+				n = n + 1
+
+				assert_eq[bool](check, false)
+				continue
 			}
-		})
-		for !borgo.ValuesIsOfType(var3, "Seq::Nil") {
-			var12 := var3.(Seq_Cons).Field0
-
-			_ = var12
-			{
-
-				if borgo.Ops.Eq(borgo.Ops.ILe(n, 5), true).(bool) {
-					{
-
-						n = borgo.Ops.IAdd(n, 1)
-
-						Debug_assert_eq(check, false)
-						var3 = var3.(Seq_Cons).Field1()
-						continue
-					}
-
-				}
-
-				check = true
-				break
-			}
-
-			var3 = var3.(Seq_Cons).Field1()
 		}
 
-		Debug_assert_eq(check, true)
-
-		Debug_assert_eq(n, 6)
-
-		n = 0
-
-		var33 := List_seq(borgo.List(1, 2, 3))
-		for !borgo.ValuesIsOfType(var33, "Seq::Nil") {
-			var40 := var33.(Seq_Cons).Field0
-
-			var x any = var40
-			{
-
-				if borgo.Ops.Eq(borgo.Ops.Eq(x, 2), true).(bool) {
-					var33 = var33.(Seq_Cons).Field1()
-					continue
-
-				}
-
-				n = borgo.Ops.IAdd(n, 1)
-			}
-
-			var33 = var33.(Seq_Cons).Field1()
-		}
-
-		return Debug_assert_eq(n, 2)
+		check = true
+		break
 	}
-}
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[bool](check, true)
+
+	assert_eq[int](n, 6)
+
+	n = 0
+
+	for _, x := range []int{1, 2, 3} {
+
+		if x == 2 {
+			continue
+		}
+
+		n = n + 1
+	}
+
+	assert_eq[int](n, 2)
 }

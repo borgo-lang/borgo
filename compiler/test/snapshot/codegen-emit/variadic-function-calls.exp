@@ -1,0 +1,29 @@
+Variadic function calls
+
+SOURCE:
+use fmt;
+
+fn foo(a: bool, x: VarArgs<int>) {}
+
+fn main() {
+  fmt.Printf("yep %s, %d", "hi", 3);
+  foo(false, 1, 2);
+}
+
+OUTPUT:
+yep hi, 3
+---
+package main
+
+import (
+	"fmt"
+)
+
+func foo(a bool, x ...int) {
+}
+
+func main() {
+	fmt.Printf("yep %s, %d", "hi", 3)
+
+	foo(false, 1, 2)
+}

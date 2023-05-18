@@ -5,7 +5,7 @@ SOURCE:
     enum Color { Red, Blue }
 
     impl Color {
-        fn is_red(self) -> Bool {
+        fn is_red(self) -> bool {
             self == Color::Red
         }
     }
@@ -14,11 +14,9 @@ SOURCE:
 }
 
 OUTPUT:
-Bool
+bool
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -69,7 +67,7 @@ No errors.
             {
               "Closure": {
                 "fun": {
-                  "name": "Color::is_red",
+                  "name": "is_red",
                   "generics": [],
                   "bounds": [],
                   "args": [
@@ -112,13 +110,13 @@ No errors.
                   ],
                   "ret": {
                     "Con": {
-                      "name": "Bool",
+                      "name": "bool",
                       "args": []
                     }
                   },
                   "ann": {
                     "Con": {
-                      "name": "Bool",
+                      "name": "bool",
                       "args": []
                     }
                   },
@@ -147,6 +145,7 @@ No errors.
                                     }
                                   }
                                 },
+                                "generics_instantiated": [],
                                 "ty": {
                                   "Con": {
                                     "name": "Color",
@@ -184,6 +183,7 @@ No errors.
                                     }
                                   }
                                 },
+                                "generics_instantiated": [],
                                 "ty": {
                                   "Con": {
                                     "name": "Color",
@@ -204,7 +204,7 @@ No errors.
                             },
                             "ty": {
                               "Con": {
-                                "name": "Bool",
+                                "name": "bool",
                                 "args": []
                               }
                             },
@@ -223,7 +223,7 @@ No errors.
                       ],
                       "ty": {
                         "Con": {
-                          "name": "Bool",
+                          "name": "bool",
                           "args": []
                         }
                       },
@@ -236,6 +236,29 @@ No errors.
                           "line": 7,
                           "col": 9
                         }
+                      }
+                    }
+                  },
+                  "bounded_ty": {
+                    "generics": [],
+                    "ty": {
+                      "Fun": {
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Color",
+                              "args": []
+                            }
+                          }
+                        ],
+                        "bounds": [],
+                        "ret": {
+                          "Con": {
+                            "name": "bool",
+                            "args": []
+                          }
+                        },
+                        "id": -1
                       }
                     }
                   }
@@ -254,11 +277,11 @@ No errors.
                     "bounds": [],
                     "ret": {
                       "Con": {
-                        "name": "Bool",
+                        "name": "bool",
                         "args": []
                       }
                     },
-                    "fx": []
+                    "id": -1
                   }
                 },
                 "span": {
@@ -290,42 +313,57 @@ No errors.
       {
         "Call": {
           "func": {
-            "Var": {
-              "value": "Color::is_red",
-              "decl": {
-                "file_id": {
-                  "package": "dummy",
-                  "filename": "dummy"
-                },
-                "span": {
-                  "start": {
-                    "line": 5,
-                    "col": 8
-                  },
-                  "end": {
-                    "line": 7,
-                    "col": 9
-                  }
-                }
-              },
-              "ty": {
-                "Fun": {
-                  "args": [
-                    {
-                      "Con": {
-                        "name": "Color",
-                        "args": []
+            "FieldAccess": {
+              "expr": {
+                "Var": {
+                  "value": "Color::Red",
+                  "decl": {
+                    "file_id": {
+                      "package": "dummy",
+                      "filename": "dummy"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 2,
+                        "col": 4
+                      },
+                      "end": {
+                        "line": 2,
+                        "col": 28
                       }
                     }
-                  ],
-                  "bounds": [],
-                  "ret": {
+                  },
+                  "generics_instantiated": [],
+                  "ty": {
                     "Con": {
-                      "name": "Bool",
+                      "name": "Color",
                       "args": []
                     }
                   },
-                  "fx": []
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "col": 4
+                    },
+                    "end": {
+                      "line": 10,
+                      "col": 14
+                    }
+                  }
+                }
+              },
+              "field": "is_red",
+              "ty": {
+                "Fun": {
+                  "args": [],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "bool",
+                      "args": []
+                    }
+                  },
+                  "id": -1
                 }
               },
               "span": {
@@ -340,48 +378,10 @@ No errors.
               }
             }
           },
-          "args": [
-            {
-              "Var": {
-                "value": "Color::Red",
-                "decl": {
-                  "file_id": {
-                    "package": "dummy",
-                    "filename": "dummy"
-                  },
-                  "span": {
-                    "start": {
-                      "line": 2,
-                      "col": 4
-                    },
-                    "end": {
-                      "line": 2,
-                      "col": 28
-                    }
-                  }
-                },
-                "ty": {
-                  "Con": {
-                    "name": "Color",
-                    "args": []
-                  }
-                },
-                "span": {
-                  "start": {
-                    "line": 10,
-                    "col": 15
-                  },
-                  "end": {
-                    "line": 10,
-                    "col": 21
-                  }
-                }
-              }
-            }
-          ],
+          "args": [],
           "ty": {
             "Con": {
-              "name": "Bool",
+              "name": "bool",
               "args": []
             }
           },
@@ -400,7 +400,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Bool",
+        "name": "bool",
         "args": []
       }
     },

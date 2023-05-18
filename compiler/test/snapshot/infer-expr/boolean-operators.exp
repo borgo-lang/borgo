@@ -1,14 +1,12 @@
-Boolean operators
+boolean operators
 
 SOURCE:
 { (1 == 2) && (false || true) }
 
 OUTPUT:
-Bool
+bool
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -28,7 +26,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -51,7 +49,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -69,7 +67,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "Bool",
+                      "name": "bool",
                       "args": []
                     }
                   },
@@ -87,7 +85,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "Bool",
+                  "name": "bool",
                   "args": []
                 }
               },
@@ -115,7 +113,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Bool",
+                          "name": "bool",
                           "args": []
                         }
                       },
@@ -138,7 +136,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Bool",
+                          "name": "bool",
                           "args": []
                         }
                       },
@@ -156,7 +154,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "Bool",
+                      "name": "bool",
                       "args": []
                     }
                   },
@@ -174,7 +172,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "Bool",
+                  "name": "bool",
                   "args": []
                 }
               },
@@ -192,7 +190,7 @@ No errors.
           },
           "ty": {
             "Con": {
-              "name": "Bool",
+              "name": "bool",
               "args": []
             }
           },
@@ -211,7 +209,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "Bool",
+        "name": "bool",
         "args": []
       }
     },

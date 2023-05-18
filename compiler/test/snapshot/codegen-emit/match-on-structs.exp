@@ -1,9 +1,9 @@
 Match on structs
 
 SOURCE:
-struct Foo { a: Int }
+struct Foo { a: int }
 
-fn borgo_main() {
+fn main() {
     let x = Foo { a: 1 };
     let res = match x {
         Foo { a: 2 } => false,
@@ -11,7 +11,7 @@ fn borgo_main() {
         Foo { a: _ } => false,
     };
 
-    res.assert_eq(true);
+    assert_eq(res, true);
 }
 
 OUTPUT:
@@ -19,121 +19,86 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Foo(arg_0 any) any {
-	return Foo{arg_0}
-}
-
 type Foo struct {
-	A any
+	a int
 }
 
-func borgo_main() any {
+func main() {
+	x := Foo{a: 1}
 
-	{
+	var res bool
 
-		var x any = func(base any) any {
-			data := base.(Foo)
-			data.A = 1
-			return data
-		}(Foo{})
-		var var3 any
-		_ = var3
+	var1_subject := x
+	var2_matches := 0
 
-		var5_subject := x
-		var6_matches := borgo.MatchNone
+	if var2_matches != 2 {
+		var2_matches = 0
 
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
+		var3_match_pat := 0
 
-			var7_match_pat := borgo.MatchNone
-
-			if var7_match_pat != borgo.MatchErr && borgo.Ops.Eq(2, var5_subject.(Foo).A).(bool) {
-				var7_match_pat = borgo.MatchOk
-			} else {
-				var7_match_pat = borgo.MatchErr
-			}
-
-			if var7_match_pat != borgo.MatchErr {
-				var6_matches = borgo.MatchOk
-			} else {
-				var6_matches = borgo.MatchErr
-			}
-
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var3 = false
-			}
+		if var3_match_pat != 1 && 2 == var1_subject.a {
+			var3_match_pat = 2
+		} else {
+			var3_match_pat = 1
 		}
 
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
-
-			var9_match_pat := borgo.MatchNone
-
-			if var9_match_pat != borgo.MatchErr && borgo.Ops.Eq(1, var5_subject.(Foo).A).(bool) {
-				var9_match_pat = borgo.MatchOk
-			} else {
-				var9_match_pat = borgo.MatchErr
-			}
-
-			if var9_match_pat != borgo.MatchErr {
-				var6_matches = borgo.MatchOk
-			} else {
-				var6_matches = borgo.MatchErr
-			}
-
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var3 = true
-			}
+		if var3_match_pat != 1 {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
 		}
 
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
+		_ = var1_subject
 
-			var11_match_pat := borgo.MatchNone
-			if var11_match_pat != borgo.MatchErr {
-				var11_match_pat = borgo.MatchOk /* wildcard */
-			}
-
-			if var11_match_pat != borgo.MatchErr {
-				var6_matches = borgo.MatchOk
-			} else {
-				var6_matches = borgo.MatchErr
-			}
-
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var3 = false
-			}
+		if var2_matches == 2 {
+			res = false
 		}
-
-		var res any = var3
-
-		return Debug_assert_eq(res, true)
 	}
-}
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterStruct("Foo", "Foo", []string{"a"})
-	borgo.RegisterMakeFunction("Foo", make_Foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		var5_match_pat := 0
+
+		if var5_match_pat != 1 && 1 == var1_subject.a {
+			var5_match_pat = 2
+		} else {
+			var5_match_pat = 1
+		}
+
+		if var5_match_pat != 1 {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = true
+		}
+	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		var7_match_pat := 0
+		if var7_match_pat != 1 {
+			var7_match_pat = 2 /* wildcard */
+		}
+
+		if var7_match_pat != 1 {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = false
+		}
+	}
+
+	assert_eq[bool](res, true)
 }

@@ -1,12 +1,12 @@
 Prevent usage of reserved words
 
 SOURCE:
-fn foo(default: Int) -> Int {
+fn foo(default: int) -> int {
   default
 }
 
 OUTPUT:
 Name default is reserved
 
-1|  fn foo(default: Int) -> Int {
+1|  fn foo(default: int) -> int {
            ^^^^^^^

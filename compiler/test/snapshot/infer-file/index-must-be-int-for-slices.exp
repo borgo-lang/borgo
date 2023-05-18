@@ -1,0 +1,17 @@
+Index must be int for slices
+
+SOURCE:
+fn borgo_main() {
+    let xs = ["a"];
+    xs[false]
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    bool
+Got:
+    int
+
+3|      xs[false]
+        ^^^^^^^^^

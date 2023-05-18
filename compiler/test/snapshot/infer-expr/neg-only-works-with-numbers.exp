@@ -4,7 +4,7 @@ SOURCE:
 -false
 
 OUTPUT:
-Was expecting Int or Float, got Bool
+Expected numeric type
 
 1|  -false
-     ^^^^^
+    ^^^^^^

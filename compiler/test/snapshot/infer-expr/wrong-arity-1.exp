@@ -9,7 +9,7 @@ Wrong arity
 Expected:
     ()
 Got:
-    (Int)
+    (int)
 
 1|  { hello(1) }
       ^^^^^^^^

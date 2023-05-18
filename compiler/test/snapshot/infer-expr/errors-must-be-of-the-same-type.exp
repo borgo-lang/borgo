@@ -2,7 +2,7 @@ Errors must be of the same type.
 
 SOURCE:
 {
-  fn foo() -> Result<()> {
+  fn foo() -> Result<(), ErrFoo> {
     if true {
       return Err(ErrFoo::A);
     }

@@ -1,0 +1,52 @@
+Read file
+
+SOURCE:
+use os;
+use fmt;
+
+fn read() -> Result<()> {
+  let f = os.ReadFile("go.mod")?;
+  fmt.Println(string(f));
+  Ok(())
+}
+
+fn main() {
+  read().unwrap();
+}
+
+OUTPUT:
+
+module borgo_test
+go 1.19
+
+
+
+---
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func read() (struct{}, error) {
+	f, var1_err := os.ReadFile("go.mod")
+	if var1_err != nil {
+		return *new(struct{}), var1_err
+	}
+
+	fmt.Println(string(f))
+
+	return struct{}{}, nil
+}
+
+func main() {
+	var3_result := func() Result[struct{}, error] {
+		var1_check, var2_err := read()
+		if var2_err != nil {
+			return make_Result_Err[struct{}, error](var2_err)
+		}
+		return make_Result_Ok[struct{}, error](var1_check)
+	}()
+	var3_result.unwrap()
+}

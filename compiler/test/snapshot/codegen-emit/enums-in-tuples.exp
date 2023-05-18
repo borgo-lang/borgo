@@ -3,14 +3,14 @@ Enums in tuples
 SOURCE:
 enum Foo { Bar, Baz }
 
-fn borgo_main() {
+fn main() {
     let res = match (Bar, Baz) {
         (Bar, Bar) => 0,
         (Bar, Baz) => 2,
         _ => unreachable!(),
     };
 
-    res.assert_eq(2);
+    assert_eq(res, 2);
 }
 
 OUTPUT:
@@ -18,144 +18,112 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-var make_Foo_Bar = Foo_Bar{}
-var make_Foo_Baz = Foo_Baz{}
-
-type Foo_Bar struct {
+func make_Foo_Bar() Foo {
+	return Foo{tag: Foo_Bar}
 }
-type Foo_Baz struct {
+
+func make_Foo_Baz() Foo {
+	return Foo{tag: Foo_Baz}
 }
-type Foo any
 
-func borgo_main() any {
+type FooTag int
 
-	{
-		var var1 any
-		_ = var1
+const (
+	Foo_Bar FooTag = iota
+	Foo_Baz
+)
 
-		var5_subject := func(base any) any {
-			data := base.(Tuple2)
-			data.First = make_Foo_Bar
-			data.Second = make_Foo_Baz
-			return data
-		}(Tuple2{})
-		var6_matches := borgo.MatchNone
+type Foo struct {
+	tag FooTag
+}
 
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
+func main() {
+	var res int
 
-			var7_match_pat := borgo.MatchNone
-			var9_match_pat := borgo.MatchNone
-
-			var8_pat, constructor_check := var5_subject.(Tuple2).First.(Foo_Bar)
-			_ = var8_pat
-
-			if var9_match_pat != borgo.MatchErr && constructor_check {
-				var7_match_pat = borgo.MatchOk
-			} else {
-				var7_match_pat = borgo.MatchErr
-			}
-
-			var11_match_pat := borgo.MatchNone
-
-			var10_pat, constructor_check := var5_subject.(Tuple2).Second.(Foo_Bar)
-			_ = var10_pat
-
-			if var11_match_pat != borgo.MatchErr && constructor_check {
-				var7_match_pat = borgo.MatchOk
-			} else {
-				var7_match_pat = borgo.MatchErr
-			}
-
-			if var7_match_pat != borgo.MatchErr {
-				var6_matches = borgo.MatchOk
-			} else {
-				var6_matches = borgo.MatchErr
-			}
-
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var1 = 0
-			}
-		}
-
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
-
-			var12_match_pat := borgo.MatchNone
-			var14_match_pat := borgo.MatchNone
-
-			var13_pat, constructor_check := var5_subject.(Tuple2).First.(Foo_Bar)
-			_ = var13_pat
-
-			if var14_match_pat != borgo.MatchErr && constructor_check {
-				var12_match_pat = borgo.MatchOk
-			} else {
-				var12_match_pat = borgo.MatchErr
-			}
-
-			var16_match_pat := borgo.MatchNone
-
-			var15_pat, constructor_check := var5_subject.(Tuple2).Second.(Foo_Baz)
-			_ = var15_pat
-
-			if var16_match_pat != borgo.MatchErr && constructor_check {
-				var12_match_pat = borgo.MatchOk
-			} else {
-				var12_match_pat = borgo.MatchErr
-			}
-
-			if var12_match_pat != borgo.MatchErr {
-				var6_matches = borgo.MatchOk
-			} else {
-				var6_matches = borgo.MatchErr
-			}
-
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var1 = 2
-			}
-		}
-
-		if var6_matches != borgo.MatchOk {
-			var6_matches = borgo.MatchNone
-
-			if var6_matches != borgo.MatchErr {
-				var6_matches = borgo.MatchOk /* wildcard */
-			}
-			_ = var5_subject
-
-			if var6_matches == borgo.MatchOk {
-
-				var1 = Debug_unreachable()
-			}
-		}
-
-		var res any = var1
-
-		return Debug_assert_eq(res, 2)
+	var1_subject := Tuple2[Foo, Foo]{
+		first:  make_Foo_Bar(),
+		second: make_Foo_Baz(),
 	}
-}
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterTypeConstructor("Foo::Bar", "Foo_Bar")
-	borgo.RegisterMakeFunction("Foo::Bar", make_Foo_Bar)
-	borgo.RegisterTypeConstructor("Foo::Baz", "Foo_Baz")
-	borgo.RegisterMakeFunction("Foo::Baz", make_Foo_Baz)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	var2_matches := 0
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		var3_match_pat := 0
+		var4_match_pat := 0
+
+		if var4_match_pat != 1 && var1_subject.first.tag == Foo_Bar {
+			var3_match_pat = 2
+		} else {
+			var3_match_pat = 1
+		}
+
+		var5_match_pat := 0
+
+		if var5_match_pat != 1 && var1_subject.second.tag == Foo_Bar {
+			var3_match_pat = 2
+		} else {
+			var3_match_pat = 1
+		}
+
+		if var3_match_pat != 1 {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = 0
+		}
+	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		var6_match_pat := 0
+		var7_match_pat := 0
+
+		if var7_match_pat != 1 && var1_subject.first.tag == Foo_Bar {
+			var6_match_pat = 2
+		} else {
+			var6_match_pat = 1
+		}
+
+		var8_match_pat := 0
+
+		if var8_match_pat != 1 && var1_subject.second.tag == Foo_Baz {
+			var6_match_pat = 2
+		} else {
+			var6_match_pat = 1
+		}
+
+		if var6_match_pat != 1 {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = 2
+		}
+	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		if var2_matches != 1 {
+			var2_matches = 2 /* wildcard */
+		}
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			res = Debug_unreachable[int]()
+		}
+	}
+
+	assert_eq[int](res, 2)
 }

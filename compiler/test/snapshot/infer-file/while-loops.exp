@@ -1,0 +1,370 @@
+While loops.
+
+SOURCE:
+fn borgo_main() {
+  let x = 1;
+  while x < 10 {
+    x as int;
+  }
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "borgo_main",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Let": {
+                        "binding": {
+                          "pat": {
+                            "Type": {
+                              "ident": "x",
+                              "is_mut": false,
+                              "ann": "Unknown",
+                              "span": {
+                                "start": {
+                                  "line": 2,
+                                  "col": 6
+                                },
+                                "end": {
+                                  "line": 2,
+                                  "col": 7
+                                }
+                              }
+                            }
+                          },
+                          "ann": "Unknown",
+                          "ty": {
+                            "Con": {
+                              "name": "int",
+                              "args": []
+                            }
+                          }
+                        },
+                        "value": {
+                          "Literal": {
+                            "lit": {
+                              "Int": 1
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "int",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 10
+                              },
+                              "end": {
+                                "line": 2,
+                                "col": 11
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 2,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 2,
+                            "col": 12
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Loop": {
+                        "kind": {
+                          "While": {
+                            "expr": {
+                              "Binary": {
+                                "op": "Lt",
+                                "left": {
+                                  "Var": {
+                                    "value": "x",
+                                    "decl": {
+                                      "file_id": {
+                                        "package": "user",
+                                        "filename": "test.brg"
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 2,
+                                          "col": 6
+                                        },
+                                        "end": {
+                                          "line": 2,
+                                          "col": 7
+                                        }
+                                      }
+                                    },
+                                    "generics_instantiated": [],
+                                    "ty": {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 3,
+                                        "col": 8
+                                      },
+                                      "end": {
+                                        "line": 3,
+                                        "col": 9
+                                      }
+                                    }
+                                  }
+                                },
+                                "right": {
+                                  "Literal": {
+                                    "lit": {
+                                      "Int": 10
+                                    },
+                                    "ty": {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 3,
+                                        "col": 12
+                                      },
+                                      "end": {
+                                        "line": 3,
+                                        "col": 14
+                                      }
+                                    }
+                                  }
+                                },
+                                "ty": {
+                                  "Con": {
+                                    "name": "bool",
+                                    "args": []
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 3,
+                                    "col": 8
+                                  },
+                                  "end": {
+                                    "line": 3,
+                                    "col": 14
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "Block": {
+                            "stmts": [
+                              {
+                                "CheckType": {
+                                  "expr": {
+                                    "Var": {
+                                      "value": "x",
+                                      "decl": {
+                                        "file_id": {
+                                          "package": "user",
+                                          "filename": "test.brg"
+                                        },
+                                        "span": {
+                                          "start": {
+                                            "line": 2,
+                                            "col": 6
+                                          },
+                                          "end": {
+                                            "line": 2,
+                                            "col": 7
+                                          }
+                                        }
+                                      },
+                                      "generics_instantiated": [],
+                                      "ty": {
+                                        "Con": {
+                                          "name": "int",
+                                          "args": []
+                                        }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 4,
+                                          "col": 4
+                                        },
+                                        "end": {
+                                          "line": 4,
+                                          "col": 5
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "ann": {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 4,
+                                      "col": 4
+                                    },
+                                    "end": {
+                                      "line": 4,
+                                      "col": 12
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "ty": {
+                              "Con": {
+                                "name": "int",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 3,
+                                "col": 15
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 3
+                              }
+                            }
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 3,
+                            "col": 2
+                          },
+                          "end": {
+                            "line": 5,
+                            "col": 3
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Unit",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 1,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Unit",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 6,
+                "col": 1
+              }
+            }
+          }
+        }
+      ],
+      "source": "fn borgo_main() {\n  let x = 1;\n  while x < 10 {\n    x as int;\n  }\n}"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}

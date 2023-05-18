@@ -11,7 +11,7 @@ SOURCE:
 OUTPUT:
 Type:
     Foo
-has no method:
+has no field or method:
     bar
 
 5|    f.bar()

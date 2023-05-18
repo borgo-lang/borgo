@@ -1,4 +1,4 @@
-use crate::type_::Type;
+use crate::type_::{BoundedType, Type};
 use crate::{global_state::Declaration, parse};
 use proc_macro2::{LineColumn as ProcLine, Span as ProcSpan};
 use serde::{Deserialize, Serialize};
@@ -44,11 +44,30 @@ impl Binding {
 pub struct Function {
     pub name: Ident,
     pub generics: Vec<String>,
-    pub bounds: Vec<TypeAst>,
+    pub bounds: Vec<(String, TypeAst)>,
     pub args: Vec<Binding>,
     pub ret: Type,
     pub ann: TypeAst,
     pub body: Box<Expr>,
+    pub bounded_ty: BoundedType,
+}
+
+impl Function {
+    pub fn as_method(&self) -> Option<(Self, Type)> {
+        if let Some(first) = self.args.first() {
+            match first.pat {
+                // if the first argument is `self` then this is a method
+                Pat::Type { ref ident, .. } if ident == "self" => {
+                    let mut new_func = self.clone();
+                    let receiver = new_func.args.remove(0).ty;
+                    return Some((new_func, receiver));
+                }
+                _ => (),
+            }
+        }
+
+        None
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -225,7 +244,7 @@ impl Pat {
             }
 
             syn::Pat::Slice(e) => Err(ParseError {
-                msg: "Can't pattern match on list literals".to_string(),
+                msg: "Can't pattern match on slice literals".to_string(),
                 span: Span::make(e.span()),
             }),
 
@@ -262,6 +281,7 @@ impl Pat {
         let make_expr = |ty: Option<Type>, span: Span| Expr::Var {
             value: "not really a var, used in match pat".to_string(),
             decl: Declaration::dummy(),
+            generics_instantiated: vec![],
             ty: ty.unwrap_or_else(|| Type::Con {
                 name: "_".to_string(),
                 args: vec![],
@@ -400,14 +420,27 @@ pub struct StructDefinition {
 pub struct StructFieldDef {
     pub name: Ident,
     pub ann: TypeAst,
-    pub ty: Type,
+    pub ty: BoundedType,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub enum ExternKind {
-    Effect,
-    Native,
-    Overload,
+pub struct TypeAliasDef {
+    pub name: String,
+    pub generics: Vec<String>,
+    pub ty: TypeAst,
+    pub attrs: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PkgImport {
+    pub name: String,
+    // pub rename: String
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PkgInfo {
+    pub name: String, // net::http
+    pub path: String, // net/http
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -420,6 +453,7 @@ pub enum LoopFlow {
 pub enum Loop {
     NoCondition,
     WithCondition { binding: Binding, expr: Box<Expr> },
+    While { expr: Box<Expr> },
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -534,6 +568,7 @@ pub enum Expr {
     Var {
         value: Ident,
         decl: Declaration,
+        generics_instantiated: Vec<Type>,
         ty: Type,
         span: Span,
     },
@@ -582,7 +617,7 @@ pub enum Expr {
         ty: Type,
         span: Span,
     },
-    StructAccess {
+    FieldAccess {
         expr: Box<Expr>,
         field: Ident,
         ty: Type,
@@ -611,8 +646,6 @@ pub enum Expr {
         span: Span,
     },
     ExternDecl {
-        name: String,
-        kind: ExternKind,
         items: Vec<Expr>,
         span: Span,
     },
@@ -664,6 +697,9 @@ pub enum Expr {
         ty: Type,
         span: Span,
     },
+    Raw {
+        text: String,
+    },
     Loop {
         kind: Loop,
         body: Box<Expr>,
@@ -671,6 +707,39 @@ pub enum Expr {
     },
     Flow {
         kind: LoopFlow,
+        span: Span,
+    },
+    TypeAlias {
+        def: TypeAliasDef,
+        span: Span,
+    },
+    UsePackage {
+        import: PkgImport,
+        span: Span,
+    },
+    Reference {
+        expr: Box<Expr>,
+        mutable: bool,
+        ty: Type,
+        span: Span,
+    },
+    Trait {
+        name: String,
+        supertraits: Vec<String>,
+        items: Vec<Expr>,
+        types: Vec<String>,
+        span: Span,
+    },
+    Mod {
+        name: String,
+        pkg: PkgInfo,
+        items: Vec<Expr>,
+        span: Span,
+    },
+    Index {
+        expr: Box<Expr>,
+        index: Box<Expr>,
+        ty: Type,
         span: Span,
     },
 
@@ -686,9 +755,9 @@ pub enum Literal {
     Int(i64),
     Float(f64),
     Bool(bool),
-    String(String),
+    String(String, Option<String> /* token like r"asdf" */),
     Char(String),
-    List(Vec<Expr>),
+    Slice(Vec<Expr>),
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -712,6 +781,7 @@ pub enum Operator {
 pub enum UnOp {
     Neg,
     Not,
+    Deref,
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -795,11 +865,19 @@ impl Expr {
                     ty: Type::dummy(),
                     span: root_span,
                 }),
-                syn::Lit::Str(s) => Ok(Expr::Literal {
-                    lit: Literal::String(s.value()),
-                    ty: Type::dummy(),
-                    span: root_span,
-                }),
+                syn::Lit::Str(s) => {
+                    let token = if s.token().to_string().starts_with("r") {
+                        Some("r".to_string())
+                    } else {
+                        None
+                    };
+
+                    Ok(Expr::Literal {
+                        lit: Literal::String(s.value(), token),
+                        ty: Type::dummy(),
+                        span: root_span,
+                    })
+                }
                 syn::Lit::Char(c) => Ok(Expr::Literal {
                     lit: Literal::Char(c.value().to_string()),
                     ty: Type::dummy(),
@@ -827,6 +905,7 @@ impl Expr {
                 Ok(Expr::Var {
                     value,
                     decl: Declaration::dummy(),
+                    generics_instantiated: vec![],
                     ty: Type::dummy(),
                     span: root_span,
                 })
@@ -856,7 +935,7 @@ impl Expr {
                     .collect::<Result<_>>()?;
 
                 Ok(Expr::Literal {
-                    lit: Literal::List(elems),
+                    lit: Literal::Slice(elems),
                     ty: Type::dummy(),
                     span: root_span,
                 })
@@ -892,6 +971,7 @@ impl Expr {
                     body: body.into(),
                     ann,
                     ret: Type::dummy(),
+                    bounded_ty: Type::dummy().to_bounded(),
                 };
 
                 Ok(Expr::Closure {
@@ -981,7 +1061,7 @@ impl Expr {
                 let expr = Self::from_expr(*f.base)?;
                 let field = parse::parse_member(f.member)?;
 
-                Ok(Expr::StructAccess {
+                Ok(Expr::FieldAccess {
                     expr: expr.into(),
                     field,
                     ty: Type::dummy(),
@@ -1011,6 +1091,21 @@ impl Expr {
 
                 let span = Span::make(m.method.span());
 
+                let func = Expr::FieldAccess {
+                    expr: target.into(),
+                    field: method,
+                    ty: Type::dummy(),
+                    span: span.clone(),
+                };
+
+                Ok(Expr::Call {
+                    func: func.into(),
+                    args,
+                    ty: Type::dummy(),
+                    span,
+                })
+
+                /*
                 Ok(Expr::MethodCall {
                     target: target.into(),
                     method,
@@ -1018,6 +1113,7 @@ impl Expr {
                     ty: Type::dummy(),
                     span,
                 })
+                */
             }
 
             syn::Expr::Return(r) => {
@@ -1075,6 +1171,17 @@ impl Expr {
                         ty: Type::dummy(),
                         span: root_span,
                     });
+                }
+
+                if name == "rawgo" {
+                    let text = match expr {
+                        Expr::Literal { lit, .. } => match lit {
+                            Literal::String(s, _) => s,
+                            _ => panic!("was expecting string in rawgo block"),
+                        },
+                        _ => panic!("was expecting string in rawgo block"),
+                    };
+                    return Ok(Self::Raw { text });
                 }
 
                 panic!("Unknown macro {}", name);
@@ -1150,6 +1257,19 @@ impl Expr {
                 })
             }
 
+            syn::Expr::While(w) => {
+                let expr = Self::from_expr(*w.cond)?;
+                let body = Self::from_block(w.body)?;
+
+                Ok(Self::Loop {
+                    kind: Loop::While {
+                        expr: Box::new(expr),
+                    },
+                    body: Box::new(body),
+                    span: root_span,
+                })
+            }
+
             syn::Expr::Break(_) => Ok(Self::Flow {
                 kind: LoopFlow::Break,
                 span: root_span,
@@ -1159,6 +1279,29 @@ impl Expr {
                 kind: LoopFlow::Continue,
                 span: root_span,
             }),
+
+            syn::Expr::Reference(r) => {
+                let expr = Self::from_expr(*r.expr)?;
+
+                Ok(Self::Reference {
+                    expr: expr.into(),
+                    mutable: r.mutability.is_some(),
+                    ty: Type::dummy(),
+                    span: root_span,
+                })
+            }
+
+            syn::Expr::Index(i) => {
+                let expr = Self::from_expr(*i.expr)?;
+                let index = Self::from_expr(*i.index)?;
+
+                Ok(Self::Index {
+                    expr: expr.into(),
+                    index: index.into(),
+                    ty: Type::dummy(),
+                    span: root_span,
+                })
+            }
 
             _ => todo!("uncovered expr {:#?}", input),
         }
@@ -1176,7 +1319,7 @@ impl Expr {
             }),
 
             syn::Item::Enum(e) => {
-                let generics = parse::parse_generics(e.generics);
+                let generics = parse::parse_generics(&e.generics);
                 let cons = e
                     .variants
                     .into_iter()
@@ -1206,20 +1349,8 @@ impl Expr {
             }
 
             syn::Item::Struct(e) => {
-                let generics = parse::parse_generics(e.generics);
+                let generics = parse::parse_generics(&e.generics);
                 let fields = parse::parse_fields(e.fields);
-                let _attrs = e
-                    .attrs
-                    .iter()
-                    .map(|a| {
-                        a.path
-                            .segments
-                            .iter()
-                            .map(|s| s.ident.to_string())
-                            .collect::<Vec<_>>()
-                            .join("::")
-                    })
-                    .collect::<Vec<_>>();
 
                 match fields {
                     parse::Fields::StructFields(fields) => {
@@ -1237,30 +1368,6 @@ impl Expr {
             }
 
             syn::Item::ForeignMod(f) => {
-                let name = f
-                    .abi
-                    .name
-                    .map(|x| x.value())
-                    .unwrap_or_else(|| "effects".to_string());
-
-                let kind = if name.starts_with("native") {
-                    ExternKind::Native
-                } else if name.starts_with("effect") {
-                    ExternKind::Effect
-                } else if name == "overload" {
-                    ExternKind::Overload
-                } else {
-                    panic!("unknown extern kind {}", name)
-                };
-
-                let module_name: Option<String> = match kind {
-                    ExternKind::Native => {
-                        Some(name.chars().into_iter().skip("native/".len()).collect())
-                    }
-                    ExternKind::Effect => None,
-                    ExternKind::Overload => None,
-                };
-
                 let items = f
                     .items
                     .iter()
@@ -1269,14 +1376,9 @@ impl Expr {
                             let (generics, args, ann) =
                                 parse::parse_signature(fun.sig.clone(), None)?;
 
-                            let bounds = parse::parse_bounds(&fun.sig);
+                            let bounds = parse::parse_bounds(&fun.sig.generics);
 
                             let fun_name = fun.sig.ident.to_string();
-
-                            let fun_name = match &module_name {
-                                Some(name) => format!("{}::{}", name, fun_name),
-                                None => fun_name,
-                            };
 
                             let new_func = Function {
                                 name: fun_name,
@@ -1286,13 +1388,14 @@ impl Expr {
                                 ret: Type::dummy(),
                                 ann,
                                 body: Expr::Noop.into(),
+                                bounded_ty: Type::dummy().to_bounded(),
                             };
 
                             let span = Span::make(i.span());
 
                             Ok(Expr::Closure {
                                 fun: new_func,
-                                kind: FunctionKind::TopLevel,
+                                kind: FunctionKind::Inline,
                                 ty: Type::dummy(),
                                 span,
                             })
@@ -1302,29 +1405,13 @@ impl Expr {
                     })
                     .collect::<Result<_>>()?;
 
-                Ok(Expr::ExternDecl {
-                    name,
-                    kind,
-                    items,
-                    span,
-                })
+                Ok(Expr::ExternDecl { items, span })
             }
 
             syn::Item::Impl(i) => {
-                let ann = parse::type_from_expr(*i.self_ty.clone());
-                let ty_name = ann.get_name().unwrap();
-                let impl_generics = parse::parse_generics(i.generics);
-
-                let receiver = Binding {
-                    pat: Pat::Type {
-                        ident: "self".to_string(),
-                        is_mut: false,
-                        ann: ann.clone(),
-                        span,
-                    },
-                    ann: ann.clone(),
-                    ty: Type::dummy(),
-                };
+                let base_ann = parse::type_from_expr(*i.self_ty.clone());
+                let impl_generics = parse::parse_generics(&i.generics);
+                let impl_bounds = parse::parse_bounds(&i.generics);
 
                 let items = i
                     .items
@@ -1333,13 +1420,20 @@ impl Expr {
                         syn::ImplItem::Method(fun) => {
                             let root_span = Span::make(fun.span());
 
-                            let (mut generics, args, ann) =
-                                parse::parse_signature(fun.sig.clone(), Some(receiver.clone()))?;
-
-                            let bounds = parse::parse_bounds(&fun.sig);
+                            let (mut generics, args, ann) = parse::parse_signature(
+                                fun.sig.clone(),
+                                Some((base_ann.clone(), span.clone())),
+                            )?;
 
                             // add generics to signature
-                            generics.extend(impl_generics.clone());
+                            for g in impl_generics.iter() {
+                                if !generics.contains(&g) {
+                                    generics.push(g.to_string());
+                                }
+                            }
+
+                            let mut bounds = parse::parse_bounds(&fun.sig.generics);
+                            bounds.extend_from_slice(&impl_bounds);
 
                             // TODO all this stuff is the same as parse_item_fn, refactor
                             let span = fun.block.span();
@@ -1356,17 +1450,28 @@ impl Expr {
                                 span: Span::make(span),
                             };
 
-                            let new_name = format!("{}::{}", ty_name, fun.sig.ident);
+                            let name = fun.sig.ident.to_string();
 
-                            let new_fun = Function {
-                                name: new_name,
+                            let mut new_fun = Function {
+                                name,
                                 generics,
                                 bounds,
                                 args,
-                                ann,
+                                ann: ann.clone(),
                                 ret: Type::dummy(),
                                 body: body.into(),
+                                bounded_ty: Type::dummy().to_bounded(),
                             };
+
+                            // If it's a static method, then update the function name to be
+                            // qualified
+                            if new_fun.as_method().is_none() {
+                                new_fun.name = format!(
+                                    "{base}::{name}",
+                                    base = base_ann.get_name().unwrap(),
+                                    name = new_fun.name
+                                );
+                            }
 
                             Ok(Expr::Closure {
                                 fun: new_fun,
@@ -1382,7 +1487,7 @@ impl Expr {
                 let span = Span::make(i.self_ty.span());
 
                 Ok(Expr::ImplBlock {
-                    ann,
+                    ann: base_ann,
                     ty: Type::dummy(),
                     generics: impl_generics,
                     items,
@@ -1400,6 +1505,136 @@ impl Expr {
                     expr: expr.into(),
                     ann,
                     ty: Type::dummy(),
+                    span,
+                })
+            }
+
+            syn::Item::Macro(m) => {
+                // TODO this is duplicated with Expr::Macro
+
+                let name = Pat::parse_path(m.mac.path.clone());
+                let expr = m
+                    .mac
+                    .parse_body::<syn::Expr>()
+                    .ok()
+                    .map(Self::from_expr)
+                    .unwrap_or_else(|| Ok(Expr::Noop))?;
+
+                if name == "rawgo" {
+                    let text = match expr {
+                        Expr::Literal { lit, .. } => match lit {
+                            Literal::String(s, _) => s,
+                            _ => panic!("was expecting string in rawgo block"),
+                        },
+                        _ => panic!("was expecting string in rawgo block"),
+                    };
+                    return Ok(Self::Raw { text });
+                }
+
+                panic!("Unknown macro {}", name);
+            }
+
+            syn::Item::Type(t) => {
+                let span = Span::make(t.span());
+                let ty = parse::type_from_expr(*t.ty);
+                let attrs = parse::parse_attrs(&t.attrs);
+                let generics = parse::parse_generics(&t.generics);
+
+                let def = TypeAliasDef {
+                    name: t.ident.to_string(),
+                    generics,
+                    ty,
+                    attrs,
+                };
+
+                Ok(Expr::TypeAlias { def, span })
+            }
+
+            syn::Item::Use(u) => {
+                let span = Span::make(u.span());
+                let name = parse::parse_use(u.tree);
+                let import = PkgImport { name };
+                Ok(Expr::UsePackage { import, span })
+            }
+
+            syn::Item::Trait(t) => {
+                let mut items: Vec<Expr> = vec![];
+                let mut types: Vec<String> = vec![];
+
+                for i in t.items.iter() {
+                    match i {
+                        syn::TraitItem::Method(fun) => {
+                            let (generics, args, ann) =
+                                parse::parse_signature(fun.sig.clone(), None)?;
+
+                            let fun_name = fun.sig.ident.to_string();
+
+                            let new_func = Function {
+                                name: fun_name,
+                                args,
+                                generics,
+                                bounds: vec![],
+                                ret: Type::dummy(),
+                                ann,
+                                body: Expr::Noop.into(),
+                                bounded_ty: Type::dummy().to_bounded(),
+                            };
+
+                            let span = Span::make(i.span());
+
+                            items.push(Expr::Closure {
+                                fun: new_func,
+                                kind: FunctionKind::Inline,
+                                ty: Type::dummy(),
+                                span,
+                            });
+                        }
+
+                        syn::TraitItem::Type(t) => {
+                            types.push(t.ident.to_string());
+                        }
+
+                        _ => panic!("trait item {:#?}", i),
+                    }
+                }
+
+                let supertraits = t
+                    .supertraits
+                    .into_iter()
+                    .map(|s| match s {
+                        syn::TypeParamBound::Trait(s) => s.path.get_ident().unwrap().to_string(),
+                        syn::TypeParamBound::Lifetime(_) => panic!("don't be ridicolous"),
+                    })
+                    .collect();
+
+                Ok(Expr::Trait {
+                    name: t.ident.to_string(),
+                    supertraits,
+                    items,
+                    types,
+                    span,
+                })
+            }
+
+            syn::Item::Mod(m) => {
+                let name = m.ident.to_string();
+                let pkg = parse::parse_pkgmod_info(&m.attrs).map_err(|err| ParseError {
+                    msg: err,
+                    span: Span::make(m.span()),
+                })?;
+
+                let items: Vec<Expr> = m
+                    .content
+                    .unwrap()
+                    .1
+                    .into_iter()
+                    .map(|item| Expr::from_item(item, FunctionKind::TopLevel))
+                    .collect::<Result<Vec<_>>>()?;
+
+                Ok(Expr::Mod {
+                    name,
+                    pkg,
+                    items,
                     span,
                 })
             }
@@ -1524,7 +1759,7 @@ impl Expr {
             Self::EnumDef { .. } => Type::unit(),
             Self::StructDef { .. } => Type::unit(),
             Self::StructCall { ty, .. } => ty,
-            Self::StructAccess { ty, .. } => ty,
+            Self::FieldAccess { ty, .. } => ty,
             Self::VarUpdate { .. } => Type::unit(),
             Self::MethodCall { ty, .. } => ty,
             Self::Return { ty, .. } => ty,
@@ -1538,8 +1773,15 @@ impl Expr {
             Self::Debug { ty, .. } => ty,
             Self::Spawn { ty, .. } => ty,
             Self::Select { ty, .. } => ty,
+            Self::Reference { ty, .. } => ty,
+            Self::Index { ty, .. } => ty,
+            Self::Raw { .. } => Type::unit(),
             Self::Loop { .. } => Type::unit(),
             Self::Flow { .. } => Type::unit(),
+            Self::TypeAlias { .. } => Type::unit(),
+            Self::UsePackage { .. } => Type::unit(),
+            Self::Trait { .. } => Type::unit(),
+            Self::Mod { .. } => Type::unit(),
 
             Self::Unit { .. } => Type::unit(),
             Self::Noop => Type::unit(),
@@ -1563,7 +1805,7 @@ impl Expr {
             Self::EnumDef { .. } => (),
             Self::StructDef { .. } => (),
             Self::StructCall { ref mut ty, .. } => *ty = new_ty,
-            Self::StructAccess { ref mut ty, .. } => *ty = new_ty,
+            Self::FieldAccess { ref mut ty, .. } => *ty = new_ty,
             Self::VarUpdate { .. } => (),
             Self::MethodCall { ref mut ty, .. } => *ty = new_ty,
             Self::Return { ref mut ty, .. } => *ty = new_ty,
@@ -1577,8 +1819,15 @@ impl Expr {
             Self::Debug { ref mut ty, .. } => *ty = new_ty,
             Self::Spawn { ref mut ty, .. } => *ty = new_ty,
             Self::Select { ref mut ty, .. } => *ty = new_ty,
+            Self::Reference { ref mut ty, .. } => *ty = new_ty,
+            Self::Index { ref mut ty, .. } => *ty = new_ty,
+            Self::Raw { .. } => (),
             Self::Loop { .. } => (),
             Self::Flow { .. } => (),
+            Self::TypeAlias { .. } => (),
+            Self::UsePackage { .. } => (),
+            Self::Trait { .. } => (),
+            Self::Mod { .. } => (),
 
             Self::Unit { .. } => (),
             Self::Noop => (),
@@ -1603,7 +1852,7 @@ impl Expr {
             Self::EnumDef { span, .. } => span,
             Self::StructDef { span, .. } => span,
             Self::StructCall { span, .. } => span,
-            Self::StructAccess { span, .. } => span,
+            Self::FieldAccess { span, .. } => span,
             Self::VarUpdate { span, .. } => span,
             Self::MethodCall { span, .. } => span,
             Self::Return { span, .. } => span,
@@ -1617,10 +1866,17 @@ impl Expr {
             Self::Debug { span, .. } => span,
             Self::Spawn { span, .. } => span,
             Self::Select { span, .. } => span,
+            Self::Reference { span, .. } => span,
+            Self::Index { span, .. } => span,
             Self::Loop { span, .. } => span,
             Self::Flow { span, .. } => span,
+            Self::TypeAlias { span, .. } => span,
+            Self::UsePackage { span, .. } => span,
+            Self::Trait { span, .. } => span,
+            Self::Mod { span, .. } => span,
 
             Self::Unit { span, .. } => span,
+            Self::Raw { .. } => Span::dummy(),
             Self::Noop => Span::dummy(),
             Self::Todo => Span::dummy(),
         }
@@ -1644,7 +1900,7 @@ impl Expr {
             Self::EnumDef { .. } => (),
             Self::StructDef { .. } => (),
             Self::StructCall { ref mut span, .. } => *span = new_span,
-            Self::StructAccess { ref mut span, .. } => *span = new_span,
+            Self::FieldAccess { ref mut span, .. } => *span = new_span,
             Self::VarUpdate { .. } => todo!(),
             Self::MethodCall { ref mut span, .. } => *span = new_span,
             Self::Return { ref mut span, .. } => *span = new_span,
@@ -1658,15 +1914,72 @@ impl Expr {
             Self::Debug { ref mut span, .. } => *span = new_span,
             Self::Spawn { ref mut span, .. } => *span = new_span,
             Self::Select { ref mut span, .. } => *span = new_span,
+            Self::Reference { ref mut span, .. } => *span = new_span,
+            Self::Index { ref mut span, .. } => *span = new_span,
             Self::Loop { ref mut span, .. } => *span = new_span,
             Self::Flow { ref mut span, .. } => *span = new_span,
+            Self::TypeAlias { ref mut span, .. } => *span = new_span,
+            Self::UsePackage { ref mut span, .. } => *span = new_span,
+            Self::Trait { ref mut span, .. } => *span = new_span,
+            Self::Mod { ref mut span, .. } => *span = new_span,
 
             Self::Unit { .. } => (),
+            Self::Raw { .. } => (),
             Self::Noop => (),
             Self::Todo => (),
         };
 
         ret
+    }
+
+    pub fn as_function(&self) -> Function {
+        match self {
+            Expr::Closure { fun, .. } => fun.clone(),
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn as_var_name(&self) -> Option<String> {
+        match self {
+            Expr::Var { value, .. } => Some(value.to_string()),
+            Expr::FieldAccess { expr, .. } => expr.as_var_name(),
+            Expr::VarUpdate { target, .. } => target.as_var_name(),
+            Expr::Index { expr, .. } => expr.as_var_name(),
+            Expr::Unary { op, expr, .. } => {
+                if op == &UnOp::Deref {
+                    expr.as_var_name()
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        }
+    }
+
+    pub fn as_result_constructor(&self) -> Option<std::result::Result<(), ()>> {
+        let variant = match self {
+            Expr::Var { ref value, .. } => Some(value.as_str()),
+            _ => None,
+        }?;
+
+        match variant {
+            "Ok" => Some(Ok(())),
+            "Err" => Some(Err(())),
+            _ => None,
+        }
+    }
+
+    pub fn as_option_constructor(&self) -> Option<std::result::Result<(), ()>> {
+        let variant = match self {
+            Expr::Var { ref value, .. } => Some(value.as_str()),
+            _ => None,
+        }?;
+
+        match variant {
+            "Some" => Some(Ok(())),
+            "None" => Some(Err(())),
+            _ => None,
+        }
     }
 }
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1684,32 +1997,10 @@ impl TypeAst {
         }
     }
 
-    fn get_name(&self) -> Option<String> {
+    pub fn get_name(&self) -> Option<String> {
         match self {
             Self::Con { name, .. } => Some(name.to_string()),
             _ => None,
-        }
-    }
-
-    pub fn add_type_argument(&self, typ: &str) -> Self {
-        match self {
-            TypeAst::Con { name, args } => {
-                let mut new_args = args.clone();
-
-                let typ = Self::Con {
-                    name: typ.to_string(),
-                    args: vec![],
-                };
-                new_args.push(typ);
-
-                TypeAst::Con {
-                    name: name.clone(),
-                    args: new_args,
-                }
-            }
-
-            TypeAst::Fun { .. } => unreachable!(),
-            TypeAst::Unknown => unreachable!(),
         }
     }
 }

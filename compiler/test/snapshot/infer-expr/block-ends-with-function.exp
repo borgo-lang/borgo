@@ -1,14 +1,12 @@
 Block ends with function
 
 SOURCE:
-{ fn foo() -> Int { 1 } }
+{ fn foo() -> int { 1 } }
 
 OUTPUT:
-fn () -> Int
+fn () -> int
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -22,13 +20,13 @@ No errors.
             "args": [],
             "ret": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
             "ann": {
               "Con": {
-                "name": "Int",
+                "name": "int",
                 "args": []
               }
             },
@@ -42,7 +40,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -61,7 +59,7 @@ No errors.
                 ],
                 "ty": {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 },
@@ -76,6 +74,22 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [],
+              "ty": {
+                "Fun": {
+                  "args": [],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -85,11 +99,11 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "Int",
+                  "name": "int",
                   "args": []
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -111,11 +125,11 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "Int",
+            "name": "int",
             "args": []
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

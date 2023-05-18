@@ -2,13 +2,13 @@ Primitive types are casted in struct call
 
 SOURCE:
 struct Foo {
-  bar: Int
+  bar: int
 }
 
-fn borgo_main() {
+fn main() {
   let x = 1;
   let y = Foo { bar: x };
-  y.bar.assert_eq(1);
+  assert_eq(y.bar, 1);
 }
 
 OUTPUT:
@@ -16,44 +16,14 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Foo(arg_0 any) any {
-	return Foo{arg_0}
-}
-
 type Foo struct {
-	Bar any
+	bar int
 }
 
-func borgo_main() any {
+func main() {
+	x := 1
 
-	{
+	y := Foo{bar: x}
 
-		var x any = 1
-
-		var y any = func(base any) any {
-			data := base.(Foo)
-			data.Bar = x
-			return data
-		}(Foo{})
-
-		return Debug_assert_eq(y.(Foo).Bar, 1)
-	}
-}
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterStruct("Foo", "Foo", []string{"bar"})
-	borgo.RegisterMakeFunction("Foo", make_Foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](y.bar, 1)
 }

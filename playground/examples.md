@@ -1,770 +1,687 @@
-# Examples
+## Intro
+
+Welcome to the Borgo language tour!
+
+Borgo is a statically typed programming language that looks like Rust and
+compiles to Go.
+
+From Rust it _borrows_:
+
+- Sum types with exhaustive pattern matching
+- `Result<T, E>` and `Option<T>` instead of `nil`
+- Type checker with good type inference
+- Error handling with `?` operator
+
+And leverages Go for:
+
+- Garbage collector
+- Robust runtime with concurrency built-in
+- Large package ecosystem with mature libraries
+
+You can think of Borgo as Rust without the borrow checker if you like, with
+access to all Go packages.
+
+Ready to dive in? :)
+
+```rust
+use fmt;
+
+fn main() {
+  fmt.Println("hi")
+}
+```
+
+## Primitive Types
+
+Primitive types are the same as in Go.
+
+Collections like slices and maps can be used without specifying the type of the
+values.
+
+For example, a slice of int elements would be declared as `[]int{1,2,3}` in Go,
+whereas Borgo doesn't need type information, so you can just write `[1, 2, 3]`.
+
+Functions like `append()` and `len()` are available as methods.
+
+Maps are initialized with the `Map::new()` function, which under the hood
+compiles to a `map[K]V{}` expression, with the `K` and `V` types helpfully
+filled in for you.
+
+Borgo also has tuples! They work exactly like in Rust.
+
+```rust
+use fmt;
+
+fn main() {
+  let n = 1;
+  let s = "hello";
+  let b = false;
+
+  fmt.Println("primitives: ", n, s, b);
+
+  let mut xs = [1,2,3];
+  fmt.Println("slice:", xs);
+
+  xs = xs.append(10);
+  fmt.Println("len after append:", xs.len());
+
+  let mut m = Map::new();
+  m.insert(1, "alice");
+  m.insert(2, "bob");
+
+  fmt.Println("map:", m);
+
+  let pair = ("hey", true);
+  fmt.Println("second element in tuple:", pair.1);
+}
+```
+
+## Control flow
+
+Like in Go, the only values that can be iterated over are slices, maps and
+channels.
+
+However, loops always iterate over a single value, which is the element in the
+slice (contrary to Go, where using a single iteration variable gives you the
+index of the element).
+
+To iterate over `(index, element)` pairs call the `.enumerate()` method on
+slices. This has no runtime cost, it just aids the compiler in generating the
+correct code.
+
+When iterating over maps, you should always destructure values with
+`(key, value)` pairs instead of a single value.
+
+Like in Rust, infinite loops use the `loop {}` construct whereas loops with
+conditions use `while {}`.
+
+Expressions like `if`, `match` and blocks return a value, so you can assign
+their result to a variable.
+
+```rust
+use fmt;
+use math::rand;
+
+fn main() {
+    let xs = ["a", "b", "c"];
+
+    fmt.Println("For loop over slices");
+    for letter in xs {
+        fmt.Println(letter);
+    }
+
+    fmt.Println("Indexed for loop");
+    for (index, letter) in xs.enumerate() {
+        fmt.Println(index, letter);
+    }
+
+    let m = Map::new();
+    m.insert(1, "alice");
+    m.insert(2, "bob");
+
+    fmt.Println("For loop over maps");
+    for (key, value) in m {
+        fmt.Println(key, value);
+    }
+
+    fmt.Println("Loop with no condition");
+    loop {
+        let n = rand.Float64();
+        fmt.Println("looping...", n);
+
+        if n > 0.75 {
+            break;
+        }
+    }
+
+    fmt.Println("While loop");
+
+    let mut count = 0;
+    while (count < 5) {
+        fmt.Println(count);
+        count = count + 1;
+    }
+
+    fmt.Println("using if statements as expressions");
+    fmt.Println(if 5 > 3 { "ok" } else { "nope" });
+
+    let block_result = {
+      let a = 1;
+      let b = 2;
+      a + b
+    };
+
+    fmt.Println("block result:", block_result);
+}
+```
+
+## Sum types and pattern matching
+
+Sum types (enums) work pretty much like in Rust.
+
+Pattern matches must be exhaustive, meaning the compiler will return an error
+when a case is missing (try removing any case statement from the example and see
+what happens!).
+
+Check the
+[Rust book chapter on enums](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html)
+if you want to learn more.
 
 ---
 
-Basics
+For now, variants can only be defined as tuples and not as structs.
+
+---
 
 ```rust
-fn borgo_main() {
-    // Int
-    (1 + 1).inspect();
+use fmt;
+use strings;
 
-    // String
-    "Hello world".inspect();
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
 
-    // Bool
-    (true || false).inspect();
+fn value_in_cents(coin: Coin) -> int {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
+}
 
-    // Char
-    'a'.inspect();
+enum IpAddr {
+    V4(uint8, uint8, uint8, uint8),
+    V6(string),
+}
 
-    // List
-    [1, 2, 3].inspect();
+fn is_private(ip: IpAddr) -> bool {
+  match ip {
+    IpAddr::V4(a, b, _, _) => {
+      if a == 10 {
+        return true
+      }
 
-    // Sequence
-    [1, 2, 3].seq().map(|x| x * 3).inspect();
+      if a == 172 && b >= 16 && b <= 31 {
+        return true
+      }
 
-    // Map
-    Map::new()
-        .insert("foo", 1)
-        .insert("bar", 2)
-        .insert("baz", 3)
-        .inspect();
+      if a == 192 && b == 168 {
+        return true
+      }
 
-    // Set
-    Set::new()
-        .insert(1)
-        .insert(1)
-        .inspect();
+      false
+    }
 
-    // Option
-    [1, 2, 3].seq().first().inspect();
+    IpAddr::V6(s) => strings.HasPrefix(s, "fc00::")
+  }
+}
 
-    // Result
-    None.ok_or("that's an error").inspect();
+fn main() {
+  let cents = value_in_cents(Coin::Nickel);
+  fmt.Println("cents:", cents);
 
-    // Tuples
-    (1, "a", true).inspect();
-
-    ()
+  let home = IpAddr::V4(127, 0, 0, 1);
+  let loopback = IpAddr::V6("::1");
+  fmt.Println("home ip is private: ", home, is_private(home));
+  fmt.Println("loopback: ", loopback);
 }
 ```
 
-Custom types
+## Structs
+
+Defining and instantiating structs is similar to Rust.
+
+Fields in structs can be modified only if the variable is declared as mutable
+(`let mut` keyword).
 
 ```rust
-enum User {
-    Verified(String),
-    NotVerified,
+use fmt;
+
+struct Person {
+  name: string,
+  hobbies: [Hobby],
 }
 
-fn is_verified(u: User) -> Bool {
-    match u {
-        User::Verified(_) => true,
-        User::NotVerified => false,
-    }
+enum Hobby {
+  SkyDiving,
+  StaringAtWall,
+  Other(string),
 }
 
-struct Point {
-    x: Int,
-    y: Float,
-}
+fn main() {
+  let mut p = Person {
+    name: "bob",
+    hobbies: [Hobby::StaringAtWall, Hobby::Other("sleep")],
+  };
 
-fn borgo_main() {
-    let alice = User::Verified("alice");
-    let a_point = Point { x: 1, y: 5.2 };
+  fmt.Println("person:", p);
 
-    Debug::assert_eq(is_verified(alice), true);
-
-    // equivalent to above
-    alice.is_verified().assert_eq(true);
-
-    Debug::inspect(alice);
-    a_point.inspect();
-
-    ()
+  p.hobbies = p.hobbies.append(Hobby::SkyDiving);
+  fmt.Println("with more hobbies:", p);
 }
 ```
 
-Collections
+## Result and Option
+
+Sometimes it's helpful to deal with values that may or may not be there. This is
+the idea behind the `Option<T>` type.
+
+For example, to get an element out of a slice or a map, you can use the
+`.get(index)` method that will force you to handle the case where the element
+isn't there.
+
+Other times you may want to return a value _or_ an error. In those cases use
+`Result<T, E>` to let the caller know that a function may return an error.
+
+When you're sure that a value is _definitely_ there, you can call `.unwrap()`.
+Like in Rust, this is an unsafe operation and will panic.
+
+A lot of methods are missing from both `Result` and `Option`, contributions to
+the stdlib are welcome!
 
 ```rust
-// All collections are immutable
+use fmt;
 
-fn borgo_main() {
-  // List
-  let xs = [7,8,9];
+struct Person {
+  name: string,
+  age: int
+}
 
-  xs.get(0).assert_eq(Some(7));
-  xs.get(1).assert_eq(Some(8));
-  xs.get(4).assert_eq(None);
+fn validate(name: string, age: int) -> Result<Person, string> {
+  if (age < 18) {
+    return Err("too young")
+  }
 
-  "New list:".inspect();
-  xs.push(10).inspect();
-  "Original:".inspect();
-  xs.inspect();
+  if (age > 98) {
+    return Err("too old")
+  }
 
-  // Map
-  let m = Map::new()
-    .insert("b", 1)
-    .insert("c", 2);
+  Ok(Person { name, age })
+}
 
-  m.get("b").assert_eq(Some(1));
-  m.get("missing").assert_eq(None);
+fn main() {
+  let xs = ["a", "b", "c"];
+  let element = xs.get(2); // Option<string>
 
-  "New map:".inspect();
-  m.insert("d", 3).inspect();
-  "Original:".inspect();
-  m.inspect();
+  match element {
+    Some(s) => fmt.Println("ok, the element was found:", s),
+    None => fmt.Println("element not found"),
+  }
 
-  // Set
-  "Set:".inspect();
-  Set::new()
-    .insert(55)
-    .insert(22)
-    .insert(55)
-    .inspect();
+  let result = validate("alice", 33); // Result<Person, string>
 
-  ()
+  match result {
+    Ok(p) => fmt.Println("got a person:", p),
+    Err(e) => fmt.Println("couldn't validate:", e),
+  }
 }
 ```
 
-Sequences
+## Interoperability with Go
+
+One ambitious goal of this project is to be fully compatible with the existing
+Go ecosystem.
+
+You've already seen how the `fmt` package was used in previous examples, but how
+do we deal with functions that return multiple values?
+
+This is where our trusty `Option` and `Result` types come in! The compiler will
+handle the conversion _automatically_ for you :)
+
+A good mental model is to think of return types in Go functions as:
+
+```
+when return type is    (T, bool)
+it becomes             Option<T>
+
+when return type is    (T, error)
+it becomes             Result<T, E>
+```
+
+Let's take the [os.LookupEnv](https://pkg.go.dev/os#LookupEnv) function as an
+example:
+
+```
+Go definition:
+  func LookupEnv(key string) (string, bool)
+
+becomes:
+  fn LookupEnv(key: string) -> Option<string>
+```
+
+Or the [os.Stat](https://pkg.go.dev/os#Stat) function from the same package:
+
+```
+Go definition:
+  func Stat(name string) (FileInfo, error)
+
+becomes:
+  fn Stat(name: string) -> Result<FileInfo>
+```
+
+---
+
+`Result<T>` is short-hand for `Result<T, error>` where `error` is the standard
+Go interface.
+
+---
+
+With this simple convention, pretty much any Go package can be used in Borgo
+code! All is needed is a package declaration, which is discussed in the next
+section.
 
 ```rust
-// `Seq<T>` represents a lazy sequence.
+use fmt;
+use os;
+use io::fs; // TODO there should be no need of importing this
 
-fn borgo_main() {
-  let xs = [1,2,3,4,5];
+fn main() {
+    let key = os.LookupEnv("HOME");
 
-  let s = xs
-  .seq()
-  .map(|n| n + 1)
-  .inspect();
+    match key {
+        // Option<T>
+        Some(s) => fmt.Println("home dir:", s),
+        None => fmt.Println("Not found in env"),
+    }
 
-  // Turn a Seq back into a list
-  let xs2 = s.to_list();
+    let info = os.Stat("file-does-not-exist");
 
-
-  ()
+    match info {
+        // Result<T, E>
+        Ok(_) => fmt.Println("The file exists"),
+        Err(err) => fmt.Println("Got error reading file", err),
+    }
 }
 ```
 
-AoC 2022 #1
+## Package definitions
+
+In order to use existing Go packages, Borgo needs to know what types and
+functions they contain.
+
+You can declare packages within `mod {}` blocks in source files. Right now the
+stdlib comes with very few bindings to the actual Go stdlib, just a few
+functions here and there for testing purposes.
+
+The example on the right shows how to write a (partial) declaration for the
+`regex` package, which is currently missing in the Borgo stdlib.
+
+Writing such declarations by hand is a pain! There's no reason why this process
+couldn't be automated though. It should be possible to parse `.go` files, find
+all public declarations and convert them into equivalent Borgo declarations :)
 
 ```rust
-// Advent of Code 2022 - Day 01
+#[package(path = regexp, name = regexp)]
+mod regexp {
 
-const input: String = "1000
-2000
-3000
+  // private type
+  type Regexp = ();
 
-4000
+  extern {
+    fn Compile(expr: string) -> Result<&mut Regexp, error>;
+    fn MustCompile(expr: string) -> &mut Regexp;
+    fn MatchString(re: &Regexp, s: string) -> bool;
+  }
+}
 
-5000
-6000
+use fmt;
+use regexp;
 
-7000
-8000
-9000
+fn main() {
+  let validID = regexp.MustCompile(r"^[a-z]+\[[0-9]+\]$");
 
-10000";
-
-fn borgo_main() {
-    let solution = input
-    .split("\n\n")
-    .map(|group| group
-          .split("\n")
-          .map(|x| String::parse_int(x).unwrap())
-          .sum()
-          )
-    .max_by(Int::cmp)
-    .unwrap();
-
-    solution.inspect();
-    solution.assert_eq(24000);
+  fmt.Println(validID.MatchString("adam[23]"));
+  fmt.Println(validID.MatchString("eve[7]"));
 }
 ```
 
-AoC 2022 #2
+## Pointers and References
 
-```rust
-// Advent of Code 2022 - Day 02
+Borgo dosn't have a borrow checker: all memory is managed by the Go runtime.
+That's one of the main benefits of compiling to Go after all!
 
-const input: String = "A Y
-B X
-C Z";
+Despite that, when handing out a _reference_ of a value to a function, it is
+still useful to be explicit about whether the reference is _mutable_ or
+_immutable_.
 
-enum Hand {
-    Rock,
-    Paper,
-    Scissors,
-}
+Borgo distinguishes between:
 
-enum GameResult {
-    Win,
-    Lose,
-    Draw,
-}
+- `&mut T` references, which allow modification of the underlying value
+- `&T` references, which are read-only and ensure no changes will occur
 
-impl Hand {
-    fn parse(s: String) -> Option<Hand> {
-        match s {
-            "A" => Some(Rock),
-            "X" => Some(Rock),
-            "B" => Some(Paper),
-            "Y" => Some(Paper),
-            "C" => Some(Scissors),
-            "Z" => Some(Scissors),
-            _ => None,
-        }
-    }
+So for example, a function that computes the sum of a slice of ints, has no need
+to mutate it. It makes sense to accept a read-only reference.
 
-    fn play_against(self, other: Hand) -> GameResult {
-        match (self, other) {
-            (Rock, Scissors) => Win,
-            (Rock, Paper) => Lose,
-            (Scissors, Paper) => Win,
-            (Scissors, Rock) => Lose,
-            (Paper, Rock) => Win,
-            (Paper, Scissors) => Lose,
-            _ => Draw,
-        }
-    }
-
-    fn value(self) -> Int {
-        match self {
-            Rock => 1,
-            Paper => 2,
-            Scissors => 3,
-        }
-    }
-
-    fn score_against(self, other: Hand) -> Int {
-        let score = match self.play_against(other) {
-            Win => 6,
-            Draw => 3,
-            Lose => 0,
-        };
-
-        self.value() + score
-    }
-}
-
-fn borgo_main() {
-    let total = input
-        .split("\n")
-        .map(|turn| {
-            let hands = turn.split(" ");
-            let a = Hand::parse(hands.get(0).unwrap()).unwrap();
-            let b = Hand::parse(hands.get(1).unwrap()).unwrap();
-
-            a.score_against(b)
-        })
-        .sum();
-
-    total.inspect().assert_eq(15);
+```
+fn sum(xs: &[int]) -> int {
+  // ...
 }
 ```
 
-AoC 2022 #3
+Whereas if we wanted to add elements to it, then we'd need a mutable reference.
 
-```rust
-// Advent of Code 2022 - Day 03
-
-const input: String = "vJrwpWtwJgWrhcsFMMfFFhFp
-jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
-PmmdzqPrVvPwwTWBwg
-wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
-ttgJtRGJQctTZtZT
-CrZsJsPPZsGzwwsLwLmpwMDw";
-
-fn borgo_main() {
-    let a = 'a'.to_int() - 1;
-    let z = 'z'.to_int();
-    let big_a = 'A'.to_int() - 1;
-
-    let result = input
-        .split("\n")
-        .map(|line| {
-            let items = line.chars();
-            let (fst_half, snd_half) = items.split_at(items.len() / 2);
-            let items_in_rucksack = fst_half.to_set();
-
-            let common = snd_half
-                .find_map(|c| {
-                    if items_in_rucksack.contains(c) {
-                        return Some(c.to_int());
-                    }
-
-                    None
-                })
-                .unwrap();
-
-            if common >= a && common <= z {
-                common - a
-            } else {
-                common - big_a + 26
-            }
-        })
-        .sum();
-
-    result.inspect().assert_eq(157);
-    ()
+```
+fn add_number(xs: &mut [int], n: int) {
+  // ...
 }
 ```
 
-AoC 2022 #4
+When generating Go code, this makes no difference, it's all pointers under the
+hood!
+
+---
+
+Because there's no borrow checker involved, it makes less sense to talk about
+_exclusive_ and _shared_ references. It's perfectly valid to have multiple
+mutable references live at the same point, something that would not be permitted
+by Rust's ownership rules.
+
+---
+
+**NOTE** Right now this is more wishful thinking than anything :D
+
+I plan to implement an extra pass in the compiler pipeline that can check if
+references are handed out correctly, but right now you can pass around
+references of any type and not get an error. Still, the idea is there and it
+should work somewhat as described here!
 
 ```rust
-// Advent of Code 2022 - Day 04
+// example missing, 
 
-const input: String = "2-4,6-8
-2-3,4-5
-5-7,7-9
-2-8,3-7
-6-6,4-6
-2-6,4-8";
-
-struct Part {
-    start: Int,
-    end: Int,
-}
-
-impl Part {
-    fn parse(s: String) -> Part {
-        let parts = s.split("-");
-
-        Part {
-            start: parts.get(0).and_then(String::parse_int).unwrap(),
-            end: parts.get(1).and_then(String::parse_int).unwrap(),
-        }
-    }
-
-    fn contains(self, other: Part) -> Bool {
-        self.start <= other.start && self.end >= other.end
-    }
-}
-
-fn borgo_main() {
-    let result = input
-        .split("\n")
-        .map(|line| {
-            let parts = line.split(",");
-            let first = Part::parse(parts.get(0).unwrap());
-            let second = Part::parse(parts.get(1).unwrap());
-            (first, second)
-        })
-        .reduce(0, |acc, (first, second)| {
-            if first.contains(second) || second.contains(first) {
-                acc + 1
-            } else {
-                acc
-            }
-        });
-
-    result.inspect().assert_eq(2);
-    ()
+fn main() {
 }
 ```
 
-AoC 2022 #5
+## Methods
+
+To define methods on types, you can use `impl {}` blocks.
+
+Methods need a `self` receiver, like in Rust. If the receiver is `&mut self` or
+`&self` then the generated method will be a pointer receiver `(self *T)`.
+
+It's also possible to declare static methods: they will compile to normal
+functions namespaced with the type name (ie. `Person_new()`).
 
 ```rust
-// Advent of Code 2022 - Day 05
+use fmt;
 
-const input: String = "    [D]    
-[N] [C]    
-[Z] [M] [P]
- 1   2   3 
-
-move 1 from 2 to 1
-move 3 from 1 to 3
-move 2 from 2 to 1
-move 1 from 1 to 2";
-
-struct Cmd {
-    count: Int,
-    from: Int,
-    to: Int,
+struct Person {
+  name: string,
+  hours_slept: int,
 }
 
-fn parse_stacks(s: String) -> Map<Int, List<Char>> {
-    let rows = s.split("\n");
-    let rows = rows
-        .take(rows.len() - 1)
-        .map(|row| {
-            row.chars()
-                .chunks(4)
-                .filter_map(|chars| chars.filter(|c| c != '[' && c != ']').first())
-        })
-        .reverse();
-
-    let mut m = Map::new();
-
-    for row in rows {
-        for (index, c) in row.enumerate() {
-            if c != ' ' {
-                m = m.update(index + 1, [], |stack| stack.push(c));
-            }
-        }
+impl Person {
+  fn new(name: string) -> Person {
+    Person {
+      name,
+      hours_slept: 0,
     }
+  }
 
-    m
+  // Needs mutable reference because modifies structure
+  fn sleep(&mut self) {
+    self.hours_slept = self.hours_slept + 1; 
+  }
+
+  // Ok with read-only reference
+  fn ready_for_work(&self) -> bool {
+    self.hours_slept > 5
+  }
+
+  fn ready_to_party(&self) -> bool {
+    self.hours_slept > 10
+  }
 }
 
-fn parse_commands(s: String) -> Seq<Cmd> {
-    s.split("\n").map(|row| {
-        let parts = row.split(" ");
+fn main() {
+  let mut p = Person::new("alice");
 
-        fn parse(index: Int) -> Int {
-            parts.get(index).and_then(String::parse_int).unwrap()
-        }
+  p.sleep();
+  p.sleep();
 
-        let count = parse(1);
-        let from = parse(3);
-        let to = parse(5);
-        Cmd { count, from, to }
-    })
-}
-
-fn run_commands(stacks: Map<Int, List<Char>>, cmds: Seq<Cmd>) -> Map<Int, List<Char>> {
-    cmds.reduce(stacks, |mut new_stacks, cmd| {
-        let mut remaining = cmd.count;
-
-        loop {
-            if remaining == 0 {
-                break;
-            }
-
-            let from = new_stacks.get(cmd.from).unwrap();
-            let to = new_stacks.get(cmd.to).unwrap();
-            let item = from.seq().last().unwrap();
-
-            new_stacks = new_stacks
-                .insert(cmd.from, from.pop())
-                .insert(cmd.to, to.push(item));
-
-            remaining = remaining - 1;
-        }
-
-        return new_stacks;
-    })
-}
-
-fn borgo_main() {
-    let parts = input.split("\n\n").to_list();
-
-    let stacks = parse_stacks(parts.get(0).unwrap());
-    let commands = parse_commands(parts.get(1).unwrap());
-    let result = run_commands(stacks, commands)
-        .seq_values()
-        .map(|stack| stack.seq().last().unwrap())
-        .to_list();
-
-    result.inspect().assert_eq(['C', 'M', 'Z']);
+  fmt.Println("is ready:", p.ready_for_work());
 }
 ```
 
-AoC 2022 #6
+## Interfaces (traits)
+
+Interfaces in Borgo work the same as in Go, it's all duck typing.
+
+If a type implements the methods declared by the interface, then the type is an
+instance of that interface.
+
+Embedded interfaces are also supported, just list out the other interfaces
+_implied_ by the one being defined. For example, the `ReadWriter` interface from
+the `io` package can be defined as:
+
+```
+trait ReadWriter: Reader + Writer {}
+```
+
+One possibly confusing detail is that Borgo uses the `trait` keyword to define
+interfaces ^\_^'.
+
+This is because the underlying parser is looking for Rust syntax. In the future
+we'll have our own parser (or more realistically just a fork) and this will no
+longer be a problem!
+
+---
+
+Borgo doesn't support [type sets](https://go.dev/ref/spec#General_interfaces),
+you can only define methods in interfaces. Constraints still work, but they will
+only be checked by the Go compiler.
+
+---
 
 ```rust
-// Advent of Code 2022 - Day 06
+use fmt;
+use math;
 
-fn solve(input: String, n_different: Int) -> Int {
-    let target = input
-        .chars()
-        .map(|c| c.to_unquoted_string())
-        .windows(n_different)
-        .filter(find_different)
-        .first()
-        .unwrap();
-
-    input.index_of(target.join("")).unwrap() + n_different
+trait geometry {
+    fn area() -> float64;
+    fn perim() -> float64;
 }
 
-fn find_different(chunk: Seq<String>) -> Bool {
-    let unique = chunk.to_set();
-    unique.len() == chunk.len()
+struct rect {
+    width: float64,
+    height: float64,
 }
 
-fn borgo_main() {
-    solve("bvwbjplbgvbhsrlpgdmjqwftvncz", 4).inspect().assert_eq(5);
+impl rect {
+    fn area(self) -> float64 {
+        self.width * self.height
+    }
 
-    solve("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 4).inspect().assert_eq(10);
+    fn perim(self) -> float64 {
+        2 * self.width + 2 * self.height
+    }
+}
+
+struct circle {
+    radius: float64,
+}
+
+impl circle {
+    fn area(self) -> float64 {
+        math.Pi * self.radius * self.radius
+    }
+
+    fn perim(self) -> float64 {
+        2 * math.Pi * self.radius
+    }
+}
+
+fn measure(g: geometry) {
+    fmt.Println(g);
+    fmt.Println(g.area());
+    fmt.Println(g.perim());
+}
+
+fn main() {
+    let r = rect {
+        width: 3,
+        height: 4,
+    };
+    let c = circle { radius: 5 };
+
+    measure(r);
+    measure(c);
 }
 ```
 
-AoC 2022 #7
+## Error handling
+
+In functions that return a `Result`, it's possible to propagate errors with the
+`?` operator.
+
+This is similar to what happens in Rust, refer to the section on
+[Propagating errors](https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html#propagating-errors)
+in the Rust book .
+
+Currently the `?` operator only works with `Result`, but it will be extended to
+also work with `Option`.
 
 ```rust
-// Advent of Code 2022 - Day 07
+use fmt;
+use io;
+use os;
 
-const input: String = "$ cd /
-$ ls
-dir a
-14848514 b.txt
-8504156 c.dat
-dir d
-$ cd a
-$ ls
-dir e
-29116 f
-2557 g
-62596 h.lst
-$ cd e
-$ ls
-584 i
-$ cd ..
-$ cd ..
-$ cd d
-$ ls
-4060174 j
-8033020 d.log
-5626152 d.ext
-7214296 k";
+fn copy_file(src: string, dst: string) -> Result<(), error> {
+  let stat = os.Stat(src)?;
 
-fn borgo_main() {
-    let mut sizes = Map::new();
-    let mut stack = [];
+  if !stat.Mode().IsRegular() {
+    return Err(fmt.Errorf("%s is not a regular file", src));
+  }
 
-    for line in input.split("\n") {
-        if line.starts_with("$ ls") || line.starts_with("dir") {
-            continue;
-        }
+  let source = os.Open(src)?;
+  let destination = os.Create(dst)?;
 
-        if line.starts_with("$ cd") {
-            let folder = line.slice(5, 10);
+  // ignore number of bytes copied
+  let _ = io.Copy(destination, source)?;
 
-            if folder == ".." {
-                stack = stack.pop();
-            } else if stack.is_empty() {
-                stack = stack.push(folder);
-            } else {
-                let path = stack.seq().last().unwrap().append("/").append(folder);
-                stack = stack.push(path);
-            }
+  // Close() returns an error
+  // it can be turned into a Result<()> with to_result
+  to_result(source.Close())?;
+  to_result(destination.Close())?;
 
-            continue;
-        }
+  Ok(())
+}
 
-        let size = line.split(" ").get(0).and_then(String::parse_int).unwrap();
-
-        for path in stack.seq() {
-            sizes = sizes.update(path, 0, |n| n + size);
-        }
-    }
-
-    let result = sizes.seq_values().filter(|n| n < 100000).sum();
-    result.inspect().assert_eq(95437);
+fn main() {
+  match copy_file("go.mod", "asdf") {
+    Ok(_) => fmt.Println("file copied"),
+    Err(e) => fmt.Println("error copying:", e),
+  }
 }
 ```
 
-AoC 2022 #10
+## Testing
 
-```rust
-// Advent of Code 2022 - Day 10
+TODO
 
-enum Cmd {
-    Noop,
-    AddX(Int),
-}
-
-impl Cmd {
-    fn parse(s: String) -> Cmd {
-        if s == "noop" {
-            return Cmd::Noop;
-        }
-
-        if s.starts_with("addx") {
-            let n = String::parse_int(s.slice(5, 10)).unwrap();
-            return Cmd::AddX(n);
-        };
-
-        unreachable!();
-    }
-}
-
-fn count_cycles(cmds: Seq<Cmd>, targets: Set<Int>) -> Int {
-    let mut cycle = 0;
-    let mut result = [];
-    let mut register = 1;
-
-    fn bump() {
-        cycle = cycle + 1;
-
-        if targets.contains(cycle) {
-            let strength = cycle * register;
-            result = result.push(strength);
-        }
-    }
-
-    for cmd in cmds {
-        match cmd {
-            Cmd::Noop => bump(),
-            Cmd::AddX(n) => {
-                bump();
-                bump();
-                register = register + n;
-            }
-        }
-    }
-
-    result.seq().sum()
-}
-
-fn borgo_main() {
-    let cmds = input.split("\n").map(Cmd::parse);
-    let targets = [20, 60, 100, 140, 180, 220];
-
-    let res = count_cycles(cmds, targets.seq().to_set());
-    res.inspect().assert_eq(13140);
-}
-
-const input: String = "addx 15
-addx -11
-addx 6
-addx -3
-addx 5
-addx -1
-addx -8
-addx 13
-addx 4
-noop
-addx -1
-addx 5
-addx -1
-addx 5
-addx -1
-addx 5
-addx -1
-addx 5
-addx -1
-addx -35
-addx 1
-addx 24
-addx -19
-addx 1
-addx 16
-addx -11
-noop
-noop
-addx 21
-addx -15
-noop
-noop
-addx -3
-addx 9
-addx 1
-addx -3
-addx 8
-addx 1
-addx 5
-noop
-noop
-noop
-noop
-noop
-addx -36
-noop
-addx 1
-addx 7
-noop
-noop
-noop
-addx 2
-addx 6
-noop
-noop
-noop
-noop
-noop
-addx 1
-noop
-noop
-addx 7
-addx 1
-noop
-addx -13
-addx 13
-addx 7
-noop
-addx 1
-addx -33
-noop
-noop
-noop
-addx 2
-noop
-noop
-noop
-addx 8
-noop
-addx -1
-addx 2
-addx 1
-noop
-addx 17
-addx -9
-addx 1
-addx 1
-addx -3
-addx 11
-noop
-noop
-addx 1
-noop
-addx 1
-noop
-noop
-addx -13
-addx -19
-addx 1
-addx 3
-addx 26
-addx -30
-addx 12
-addx -1
-addx 3
-addx 1
-noop
-noop
-noop
-addx -9
-addx 18
-addx 1
-addx 2
-noop
-noop
-addx 9
-noop
-noop
-noop
-addx -1
-addx 2
-addx -37
-addx 1
-addx 3
-noop
-addx 15
-addx -21
-addx 22
-addx -6
-addx 1
-noop
-addx 2
-addx 1
-noop
-addx -10
-noop
-noop
-addx 20
-addx 1
-addx 2
-addx 2
-addx -6
-addx -11
-noop
-noop
-noop";
+```rust-skip
 ```

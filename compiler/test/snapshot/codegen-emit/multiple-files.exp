@@ -8,10 +8,10 @@ enum Foo {
 
 file: bar.brg
 enum Bar {
-  A(Int),
+  A(int),
 }
 
-fn with_foo(f: Foo, m: Int) -> Int {
+fn with_foo(f: Foo, m: int) -> int {
   match f {
     Foo::X(b) => match b {
       Bar::A(n) => n + m
@@ -20,9 +20,9 @@ fn with_foo(f: Foo, m: Int) -> Int {
 }
 
 file: main.brg
-fn borgo_main() {
+fn main() {
   let bar = Bar::A(2);
-  with_foo(Foo::X(bar), 3).assert_eq(5);
+  assert_eq(with_foo(Foo::X(bar), 3), 5);
 }
 
 OUTPUT:
@@ -30,123 +30,87 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Bar_A(arg_0 any) any {
-	return Bar_A{arg_0}
+func make_Bar_A(arg_0 int) Bar {
+	return Bar{tag: Bar_A, A: arg_0}
 }
 
-func make_Foo_X(arg_0 any) any {
-	return Foo_X{arg_0}
-}
-func borgo_main() any {
-
-	{
-
-		var bar any = make_Bar_A(2)
-
-		return Debug_assert_eq(with_foo(make_Foo_X(bar), 3), 5)
-	}
+func make_Foo_X(arg_0 Bar) Foo {
+	return Foo{tag: Foo_X, X: arg_0}
 }
 
-type Bar_A struct {
-	Field0 any
+type BarTag int
+
+const (
+	Bar_A BarTag = iota
+)
+
+type Bar struct {
+	tag BarTag
+	A   int
 }
-type Bar any
 
-func with_foo(f any, m any) any {
+func with_foo(f Foo, m int) int {
+	var var3 int
+	var1_subject := f
+	var2_matches := 0
 
-	{
-		var var1 any
-		_ = var1
+	if var2_matches != 2 {
+		var2_matches = 0
 
-		var3_subject := f
-		var4_matches := borgo.MatchNone
+		var4_match_pat := 0
+		b := var1_subject.X
 
-		if var4_matches != borgo.MatchOk {
-			var4_matches = borgo.MatchNone
-
-			var6_match_pat := borgo.MatchNone
-
-			var5_pat, constructor_check := var3_subject.(Foo_X)
-			_ = var5_pat
-
-			b := var5_pat.Field0
-
-			if var6_match_pat != borgo.MatchErr && constructor_check {
-				var4_matches = borgo.MatchOk
-			} else {
-				var4_matches = borgo.MatchErr
-			}
-
-			_ = var3_subject
-
-			if var4_matches == borgo.MatchOk {
-
-				var8_subject := b
-				var9_matches := borgo.MatchNone
-
-				if var9_matches != borgo.MatchOk {
-					var9_matches = borgo.MatchNone
-
-					var11_match_pat := borgo.MatchNone
-
-					var10_pat, constructor_check := var8_subject.(Bar_A)
-					_ = var10_pat
-
-					n := var10_pat.Field0
-
-					if var11_match_pat != borgo.MatchErr && constructor_check {
-						var9_matches = borgo.MatchOk
-					} else {
-						var9_matches = borgo.MatchErr
-					}
-
-					_ = var8_subject
-
-					if var9_matches == borgo.MatchOk {
-
-						var1 = borgo.Ops.IAdd(n, m)
-					}
-				}
-
-			}
+		if var4_match_pat != 1 && var1_subject.tag == Foo_X {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
 		}
 
-		return var1
+		_ = var1_subject
+
+		if var2_matches == 2 {
+
+			var6_subject := b
+			var7_matches := 0
+
+			if var7_matches != 2 {
+				var7_matches = 0
+
+				var8_match_pat := 0
+				n := var6_subject.A
+
+				if var8_match_pat != 1 && var6_subject.tag == Bar_A {
+					var7_matches = 2
+				} else {
+					var7_matches = 1
+				}
+
+				_ = var6_subject
+
+				if var7_matches == 2 {
+					var3 = n + m
+				}
+			}
+
+		}
 	}
+
+	return var3
 }
 
-type Foo_X struct {
-	Field0 any
-}
-type Foo any
+type FooTag int
 
-func Bar_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
+const (
+	Foo_X FooTag = iota
+)
+
+type Foo struct {
+	tag FooTag
+	X   Bar
 }
-func Foo_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Bar_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Foo_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Bar_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func Foo_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
-	borgo.RegisterTypeConstructor("Bar::A", "Bar_A")
-	borgo.RegisterMakeFunction("Bar::A", make_Bar_A)
-	borgo.RegisterGlobalFunction("with_foo", with_foo)
-	borgo.RegisterTypeConstructor("Foo::X", "Foo_X")
-	borgo.RegisterMakeFunction("Foo::X", make_Foo_X)
+
+func main() {
+	bar := make_Bar_A(2)
+
+	assert_eq[int](with_foo(make_Foo_X(bar), 3), 5)
 }

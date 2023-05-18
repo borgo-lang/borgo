@@ -1,7 +1,7 @@
 Generic arguments 3
 
 SOURCE:
-{ fn foo(foo: Int<Bool>) {} }
+{ fn foo(foo: int<bool>) {} }
 
 OUTPUT:
 Wrong arity
@@ -9,7 +9,7 @@ Wrong arity
 Expected:
     ()
 Got:
-    (Bool)
+    (bool)
 
-1|  { fn foo(foo: Int<Bool>) {} }
+1|  { fn foo(foo: int<bool>) {} }
       ^^^^^^^^^^^^^^^^^^^^^^^^^

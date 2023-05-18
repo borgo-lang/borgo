@@ -9,9 +9,9 @@ match 1 {
 OUTPUT:
 Type mismatch
 Expected:
-    Int
+    int
 Got:
-    Bool
+    bool
 
 3|    false => "foo",
       ^^^^^

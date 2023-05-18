@@ -2,14 +2,18 @@ Error when updating structs.
 
 SOURCE:
 {
-  struct Foo { a: Int }
+  struct Foo { a: int }
 
-  let x = Foo { a: 1 };
+  let mut x = Foo { a: 1 };
   x.a = "foo"
 }
 
 OUTPUT:
-Can't update struct fields, re-assign instead. x =Foo { field = new_value, ..x } 
+Type mismatch
+Expected:
+    int
+Got:
+    string
 
 5|    x.a = "foo"
       ^^^^^^^^^^^

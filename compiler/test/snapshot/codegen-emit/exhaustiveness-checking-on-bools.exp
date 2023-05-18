@@ -1,12 +1,12 @@
 Exhaustiveness checking on bools
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   let x = match false {
     true => unreachable!(),
     false => 2,
   };
-  x.assert_eq(2);
+  assert_eq(x, 2);
 }
 
 OUTPUT:
@@ -14,57 +14,41 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	var x int
 
-var _ = borgo.Unit
+	var1_subject := false
+	var2_matches := 0
 
-func borgo_main() any {
+	if var2_matches != 2 {
+		var2_matches = 0
 
-	{
-		var var1 any
-		_ = var1
-
-		var3_subject := false
-		var4_matches := borgo.MatchNone
-
-		if var4_matches != borgo.MatchOk {
-			var4_matches = borgo.MatchNone
-
-			if var4_matches != borgo.MatchErr && borgo.Ops.Eq(true, var3_subject).(bool) {
-				var4_matches = borgo.MatchOk
-			} else {
-				var4_matches = borgo.MatchErr
-			}
-			_ = var3_subject
-
-			if var4_matches == borgo.MatchOk {
-
-				var1 = Debug_unreachable()
-			}
+		if var2_matches != 1 && true == var1_subject {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
 		}
+		_ = var1_subject
 
-		if var4_matches != borgo.MatchOk {
-			var4_matches = borgo.MatchNone
-
-			if var4_matches != borgo.MatchErr && borgo.Ops.Eq(false, var3_subject).(bool) {
-				var4_matches = borgo.MatchOk
-			} else {
-				var4_matches = borgo.MatchErr
-			}
-			_ = var3_subject
-
-			if var4_matches == borgo.MatchOk {
-
-				var1 = 2
-			}
+		if var2_matches == 2 {
+			x = Debug_unreachable[int]()
 		}
-
-		var x any = var1
-
-		return Debug_assert_eq(x, 2)
 	}
-}
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		if var2_matches != 1 && false == var1_subject {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
+		}
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			x = 2
+		}
+	}
+
+	assert_eq[int](x, 2)
 }

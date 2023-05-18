@@ -1,14 +1,14 @@
 Return statement
 
 SOURCE:
-fn foo() -> Int {
+fn foo() -> int {
   let x = match 1 {
     1 => return 12,
     _ => 5,
   };
 
   if true {
-    x + 40
+    let _ = x + 40;
   } else {
     return 9
   }
@@ -16,8 +16,14 @@ fn foo() -> Int {
   return 4
 }
 
-fn borgo_main() {
-  foo().assert_eq(12);
+fn bar() {
+    if false {
+        return
+    }
+}
+
+fn main() {
+  assert_eq(foo(), 12);
 }
 
 OUTPUT:
@@ -25,74 +31,55 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func foo() int {
+	var x int
 
-var _ = borgo.Unit
+	var1_subject := 1
+	var2_matches := 0
 
-func foo() any {
+	if var2_matches != 2 {
+		var2_matches = 0
 
-	{
-		var var1 any
-		_ = var1
-
-		var3_subject := 1
-		var4_matches := borgo.MatchNone
-
-		if var4_matches != borgo.MatchOk {
-			var4_matches = borgo.MatchNone
-
-			if var4_matches != borgo.MatchErr && borgo.Ops.Eq(1, var3_subject).(bool) {
-				var4_matches = borgo.MatchOk
-			} else {
-				var4_matches = borgo.MatchErr
-			}
-			_ = var3_subject
-
-			if var4_matches == borgo.MatchOk {
-
-				return 12
-
-			}
-		}
-
-		if var4_matches != borgo.MatchOk {
-			var4_matches = borgo.MatchNone
-
-			if var4_matches != borgo.MatchErr {
-				var4_matches = borgo.MatchOk /* wildcard */
-			}
-			_ = var3_subject
-
-			if var4_matches == borgo.MatchOk {
-
-				var1 = 5
-			}
-		}
-
-		var x any = var1
-
-		if borgo.Ops.Eq(true, true).(bool) {
-
-			borgo.Ops.IAdd(x, 40)
-
+		if var2_matches != 1 && 1 == var1_subject {
+			var2_matches = 2
 		} else {
-
-			return 9
-
+			var2_matches = 1
 		}
+		_ = var1_subject
 
-		return 4
+		if var2_matches == 2 {
+			return 12
+		}
+	}
+
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		if var2_matches != 1 {
+			var2_matches = 2 /* wildcard */
+		}
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			x = 5
+		}
+	}
+
+	if true {
+		_ = x + 40
+	} else {
+		return 9
+	}
+
+	return 4
+}
+
+func bar() {
+	if false {
+		return
 	}
 }
-func borgo_main() any {
 
-	{
-
-		return Debug_assert_eq(foo(), 12)
-	}
-}
-
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	assert_eq[int](foo(), 12)
 }

@@ -3,15 +3,14 @@ It's possible to sanity-check the type of a value.
 SOURCE:
 {
   let x = [1,2,3];
-  x as List<Int>
+  x as [int];
+  x
 }
 
 OUTPUT:
-List<Int>
+[int]
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -39,11 +38,11 @@ No errors.
             "ann": "Unknown",
             "ty": {
               "Con": {
-                "name": "List",
+                "name": "Slice",
                 "args": [
                   {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   }
@@ -54,7 +53,7 @@ No errors.
           "value": {
             "Literal": {
               "lit": {
-                "List": [
+                "Slice": [
                   {
                     "Literal": {
                       "lit": {
@@ -62,7 +61,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -85,7 +84,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -108,7 +107,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -128,11 +127,11 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "List",
+                  "name": "Slice",
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     }
@@ -153,11 +152,11 @@ No errors.
           },
           "ty": {
             "Con": {
-              "name": "List",
+              "name": "Slice",
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -197,13 +196,14 @@ No errors.
                   }
                 }
               },
+              "generics_instantiated": [],
               "ty": {
                 "Con": {
-                  "name": "List",
+                  "name": "Slice",
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     }
@@ -224,11 +224,11 @@ No errors.
           },
           "ann": {
             "Con": {
-              "name": "List",
+              "name": "Slice",
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -237,11 +237,11 @@ No errors.
           },
           "ty": {
             "Con": {
-              "name": "List",
+              "name": "Slice",
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -255,7 +255,52 @@ No errors.
             },
             "end": {
               "line": 3,
-              "col": 16
+              "col": 12
+            }
+          }
+        }
+      },
+      {
+        "Var": {
+          "value": "x",
+          "decl": {
+            "file_id": {
+              "package": "dummy",
+              "filename": "dummy"
+            },
+            "span": {
+              "start": {
+                "line": 2,
+                "col": 6
+              },
+              "end": {
+                "line": 2,
+                "col": 7
+              }
+            }
+          },
+          "generics_instantiated": [],
+          "ty": {
+            "Con": {
+              "name": "Slice",
+              "args": [
+                {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 2
+            },
+            "end": {
+              "line": 4,
+              "col": 3
             }
           }
         }
@@ -263,11 +308,11 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "List",
+        "name": "Slice",
         "args": [
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           }
@@ -280,7 +325,7 @@ No errors.
         "col": 0
       },
       "end": {
-        "line": 4,
+        "line": 5,
         "col": 1
       }
     }

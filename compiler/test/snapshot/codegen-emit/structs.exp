@@ -2,64 +2,34 @@ Structs
 
 SOURCE:
 struct Bar<T> {
-  name: String,
-  age: Int,
+  name: string,
+  age: int,
   v: T,
 }
 
-fn borgo_main() {
+fn main() {
   let x = Bar { name: "yo", age: 99, v: false };
-  x.inspect();
-  ()
+  inspect(x);
 }
 
 OUTPUT:
-Bar { name: "yo", age: 99, v: false }
+{name:yo age:99 v:false}
 
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func make_Bar(arg_0 any, arg_1 any, arg_2 any) any {
-	return Bar{arg_0, arg_1, arg_2}
+type Bar[T any] struct {
+	name string
+	age  int
+	v    T
 }
 
-type Bar struct {
-	Name any
-	Age  any
-	V    any
-}
-
-func borgo_main() any {
-
-	{
-
-		var x any = func(base any) any {
-			data := base.(Bar)
-			data.Name = "yo"
-			data.Age = 99
-			data.V = false
-			return data
-		}(Bar{})
-		Debug_inspect(x)
-
-		return borgo.Unit
+func main() {
+	x := Bar[bool]{
+		name: "yo",
+		age:  99,
+		v:    false,
 	}
-}
-func Bar_equals(values ...any) any {
-	return borgo.OverloadImpl("equals", values)
-}
-func Bar_to_hash(values ...any) any {
-	return borgo.OverloadImpl("to_hash", values)
-}
-func Bar_to_string(values ...any) any {
-	return borgo.OverloadImpl("to_string", values)
-}
-func pkg_user_init() {
-	borgo.RegisterStruct("Bar", "Bar", []string{"name", "age", "v"})
-	borgo.RegisterMakeFunction("Bar", make_Bar)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+
+	inspect[Bar[bool]](x)
 }

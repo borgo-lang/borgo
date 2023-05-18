@@ -3,24 +3,29 @@ Mutually recursive functions
 SOURCE:
 file: main.brg
 
-fn even(n: Int) -> Bool {
+fn abs(n: int) -> int {
+  if n < 0 { return -n }
+  n
+}
+
+fn even(n: int) -> bool {
   if n == 0 {
     return true
   }
 
-  odd(Int::abs(n) - 1)
+  odd(abs(n) - 1)
 }
 
-fn odd(n: Int) -> Bool {
+fn odd(n: int) -> bool {
   if n == 0 {
     return false
   }
 
-  even(Int::abs(n) - 1)
+  even(abs(n) - 1)
 }
 
-fn borgo_main() {
-  even(10).assert_eq(true);
+fn main() {
+  assert_eq(even(10), true);
 }
 
 OUTPUT:
@@ -28,46 +33,30 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func even(n any) any {
-
-	{
-
-		if borgo.Ops.Eq(borgo.Ops.Eq(n, 0), true).(bool) {
-
-			return true
-
-		}
-
-		return odd(borgo.Ops.ISub(Int_abs(n), 1))
+func abs(n int) int {
+	if n < 0 {
+		return -n
 	}
-}
-func odd(n any) any {
 
-	{
-
-		if borgo.Ops.Eq(borgo.Ops.Eq(n, 0), true).(bool) {
-
-			return false
-
-		}
-
-		return even(borgo.Ops.ISub(Int_abs(n), 1))
-	}
-}
-func borgo_main() any {
-
-	{
-
-		return Debug_assert_eq(even(10), true)
-	}
+	return n
 }
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("even", even)
-	borgo.RegisterGlobalFunction("odd", odd)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func even(n int) bool {
+	if n == 0 {
+		return true
+	}
+
+	return odd(abs(n) - 1)
+}
+
+func odd(n int) bool {
+	if n == 0 {
+		return false
+	}
+
+	return even(abs(n) - 1)
+}
+
+func main() {
+	assert_eq[bool](even(10), true)
 }

@@ -1,17 +1,17 @@
 Function calls
 
 SOURCE:
-fn foo(b: Bool, x: Int) -> Bool { b }
-fn bar(x: Int) -> Int { x }
+fn foo(b: bool, x: int) -> bool { b }
+fn bar(x: int) -> int { x }
+fn baz() {}
 
-fn borgo_main() {
-  foo(match 1 {
+fn main() {
+  let val = foo(match 1 {
     1 => true,
     _ => false,
-  }, bar(5))
-  .assert_eq(true);
+  }, bar(5));
 
-  ()
+  assert_eq(val, true);
 }
 
 OUTPUT:
@@ -19,73 +19,51 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-
-func foo(b any, x any) any {
-
-	{
-
-		return b
-	}
+func foo(b bool, x int) bool {
+	return b
 }
-func bar(x any) any {
 
-	{
-
-		return x
-	}
+func bar(x int) int {
+	return x
 }
-func borgo_main() any {
 
-	{
-		var var1 any
-		_ = var1
-		var var2 any
-		_ = var2
+func baz() {
+}
 
-		var4_subject := 1
-		var5_matches := borgo.MatchNone
+func main() {
+	var var3 bool
+	var1_subject := 1
+	var2_matches := 0
 
-		if var5_matches != borgo.MatchOk {
-			var5_matches = borgo.MatchNone
+	if var2_matches != 2 {
+		var2_matches = 0
 
-			if var5_matches != borgo.MatchErr && borgo.Ops.Eq(1, var4_subject).(bool) {
-				var5_matches = borgo.MatchOk
-			} else {
-				var5_matches = borgo.MatchErr
-			}
-			_ = var4_subject
-
-			if var5_matches == borgo.MatchOk {
-
-				var2 = true
-			}
+		if var2_matches != 1 && 1 == var1_subject {
+			var2_matches = 2
+		} else {
+			var2_matches = 1
 		}
+		_ = var1_subject
 
-		if var5_matches != borgo.MatchOk {
-			var5_matches = borgo.MatchNone
-
-			if var5_matches != borgo.MatchErr {
-				var5_matches = borgo.MatchOk /* wildcard */
-			}
-			_ = var4_subject
-
-			if var5_matches == borgo.MatchOk {
-
-				var2 = false
-			}
+		if var2_matches == 2 {
+			var3 = true
 		}
-
-		Debug_assert_eq(foo(var2, bar(5)), true)
-
-		return borgo.Unit
 	}
-}
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("bar", bar)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	if var2_matches != 2 {
+		var2_matches = 0
+
+		if var2_matches != 1 {
+			var2_matches = 2 /* wildcard */
+		}
+		_ = var1_subject
+
+		if var2_matches == 2 {
+			var3 = false
+		}
+	}
+
+	val := foo(var3, bar(5))
+
+	assert_eq[bool](val, true)
 }

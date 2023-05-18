@@ -4,11 +4,11 @@ SOURCE:
 {
   struct Foo<T> { bar: T }
   impl<T> Foo<T> {
-    fn map(self, f: fn (x: T) -> String) -> String {
+    fn map(self, f: fn (x: T) -> string) -> string {
       f(self.bar)
     }
 
-    fn other(self) -> String {
+    fn other(self) -> string {
       self.map(|x| "asdf")
     }
   }
@@ -18,11 +18,9 @@ SOURCE:
 }
 
 OUTPUT:
-String
+string
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -44,9 +42,12 @@ No errors.
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "T",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "T",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -96,7 +97,7 @@ No errors.
             {
               "Closure": {
                 "fun": {
-                  "name": "Foo::map",
+                  "name": "map",
                   "generics": [
                     "T"
                   ],
@@ -189,7 +190,7 @@ No errors.
                           ],
                           "ret": {
                             "Con": {
-                              "name": "String",
+                              "name": "string",
                               "args": []
                             }
                           }
@@ -208,24 +209,24 @@ No errors.
                           "bounds": [],
                           "ret": {
                             "Con": {
-                              "name": "String",
+                              "name": "string",
                               "args": []
                             }
                           },
-                          "fx": []
+                          "id": -1
                         }
                       }
                     }
                   ],
                   "ret": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
                   "ann": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
@@ -253,6 +254,7 @@ No errors.
                                     }
                                   }
                                 },
+                                "generics_instantiated": [],
                                 "ty": {
                                   "Fun": {
                                     "args": [
@@ -266,11 +268,11 @@ No errors.
                                     "bounds": [],
                                     "ret": {
                                       "Con": {
-                                        "name": "String",
+                                        "name": "string",
                                         "args": []
                                       }
                                     },
-                                    "fx": []
+                                    "id": -1
                                   }
                                 },
                                 "span": {
@@ -287,7 +289,7 @@ No errors.
                             },
                             "args": [
                               {
-                                "StructAccess": {
+                                "FieldAccess": {
                                   "expr": {
                                     "Var": {
                                       "value": "self",
@@ -307,6 +309,7 @@ No errors.
                                           }
                                         }
                                       },
+                                      "generics_instantiated": [],
                                       "ty": {
                                         "Con": {
                                           "name": "Foo",
@@ -354,7 +357,7 @@ No errors.
                             ],
                             "ty": {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             },
@@ -373,7 +376,7 @@ No errors.
                       ],
                       "ty": {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
@@ -386,6 +389,58 @@ No errors.
                           "line": 6,
                           "col": 5
                         }
+                      }
+                    }
+                  },
+                  "bounded_ty": {
+                    "generics": [
+                      "T"
+                    ],
+                    "ty": {
+                      "Fun": {
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Foo",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "T",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "Fun": {
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "T",
+                                    "args": []
+                                  }
+                                }
+                              ],
+                              "bounds": [],
+                              "ret": {
+                                "Con": {
+                                  "name": "string",
+                                  "args": []
+                                }
+                              },
+                              "id": -1
+                            }
+                          }
+                        ],
+                        "bounds": [],
+                        "ret": {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        },
+                        "id": -1
                       }
                     }
                   }
@@ -414,22 +469,22 @@ No errors.
                           "bounds": [],
                           "ret": {
                             "Con": {
-                              "name": "String",
+                              "name": "string",
                               "args": []
                             }
                           },
-                          "fx": []
+                          "id": -1
                         }
                       }
                     ],
                     "bounds": [],
                     "ret": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
-                    "fx": []
+                    "id": -1
                   }
                 },
                 "span": {
@@ -447,7 +502,7 @@ No errors.
             {
               "Closure": {
                 "fun": {
-                  "name": "Foo::other",
+                  "name": "other",
                   "generics": [
                     "T"
                   ],
@@ -513,13 +568,13 @@ No errors.
                   ],
                   "ret": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
                   "ann": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
@@ -529,40 +584,56 @@ No errors.
                         {
                           "Call": {
                             "func": {
-                              "Var": {
-                                "value": "Foo::map",
-                                "decl": {
-                                  "file_id": {
-                                    "package": "dummy",
-                                    "filename": "dummy"
-                                  },
-                                  "span": {
-                                    "start": {
-                                      "line": 4,
-                                      "col": 4
+                              "FieldAccess": {
+                                "expr": {
+                                  "Var": {
+                                    "value": "self",
+                                    "decl": {
+                                      "file_id": {
+                                        "package": "dummy",
+                                        "filename": "dummy"
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 3,
+                                          "col": 2
+                                        },
+                                        "end": {
+                                          "line": 11,
+                                          "col": 3
+                                        }
+                                      }
                                     },
-                                    "end": {
-                                      "line": 6,
-                                      "col": 5
+                                    "generics_instantiated": [],
+                                    "ty": {
+                                      "Con": {
+                                        "name": "Foo",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "T",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 9,
+                                        "col": 6
+                                      },
+                                      "end": {
+                                        "line": 9,
+                                        "col": 10
+                                      }
                                     }
                                   }
                                 },
+                                "field": "map",
                                 "ty": {
                                   "Fun": {
                                     "args": [
-                                      {
-                                        "Con": {
-                                          "name": "Foo",
-                                          "args": [
-                                            {
-                                              "Con": {
-                                                "name": "T",
-                                                "args": []
-                                              }
-                                            }
-                                          ]
-                                        }
-                                      },
                                       {
                                         "Fun": {
                                           "args": [
@@ -576,22 +647,22 @@ No errors.
                                           "bounds": [],
                                           "ret": {
                                             "Con": {
-                                              "name": "String",
+                                              "name": "string",
                                               "args": []
                                             }
                                           },
-                                          "fx": []
+                                          "id": -1
                                         }
                                       }
                                     ],
                                     "bounds": [],
                                     "ret": {
                                       "Con": {
-                                        "name": "String",
+                                        "name": "string",
                                         "args": []
                                       }
                                     },
-                                    "fx": []
+                                    "id": -1
                                   }
                                 },
                                 "span": {
@@ -607,50 +678,6 @@ No errors.
                               }
                             },
                             "args": [
-                              {
-                                "Var": {
-                                  "value": "self",
-                                  "decl": {
-                                    "file_id": {
-                                      "package": "dummy",
-                                      "filename": "dummy"
-                                    },
-                                    "span": {
-                                      "start": {
-                                        "line": 3,
-                                        "col": 2
-                                      },
-                                      "end": {
-                                        "line": 11,
-                                        "col": 3
-                                      }
-                                    }
-                                  },
-                                  "ty": {
-                                    "Con": {
-                                      "name": "Foo",
-                                      "args": [
-                                        {
-                                          "Con": {
-                                            "name": "T",
-                                            "args": []
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "span": {
-                                    "start": {
-                                      "line": 9,
-                                      "col": 11
-                                    },
-                                    "end": {
-                                      "line": 9,
-                                      "col": 14
-                                    }
-                                  }
-                                }
-                              },
                               {
                                 "Closure": {
                                   "fun": {
@@ -687,7 +714,7 @@ No errors.
                                     ],
                                     "ret": {
                                       "Con": {
-                                        "name": "String",
+                                        "name": "string",
                                         "args": []
                                       }
                                     },
@@ -695,11 +722,14 @@ No errors.
                                     "body": {
                                       "Literal": {
                                         "lit": {
-                                          "String": "asdf"
+                                          "String": [
+                                            "asdf",
+                                            null
+                                          ]
                                         },
                                         "ty": {
                                           "Con": {
-                                            "name": "String",
+                                            "name": "string",
                                             "args": []
                                           }
                                         },
@@ -712,6 +742,23 @@ No errors.
                                             "line": 9,
                                             "col": 25
                                           }
+                                        }
+                                      }
+                                    },
+                                    "bounded_ty": {
+                                      "generics": [],
+                                      "ty": {
+                                        "Fun": {
+                                          "args": [
+                                            {
+                                              "Var": 99
+                                            }
+                                          ],
+                                          "bounds": [],
+                                          "ret": {
+                                            "Var": 99
+                                          },
+                                          "id": -1
                                         }
                                       }
                                     }
@@ -730,11 +777,11 @@ No errors.
                                       "bounds": [],
                                       "ret": {
                                         "Con": {
-                                          "name": "String",
+                                          "name": "string",
                                           "args": []
                                         }
                                       },
-                                      "fx": []
+                                      "id": -1
                                     }
                                   },
                                   "span": {
@@ -752,7 +799,7 @@ No errors.
                             ],
                             "ty": {
                               "Con": {
-                                "name": "String",
+                                "name": "string",
                                 "args": []
                               }
                             },
@@ -771,7 +818,7 @@ No errors.
                       ],
                       "ty": {
                         "Con": {
-                          "name": "String",
+                          "name": "string",
                           "args": []
                         }
                       },
@@ -784,6 +831,38 @@ No errors.
                           "line": 10,
                           "col": 5
                         }
+                      }
+                    }
+                  },
+                  "bounded_ty": {
+                    "generics": [
+                      "T"
+                    ],
+                    "ty": {
+                      "Fun": {
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "Foo",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "T",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "bounds": [],
+                        "ret": {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        },
+                        "id": -1
                       }
                     }
                   }
@@ -806,11 +885,11 @@ No errors.
                     "bounds": [],
                     "ret": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
-                    "fx": []
+                    "id": -1
                   }
                 },
                 "span": {
@@ -868,7 +947,7 @@ No errors.
                 "args": [
                   {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   }
@@ -889,7 +968,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Int",
+                          "name": "int",
                           "args": []
                         }
                       },
@@ -914,7 +993,7 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "Int",
+                        "name": "int",
                         "args": []
                       }
                     }
@@ -939,7 +1018,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -961,49 +1040,64 @@ No errors.
       {
         "Call": {
           "func": {
-            "Var": {
-              "value": "Foo::other",
-              "decl": {
-                "file_id": {
-                  "package": "dummy",
-                  "filename": "dummy"
-                },
-                "span": {
-                  "start": {
-                    "line": 8,
-                    "col": 4
+            "FieldAccess": {
+              "expr": {
+                "Var": {
+                  "value": "foo",
+                  "decl": {
+                    "file_id": {
+                      "package": "dummy",
+                      "filename": "dummy"
+                    },
+                    "span": {
+                      "start": {
+                        "line": 13,
+                        "col": 6
+                      },
+                      "end": {
+                        "line": 13,
+                        "col": 9
+                      }
+                    }
                   },
-                  "end": {
-                    "line": 10,
-                    "col": 5
+                  "generics_instantiated": [],
+                  "ty": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 14,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 14,
+                      "col": 5
+                    }
                   }
                 }
               },
+              "field": "other",
               "ty": {
                 "Fun": {
-                  "args": [
-                    {
-                      "Con": {
-                        "name": "Foo",
-                        "args": [
-                          {
-                            "Con": {
-                              "name": "Int",
-                              "args": []
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ],
+                  "args": [],
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   },
-                  "fx": []
+                  "id": -1
                 }
               },
               "span": {
@@ -1018,55 +1112,10 @@ No errors.
               }
             }
           },
-          "args": [
-            {
-              "Var": {
-                "value": "foo",
-                "decl": {
-                  "file_id": {
-                    "package": "dummy",
-                    "filename": "dummy"
-                  },
-                  "span": {
-                    "start": {
-                      "line": 13,
-                      "col": 6
-                    },
-                    "end": {
-                      "line": 13,
-                      "col": 9
-                    }
-                  }
-                },
-                "ty": {
-                  "Con": {
-                    "name": "Foo",
-                    "args": [
-                      {
-                        "Con": {
-                          "name": "Int",
-                          "args": []
-                        }
-                      }
-                    ]
-                  }
-                },
-                "span": {
-                  "start": {
-                    "line": 14,
-                    "col": 6
-                  },
-                  "end": {
-                    "line": 14,
-                    "col": 11
-                  }
-                }
-              }
-            }
-          ],
+          "args": [],
           "ty": {
             "Con": {
-              "name": "String",
+              "name": "string",
               "args": []
             }
           },
@@ -1085,7 +1134,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "String",
+        "name": "string",
         "args": []
       }
     },

@@ -3,34 +3,19 @@ Const expressions are global
 SOURCE:
 file: main.brg
 
-const a: Int = 1;
+const a: int = 1;
 
-fn borgo_main() -> Int { a + 5 }
+fn main() { assert_eq(a + 5, 6) }
 
 OUTPUT:
 
 ---
 package main
 
-import borgo "borgo/runtime"
-
-var _ = borgo.Unit
-var a any
-
-func init_const_a() any {
-
+var a = func() int {
 	return 1
-}
+}()
 
-func borgo_main() any {
-
-	{
-
-		return borgo.Ops.IAdd(a, 5)
-	}
-}
-
-func pkg_user_init() {
-	a = init_const_a()
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+func main() {
+	assert_eq[int](a+5, 6)
 }

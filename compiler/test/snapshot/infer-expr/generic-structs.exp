@@ -8,11 +8,9 @@ SOURCE:
 }
 
 OUTPUT:
-Foo<Int>
+Foo<int>
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -34,9 +32,12 @@ No errors.
                   }
                 },
                 "ty": {
-                  "Con": {
-                    "name": "T",
-                    "args": []
+                  "generics": [],
+                  "ty": {
+                    "Con": {
+                      "name": "T",
+                      "args": []
+                    }
                   }
                 }
               }
@@ -67,7 +68,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "Int",
+                      "name": "int",
                       "args": []
                     }
                   },
@@ -92,7 +93,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "Int",
+                    "name": "int",
                     "args": []
                   }
                 }
@@ -118,7 +119,7 @@ No errors.
         "args": [
           {
             "Con": {
-              "name": "Int",
+              "name": "int",
               "args": []
             }
           }

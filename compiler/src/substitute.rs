@@ -1,17 +1,18 @@
 use crate::ast::{Arm, Binding, Expr, Function, Literal, Loop, Pat, StructField, StructFieldPat};
 use crate::infer;
+use crate::type_::Type;
 
 pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
     match expr {
         Expr::Literal { lit, ty, span } => match lit {
-            Literal::List(expr) => {
+            Literal::Slice(expr) => {
                 let new_expr = expr
                     .iter()
                     .map(|e| substitute_expr(e.clone(), instance))
                     .collect();
 
                 Expr::Literal {
-                    lit: Literal::List(new_expr),
+                    lit: Literal::Slice(new_expr),
                     ty: instance.substitute(ty),
                     span,
                 }
@@ -42,6 +43,7 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
                 body: substitute_expr(*fun.body, instance).into(),
                 ret: instance.substitute(fun.ret.clone()),
                 ann: fun.ann,
+                bounded_ty: fun.bounded_ty,
             },
             ty: instance.substitute(ty),
             kind,
@@ -51,7 +53,19 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
         Expr::Block { stmts, ty, span } => Expr::Block {
             stmts: stmts
                 .iter()
-                .map(|e| substitute_expr(e.clone(), instance))
+                .map(|e| {
+                    let new_expr = substitute_expr(e.clone(), instance);
+
+                    // Statements inside a block are discarded, so they may never end up getting
+                    // constrained to anything. It's desirable to have a concrete type for all
+                    // expressions, so replace with Unit if a type hasn't been inferred yet.
+                    let new_expr = match new_expr.get_type() {
+                        Type::Var(_) => new_expr.replace_type(Type::unit()),
+                        _ => new_expr,
+                    };
+
+                    new_expr
+                })
                 .collect(),
             ty: instance.substitute(ty),
             span,
@@ -72,11 +86,16 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
         Expr::Var {
             value,
             decl,
+            generics_instantiated,
             ty,
             span,
         } => Expr::Var {
             value,
             decl,
+            generics_instantiated: generics_instantiated
+                .iter()
+                .map(|ty| instance.substitute(ty.clone()))
+                .collect(),
             ty: instance.substitute(ty),
             span,
         },
@@ -173,12 +192,12 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
-        Expr::StructAccess {
+        Expr::FieldAccess {
             expr,
             ty,
             field,
             span,
-        } => Expr::StructAccess {
+        } => Expr::FieldAccess {
             expr: substitute_expr(*expr, instance).into(),
             ty: instance.substitute(ty),
             field,
@@ -224,14 +243,7 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
-        Expr::ExternDecl {
-            name,
-            kind,
-            items,
-            span,
-        } => Expr::ExternDecl {
-            name,
-            kind,
+        Expr::ExternDecl { items, span } => Expr::ExternDecl {
             items: items
                 .iter()
                 .map(|e| substitute_expr(e.clone(), instance))
@@ -327,11 +339,38 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
+        Expr::Reference {
+            expr,
+            mutable,
+            ty,
+            span,
+        } => Expr::Reference {
+            expr: substitute_expr(*expr, instance).into(),
+            mutable,
+            ty: instance.substitute(ty),
+            span,
+        },
+
+        Expr::Index {
+            expr,
+            index,
+            ty,
+            span,
+        } => Expr::Index {
+            expr: substitute_expr(*expr, instance).into(),
+            index: substitute_expr(*index, instance).into(),
+            ty: instance.substitute(ty),
+            span,
+        },
+
         Expr::Loop { kind, body, span } => {
             let new_kind = match kind {
                 Loop::NoCondition => kind,
                 Loop::WithCondition { binding, expr } => Loop::WithCondition {
                     binding: substitute_binding(&binding, instance),
+                    expr: substitute_expr(*expr, instance).into(),
+                },
+                Loop::While { expr } => Loop::While {
                     expr: substitute_expr(*expr, instance).into(),
                 },
             };
@@ -343,8 +382,43 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             }
         }
 
+        Expr::Trait {
+            name,
+            items,
+            supertraits,
+            types,
+            span,
+        } => Expr::Trait {
+            name,
+            items: items
+                .iter()
+                .map(|e| substitute_expr(e.clone(), instance))
+                .collect(),
+            types,
+            supertraits,
+            span,
+        },
+
+        Expr::Mod {
+            name,
+            items,
+            pkg,
+            span,
+        } => Expr::Mod {
+            name,
+            pkg,
+            items: items
+                .iter()
+                .map(|e| substitute_expr(e.clone(), instance))
+                .collect(),
+            span,
+        },
+
         Expr::Flow { kind, span } => Expr::Flow { kind, span },
+        Expr::TypeAlias { def, span } => Expr::TypeAlias { def, span },
+        Expr::UsePackage { import, span } => Expr::UsePackage { import, span },
         Expr::Unit { span } => Expr::Unit { span },
+        Expr::Raw { text } => Expr::Raw { text },
         Expr::Noop => Expr::Noop,
         Expr::Todo => Expr::Todo,
     }

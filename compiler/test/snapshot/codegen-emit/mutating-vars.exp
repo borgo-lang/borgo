@@ -1,7 +1,7 @@
 Mutating vars
 
 SOURCE:
-fn foo(mut a: Int) -> Int {
+fn foo(mut a: int) -> int {
   loop {
     if a > 5 { break; }
     a = a + 1;
@@ -10,17 +10,17 @@ fn foo(mut a: Int) -> Int {
   a
 }
 
-fn borgo_main() {
+fn main() {
   let mut x = 1;
   x = x + 3;
-  x.assert_eq(4);
+  assert_eq(x, 4);
 
   {
     let x = 5;
-    x.assert_eq(5);
+    assert_eq(x, 5);
   }
 
-  foo(0).assert_eq(6);
+  assert_eq(foo(0), 6);
 
   // TODO this doesn't type check :/
   // x = x + 6;
@@ -32,49 +32,31 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func foo(a int) int {
+	for {
 
-var _ = borgo.Unit
-
-func foo(a any) any {
-
-	{
-		for {
-			{
-
-				if borgo.Ops.Eq(borgo.Ops.IGt(a, 5), true).(bool) {
-					break
-
-				}
-
-				a = borgo.Ops.IAdd(a, 1)
-			}
+		if a > 5 {
+			break
 		}
 
-		return a
+		a = a + 1
 	}
-}
-func borgo_main() any {
 
+	return a
+}
+
+func main() {
+	x := 1
+
+	x = x + 3
+
+	assert_eq[int](x, 4)
 	{
 
-		var x any = 1
+		x := 5
 
-		x = borgo.Ops.IAdd(x, 3)
-
-		Debug_assert_eq(x, 4)
-		{
-
-			var x any = 5
-
-			Debug_assert_eq(x, 5)
-		}
-
-		return Debug_assert_eq(foo(0), 6)
+		assert_eq[int](x, 5)
 	}
-}
 
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("foo", foo)
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[int](foo(0), 6)
 }

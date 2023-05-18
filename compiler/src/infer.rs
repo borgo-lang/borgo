@@ -1,14 +1,14 @@
 use crate::ast::{
-    Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, ExternKind, File,
-    Function, FunctionKind, Literal, Loop, Operator, Pat, Span, StructDefinition, StructField,
-    StructFieldDef, StructFieldPat, TypeAst, UnOp,
+    Arm, Binding, Constructor, EnumDefinition, EnumFieldDef, Expr, File, Function, FunctionKind,
+    Literal, Loop, Operator, Pat, PkgImport, Span, StructDefinition, StructField, StructFieldDef,
+    StructFieldPat, TypeAst, UnOp,
 };
 use crate::error::{ArityError, Error, UnificationError};
 use crate::exhaustive;
-use crate::global_state::{Declaration, FileId, GlobalState, ValueDef};
+use crate::global_state::{Declaration, FileId, GlobalState, Interface, Module, ValueDef};
 use crate::project::Package;
 use crate::substitute;
-use crate::type_::{BoundedType, Type};
+use crate::type_::{Bound, BoundedType, Type, TypeId};
 
 use std::collections::{HashMap, HashSet};
 
@@ -18,9 +18,6 @@ pub struct Infer {
 
     // The return type of the current function being inferred
     current_fn_ret_ty: Option<Type>,
-
-    // The `Error` type as defined by this package
-    package_error_ty: Option<Type>,
 
     // The file being processed
     current_file_id: Option<FileId>,
@@ -38,7 +35,6 @@ impl Infer {
             gs,
             substitutions: Default::default(),
             current_fn_ret_ty: None,
-            package_error_ty: None,
             current_file_id: None,
             errors: Default::default(),
         }
@@ -95,17 +91,23 @@ impl Infer {
                 args,
                 bounds,
                 ret,
-                fx,
+                id: fx,
             } => {
                 let new_args = args.into_iter().map(|a| self.substitute(a)).collect();
-                let new_bounds = bounds.into_iter().map(|a| self.substitute(a)).collect();
+                let new_bounds = bounds
+                    .into_iter()
+                    .map(|b| Bound {
+                        generic: self.substitute(b.generic),
+                        ty: self.substitute(b.ty),
+                    })
+                    .collect();
                 let new_ret = self.substitute(*ret);
 
                 Type::Fun {
                     args: new_args,
                     bounds: new_bounds,
                     ret: new_ret.into(),
-                    fx,
+                    id: fx,
                 }
             }
         }
@@ -144,11 +146,11 @@ impl Infer {
                     }
                 }
 
-                Literal::String(s) => {
+                Literal::String(s, token) => {
                     self.add_constraint(expected, &Type::string(), &span);
 
                     Expr::Literal {
-                        lit: Literal::String(s),
+                        lit: Literal::String(s, token),
                         ty: Type::string(),
                         span,
                     }
@@ -164,15 +166,15 @@ impl Infer {
                     }
                 }
 
-                Literal::List(elems) => {
+                Literal::Slice(elems) => {
                     let ty = self.fresh_ty_var();
                     let new_elems = elems.into_iter().map(|e| self.infer_expr(e, &ty)).collect();
 
-                    let ty = Type::list(ty);
+                    let ty = Type::slice(ty);
                     self.add_constraint(expected, &ty, &span);
 
                     Expr::Literal {
-                        lit: Literal::List(new_elems),
+                        lit: Literal::Slice(new_elems),
                         ty,
                         span,
                     }
@@ -274,8 +276,14 @@ impl Infer {
                 // TODO the return type from `expected` should also flow in
                 let new_ret = self.to_type(&fun.ann, &span);
 
-                let new_bounds: Vec<_> =
-                    fun.bounds.iter().map(|b| self.to_type(b, &span)).collect();
+                let new_bounds: Vec<_> = fun
+                    .bounds
+                    .iter()
+                    .map(|(g, ann)| Bound {
+                        generic: Type::generic(g),
+                        ty: self.to_type(ann, &span),
+                    })
+                    .collect();
 
                 new_bounds.iter().for_each(|b| self.gs.add_assumption(b));
 
@@ -287,10 +295,18 @@ impl Infer {
                     args: new_args.iter().map(|b| b.ty.clone()).collect(),
                     bounds: new_bounds,
                     ret: new_ret.clone().into(),
-                    fx: Default::default(),
+                    id: TypeId::unset(),
                 };
 
-                let new_body = self.infer_expr(*fun.body.clone(), &new_ret);
+                // We don't actually care what the type of the last expression is, if the return
+                // type is unit
+                let body_ty = if new_ret == Type::unit() {
+                    Type::discard()
+                } else {
+                    new_ret.clone()
+                };
+
+                let new_body = self.infer_expr(*fun.body.clone(), &body_ty);
 
                 self.gs.exit_scope();
                 // END NEW SCOPE
@@ -298,30 +314,10 @@ impl Infer {
                 self.current_fn_ret_ty = prev_ret_ty; // Reset current function
 
                 let bounded_ty = typ.to_bounded_with_generics(fun.generics.to_owned());
+
                 let typ = self.instantiate(&bounded_ty);
 
                 self.add_constraint(expected, &typ, &span);
-
-                match kind {
-                    FunctionKind::TopLevel | FunctionKind::Inline => {
-                        // TODO for now, out of the builtin overloads only to_string can be overridden.
-                        // The reason is buried somewhere in the runtime, it's probably not worth
-                        // implementing this right now -- better wait for comptime.
-                        // But it means that there should be a check here to prevent users from
-                        // overriding these overloads, as their code won't get called if in a
-                        // nested struct.
-
-                        self.gs.add_value(
-                            fun.name.clone(),
-                            bounded_ty.clone(),
-                            self.new_declaration(&span),
-                        );
-
-                        self.gs.remove_derived_overload(&fun.name);
-                    }
-
-                    FunctionKind::Lambda => {}
-                };
 
                 Expr::Closure {
                     fun: Function {
@@ -332,6 +328,7 @@ impl Infer {
                         body: new_body.into(),
                         ret: new_ret,
                         ann: fun.ann.clone(),
+                        bounded_ty,
                     },
                     ty: typ,
                     kind,
@@ -378,39 +375,74 @@ impl Infer {
                     }
                 };
 
-                let ty = self.instantiate(&def.ty);
+                // Instantiate the type manually so we can collect the types and use them later for
+                // codegen.
+                let generics = self.collect_generics(&def.ty);
+                let ty = self.instantiate_with_vars(&def.ty.ty, &generics);
+
+                let mut instances: Vec<_> = generics.into_values().collect();
+                instances.sort();
+                let instances = instances.into_iter().map(|v| Type::Var(v)).collect();
+
                 self.add_constraint(expected, &ty, &span);
 
                 Expr::Var {
                     value: value.clone(),
                     decl: def.decl,
+                    generics_instantiated: instances,
                     ty,
                     span,
                 }
             }
 
             Expr::Call {
-                func, args, span, ..
+                func,
+                args: call_args,
+                span,
+                ..
             } => {
                 let ty = self.fresh_ty_var();
                 let new_func = self.infer_expr(*func, &ty);
 
                 let ty = new_func.get_type();
                 let bounds = ty.get_bounds();
+                let is_variadic = ty.is_variadic();
 
                 let (args_ty, ret_ty) = match ty {
-                    Type::Fun { args, ret, .. } => (args, *ret),
+                    Type::Fun { mut args, ret, .. } => match is_variadic {
+                        None => (args, *ret),
+
+                        Some(variadic_ty) => {
+                            //  We need at least (args - 1) arguments because the last one is
+                            //  optional
+                            let min_args_size = args.len() - 1;
+
+                            // Remove the var arg
+                            args.remove(min_args_size);
+
+                            // At most, we need the arguments supplied by the caller
+                            let max_args = std::cmp::max(min_args_size, call_args.len());
+
+                            while args.len() < max_args {
+                                // If there are more arguments than we have, then they must be of
+                                // the variadic type
+                                args.push(variadic_ty.clone());
+                            }
+
+                            (args, *ret)
+                        }
+                    },
                     _ => {
                         // we may get here without a proper function, ie. if a method did not exist
                         // manufacture a function on the fly and keep going
-                        let args_ty = args.iter().map(|_| self.fresh_ty_var()).collect();
+                        let args_ty = call_args.iter().map(|_| self.fresh_ty_var()).collect();
                         let ret = self.fresh_ty_var();
                         (args_ty, ret)
                     }
                 };
 
                 // match arguments
-                let new_args: Vec<Expr> = args
+                let new_args: Vec<Expr> = call_args
                     .iter()
                     .enumerate()
                     .map(|(index, arg)| {
@@ -432,74 +464,24 @@ impl Infer {
                     self.errors.push(Error::WrongArity(err));
                 }
 
-                // Transform Debug::inspect(x) to Expr::Debug
-                if let Some(op) = self.transform_call_expr(&new_func, &new_args, &span) {
-                    return self.infer_expr(op, expected);
-                }
-
                 // match return type
                 self.add_constraint(expected, &ret_ty, &span);
 
                 // match constraint bounds
-                bounds.iter().for_each(|b| {
-                    let constraint = self.substitute(b.clone());
+                for b in bounds.into_iter() {
+                    let generic = self.substitute(b.generic);
 
-                    let trait_name = constraint.get_name();
-                    if trait_name.is_none() {
-                        // There's probably a type error somewhere else, just skip checking.
-                        return;
+                    // Only constraint the type if we know what it is.
+                    // In certain situations, like when instantiating a map with Map::new()
+                    // we don't know what K is yet, so there's no point constraining it that early.
+                    // This is more inline with what Rust does, putting constraints on the single
+                    // methods (ie. HashMap::insert) instead of on the whole type.
+
+                    if generic.get_name().is_some() {
+                        // TODO bounds should have a span too
+                        self.add_constraint(&generic, &b.ty, &span);
                     }
-
-                    let trait_name = trait_name.unwrap();
-                    let inner_type = constraint.get_args().unwrap().first().unwrap().clone();
-
-                    // There can't be any overload for functions, so this is always an error
-                    if inner_type.is_function() {
-                        // self.check_trait_can_be_derived(&trait_name, &inner_type);
-                        self.generic_error(
-                            format!("Functions don't support overload `{trait_name}`"),
-                            span.clone(),
-                        );
-                        return;
-                    }
-
-                    // Otherwise we need to know if it's a regular type or a generic
-                    let type_name = inner_type.get_name();
-
-                    if type_name.is_none() {
-                        // Same as above, type error somewhere else
-                        return;
-                    }
-
-                    let type_name = type_name.unwrap();
-                    let ty = self.gs.get_global_type(&type_name);
-
-                    match ty {
-                        Some(_) => {
-                            // Regular type
-                            // Check that an overload exists for this type.
-                            let method = format!("{type_name}::{trait_name}");
-                            if self.gs.get_value(&method).is_none() {
-                                self.generic_error(
-                                    format!(
-                                        "No overload `{trait_name}` found for type `{type_name}`"
-                                    ),
-                                    span.clone(),
-                                );
-                            }
-                        }
-
-                        None => {
-                            // Generic type
-                            if !self.gs.constraint_satisfied(&constraint) {
-                                self.generic_error(
-                            format!("Constraint {trait_name} not satisfied for type {type_name}"),
-                            span.clone(),
-                        );
-                            }
-                        }
-                    }
-                });
+                }
 
                 Expr::Call {
                     func: new_func.into(),
@@ -512,19 +494,20 @@ impl Infer {
             Expr::CheckType {
                 expr, ann, span, ..
             } => {
-                let new_expr = self.infer_expr(*expr, expected);
-                match &ann {
-                    TypeAst::Unknown => panic!("checking type without type?"),
-                    _ => (),
+                if ann == TypeAst::Unknown {
+                    panic!("checking type without type?");
                 }
 
-                let new_ty = self.to_type(&ann, &span);
+                let expr_ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &expr_ty);
 
-                self.add_constraint(expected, &new_ty, &span);
+                let check_ty = self.to_type(&ann, &span);
+                self.add_constraint(&expr_ty, &check_ty, &span);
+                // self.add_constraint(expected, &check_ty, &span);
 
                 Expr::CheckType {
                     expr: new_expr.into(),
-                    ty: new_ty,
+                    ty: check_ty,
                     ann,
                     span,
                 }
@@ -550,7 +533,7 @@ impl Infer {
                 let new_els = self.infer_expr(*els, &else_ty);
 
                 // Check if we are in discard mode (ie. block statements, loop bodies)
-                let discard_mode = expected == &Type::discard();
+                let discard_mode = expected.is_discard();
 
                 // In case we are not discarding, then we need an else block
                 // and the types of the then and else branches must unify
@@ -728,7 +711,7 @@ impl Infer {
                         let target = match found {
                             Some(found) => {
                                 matched.insert(f.name.clone());
-                                self.instantiate_with_vars(&found.ty, &generics)
+                                self.instantiate_with_vars(&found.ty.ty, &generics)
                             }
                             None => {
                                 self.generic_error(
@@ -770,7 +753,7 @@ impl Infer {
                 }
             }
 
-            Expr::StructAccess {
+            Expr::FieldAccess {
                 expr,
                 field,
                 span,
@@ -780,46 +763,92 @@ impl Infer {
                 let new_expr = self.infer_expr(*expr, &ty);
                 let ty = self.substitute(ty);
 
-                let field_ty = ty
+                // 1. check if it's a struct
+                //      -> yes, check for field
+                // 2. If fails, Lookup method
+
+                let def = ty
+                    .remove_references()
                     .get_name()
-                    .ok_or(format!("was expecting struct, got {}", ty))
-                    .and_then(|name| {
-                        self.get_struct_by_name(&name)
-                            .ok_or_else(|| format!("no struct {}", name))
-                    })
-                    .and_then(|(def, struct_ty)| {
-                        // Instantiate the struct again, so we can get a fresh mapping of generics.
-                        let generics = self.collect_generics(&struct_ty);
-                        let instantiated = self.instantiate_with_vars(&struct_ty.ty, &generics);
+                    .and_then(|name| self.get_struct_by_name(&name));
 
-                        // Constraint the new instantiated struct to the expr we inferred before.
-                        self.add_constraint(&ty, &instantiated, &span);
-
-                        // Now look for the field in the struct.
-                        // The type in the field won't be instantiated yet, so we can use the same
-                        // vars we used to instantiate the struct to get all the types to line up.
-                        def.fields
-                            .iter()
-                            .find_map(|f| {
-                                if f.name == field {
-                                    Some(self.instantiate_with_vars(&f.ty, &generics))
-                                } else {
-                                    None
-                                }
-                            })
-                            .ok_or_else(|| format!("no struct field {}", field))
-                    })
-                    .unwrap_or_else(|err| {
-                        self.generic_error(err, span.clone());
-                        self.fresh_ty_var()
+                if let Some((def, struct_ty)) = def {
+                    // Lookup the field
+                    let field_ty = def.fields.iter().find_map(|f| {
+                        if f.name == field {
+                            Some(f.ty.clone())
+                        } else {
+                            None
+                        }
                     });
 
-                self.add_constraint(expected, &field_ty, &span);
+                    if let Some(field_ty) = field_ty {
+                        // Collect all the generics on both the struct and field
+                        let mut generics = struct_ty.generics.clone();
+                        generics.extend_from_slice(&field_ty.generics);
+                        let generics = self.collect_generics_as_vars(&generics);
 
-                Expr::StructAccess {
+                        // Instantiate the struct again, so we can get a fresh mapping of generics.
+                        let instantiated = self.instantiate_with_vars(&struct_ty.ty, &generics);
+
+                        // The type in the field isn't instantiated yet, so we can use the same
+                        // vars we used to instantiate the struct to get all the types to line up.
+                        let new_field_ty = self.instantiate_with_vars(&field_ty.ty, &generics);
+
+                        // Constraint the instantiated struct to the expr we inferred before.
+                        self.add_constraint(&ty.remove_references(), &instantiated, &span);
+
+                        self.add_constraint(expected, &new_field_ty, &span);
+
+                        return Expr::FieldAccess {
+                            expr: new_expr.into(),
+                            field,
+                            ty: new_field_ty,
+                            span,
+                        };
+                    }
+                }
+
+                // TODO asdf this should return Ok | expected Ref<T>, RefMut<T> or something
+                let method = self.gs.get_method(&ty, &field);
+
+                if let Some(method) = method {
+                    let mut func_ty = self.instantiate(&method);
+
+                    let func_args = match func_ty {
+                        Type::Fun { ref mut args, .. } => args,
+                        _ => unreachable!(),
+                    };
+
+                    // Unify the receiver, then drop it so that the resulting type only has the
+                    // rest of the args
+                    let receiver = func_args.remove(0);
+
+                    self.add_constraint(&receiver, &ty, &span);
+
+                    return Expr::FieldAccess {
+                        expr: new_expr.into(),
+                        field,
+                        ty: func_ty,
+                        span,
+                    };
+                };
+
+                self.generic_error(
+                    format!(
+                        "Type:
+    {}
+has no field or method:
+    {}",
+                        &ty, &field,
+                    ),
+                    span.clone(),
+                );
+
+                Expr::FieldAccess {
                     expr: new_expr.into(),
                     field,
-                    ty: field_ty,
+                    ty: self.fresh_ty_var(),
                     span,
                 }
             }
@@ -835,140 +864,35 @@ impl Infer {
                 let value_ty = self.fresh_ty_var();
                 let new_value = self.infer_expr(*value.clone(), &value_ty);
 
-                // Find variable on left side
-                let var_name = match *target {
-                    Expr::Var { value, .. } => Some(value),
-
-                    Expr::StructAccess { .. } => {
-                        // expr should be a Var, no other update is allowed
+                if let Some(var_name) = new_target.as_var_name() {
+                    // This is not really correct, we should check whether the target var is a RefMut.
+                    let is_deref = matches!(new_target, Expr::Unary { .. });
+                    if !self.gs.get_mutability(&var_name) && !is_deref {
                         self.generic_error(
-                            "Can't update struct fields, re-assign instead. x =Foo { field = new_value, ..x } ".to_string(),
-                            span.clone(),
-                        );
-
-                        None
-                    }
-
-                    _ => {
-                        self.generic_error(
-                            "Assign operator is not supported here".to_string(),
-                            span.clone(),
-                        );
-
-                        None
-                    }
-                };
-
-                let ret = Expr::VarUpdate {
-                    target: new_target.into(),
-                    value: new_value.into(),
-                    span: span.clone(),
-                };
-
-                if var_name.is_none() {
-                    self.generic_error(
-                        "Only assignments to variables allowed".to_string(),
-                        span.clone(),
-                    );
-
-                    return ret;
-                }
-
-                let var_name = var_name.unwrap();
-
-                match self.gs.get_value(&var_name) {
-                    Some(existing_ty) => {
-                        // The type of the expression on the right must match the type of whatever
-                        // was previously declared in the environment
-                        self.add_constraint(&existing_ty.ty.ty, &value_ty, &span);
-                    }
-
-                    None => {
-                        self.generic_error(
-                            format!("variable {} not found in env", var_name),
-                            span.clone(),
-                        );
-
-                        return ret;
-                    }
-                }
-
-                if !self.gs.get_mutability(&var_name) {
-                    self.generic_error(
                         format!("Variable {var_name} is not declared as mutable. Use `let mut {var_name}`.")
                             ,
                         span.clone(),
                     );
+                    }
+                } else {
+                    self.generic_error(
+                        "Assign operator is not supported here".to_string(),
+                        span.clone(),
+                    );
                 }
 
-                ret
+                // Constraint left = right
+                self.add_constraint(&target_ty, &value_ty, &span);
+
+                Expr::VarUpdate {
+                    target: new_target.into(),
+                    value: new_value.into(),
+                    span: span.clone(),
+                }
             }
 
-            Expr::MethodCall {
-                ty: _,
-                target,
-                method,
-                args,
-                span,
-            } => {
-                let ty = self.fresh_ty_var();
-                let new_target = self.infer_expr(*target, &ty);
-                let ty = self.substitute(ty);
-
-                let new_target = new_target.replace_span(&span);
-
-                // If it's a struct, check if there is a field that matches method
-                if let Some(func) = self.find_method_in_struct(&ty, &new_target, &method) {
-                    let func = Expr::Call {
-                        func: func.into(),
-                        args,
-                        ty: Type::dummy(),
-                        span,
-                    };
-
-                    return self.infer_expr(func, expected);
-                }
-
-                let func = self
-                    .gs
-                    .lookup_method(&method, &ty, args.len())
-                    .unwrap_or_else(|| {
-                        self.generic_error(
-                            format!(
-                                "Type:
-    {}
-has no method:
-    {}",
-                                &ty, &method,
-                            ),
-                            span.clone(),
-                        );
-                        method.clone()
-                    });
-
-                let decl = self
-                    .gs
-                    .get_value(&func)
-                    .map(|def| def.decl)
-                    .unwrap_or_else(Declaration::dummy);
-
-                let func = Expr::Var {
-                    value: func,
-                    decl,
-                    ty: Type::dummy(),
-                    span: span.clone(),
-                };
-                let func = Expr::Call {
-                    func: func.into(),
-                    args: std::iter::once(new_target)
-                        .chain(args.into_iter())
-                        .collect(),
-                    ty: Type::dummy(),
-                    span,
-                };
-
-                // Transform all MethodCall into Call, no point keeping the extra node around
-                self.infer_expr(func, expected)
+            Expr::MethodCall { .. } => {
+                panic!("method calls should have been desugared to FieldAccess during parsing. This is not currently used")
             }
 
             Expr::Return { expr, span, .. } => {
@@ -1029,40 +953,44 @@ has no method:
                 let new_left = self.infer_expr(*left, &left_ty);
                 let new_right = self.infer_expr(*right, &right_ty);
 
-                let ty = self.substitute(left_ty.clone());
+                // Checking the type of operands here is a tad complex.
+                // For now, rely on Go compiler to do the right thing.
 
-                // TODO refactor this mess
                 let target = match &op {
-                    Operator::Add | Operator::Sub | Operator::Mul | Operator::Div => {
-                        if self.check_numeric(&ty, new_left.get_span()) {
-                            ty.clone()
-                        } else {
-                            self.fresh_ty_var()
-                        }
-                    }
+                    Operator::Eq
+                    | Operator::Ne
+                    | Operator::Lt
+                    | Operator::Le
+                    | Operator::Gt
+                    | Operator::Ge => Type::bool(),
 
-                    Operator::Lt | Operator::Le | Operator::Gt | Operator::Ge => {
-                        let _ = self.check_numeric(&ty, new_left.get_span());
-                        Type::bool()
-                    }
-
-                    Operator::Rem => Type::int(),
-
-                    _ => Type::bool(),
+                    _ => left_ty.clone(),
                 };
 
                 self.add_constraint(expected, &target, &span);
 
-                if op == Operator::And || op == Operator::Or {
-                    self.add_constraint(&left_ty, &Type::bool(), &span);
-                    self.add_constraint(&right_ty, &Type::bool(), &span);
-                } else {
-                    self.add_constraint(&left_ty, &right_ty, &span);
-                }
+                match op {
+                    Operator::And | Operator::Or => {
+                        self.add_constraint(&left_ty, &Type::bool(), &span);
+                        self.add_constraint(&right_ty, &Type::bool(), &span);
+                    }
 
-                if op == Operator::Eq || op == Operator::Ne {
-                    if !self.check_trait_can_be_derived("equals", &ty) {
-                        self.generic_error(format!("Type {} can't be compared", &ty), span.clone());
+                    Operator::Eq | Operator::Ne => {
+                        self.add_constraint(&left_ty, &right_ty, &span);
+                    }
+
+                    // allow strings to be used with + operator
+                    Operator::Add
+                        if (new_left.get_type().is_string()
+                            || new_right.get_type().is_string()) =>
+                    {
+                        self.add_constraint(&left_ty, &right_ty, &span);
+                    }
+
+                    // in all other cases it must be a numeric type
+                    _ => {
+                        self.check_numeric(&left_ty, &span);
+                        self.check_numeric(&right_ty, &span);
                     }
                 }
 
@@ -1092,18 +1020,12 @@ has no method:
 
                 let target = match op {
                     UnOp::Neg => {
-                        let ty = self.substitute(new_expr.get_type());
-
-                        if ty != Type::int() && ty != Type::float() {
-                            let msg = format!("Was expecting Int or Float, got {}", ty);
-                            self.generic_error(msg, new_expr.get_span());
-                            self.fresh_ty_var()
-                        } else {
-                            ty
-                        }
+                        self.check_numeric(&new_ty, &span);
+                        new_ty.clone()
                     }
 
                     UnOp::Not => Type::bool(),
+                    UnOp::Deref => self.fresh_ty_var(),
                 };
 
                 self.add_constraint(&target, &new_ty, &new_expr.get_span());
@@ -1160,10 +1082,16 @@ has no method:
                 }
             }
 
-            Expr::Spawn { expr, ty: _, span } => {
-                // TODO just check that it's a Call
-                let new_expr = self.infer_expr(*expr, expected);
+            Expr::Spawn { expr, span, .. } => {
+                if !matches!(*expr, Expr::Call { .. }) {
+                    self.generic_error(
+                        "Argument to spawn!() must be a function call".to_string(),
+                        span.clone(),
+                    );
+                }
 
+                let ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &ty);
                 self.add_constraint(expected, &Type::unit(), &span);
 
                 Expr::Spawn {
@@ -1216,6 +1144,83 @@ has no method:
                 }
             }
 
+            Expr::Reference {
+                expr,
+                mutable,
+                span,
+                ..
+            } => {
+                let ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &ty);
+
+                let wrapped = Type::reference(ty);
+                self.add_constraint(expected, &wrapped, &span);
+
+                Expr::Reference {
+                    expr: new_expr.into(),
+                    mutable,
+                    ty: wrapped,
+                    span,
+                }
+            }
+
+            Expr::Index {
+                expr, index, span, ..
+            } => {
+                let expr_ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &expr_ty);
+
+                let index_ty = self.fresh_ty_var();
+                let new_index = self.infer_expr(*index, &index_ty);
+                let expr_ty = self.substitute(expr_ty);
+
+                let ty_name = match expr_ty.get_name() {
+                    Some(name) => name,
+                    None => {
+                        self.generic_error(
+                            "Type must be known at this point".to_string(),
+                            new_expr.get_span(),
+                        );
+                        "Slice".to_string()
+                    }
+                };
+
+                let inner_ty = self.fresh_ty_var();
+
+                let (expected_index, collection_ty) = if ty_name == "Slice" {
+                    // slices can be indexed by ints
+                    (Type::int(), Type::slice(inner_ty.clone()))
+                } else if ty_name == "Map" {
+                    // maps can be indexed by whatever the key type is
+                    let key_ty = &expr_ty.get_args().unwrap()[0];
+
+                    (
+                        key_ty.clone(),
+                        Type::Con {
+                            name: "Map".to_string(),
+                            args: vec![key_ty.clone(), inner_ty.clone()],
+                        },
+                    )
+                } else {
+                    self.generic_error(
+                        "Only slices and maps can be indexed".to_string(),
+                        new_expr.get_span(),
+                    );
+                    (self.fresh_ty_var(), self.fresh_ty_var())
+                };
+
+                self.add_constraint(&collection_ty, &expr_ty, &span);
+                self.add_constraint(&index_ty, &expected_index, &span);
+                self.add_constraint(expected, &inner_ty, &span);
+
+                Expr::Index {
+                    expr: new_expr.into(),
+                    index: new_index.into(),
+                    ty: inner_ty,
+                    span,
+                }
+            }
+
             Expr::ImplBlock {
                 ann,
                 ty: _,
@@ -1249,21 +1254,11 @@ has no method:
                 }
             }
 
-            Expr::ExternDecl {
-                name,
-                kind,
-                items,
-                span,
-            } => {
-                if kind == ExternKind::Overload {
-                    return Expr::ExternDecl {
-                        name,
-                        kind,
-                        items,
-                        span,
-                    };
-                }
-
+            // Both this and Trait are sort of redundant.
+            // Checks are already performed when declaring types, but this is still needed to
+            // update the node in the tree. A better way would be to keep around the result of
+            // declare_type
+            Expr::ExternDecl { items, span } => {
                 let new_items = items
                     .into_iter()
                     .map(|e| {
@@ -1273,81 +1268,181 @@ has no method:
                     .collect();
 
                 Expr::ExternDecl {
-                    name,
-                    kind,
                     items: new_items,
                     span,
                 }
             }
 
-            Expr::Loop {
-                ref kind,
-                body,
+            Expr::Trait {
+                name,
+                items,
+                supertraits,
+                types,
                 span,
             } => {
-                let (binding, expr) = match kind {
-                    Loop::WithCondition { binding, expr } => (binding.clone(), expr.clone()),
+                let new_items = items
+                    .into_iter()
+                    .map(|e| {
+                        let ty = self.fresh_ty_var();
+                        self.infer_expr(e, &ty)
+                    })
+                    .collect();
 
-                    // Create fake _ = Seq::Nil as loop condition
-                    Loop::NoCondition => (
-                        Binding {
-                            pat: Pat::Wild {
-                                span: Span::dummy(),
-                            },
-                            ty: Type::dummy(),
-                            ann: TypeAst::Unknown,
-                        },
-                        Expr::Var {
-                            value: "Seq::Nil".to_string(),
-                            ty: Type::dummy(),
-                            decl: Declaration::dummy(),
-                            span: Span::dummy(),
-                        }
-                        .into(),
-                    ),
-                };
-
-                let binding_ty = self.to_type(&binding.ann, &span);
-
-                let new_binding = Binding {
-                    pat: self.infer_pat(binding.pat, binding_ty.clone()),
-                    ty: binding_ty.clone(),
-                    ..binding
-                };
-
-                // for $binding in $expr { $body }
-                // $expr should be of type Seq<$binding>
-                let seq_ty = Type::Con {
-                    name: "Seq".to_string(),
-                    args: vec![binding_ty.clone()],
-                };
-
-                let expr_ty = self.fresh_ty_var();
-                let new_expr = self.infer_expr(*expr, &expr_ty);
-                self.add_constraint(&seq_ty, &expr_ty, &new_expr.get_span());
-
-                // Inference for body must run after constraining the binding, otherwise there will
-                // be a loose type variable that won't unify.
-                let body_ty = Type::discard();
-                let new_body = self.infer_expr(*body, &body_ty);
-
-                let new_kind = match kind {
-                    Loop::NoCondition => Loop::NoCondition,
-                    Loop::WithCondition { .. } => Loop::WithCondition {
-                        binding: new_binding,
-                        expr: new_expr.into(),
-                    },
-                };
-
-                Expr::Loop {
-                    kind: new_kind,
-                    body: new_body.into(),
+                Expr::Trait {
+                    name,
+                    items: new_items,
+                    supertraits,
+                    types,
                     span,
+                }
+            }
+
+            Expr::Mod {
+                name,
+                pkg,
+                items,
+                span,
+            } => {
+                let new_items = items
+                    .into_iter()
+                    .map(|e| {
+                        let ty = self.fresh_ty_var();
+                        self.infer_expr(e, &ty)
+                    })
+                    .collect();
+
+                Expr::Mod {
+                    name,
+                    pkg,
+                    items: new_items,
+                    span,
+                }
+            }
+
+            Expr::Loop { kind, body, span } => {
+                match kind {
+                    Loop::NoCondition => {
+                        let body_ty = Type::discard();
+                        let new_body = self.infer_expr(*body, &body_ty);
+
+                        return Expr::Loop {
+                            kind,
+                            body: new_body.into(),
+                            span,
+                        };
+                    }
+
+                    //
+                    // for $binding in $expr { $body }
+                    // $expr should be Slice, Map, Channel
+                    //
+                    Loop::WithCondition { binding, expr } => {
+                        let binding_ty = self.to_type(&binding.ann, &span);
+
+                        let new_binding = Binding {
+                            pat: self.infer_pat(binding.pat, binding_ty.clone()),
+                            ty: binding_ty.clone(),
+                            ..binding
+                        };
+
+                        let expr_ty = self.fresh_ty_var();
+                        let new_expr = self.infer_expr(*expr, &expr_ty);
+
+                        let expr_ty = self.substitute(expr_ty);
+
+                        let ty_name = match expr_ty.get_name() {
+                            Some(name) => name,
+                            None => {
+                                self.generic_error(
+                                    "Type must be known at this point".to_string(),
+                                    new_expr.get_span(),
+                                );
+                                "Slice".to_string()
+                            }
+                        };
+
+                        let expr_args = expr_ty
+                            .get_args()
+                            .unwrap_or_else(|| vec![self.fresh_ty_var(), self.fresh_ty_var()]);
+
+                        let range_ty = if ty_name == "Slice" {
+                            expr_args[0].clone()
+                        } else if ty_name == "EnumerateSlice" {
+                            // (index, value) for slices with .enumerate()
+                            Type::tuple2(Type::int(), expr_args[0].clone())
+                        } else if ty_name == "Map" {
+                            // (key, value) for maps
+                            Type::tuple2(expr_args[0].clone(), expr_args[1].clone())
+                        } else if ty_name == "Receiver" {
+                            expr_args[0].clone()
+                        } else {
+                            self.generic_error(
+                                format!("Can't iterate on type {expr_ty}"),
+                                new_expr.get_span(),
+                            );
+
+                            self.fresh_ty_var()
+                        };
+
+                        // If range_ty is a tuple, then the binding must be a literal tuple.
+                        // This is because during codegen we're not actually allocating a Tuple,
+                        // but directly matching "k, v := range ..."
+
+                        if range_ty.get_name() == Some("Tuple2".to_string()) {
+                            match &new_binding.pat {
+                                Pat::Struct { .. } => (),
+                                Pat::Wild { .. } => (),
+                                _ => {
+                                    self.generic_error(
+                                        format!("Use tuple literals \"(k, v)\" in loops."),
+                                        span.clone(),
+                                    );
+                                }
+                            }
+                        }
+
+                        self.add_constraint(&range_ty, &binding_ty, &new_expr.get_span());
+
+                        // Inference for body must run after constraining the binding, otherwise there will
+                        // be a loose type variable that won't unify.
+                        let body_ty = Type::discard();
+                        let new_body = self.infer_expr(*body, &body_ty);
+
+                        Expr::Loop {
+                            kind: Loop::WithCondition {
+                                binding: new_binding,
+                                expr: new_expr.into(),
+                            },
+                            body: new_body.into(),
+                            span,
+                        }
+                    }
+
+                    //
+                    // while $expr { $body }
+                    //
+                    Loop::While { expr } => {
+                        let new_expr = self.infer_expr(*expr, &Type::bool());
+                        let body_ty = Type::discard();
+                        let new_body = self.infer_expr(*body, &body_ty);
+
+                        Expr::Loop {
+                            kind: Loop::While {
+                                expr: new_expr.into(),
+                            },
+                            body: new_body.into(),
+                            span,
+                        }
+                    }
                 }
             }
 
             Expr::Flow { kind, span } => Expr::Flow { kind, span },
 
+            Expr::TypeAlias { def, span } => Expr::TypeAlias { def, span },
+            Expr::UsePackage { import, span } => Expr::UsePackage { import, span },
+
+            Expr::Raw { text } => Expr::Raw { text },
             Expr::Noop => Expr::Noop,
             Expr::Todo => todo!(),
             // _ => todo!("{:#?}", expr),
@@ -1355,7 +1450,11 @@ has no method:
     }
 
     pub fn collect_generics(&mut self, typ: &BoundedType) -> HashMap<String, i32> {
-        typ.generics
+        self.collect_generics_as_vars(&typ.generics)
+    }
+
+    pub fn collect_generics_as_vars(&mut self, generics: &[String]) -> HashMap<String, i32> {
+        generics
             .iter()
             .map(|g| (g.to_string(), self.gs.fresh_var()))
             .collect()
@@ -1389,7 +1488,7 @@ has no method:
                 args,
                 bounds,
                 ret,
-                fx,
+                id: fx,
             } => Type::Fun {
                 args: args
                     .iter()
@@ -1397,10 +1496,13 @@ has no method:
                     .collect(),
                 bounds: bounds
                     .iter()
-                    .map(|x| self.instantiate_with_vars(x, new_vars))
+                    .map(|b| Bound {
+                        generic: self.instantiate_with_vars(&b.generic, new_vars),
+                        ty: self.instantiate_with_vars(&b.ty, new_vars),
+                    })
                     .collect(),
                 ret: self.instantiate_with_vars(ret, new_vars).into(),
-                fx: fx.clone(),
+                id: fx.clone(),
             },
         }
     }
@@ -1544,7 +1646,7 @@ has no method:
                         let found = def.fields.iter().find(|x| x.name == f.name);
 
                         let target = match found {
-                            Some(found) => self.instantiate_with_vars(&found.ty, &generics),
+                            Some(found) => self.instantiate_with_vars(&found.ty.ty, &generics),
                             None => {
                                 self.generic_error(
                                     format!("field not found: `{}`", f.name),
@@ -1582,12 +1684,12 @@ has no method:
     }
 
     pub fn infer_package(&mut self, pkg: &Package) -> Package {
+        self.declare_symbols(&pkg.files);
+        self.declare_modules(&pkg.files);
         self.declare_files(&pkg.files);
 
-        // Look for the blessed `Error` type.
-        // It's fine if we can't find one, it means the package only exports
-        // pure functions, or uses Results with explicit errors.
-        self.package_error_ty = self.gs.get_type("Error").map(|def| def.ty);
+        // this is a hack, see below
+        let had_errors = self.errors.clone();
 
         let mut errors = pkg.errors.clone();
 
@@ -1608,6 +1710,13 @@ has no method:
                 }
             })
         });
+
+        if errors.is_empty() && !had_errors.is_empty() {
+            // TODO asdf we don't have information about the file that triggered the error here...
+            // so the best we can do is to wrap up the error in a random file and call it a day :/
+            // this is obviously wrong
+            errors.insert(pkg.files.first().unwrap().name.to_string(), had_errors);
+        }
 
         Package {
             name: pkg.name.clone(),
@@ -1658,12 +1767,13 @@ has no method:
         //  It's important that all these steps stay separated, otherwise stuff will break
         //  depending on the order of declarations.
 
-        // 1. Declare Enums and structs
+        // 1 Process imports, get external modules in scope
         files.iter().for_each(|f| {
-            f.decls
-                .iter()
-                .filter(|e| matches!(e, Expr::EnumDef { .. } | Expr::StructDef { .. }))
-                .for_each(|e| self.declare_type(e));
+            for e in &f.decls {
+                if let Expr::UsePackage { import, span } = e {
+                    self.import_package(import, span);
+                }
+            }
         });
 
         // 2. Declare all the actual variants
@@ -1672,93 +1782,9 @@ has no method:
             f.decls.iter().for_each(|e| self.declare_variants(e));
         });
 
-        // 3. Declare overloads
+        // 3. Declare Closure, Impl, Extern and Const
         files.iter().for_each(|f| {
-            f.decls.iter().for_each(|e| match e {
-                Expr::ExternDecl { kind, items, .. } if kind == &ExternKind::Overload => {
-                    items.iter().for_each(|e| match e {
-                        Expr::Closure {
-                            ref fun, ref span, ..
-                        } => {
-                            let ty = self.fresh_ty_var();
-                            self.infer_expr(e.clone(), &ty);
-
-                            // Would be nice to just use `ty` here, but infer_expr will always
-                            // return an instantiated type, so we can't use it.
-                            // Instead, we get the generalized type by looking in GlobalState
-                            let def = self.gs.get_value(&fun.name).unwrap();
-
-                            self.check_and_add_overload(fun, &def.ty, &span);
-                        }
-
-                        _ => unreachable!(),
-                    });
-                }
-
-                _ => (),
-            });
-        });
-
-        // 4. Derive implementation for known overloads
-        // (this will be moved to comptime eventually)
-
-        let overloads = self.gs.get_overloads();
-        self.gs
-            .get_all_types()
-            .into_iter()
-            .for_each(|(ty_name, ty)| {
-                // Skip overloading overloads, bit confusing I guess.
-                if overloads.contains(&ty_name) {
-                    return;
-                }
-
-                overloads.iter().for_each(|overload_name| {
-                    let overload_ty = self.gs.get_value(overload_name).unwrap();
-
-                    if self.check_trait_can_be_derived(overload_name, &ty.ty) {
-                        let method = format!("{ty_name}::{overload_name}");
-
-                        // Replace T in overload_ty with ty.ty
-                        // For example, given a target type Foo<X>
-                        // we want to instantiate the overload
-                        // equals<T>(x: T, y: T) -> Bool
-                        // to
-                        // equals<X: equals>(x: Foo<X>, y: Foo<X>) -> Bool
-                        let new_fn = self
-                            .instantiate_overload(
-                                &overload_ty.ty.ty,
-                                overload_ty.ty.generics.first().unwrap(),
-                                overload_name,
-                                &ty,
-                            )
-                            .to_bounded_with_generics(overload_ty.ty.generics);
-
-                        // Finally add the new function to the global scope.
-                        // Note that there's no actual implementation, codegen will take care of it.
-                        // Only do this if there's no implementation in scope already.
-
-                        if self.gs.get_value(&method).is_none() {
-                            self.gs.add_value(method, new_fn, Declaration::dummy());
-                            self.gs.add_derived_overload(&overload_name, &ty_name);
-                        }
-                    }
-                })
-            });
-
-        // 5. Declare Closure, Impl, Extern and Const
-        files.iter().for_each(|f| {
-            f.decls
-                .iter()
-                .filter(|e| {
-                    matches!(
-                        e,
-                        Expr::Closure { .. }
-                            | Expr::ImplBlock { .. }
-                            | Expr::ExternDecl { .. }
-                            | Expr::Const { .. }
-                    )
-                })
-                .for_each(|e| self.declare_type(e));
+            f.decls.iter().for_each(|e| self.declare_type(e));
         });
     }
 
@@ -1802,15 +1828,75 @@ has no method:
                 );
             }
 
-            Expr::Closure { fun, span, .. } => {
-                let new_func = create_func(fun, span);
-                let ty = self.fresh_ty_var();
-                self.infer_expr(new_func, &ty);
+            Expr::TypeAlias { def, span, .. } => {
+                let ty = Type::Con {
+                    name: def.name.clone(),
+                    args: def.generics.iter().map(|g| Type::generic(g)).collect(),
+                };
+
+                self.gs.add_type(
+                    def.name.clone(),
+                    ty.to_bounded_with_generics(def.generics.to_owned()),
+                    self.new_declaration(span),
+                );
             }
 
-            Expr::ImplBlock { items, .. } => {
+            Expr::Closure { fun, span, .. } => {
+                let ty = self.fresh_ty_var();
+
+                let new_expr = self.infer_expr(create_func(fun, span), &ty);
+                let new_func = new_expr.as_function();
+
+                self.gs.add_value(
+                    new_func.name.clone(),
+                    new_func.bounded_ty.clone(),
+                    self.new_declaration(&span),
+                );
+            }
+
+            Expr::ImplBlock {
+                ann,
+                generics,
+                items,
+                span,
+                ..
+            } => {
                 items.iter().for_each(|e| {
-                    self.declare_type(e);
+                    self.gs.begin_scope();
+
+                    self.gs
+                        .put_generics_in_scope(&generics, self.new_declaration(&span));
+
+                    let base_ty = self.to_type(&ann, &span);
+
+                    let decl = self.new_declaration(&e.get_span());
+                    let ty = self.fresh_ty_var();
+
+                    let fun = e.as_function();
+                    let new_expr = self.infer_expr(create_func(&fun, span), &ty);
+                    let new_func = new_expr.as_function();
+                    let method = new_func.as_method();
+
+                    self.gs.exit_scope();
+
+                    match method {
+                        Some((method, _)) => {
+                            // Add method to type
+
+                            self.gs
+                                .add_method(&base_ty, &method.name, method.bounded_ty, decl);
+                        }
+
+                        None => {
+                            // Add static function to global scope
+
+                            self.gs.add_value(
+                                new_func.name,
+                                new_func.bounded_ty.clone(),
+                                self.new_declaration(&span),
+                            );
+                        }
+                    };
                 });
             }
 
@@ -1827,16 +1913,75 @@ has no method:
                     .add_value(ident.clone(), ty.to_bounded(), self.new_declaration(span));
             }
 
-            Expr::ExternDecl { items, kind, .. } => {
-                if kind == &ExternKind::Overload {
-                    // overloads need to be declared already, see declare_files
-                    return ();
+            Expr::ExternDecl { items, span, .. } => {
+                for e in items {
+                    let ty = self.fresh_ty_var();
+
+                    let fun = e.as_function();
+                    let new_expr = self.infer_expr(create_func(&fun, span), &ty);
+                    let new_func = new_expr.as_function();
+
+                    self.gs.add_value(
+                        new_func.name.clone(),
+                        new_func.bounded_ty.clone(),
+                        self.new_declaration(&span),
+                    );
+                }
+            }
+
+            Expr::Trait {
+                name,
+                items,
+                supertraits,
+                types,
+                span,
+            } => {
+                // create a struct that holds one field for each fn
+                // This is similar to what ExternDecl does
+                let struct_name = name;
+
+                let decl = self.new_declaration(&span);
+
+                let base_ty = Type::Con {
+                    name: struct_name.clone(),
+                    args: vec![],
+                };
+
+                let mut methods: HashMap<String, Type> = HashMap::new();
+
+                // Include all the methods from supertraits
+                for s in supertraits {
+                    let super_methods = self.gs.get_type_methods(s);
+
+                    for (name, mut method) in super_methods {
+                        method.ty.ty.remove_receiver();
+                        methods.insert(name, method.ty.ty);
+                    }
                 }
 
-                items.iter().for_each(|fun| {
+                for e in items {
+                    let fun = e.as_function();
+
                     let ty = self.fresh_ty_var();
-                    self.infer_expr(fun.clone(), &ty);
+                    let expr = self.infer_expr(e.clone(), &ty);
+
+                    methods.insert(fun.name, expr.get_type());
+                }
+
+                self.gs
+                    .add_type(struct_name.to_string(), base_ty.to_bounded(), decl.clone());
+
+                self.gs.add_interface(Interface {
+                    name: struct_name.to_string(),
+                    types: types.to_vec(),
+                    methods,
                 });
+            }
+
+            Expr::Mod { items, .. } => {
+                for i in items {
+                    self.declare_type(i);
+                }
             }
 
             _ => (),
@@ -1899,7 +2044,7 @@ has no method:
                             args: new_fields.clone().into_iter().map(|f| f.ty).collect(),
                             bounds: Default::default(),
                             ret: ty.clone().into(),
-                            fx: Default::default(),
+                            id: TypeId::unset(),
                         };
 
                         // let fun = self.generalize(fun, &def.generics, &span);
@@ -1941,7 +2086,7 @@ has no method:
                         self.gs.exit_scope();
 
                         StructFieldDef {
-                            ty: typ,
+                            ty: typ.to_bounded(), // should this care about generics?
                             ..f.clone()
                         }
                     })
@@ -1956,15 +2101,19 @@ has no method:
                 self.gs.add_struct(def.name.clone(), def);
             }
 
+            Expr::Mod { items, .. } => {
+                for i in items {
+                    self.declare_variants(i);
+                }
+            }
+
             _ => (),
         }
     }
 
     /// This should be the preferred way of running inference from the outside
-    pub fn infer_expr_with_error(&mut self, e: &Expr, err_ty: Type) -> (Expr, Vec<Error>, Type) {
+    pub fn infer_expr_with_error(&mut self, e: &Expr) -> (Expr, Vec<Error>, Type) {
         self.errors = vec![];
-
-        self.package_error_ty = Some(err_ty);
 
         let ty = self.fresh_ty_var();
         let expr = self.infer_expr(e.clone(), &ty);
@@ -1997,6 +2146,41 @@ has no method:
     }
 
     fn unify(&mut self, t1: &Type, t2: &Type, span: &Span) -> Result<(), String> {
+        // First unpack references. Type inference doesn't bother with references,
+        // it just checks that the underlying types match. A further compiler pass
+        // will check that the correct references are being passed around.
+        let t1_reference = t1.is_reference() || t1.is_mut_reference();
+        let t2_reference = t2.is_reference() || t2.is_mut_reference();
+
+        // if they are both references, unwrap them both and check that the inner type matches
+        if t1_reference && t2_reference {
+            return self.unify(&t1.remove_references(), &t2.remove_references(), span);
+        }
+
+        // Otherwise, prevent substitution of variables too eagerly and only unify if we're dealing
+        // with concrete types on both sides
+        if t1_reference && !t2.is_var() {
+            return self.unify(&t1.remove_references(), t2, span);
+        }
+
+        if t2_reference && !t1.is_var() {
+            return self.unify(t1, &t2.inner().unwrap(), span);
+        }
+        // END references stuff
+
+        // If either type can be discarded, then there's nothing to unify.
+        if t1.is_discard() || t2.is_discard() {
+            return Ok(());
+        }
+
+        // Don't bother matching exact numeric types, for now.
+        if t1.is_numeric() && t2.is_numeric() {
+            return Ok(());
+        }
+
+        //
+        // Check the actual types
+        //
         match (t1, t2) {
             (Type::Var(i1), Type::Var(i2)) if i1 == i2 => {
                 Ok(()) /* do nothing if they're equal */
@@ -2036,7 +2220,27 @@ has no method:
 
             // They are both concrete types, check names and args match
             (Type::Con { name: n1, args: a1 }, Type::Con { name: n2, args: a2 }) => {
-                if n1 != n2 || a1.len() != a2.len() {
+                if n1 == "any" || n2 == "any" {
+                    return Ok(());
+                }
+
+                if n1 != n2 {
+                    match self.check_interface_impl(n1, n2) {
+                        CheckInterfaceResult::Ok => return Ok(()),
+                        CheckInterfaceResult::NotAnInterface => (),
+                        CheckInterfaceResult::Error(e) => return Err(e),
+                    }
+
+                    match self.check_interface_impl(n2, n1) {
+                        CheckInterfaceResult::Ok => return Ok(()),
+                        CheckInterfaceResult::NotAnInterface => (),
+                        CheckInterfaceResult::Error(e) => return Err(e),
+                    }
+
+                    return Err("Type mismatch".to_string());
+                }
+
+                if a1.len() != a2.len() {
                     return Err("Type mismatch".to_string());
                 }
 
@@ -2092,19 +2296,26 @@ has no method:
     }
 
     fn init_builtin_types(gs: &mut GlobalState) {
+        // Pretty much all of these could be defined in the stdlib.
+        // They're still here because infer-expr tests don't load the stdlib so I'd need to copy
+        // pasta this types in the prelude. Maybe one day I'll get rid of the prelude and this
+        // function too.
         let gen_t = Type::generic("T");
 
         gs.add_builtin_type("Unit".into(), Type::unit().to_bounded());
-        gs.add_builtin_type("Int".into(), Type::int().to_bounded());
-        gs.add_builtin_type("Float".into(), Type::float().to_bounded());
-        gs.add_builtin_type("Bool".into(), Type::bool().to_bounded());
-        gs.add_builtin_type("String".into(), Type::string().to_bounded());
-        gs.add_builtin_type("Char".into(), Type::char().to_bounded());
         gs.add_builtin_type(
-            "List".into(),
-            Type::list(gen_t).to_bounded_with_generics(vec!["T".to_string()]),
+            "Slice".into(),
+            Type::slice(gen_t.clone()).to_bounded_with_generics(vec!["T".to_string()]),
         );
         gs.add_builtin_type("Never".into(), Type::never().to_bounded());
+        gs.add_builtin_type(
+            "Ref".into(),
+            Type::reference(gen_t.clone()).to_bounded_with_generics(vec!["T".to_string()]),
+        );
+        gs.add_builtin_type(
+            "RefMut".into(),
+            Type::reference(gen_t).to_bounded_with_generics(vec!["T".to_string()]),
+        );
     }
 
     fn generic_error(&mut self, msg: String, span: Span) {
@@ -2118,25 +2329,6 @@ has no method:
         Some((def, ty))
     }
 
-    fn transform_call_expr(&mut self, func: &Expr, args: &[Expr], span: &Span) -> Option<Expr> {
-        match &func {
-            Expr::Var { value, .. } => {
-                if value == "Debug::inspect" {
-                    return Some(Expr::Debug {
-                        kind: DebugKind::Inspect,
-                        expr: args[0].clone().into(),
-                        ty: Type::dummy(),
-                        span: span.clone(),
-                    });
-                }
-
-                None
-            }
-
-            _ => None,
-        }
-    }
-
     fn new_declaration(&self, span: &Span) -> Declaration {
         Declaration {
             file_id: self.current_file_id.clone().unwrap_or_else(|| FileId {
@@ -2147,51 +2339,19 @@ has no method:
         }
     }
 
-    fn find_method_in_struct(
-        &mut self,
-        ty: &Type,
-        new_target: &Expr,
-        method: &str,
-    ) -> Option<Expr> {
-        let name = ty.get_name()?;
-        let def = self.gs.get_struct(&name)?;
-
-        let found = def.fields.iter().any(|f| f.name == method);
-        if !found {
-            return None;
-        }
-
-        Some(Expr::StructAccess {
-            expr: new_target.to_owned().into(),
-            field: method.to_string(),
-            ty: Type::dummy(),
-            span: new_target.get_span(),
-        })
-    }
-
     // Allow users to omit the error type, ie. Result<T>
     // This function will add the error type back -> Result<T, E>
-    fn add_optional_error_to_result(&mut self, ty: Type, span: &Span) -> Type {
+    fn add_optional_error_to_result(&mut self, ty: Type, _span: &Span) -> Type {
         match &ty {
             Type::Con { name, args } => {
                 if name == "Result" && args.len() == 1 {
                     let mut new_args = args.clone();
 
-                    let package_err = match &self.package_error_ty {
-                        Some(ty) => ty.clone(),
-                        None => {
-                            self.generic_error(
-                                "
-     Tried to use Result<T> shorthand syntax,
-     but no Error type was found for this package"
-                                    .to_string(),
-                                span.clone(),
-                            );
-                            self.fresh_ty_var()
-                        }
+                    let error_ty = Type::Con {
+                        name: "error".to_string(),
+                        args: vec![],
                     };
-
-                    new_args.push(package_err);
+                    new_args.push(error_ty);
 
                     return Type::Con {
                         name: "Result".to_string(),
@@ -2251,7 +2411,7 @@ has no method:
                     args: new_args,
                     bounds: Default::default(),
                     ret: new_ret.into(),
-                    fx: Default::default(),
+                    id: TypeId::unset(),
                 }
             }
 
@@ -2259,176 +2419,183 @@ has no method:
         }
     }
 
-    fn check_and_add_overload(&mut self, fun: &Function, bounded_ty: &BoundedType, span: &Span) {
-        // TODO check:
-        //   - there is one generic param
-        //   - function is of shape T -> A
-        //
-        let type_param = fun.generics.first().unwrap();
-
-        let bound = Type::Con {
-            name: fun.name.clone(),
-            args: vec![Type::generic(type_param)],
-        };
-
-        let ty = match &bounded_ty.ty {
-            Type::Fun { args, ret, .. } => Type::Fun {
-                args: args.clone(),
-                bounds: vec![bound.clone()],
-                ret: ret.clone(),
-                fx: Default::default(),
-            },
-            _ => unreachable!(),
-        };
-
-        // Add type (needed when resolving constraints)
-        self.gs.add_type(
-            fun.name.clone(),
-            bound.to_bounded_with_generics(vec![type_param.to_string()]),
-            self.new_declaration(span),
-        );
-
-        // Add trait ie. equals
-        self.gs.add_trait(&fun.name);
-
-        // Add function ie. equals
-        // NOTE this overrides the declaration that was just added when inferring the function.
-        // It's probably a bit confusing, need to think of how to improve this.
-        self.gs.add_value(
-            fun.name.clone(),
-            ty.to_bounded_with_generics(vec![type_param.to_string()]),
-            Declaration::dummy(),
-        );
-    }
-
-    fn check_trait_can_be_derived(&mut self, trait_name: &str, ty: &Type) -> bool {
-        let mut seen = HashSet::new();
-        self.check_trait_can_be_derived_impl(&mut seen, trait_name, ty)
-    }
-
-    fn check_trait_can_be_derived_impl(
-        &mut self,
-        seen: &mut HashSet<String>,
-        trait_name: &str,
-        ty: &Type,
-    ) -> bool {
-        // All the built-in traits pretty much follow the same logic.
-        // Deriving an automatic instance for a trait is allowed, as long as the type doesn't
-        // contain functions (which can't be compared, hashed etc.)
-
-        match ty {
-            Type::Con { name, .. } => {
-                // Extend check to fields in structs and enums
-
-                if seen.contains(name) {
-                    return true;
-                }
-
-                seen.insert(name.to_string());
-
-                if let Some(def) = self.gs.get_struct(name) {
-                    return def
-                        .fields
-                        .iter()
-                        .all(|f| self.check_trait_can_be_derived_impl(seen, trait_name, &f.ty));
-                }
-
-                if let Some(def) = self.gs.get_enum(name) {
-                    return def.cons.iter().all(|c| {
-                        c.fields
-                            .iter()
-                            .all(|f| self.check_trait_can_be_derived_impl(seen, trait_name, &f.ty))
-                    });
-                }
-
-                return true;
-            }
-
-            Type::Fun { .. } => match trait_name {
-                "equals" => false,
-                "to_hash" => false,
-                "to_string" => true,
-                _ => todo!("Do something with trait {}", trait_name),
-            },
-
-            Type::Var(_) => {
-                return false;
-                // self.generic_error("Type must be known at this point".to_string(), span.clone())
-            }
-        }
-    }
-
     fn check_reserved_name(&mut self, ident: &str) -> bool {
         RESERVED_WORDS.contains(&ident)
     }
 
-    fn check_numeric(&mut self, ty: &Type, span: Span) -> bool {
-        if ty != &Type::int() && ty != &Type::float() {
-            let msg = format!("Was expecting Int or Float, got {}", &ty);
-            self.generic_error(msg, span);
-            return false;
+    fn check_interface_impl(&mut self, n1: &str, n2: &str) -> CheckInterfaceResult {
+        let interface = self.gs.get_interface(n1);
+        if interface.is_none() {
+            return CheckInterfaceResult::NotAnInterface;
         }
 
-        true
-    }
+        let interface = interface.unwrap();
+        let methods = self.gs.get_type_methods(n2);
 
-    // This is similar to `instantiate_with_vars`, but uses a concrete type instead of type variables.
-    // ie. fn to_string<T>(x: T) -> String
-    // instantiated with Foo<X, Y> becomes
-    // fn to_string<X: to_string, Y: to_string>(x: Foo<X, Y>) -> String
-    //
-    // `self_ty` is the generic T in the overload
-    // `overload_name` is `equals`, `to_string` etc.
-    fn instantiate_overload(
-        &mut self,
-        typ: &Type,
-        self_ty: &str,
-        overload_name: &str,
-        replace_with: &BoundedType,
-    ) -> Type {
-        match typ {
-            Type::Var(_) => unreachable!(),
+        for (method_name, method_ty) in interface.methods {
+            let candidate = methods.get(&method_name);
 
-            Type::Con { name, args } => {
-                if name == self_ty {
-                    return replace_with.ty.clone();
-                }
-
-                Type::Con {
-                    name: name.to_string(),
-                    args: args
-                        .iter()
-                        .map(|x| self.instantiate_overload(x, self_ty, overload_name, replace_with))
-                        .collect(),
-                }
+            if candidate.is_none() {
+                return CheckInterfaceResult::Error(format!(
+                    "method {} not found on type {}",
+                    method_name, n2
+                ));
             }
 
-            Type::Fun {
-                args,
-                bounds: _,
-                ret,
-                fx,
-            } => Type::Fun {
-                args: args
-                    .iter()
-                    .map(|x| self.instantiate_overload(x, self_ty, overload_name, replace_with))
-                    .collect(),
-                bounds: replace_with
-                    .generics
-                    .iter()
-                    .map(|g| Type::Con {
-                        name: overload_name.to_string(),
-                        args: vec![Type::generic(g)],
-                    })
-                    .collect(),
+            // Add a self receiver param on the interface method
+            let interface_method = method_ty.clone().add_any_receiver();
 
-                ret: self
-                    .instantiate_overload(ret, self_ty, overload_name, replace_with)
-                    .into(),
-                fx: fx.clone(),
-            },
+            // Check the two unify
+            if let Err(e) = self.unify(&interface_method, &candidate.unwrap().ty.ty, &Span::dummy())
+            {
+                return CheckInterfaceResult::Error(format!(
+                    "method {} on type {} has wrong type {}",
+                    method_name, n2, e
+                ));
+            }
+        }
+
+        return CheckInterfaceResult::Ok;
+    }
+
+    fn declare_modules(&mut self, files: &[File]) {
+        for f in files {
+            for e in &f.decls {
+                if let Expr::Mod {
+                    name, pkg, items, ..
+                } = e
+                {
+                    self.gs.begin_scope();
+                    self.current_file_id = Some(FileId {
+                        package: name.clone(),
+                        filename: f.name.clone(),
+                    });
+
+                    self.declare_files(&vec![File {
+                        decls: items.clone(),
+                        ..f.clone()
+                    }]);
+
+                    let module = self.gs.extract_module(name, &pkg);
+                    self.gs.add_module(&pkg.name, module);
+
+                    self.current_file_id = None;
+                    self.gs.exit_scope();
+                }
+            }
         }
     }
+
+    fn import_package(&mut self, import: &PkgImport, span: &Span) {
+        let module = self.gs.get_module(&import.name);
+        if module.is_none() {
+            self.generic_error(
+                format!("Package {name} not found", name = import.name),
+                span.clone(),
+            );
+            return;
+        }
+
+        let module = module.unwrap();
+        self.gs.import_module(&module.name, module.clone());
+        self.create_pkg_struct(&module.name, &module);
+    }
+
+    fn create_pkg_struct(&mut self, name: &str, module: &Module) {
+        // create a struct that holds one field for each fn
+        // define a global value for the package (ie. fmt)
+        // TODO asdf store the names of these packages and their values, so that when extracting
+        // modules we can skip them
+
+        let struct_name = format!("__Package{name}");
+        let ty = Type::Con {
+            name: struct_name.clone(),
+            args: vec![],
+        };
+
+        let mut fields = vec![];
+
+        for (binding, v) in &module.values {
+            fields.push(StructFieldDef {
+                name: binding.clone(),
+                ann: TypeAst::Unknown,
+                ty: module.rewrite_type(name, &v.ty),
+            });
+
+            // If this value has a receiver defined in this package, then add it as a method
+            if let Some((receiver, decl)) = self.external_func_is_method(&name, &v.ty.ty) {
+                self.gs.add_method(
+                    &module.rewrite_type_impl(name, &receiver),
+                    &binding,
+                    module.rewrite_type(name, &v.ty),
+                    decl,
+                );
+            }
+        }
+
+        let def = StructDefinition {
+            name: struct_name.clone(),
+            generics: vec![],
+            fields,
+        };
+
+        let span = Span::dummy(); // TODO asdf
+        let decl = self.new_declaration(&span);
+
+        // Hacky way to register global functions (ie. string(), int() etc.)
+        if name == "global" {
+            for f in def.fields {
+                self.gs.add_value(f.name, f.ty, decl.clone());
+            }
+
+            return;
+        }
+
+        self.gs
+            .add_type(struct_name.to_string(), ty.to_bounded(), decl.clone());
+        self.gs.add_struct(struct_name, def);
+        self.gs.add_value(name.to_string(), ty.to_bounded(), decl)
+    }
+
+    fn declare_symbols(&mut self, files: &[File]) {
+        files.iter().for_each(|f| {
+            f.decls
+                .iter()
+                .filter(|e| {
+                    matches!(
+                        e,
+                        Expr::EnumDef { .. } | Expr::StructDef { .. } | Expr::TypeAlias { .. }
+                    )
+                })
+                .for_each(|e| self.declare_type(e));
+        });
+    }
+
+    fn external_func_is_method(&mut self, name: &str, ty: &Type) -> Option<(Type, Declaration)> {
+        let args = ty.get_function_args()?;
+        let receiver = args.first()?;
+        let ty_name = receiver.remove_references().get_name()?;
+        let type_def = self.gs.get_global_type_declaration(&ty_name)?;
+
+        if type_def.decl.file_id.package == name {
+            return Some((receiver.remove_references(), type_def.decl));
+        }
+
+        None
+    }
+
+    fn check_numeric(&mut self, ty: &Type, span: &Span) {
+        let ty = self.substitute(ty.clone());
+        if !ty.is_numeric() {
+            self.generic_error("Expected numeric type".to_string(), span.clone());
+        }
+    }
+}
+
+enum CheckInterfaceResult {
+    Ok,
+    NotAnInterface,
+    Error(String),
 }
 
 const RESERVED_WORDS: &[&str] = &["default", "len", "append", "cap"];

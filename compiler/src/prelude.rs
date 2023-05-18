@@ -2,7 +2,7 @@ use crate::ast;
 use crate::global_state;
 use crate::infer;
 use crate::type_::Type;
-use std::collections::HashSet;
+use crate::type_::TypeId;
 
 /// Initialize types and functions only used in tests
 
@@ -13,7 +13,7 @@ pub fn init(instance: &mut infer::Infer) {
     let expr = ast::Expr::from_expr(e).unwrap();
 
     populate_prelude(&mut instance.gs);
-    let (_, errors, _) = instance.infer_expr_with_error(&expr, Type::unit());
+    let (_, errors, _) = instance.infer_expr_with_error(&expr);
 
     if !errors.is_empty() {
         panic!(
@@ -27,9 +27,9 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
     let gen_t = Type::generic("T");
     let gen_y = Type::generic("Y");
 
-    // junk
-    gs.add_effect("print".into());
-    gs.add_effect("rand".into());
+    gs.add_builtin_type("int".into(), Type::int().to_bounded());
+    gs.add_builtin_type("bool".into(), Type::bool().to_bounded());
+    gs.add_builtin_type("string".into(), Type::string().to_bounded());
 
     gs.add_builtin_value(
         "inc".into(),
@@ -37,7 +37,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::int()],
             bounds: vec![],
             ret: Type::int().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
@@ -48,7 +48,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::int()],
             bounds: vec![],
             ret: Type::int().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
@@ -59,7 +59,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::int(), Type::int()],
             bounds: vec![],
             ret: Type::int().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
@@ -70,7 +70,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![],
             bounds: vec![],
             ret: Type::string().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
@@ -78,10 +78,10 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
     gs.add_builtin_value(
         "list_push".into(),
         Type::Fun {
-            args: vec![Type::list(gen_t.clone()), gen_t.clone()],
+            args: vec![Type::slice(gen_t.clone()), gen_t.clone()],
             bounds: vec![],
-            ret: Type::list(gen_t.clone()).into(),
-            fx: Default::default(),
+            ret: Type::slice(gen_t.clone()).into(),
+            id: TypeId::unset(),
         }
         .to_bounded_with_generics(vec!["T".to_string()]),
     );
@@ -90,16 +90,16 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
         args: vec![gen_t.clone()],
         bounds: vec![],
         ret: gen_y.clone().into(),
-        fx: Default::default(),
+        id: TypeId::unset(),
     };
 
     gs.add_builtin_value(
         "list_map".into(),
         Type::Fun {
-            args: vec![Type::list(gen_t.clone()), map_fn],
+            args: vec![Type::slice(gen_t.clone()), map_fn],
             bounds: vec![],
-            ret: Type::list(gen_y.clone()).into(),
-            fx: Default::default(),
+            ret: Type::slice(gen_y.clone()).into(),
+            id: TypeId::unset(),
         }
         .to_bounded_with_generics(vec!["T".to_string(), "Y".to_string()]),
     );
@@ -107,10 +107,10 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
     gs.add_builtin_value(
         "list_head".into(),
         Type::Fun {
-            args: vec![Type::list(gen_t.clone())],
+            args: vec![Type::slice(gen_t.clone())],
             bounds: vec![],
             ret: gen_t.clone().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded_with_generics(vec!["T".to_string()]),
     );
@@ -121,7 +121,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::int()],
             bounds: vec![],
             ret: Type::string().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
@@ -132,7 +132,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::string(), Type::string()],
             bounds: vec![],
             ret: Type::string().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
@@ -143,7 +143,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::int()],
             bounds: vec![],
             ret: Type::int().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
@@ -154,7 +154,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::tuple2(gen_t.clone(), gen_y.clone())],
             bounds: vec![],
             ret: gen_t.clone().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded_with_generics(vec!["T".to_string(), "Y".to_string()]),
     );
@@ -165,7 +165,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::tuple2(gen_t, gen_y.clone())],
             bounds: vec![],
             ret: gen_y.into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded_with_generics(vec!["T".to_string(), "Y".to_string()]),
     );
@@ -176,7 +176,7 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![Type::string()],
             bounds: vec![],
             ret: Type::unit().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
@@ -187,25 +187,19 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
             args: vec![],
             bounds: vec![],
             ret: Type::int().into(),
-            fx: Default::default(),
+            id: TypeId::unset(),
         }
         .to_bounded(),
     );
 
-    {
-        let mut fx = HashSet::new();
-        fx.insert("print".to_string());
-        fx.insert("rand".to_string());
-
-        gs.add_builtin_value(
-            "print_and_stuff".into(),
-            Type::Fun {
-                args: vec![],
-                bounds: vec![],
-                ret: Type::int().into(),
-                fx,
-            }
-            .to_bounded(),
-        );
-    }
+    gs.add_builtin_value(
+        "print_and_stuff".into(),
+        Type::Fun {
+            args: vec![],
+            bounds: vec![],
+            ret: Type::int().into(),
+            id: TypeId::unset(),
+        }
+        .to_bounded(),
+    );
 }

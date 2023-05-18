@@ -8,8 +8,6 @@ fn () -> ()
 ---
 No errors.
 ---
-[]
----
 {
   "Block": {
     "stmts": [
@@ -52,6 +50,22 @@ No errors.
                   }
                 }
               }
+            },
+            "bounded_ty": {
+              "generics": [],
+              "ty": {
+                "Fun": {
+                  "args": [],
+                  "bounds": [],
+                  "ret": {
+                    "Con": {
+                      "name": "Unit",
+                      "args": []
+                    }
+                  },
+                  "id": -1
+                }
+              }
             }
           },
           "kind": "Inline",
@@ -65,7 +79,7 @@ No errors.
                   "args": []
                 }
               },
-              "fx": []
+              "id": -1
             }
           },
           "span": {
@@ -91,7 +105,7 @@ No errors.
             "args": []
           }
         },
-        "fx": []
+        "id": -1
       }
     },
     "span": {

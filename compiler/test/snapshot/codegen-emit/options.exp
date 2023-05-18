@@ -1,0 +1,94 @@
+Options
+
+SOURCE:
+use os;
+
+fn foo() -> Option<int> {
+  Some(3)
+}
+
+fn main() {
+  let x = foo();
+  assert_eq(x.IsSome(), true);
+
+  match os.LookupEnv("HOME") {
+    Some(_) => (),
+    None => unreachable!(),
+  }
+}
+
+OUTPUT:
+
+---
+package main
+
+import (
+	"os"
+)
+
+func foo() (int, bool) {
+	return 3, true
+}
+
+func main() {
+	var3_result := func() Option[int] {
+		var1_check, var2_err := foo()
+		if var2_err == false {
+			return make_Option_None[int]()
+		}
+		return make_Option_Some[int](var1_check)
+	}()
+
+	x := var3_result
+
+	assert_eq[bool](x.IsSome(), true)
+
+	var6_result := func() Option[string] {
+		var4_check, var5_err := os.LookupEnv("HOME")
+		if var5_err == false {
+			return make_Option_None[string]()
+		}
+		return make_Option_Some[string](var4_check)
+	}()
+
+	var7_subject := var6_result
+	var8_matches := 0
+
+	if var8_matches != 2 {
+		var8_matches = 0
+
+		var9_match_pat := 0
+		if var9_match_pat != 1 {
+			var9_match_pat = 2 /* wildcard */
+		}
+
+		if var9_match_pat != 1 && var7_subject.tag == Option_Some {
+			var8_matches = 2
+		} else {
+			var8_matches = 1
+		}
+
+		_ = var7_subject
+
+		if var8_matches == 2 {
+		}
+	}
+
+	if var8_matches != 2 {
+		var8_matches = 0
+
+		var11_match_pat := 0
+
+		if var11_match_pat != 1 && var7_subject.tag == Option_None {
+			var8_matches = 2
+		} else {
+			var8_matches = 1
+		}
+
+		_ = var7_subject
+
+		if var8_matches == 2 {
+			Debug_unreachable[struct{}]()
+		}
+	}
+}

@@ -2,7 +2,7 @@ The `?` operator can only be used in functions that return a Result.
 
 SOURCE:
 {
-  fn foo() -> Result<Int, ErrFoo> { Ok(1) }
+  fn foo() -> Result<int, ErrFoo> { Ok(1) }
   fn bar() {
     let x = foo()?;
     ()

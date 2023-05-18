@@ -1,17 +1,26 @@
 import { basicSetup, EditorView } from "codemirror";
-import { hoverTooltip, keymap } from "@codemirror/view";
+import { keymap } from "@codemirror/view";
 import { rust } from "@codemirror/lang-rust";
 
-const Borgo = {};
+const Borgo = {
+  compile_wasm: function () {
+    throw new Error("compile_wasm not initialized");
+  },
+};
 
 window.Borgo = Borgo;
 
 let output = [];
+let EXAMPLES;
+let STD_SOURCE;
 
 const elements = {
   output: document.getElementById("output"),
   errors: document.getElementById("errors"),
   examples: document.getElementById("examples"),
+  links: () => document.querySelectorAll("#examples a"),
+  section_title: document.getElementById("section-title"),
+  section_description: document.getElementById("section-description"),
 };
 
 function updateLog(s) {
@@ -21,34 +30,80 @@ function updateLog(s) {
 
 function resetLogs() {
   output = [];
-  elements.output.textContent = "no output";
-  elements.errors.textContent = "no errors";
+  elements.output.textContent = "";
+  elements.errors.textContent = "";
 }
 
 function updateError(err) {
   elements.errors.textContent = err;
 }
 
-let EXAMPLES;
-let STD_SOURCE;
-
 async function initStaticData() {
   EXAMPLES = await (fetch("/examples.out.json").then((res) => res.json()));
   STD_SOURCE = await (fetch("/std/core.brg").then((res) => res.text()));
 }
 
-initStaticData();
-
 async function initExamples() {
-  EXAMPLES.forEach((e, index) => {
+  EXAMPLES.forEach((e) => {
     const link =
-      `<a href="#" onClick="Borgo.selectExample(${index})">${e.title}</a>`;
+      `<a href="#${e.slug}" onClick="Borgo.selectExample(${e.slug})">${e.title}</a>`;
     elements.examples.innerHTML += link;
   });
 }
 
-Borgo.selectExample = function (index) {
-  const e = EXAMPLES[index];
+async function callGoPlayground(code) {
+  const res = await fetch(
+    "https://go-compiler.borgo.workers.dev/",
+    {
+      "credentials": "omit",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "body": JSON.stringify({ code }),
+      "method": "POST",
+      "mode": "cors",
+    },
+  );
+
+  return await res.json();
+}
+
+function aggregateProject(project) {
+  let source = [];
+  let imports = {};
+
+  for (const pkg of Object.values(project)) {
+    for (const [path, name] of Object.entries(pkg.imports)) {
+      imports[path] = name ?? "";
+    }
+
+    source.push(pkg.source);
+  }
+
+  const rendered_imports = Object.entries(imports).map(([path, name]) => {
+    return `import ${name} "${path}"`;
+  });
+
+  return ["package main", ...rendered_imports, ...source].join(
+    "\n",
+  );
+}
+
+function initRouting() {
+  function refresh() {
+    const hash = window.location.hash ||
+      elements.links()[0].getAttribute("href");
+
+    Borgo.selectExample(hash.substr(1));
+  }
+
+  window.addEventListener("hashchange", refresh);
+  window.addEventListener("popstate", refresh);
+  refresh();
+}
+
+Borgo.selectExample = function (slug) {
+  const e = EXAMPLES.find((e) => e.slug == slug);
   const state = Borgo.view.state;
 
   const update = state.update({
@@ -57,37 +112,30 @@ Borgo.selectExample = function (index) {
 
   // Update editor content
   Borgo.view.update([update]);
-
   resetLogs();
+
+  elements.section_title.textContent = e.title;
+  elements.section_description.innerHTML = e.description;
+
+  // Update active link in sidebar
+  const links = elements.links();
+  links.forEach((e) => {
+    e.classList.remove("active");
+
+    if (e.getAttribute("href").substr(1) == slug) {
+      e.classList.add("active");
+    }
+  });
 };
 
 Borgo.main = async function () {
   resetLogs();
+
+  await initStaticData();
   initExamples();
 
   const editor = document.getElementById("editor");
   const initial_content = editor.getElementsByTagName("textarea")[0].value;
-
-  // Hover Tooltip
-  const wordHover = hoverTooltip((view, pos, side) => {
-    const line = view.state.doc.lineAt(pos);
-
-    // TODO put compilation in standalone fn and cache result
-    const user_source = view.state.doc.toString();
-    const project = Borgo.compile(user_source, STD_SOURCE);
-    const hover = Borgo.on_hover(project, line.number, pos - line.from);
-
-    return {
-      pos,
-      end: pos,
-      above: true,
-      create(view) {
-        let dom = document.createElement("div");
-        dom.textContent = hover;
-        return { dom };
-      },
-    };
-  });
 
   let view = new EditorView({
     doc: initial_content,
@@ -103,8 +151,6 @@ Borgo.main = async function () {
           compile();
         },
       }]),
-      // Disable tooltips for now, as they're not very reliable
-      //  wordHover,
     ],
   });
 
@@ -120,16 +166,25 @@ Borgo.main = async function () {
 
   // --------------------
 
-  window.compile = function () {
-    const user_source = view.state.doc.toString();
+  Borgo.compile = async function () {
     resetLogs();
 
+    const user_source = view.state.doc.toString();
+
     try {
-      const project = Borgo.compile(user_source, STD_SOURCE);
-      const result = runProject(project);
+      const compiler_res = Borgo.compile_wasm(user_source, STD_SOURCE);
+      const project = JSON.parse(compiler_res);
+
+      updateLog("Waiting for server...");
+      const full_source = aggregateProject(project);
+      const result = await (callGoPlayground(full_source));
 
       if (result) {
-        updateLog(result);
+        const events = (result.Events ?? []).map((e) => e.Message).join("\n");
+
+        resetLogs();
+        updateLog(result.Errors + events);
+        updateLog("\nProgram exited.");
       }
 
       Borgo.project = project;
@@ -137,4 +192,7 @@ Borgo.main = async function () {
       updateError(e);
     }
   };
+
+  // Init router and select first example
+  initRouting();
 };

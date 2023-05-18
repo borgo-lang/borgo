@@ -1,9 +1,9 @@
 Math with floats
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   let x = 5.3 * 1.2;
-  Debug::assert_eq(true, x > 6.35 && x < 6.36);
+  assert_eq(true, x > 6.35 && x <= 6.36);
 }
 
 OUTPUT:
@@ -11,20 +11,8 @@ OUTPUT:
 ---
 package main
 
-import borgo "borgo/runtime"
+func main() {
+	x := 5.3 * 1.2
 
-var _ = borgo.Unit
-
-func borgo_main() any {
-
-	{
-
-		var x any = borgo.Ops.FMul(5.3, 1.2)
-
-		return Debug_assert_eq(true, borgo.Ops.And(borgo.Ops.FGt(x, 6.35), borgo.Ops.FLt(x, 6.36)))
-	}
-}
-
-func pkg_user_init() {
-	borgo.RegisterGlobalFunction("borgo_main", borgo_main)
+	assert_eq[bool](true, x > 6.35 && x <= 6.36)
 }

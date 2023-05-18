@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::ast::{EnumDefinition, File, Span, StructDefinition};
+use crate::ast::{EnumDefinition, File, PkgInfo, Span, StructDefinition};
 use crate::project::Package;
-use crate::type_::{BoundedType, Type};
-use std::collections::{HashMap, HashSet, VecDeque};
+use crate::type_::{Bound, BoundedType, Type, TypeId};
+use std::collections::{HashMap, VecDeque};
 
 #[derive(Debug, Clone)]
 struct Scope {
@@ -11,8 +11,8 @@ struct Scope {
     types: HashMap<String, TypeDef>,
     // bindings in the value universe, ie. x => Int
     values: HashMap<String, ValueDef>,
-    // assumptions about a type found in trait bounds, ie. equals<T>. Used for constraint resolution.
-    assumptions: Vec<Type>,
+    // assumptions about a type found in trait bounds, ie. T => comparable. Used for constraint resolution.
+    assumptions: HashMap<String, Vec<String>>,
     // bindings that were declared with `let mut`
     mutability: HashMap<String, bool>,
 }
@@ -47,28 +47,30 @@ impl Scope {
 #[derive(Clone)]
 pub struct GlobalState {
     next_var: i32,
+    next_type_id: i32,
     scopes: VecDeque<Scope>,
     types: HashMap<String, TypeDef>,
     enums: HashMap<String, EnumDefinition>,
     structs: HashMap<String, StructDefinition>,
     aliases: HashMap<String, String>,
-    effects: HashSet<String>,
-    traits: HashSet<String>,
-    derived_traits: HashSet<DerivedOverload>,
+    methods: HashMap<String, HashMap<String, TypeDef>>, // type => (method => signature)
+    modules: HashMap<String, Module>,
+    interfaces: HashMap<String, Interface>,
 }
 
 impl GlobalState {
     pub fn new() -> Self {
         Self {
             next_var: 0,
+            next_type_id: 0,
             scopes: VecDeque::from([Scope::new()]),
             types: Default::default(),
             enums: Default::default(),
             structs: Default::default(),
             aliases: Default::default(), // Ok -> Result::Ok
-            effects: Default::default(),
-            traits: Default::default(),
-            derived_traits: Default::default(),
+            modules: Default::default(),
+            methods: Default::default(),
+            interfaces: Default::default(),
         }
     }
 
@@ -86,7 +88,9 @@ impl GlobalState {
     }
 
     pub fn add_type(&mut self, name: String, ty: BoundedType, decl: Declaration) {
-        self.types.insert(name, TypeDef { ty, decl });
+        if !self.types.contains_key(&name) {
+            self.types.insert(name, TypeDef { ty, decl });
+        }
     }
 
     pub fn get_type(&mut self, name: &str) -> Option<BoundedType> {
@@ -126,14 +130,6 @@ impl GlobalState {
         self.aliases.insert(alias, source);
     }
 
-    pub fn add_effect(&mut self, effect: String) {
-        self.effects.insert(effect);
-    }
-
-    pub fn is_effect(&self, effect: &str) -> bool {
-        self.effects.contains(effect)
-    }
-
     pub fn get_enum(&self, name: &str) -> Option<EnumDefinition> {
         self.enums.get(name).cloned()
     }
@@ -170,61 +166,6 @@ impl GlobalState {
             .for_each(|scope| eprintln!("{:#?}", scope))
     }
 
-    pub fn lookup_method(
-        &mut self,
-        method: &str,
-        first_arg: &Type,
-        _arity: usize,
-    ) -> Option<String> {
-        // This should be a bit cleverer, but ok for now
-        // Aliasing makes this hard to follow
-        // Note that this doesn't handle struct fields with functions
-
-        // 1. If we know the first argument, then lookup a fully qualified function ie. List::map
-        if let Type::Con { name, .. } = first_arg {
-            let checks = vec![name.clone(), format!("{}::{}", name, method)];
-
-            let found = checks
-                .into_iter()
-                .find_map(|n| self.get_value(&n).map(|_| n));
-
-            if let Some(name) = found {
-                return Some(self.resolve_name(&name));
-            }
-        }
-
-        // 2. The first argument is generic, this could be something like Debug::assert_eq(a, b)
-        // For now, scan the whole set of values looking for something that might match
-        let lookup = format!("::{}", method);
-        let candidate = self.current_scope().values.iter().find_map(|(name, def)| {
-            if name.ends_with(&lookup) {
-                match &def.get_type() {
-                    Type::Fun { args, .. } => {
-                        if let Some(first) = args.first() {
-                            if def.is_generic(first) {
-                                return Some(name);
-                            }
-                        }
-                    }
-                    _ => (),
-                }
-            }
-
-            None
-        });
-
-        if let Some(candidate) = candidate {
-            return Some(candidate.to_string());
-        }
-
-        // 3. If all else fails, look for a function with that name.
-        if let Some(_) = self.get_value(method) {
-            return Some(self.resolve_name(method));
-        }
-
-        None
-    }
-
     pub fn put_generics_in_scope(&mut self, generics: &[String], decl: Declaration) {
         generics.iter().for_each(|g| {
             let ty = Type::Con {
@@ -239,18 +180,16 @@ impl GlobalState {
         });
     }
 
-    pub fn add_assumption(&mut self, assumption: &Type) {
-        self.current_scope().assumptions.push(assumption.clone());
+    pub fn add_assumption(&mut self, bound: &Bound) {
+        self.current_scope()
+            .assumptions
+            .entry(bound.generic.to_string())
+            .or_default()
+            .push(bound.ty.get_name().unwrap());
     }
 
-    pub fn constraint_satisfied(&self, constraint: &Type) -> bool {
-        self.scopes
-            .iter()
-            .any(|scope| scope.assumptions.contains(constraint))
-    }
-
-    pub fn add_trait(&mut self, name: &str) {
-        self.traits.insert(name.to_string());
+    pub fn add_interface(&mut self, interface: Interface) {
+        self.interfaces.insert(interface.name.clone(), interface);
     }
 
     pub fn get_all_types(&self) -> HashMap<String, BoundedType> {
@@ -258,36 +197,6 @@ impl GlobalState {
             .iter()
             .map(|(name, t)| (name.clone(), t.ty.clone()))
             .collect()
-    }
-
-    pub fn get_overloads(&self) -> HashSet<String> {
-        self.traits.clone()
-    }
-
-    pub fn add_derived_overload(&mut self, overload_name: &str, ty_name: &str) {
-        let value = DerivedOverload {
-            overload: overload_name.to_string(),
-            ty: ty_name.to_string(),
-        };
-
-        self.derived_traits.insert(value);
-    }
-
-    pub fn get_derived_overloads(&self) -> HashSet<DerivedOverload> {
-        self.derived_traits.clone()
-    }
-
-    pub fn remove_derived_overload(&mut self, name: &str) {
-        if !name.contains("::") {
-            return;
-        }
-
-        let parts: Vec<_> = name.split("::").collect();
-        let ty = parts[0].to_string();
-        let overload = parts[1].to_string();
-
-        let value = DerivedOverload { overload, ty };
-        self.derived_traits.remove(&value);
     }
 
     pub fn set_mutability(&mut self, ident: &str, mutable: bool) {
@@ -302,6 +211,181 @@ impl GlobalState {
             .find_map(|scope| scope.mutability.get(ident))
             .cloned()
             .unwrap_or_default()
+    }
+
+    pub fn add_method(
+        &mut self,
+        base_ty: &Type,
+        method_name: &str,
+        ty: BoundedType,
+        decl: Declaration,
+    ) {
+        let base_ty = base_ty.get_name().unwrap();
+        let methods = self.methods.entry(base_ty).or_insert(HashMap::new());
+
+        methods.insert(method_name.to_string(), TypeDef { ty, decl });
+    }
+
+    pub fn get_method(&self, base_ty: &Type, method: &str) -> Option<BoundedType> {
+        base_ty.remove_references().get_name().and_then(|ty_name| {
+            self.get_type_methods(&ty_name)
+                .get(method)
+                .cloned()
+                .map(|t| t.ty)
+        })
+    }
+
+    pub fn get_type_methods(&self, ty_name: &str) -> HashMap<String, TypeDef> {
+        // If it's an interface, return all methods
+        if let Some(interface) = self.interfaces.get(ty_name).cloned() {
+            let mut ret = HashMap::new();
+
+            for (name, ty) in interface.methods {
+                let decl = Declaration::dummy(); // TODO an interface should have a declaration
+                ret.insert(
+                    name,
+                    TypeDef {
+                        ty: ty.add_any_receiver().to_bounded(),
+                        decl,
+                    },
+                );
+            }
+
+            return ret;
+        }
+
+        // If it's a constraint, return all the methods of all the interfaces implied by that
+        // constraint
+        if let Some(ifaces) = self.get_assumptions(ty_name) {
+            return ifaces
+                .into_iter()
+                .flat_map(|i| self.get_type_methods(&i))
+                .collect();
+        }
+
+        self.methods.get(ty_name).cloned().unwrap_or_default()
+    }
+
+    pub fn generate_type_id(&mut self) -> TypeId {
+        self.next_type_id += 1;
+        TypeId(self.next_type_id)
+    }
+
+    pub fn get_interface(&self, name: &str) -> Option<Interface> {
+        self.interfaces.get(name).cloned()
+    }
+
+    pub fn extract_module(&mut self, name: &str, pkg: &PkgInfo) -> Module {
+        let matches_decl = |decl: &Declaration| decl.file_id.package == name;
+
+        let mut types = HashMap::new();
+
+        for t in &self.types {
+            // TODO asdf store the actual generated type names fmt, os...
+            // this is excluding stuff like __Packageos created in `use` declarations
+            if matches_decl(&t.1.decl) && !t.0.starts_with("__") {
+                types.insert(t.0.clone(), t.1.clone());
+            }
+        }
+
+        let mut enums = HashMap::new();
+        for t in &self.enums {
+            if types.contains_key(t.0) {
+                enums.insert(t.0.clone(), t.1.clone());
+            }
+        }
+
+        let mut structs = HashMap::new();
+        for t in &self.structs {
+            if types.contains_key(t.0) {
+                structs.insert(t.0.clone(), t.1.clone());
+            }
+        }
+
+        let mut values = HashMap::new();
+        for t in &self.current_scope().values {
+            let ty = t.1.ty.ty.get_name();
+            // TODO asdf here too
+            if let Some(name) = ty {
+                if name.starts_with("__") {
+                    continue;
+                }
+            }
+
+            if matches_decl(&t.1.decl) {
+                values.insert(t.0.clone(), t.1.clone());
+            }
+        }
+
+        let mut interfaces = HashMap::new();
+        for i in self.interfaces.values() {
+            if types.contains_key(&i.name) {
+                interfaces.insert(i.name.clone(), i.clone());
+            }
+        }
+
+        Module {
+            name: name.to_string(),
+            pkg: pkg.clone(),
+            types,
+            enums,
+            structs,
+            values,
+            interfaces,
+        }
+    }
+
+    pub fn import_module(&mut self, pkg: &str, module: Module) {
+        for (name, t) in &module.types {
+            let name = module.rewrite(pkg, name);
+            let ty = module.rewrite_type(pkg, &t.ty);
+            self.add_type(name, ty, t.decl.clone());
+        }
+
+        for (name, def) in &module.structs {
+            let name = module.rewrite(pkg, name);
+            let mut def = def.clone();
+
+            for f in &mut def.fields {
+                f.ty = module.rewrite_type(pkg, &f.ty);
+            }
+
+            self.add_struct(name, def);
+        }
+
+        for interface in module.interfaces.values() {
+            let name = module.rewrite(pkg, &interface.name);
+
+            let mut methods = HashMap::new();
+            for (m, ty) in &interface.methods {
+                methods.insert(m.to_string(), module.rewrite_type_impl(pkg, ty));
+            }
+
+            self.add_interface(Interface {
+                name,
+                types: interface.types.clone(),
+                methods,
+            });
+        }
+
+        // values are imported in Infer::create_pkg_struct
+
+        // TODO asdf fill the other ones in
+    }
+
+    pub fn add_module(&mut self, name: &str, module: Module) {
+        self.modules.insert(name.to_string(), module);
+    }
+
+    pub fn get_module(&self, name: &str) -> Option<Module> {
+        self.modules.get(name).cloned()
+    }
+
+    fn get_assumptions(&self, ty_name: &str) -> Option<Vec<String>> {
+        self.scopes
+            .iter()
+            .find_map(|scope| scope.assumptions.get(ty_name))
+            .cloned()
     }
 }
 
@@ -346,20 +430,6 @@ impl ValueDef {
             decl: Declaration::dummy(),
         }
     }
-
-    fn get_type(&self) -> Type {
-        self.ty.ty.clone()
-    }
-
-    /// Used in lookup_method to find if this type is generic
-    fn is_generic(&self, first: &Type) -> bool {
-        let name = first.get_name();
-        if name.is_none() {
-            return false;
-        }
-
-        self.ty.generics.contains(&name.unwrap())
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -377,8 +447,67 @@ impl Declaration {
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct DerivedOverload {
-    pub overload: String,
-    pub ty: String,
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Module {
+    pub name: String,
+    pub pkg: PkgInfo,
+    pub types: HashMap<String, TypeDef>,
+    pub enums: HashMap<String, EnumDefinition>,
+    pub structs: HashMap<String, StructDefinition>,
+    pub values: HashMap<String, ValueDef>,
+    pub interfaces: HashMap<String, Interface>,
+}
+
+impl Module {
+    pub fn rewrite(&self, pkg: &str, name: &str) -> String {
+        if self.types.contains_key(name) {
+            format!("{}::{}", pkg, name)
+        } else {
+            name.to_string()
+        }
+    }
+
+    pub fn rewrite_type(&self, pkg: &str, ty: &BoundedType) -> BoundedType {
+        let new_ty = self.rewrite_type_impl(pkg, &ty.ty);
+        BoundedType {
+            generics: ty.generics.clone(),
+            ty: new_ty,
+        }
+    }
+
+    pub fn rewrite_type_impl(&self, pkg: &str, ty: &Type) -> Type {
+        match ty {
+            Type::Con { name, args } => Type::Con {
+                name: self.rewrite(pkg, name),
+                args: args
+                    .iter()
+                    .map(|a| self.rewrite_type_impl(pkg, a))
+                    .collect(),
+            },
+
+            Type::Fun {
+                args,
+                bounds,
+                ret,
+                id,
+            } => Type::Fun {
+                args: args
+                    .iter()
+                    .map(|a| self.rewrite_type_impl(pkg, a))
+                    .collect(),
+                bounds: bounds.clone(),
+                ret: self.rewrite_type_impl(pkg, ret).into(),
+                id: id.clone(),
+            },
+
+            Type::Var(_) => ty.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Interface {
+    pub name: String,
+    pub types: Vec<String>,
+    pub methods: HashMap<String, Type>,
 }

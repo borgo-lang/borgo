@@ -1,0 +1,70 @@
+Trait bounds without methods are not checked
+
+SOURCE:
+// Let the Go compiler figure out if a type satisfies a constraint
+fn foo<T: comparable>(x: T, y: T) -> bool {
+    x == y
+}
+
+trait Foo {
+  fn check() -> int;
+}
+
+struct Bar {}
+impl Bar {
+  fn check(self) -> int { 3 }
+}
+
+// Check that multiple constraints are correctly emitted
+fn bar<T: comparable + Foo>(x: T, y: T) -> int {
+  if x == y {
+    x.check()
+  } else {
+    -1
+  }
+}
+
+fn main() {
+  assert_eq(foo(1.0, 2.0), false);
+  assert_eq(foo(1, 1), true);
+  assert_eq(bar(Bar{}, Bar{}), 3);
+}
+
+OUTPUT:
+
+---
+package main
+
+func foo[T comparable](x T, y T) bool {
+	return x == y
+}
+
+type Foo interface {
+	check() int
+}
+type Bar struct{}
+
+func (self Bar) check() int {
+	return 3
+}
+
+func bar[T interface {
+	comparable
+	Foo
+}](x T, y T) int {
+	var var1 int
+	if x == y {
+		var1 = x.check()
+	} else {
+		var1 = -1
+	}
+	return var1
+}
+
+func main() {
+	assert_eq[bool](foo[float64](1, 2), false)
+
+	assert_eq[bool](foo[int](1, 1), true)
+
+	assert_eq[int](bar[Bar](Bar{}, Bar{}), 3)
+}

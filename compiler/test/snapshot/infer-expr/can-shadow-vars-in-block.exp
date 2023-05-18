@@ -10,11 +10,9 @@ SOURCE:
 }
 
 OUTPUT:
-String
+string
 ---
 No errors.
----
-[]
 ---
 {
   "Block": {
@@ -42,7 +40,7 @@ No errors.
             "ann": "Unknown",
             "ty": {
               "Con": {
-                "name": "String",
+                "name": "string",
                 "args": []
               }
             }
@@ -50,11 +48,14 @@ No errors.
           "value": {
             "Literal": {
               "lit": {
-                "String": "mutable"
+                "String": [
+                  "mutable",
+                  null
+                ]
               },
               "ty": {
                 "Con": {
-                  "name": "String",
+                  "name": "string",
                   "args": []
                 }
               },
@@ -72,7 +73,7 @@ No errors.
           },
           "ty": {
             "Con": {
-              "name": "String",
+              "name": "string",
               "args": []
             }
           },
@@ -114,7 +115,7 @@ No errors.
                   "ann": "Unknown",
                   "ty": {
                     "Con": {
-                      "name": "String",
+                      "name": "string",
                       "args": []
                     }
                   }
@@ -122,11 +123,14 @@ No errors.
                 "value": {
                   "Literal": {
                     "lit": {
-                      "String": "block"
+                      "String": [
+                        "block",
+                        null
+                      ]
                     },
                     "ty": {
                       "Con": {
-                        "name": "String",
+                        "name": "string",
                         "args": []
                       }
                     },
@@ -144,7 +148,7 @@ No errors.
                 },
                 "ty": {
                   "Con": {
-                    "name": "String",
+                    "name": "string",
                     "args": []
                   }
                 },
@@ -163,7 +167,7 @@ No errors.
           ],
           "ty": {
             "Con": {
-              "name": "String",
+              "name": "string",
               "args": []
             }
           },
@@ -198,9 +202,10 @@ No errors.
               }
             }
           },
+          "generics_instantiated": [],
           "ty": {
             "Con": {
-              "name": "String",
+              "name": "string",
               "args": []
             }
           },
@@ -219,7 +224,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "String",
+        "name": "string",
         "args": []
       }
     },

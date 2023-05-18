@@ -1,14 +1,14 @@
 Const expressions are type checked
 
 SOURCE:
-const a: String = 1;
+const a: string = 1;
 
 OUTPUT:
 Type mismatch
 Expected:
-    String
+    string
 Got:
-    Int
+    int
 
-1|  const a: String = 1;
+1|  const a: string = 1;
     ^^^^^^^^^^^^^^^^^^^^
