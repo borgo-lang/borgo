@@ -441,6 +441,11 @@ fn main() {
 
 ## Pointers and References
 
+**NOTE** Right now this is more wishful thinking than anything :D I plan to
+implement an extra pass in the compiler pipeline that can check if references
+are handed out correctly, but right now you can pass around references of any
+type and not get an error.
+
 Borgo dosn't have a borrow checker: all memory is managed by the Go runtime.
 That's one of the main benefits of compiling to Go after all!
 
@@ -481,13 +486,6 @@ mutable references live at the same point, something that would not be permitted
 by Rust's ownership rules.
 
 ---
-
-**NOTE** Right now this is more wishful thinking than anything :D
-
-I plan to implement an extra pass in the compiler pipeline that can check if
-references are handed out correctly, but right now you can pass around
-references of any type and not get an error. Still, the idea is there and it
-should work somewhat as described here!
 
 ```rust
 // example missing, 
