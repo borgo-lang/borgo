@@ -24,6 +24,15 @@ type Container[T any] struct {
 
 type AnInt int
 
+type NoEmbedded interface {
+	Check() string
+}
+
+type Foo interface {
+	io.ReadCloser
+	Bar() string
+}
+
 func Simple() {}
 
 func Withdata(a int, b []string) Person {

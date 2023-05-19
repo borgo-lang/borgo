@@ -128,6 +128,20 @@ func structFieldsToString(list []StructField) string {
 	return strings.Join(fields, ",\n")
 }
 
+func interfaceFieldsToString(list []StructField) string {
+	fields := []string{}
+
+	for _, f := range list {
+		rendered := f.Type.String()
+		// hack hack
+		rendered = strings.TrimPrefix(rendered, "fn ")
+
+		fields = append(fields, "fn "+f.Name+" "+rendered)
+	}
+
+	return strings.Join(fields, ",\n")
+}
+
 func joinTypes(types []Type) string {
 	args := []string{}
 
@@ -166,6 +180,7 @@ type Struct struct {
 	Name   string
 	Bounds []Bound
 	Fields []StructField
+	Kind   TypeKind
 }
 
 type StructField struct {
@@ -178,10 +193,16 @@ type Variable struct {
 	Type Type
 }
 
+type TypeKind int
+
+const (
+	TypeStruct TypeKind = iota
+	TypeInterface
+)
+
 type Package struct {
-	Types   []Type
+	Types   []Struct
 	Aliases []Alias
-	Structs []Struct
 	Funcs   []Function
 	Vars    []Variable // consts and vars
 }
@@ -201,16 +222,21 @@ func (p *Package) AddTypeAlias(name string, t Type) {
 	p.Aliases = append(p.Aliases, alias)
 }
 
-func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field) {
+func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind TypeKind) {
 	fields := []StructField{}
 
 	for _, f := range list {
-		name := f.Names[0].Name // TODO this is probably very wrong
+		name := ""
+
+		if len(f.Names) > 0 {
+			name = f.Names[0].Name // TODO this is probably very wrong
+		}
+
 		fields = append(fields, StructField{Name: name, Type: parseTypeExpr(f.Type)})
 	}
 
-	s := Struct{Name: name, Bounds: bounds, Fields: fields}
-	p.Structs = append(p.Structs, s)
+	s := Struct{Name: name, Bounds: bounds, Fields: fields, Kind: kind}
+	p.Types = append(p.Types, s)
 }
 
 func (p *Package) String() string {
@@ -230,13 +256,48 @@ func (p *Package) String() string {
 		fmt.Fprintf(&w, "type %s = ()\n\n", a.Name)
 	}
 
-	for _, s := range p.Structs {
-		bounds := boundsToString(s.Bounds)
-		fields := structFieldsToString(s.Fields)
-		fmt.Fprintf(&w, "struct %s %s {\n %s \n}\n\n", s.Name, bounds, fields)
+	for _, s := range p.Types {
+
+		switch s.Kind {
+		case TypeStruct:
+			bounds := boundsToString(s.Bounds)
+			fields := structFieldsToString(s.Fields)
+			def := "struct " + s.Name + bounds + "{\n" + fields + "\n}\n\n"
+			fmt.Fprint(&w, def)
+
+		case TypeInterface:
+			bounds, fields := splitBoundsAndFieldsForInterface(s.Fields)
+
+			newBounds := strings.Join(bounds, ", ")
+			newFields := interfaceFieldsToString(fields)
+
+			if len(bounds) > 0 {
+				newBounds = ": " + newBounds + " "
+			}
+
+			def := "trait " + s.Name + newBounds + "{\n" + newFields + "\n}\n\n"
+			fmt.Fprint(&w, def)
+		}
+
 	}
 
 	return w.String()
+}
+
+func splitBoundsAndFieldsForInterface(structFields []StructField) ([]string, []StructField) {
+	bounds := []string{}
+	fields := []StructField{}
+
+	for _, f := range structFields {
+		if f.Name == "" {
+			bounds = append(bounds, f.Type.String())
+			continue
+		}
+
+		fields = append(fields, f)
+	}
+
+	return bounds, fields
 }
 
 func main() {
@@ -294,7 +355,11 @@ func main() {
 						p.AddTypeAlias(spec.Name.Name, mono(ty.Name))
 
 					case *ast.StructType:
-						p.AddStruct(spec.Name.Name, bounds, ty.Fields.List)
+						p.AddStruct(spec.Name.Name, bounds, ty.Fields.List, TypeStruct)
+
+					case *ast.InterfaceType:
+						p.AddStruct(spec.Name.Name, bounds, ty.Methods.List, TypeInterface)
+						// p.AddInterface(spec.Name.Name, bounds, ty.Fields.List)
 
 					default:
 						log.Fatalf("unhandled TySpec, got %T", ty)
