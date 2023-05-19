@@ -18,6 +18,12 @@ type Hobby struct {
 	Kind HobbyKind
 }
 
+type Container[T any] struct {
+	X T
+}
+
+type AnInt int
+
 func Simple() {}
 
 func Withdata(a int, b []string) Person {

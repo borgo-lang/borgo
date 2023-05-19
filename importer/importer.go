@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"log"
-	"reflect"
-	"strings"
-
 	"go/ast"
 	"go/doc"
 	"go/parser"
 	"go/token"
+	"log"
+	"reflect"
+	"strings"
 )
 
 var folder = flag.String("folder", "", "folder containing packages")
@@ -119,6 +118,16 @@ func functionArgsToString(fargs []FuncArg) string {
 	return strings.Join(args, ", ")
 }
 
+func structFieldsToString(list []StructField) string {
+	fields := []string{}
+
+	for _, f := range list {
+		fields = append(fields, f.Name+": "+f.Type.String())
+	}
+
+	return strings.Join(fields, ",\n")
+}
+
 func joinTypes(types []Type) string {
 	args := []string{}
 
@@ -148,9 +157,33 @@ func (p FuncArg) String() string {
 	return p.Name + ": " + p.Type.String()
 }
 
+type Alias struct {
+	Name string
+	Type Type
+}
+
+type Struct struct {
+	Name   string
+	Bounds []Bound
+	Fields []StructField
+}
+
+type StructField struct {
+	Name string
+	Type Type
+}
+
+type Variable struct {
+	Name string
+	Type Type
+}
+
 type Package struct {
-	Types []Type
-	Funcs []Function
+	Types   []Type
+	Aliases []Alias
+	Structs []Struct
+	Funcs   []Function
+	Vars    []Variable // consts and vars
 }
 
 func (p *Package) AddFunction(name string, f *ast.FuncType) {
@@ -161,6 +194,23 @@ func (p *Package) AddFunction(name string, f *ast.FuncType) {
 func (p *Package) AddMethod(name string, recv string, f *ast.FuncType) {
 	function := Function{Name: name, Type: parseFunc(f)}
 	p.Funcs = append(p.Funcs, function)
+}
+
+func (p *Package) AddTypeAlias(name string, t Type) {
+	alias := Alias{Name: name, Type: t}
+	p.Aliases = append(p.Aliases, alias)
+}
+
+func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field) {
+	fields := []StructField{}
+
+	for _, f := range list {
+		name := f.Names[0].Name // TODO this is probably very wrong
+		fields = append(fields, StructField{Name: name, Type: parseTypeExpr(f.Type)})
+	}
+
+	s := Struct{Name: name, Bounds: bounds, Fields: fields}
+	p.Structs = append(p.Structs, s)
 }
 
 func (p *Package) String() string {
@@ -175,11 +225,21 @@ func (p *Package) String() string {
 		fmt.Fprintf(&w, "fn %s %s (%s) -> %s;\n\n", f.Name, bounds, args, ret)
 	}
 
+	for _, a := range p.Aliases {
+		// TODO ignore actual type for now, the compiler doesn't know what to do with it yet
+		fmt.Fprintf(&w, "type %s = ()\n\n", a.Name)
+	}
+
+	for _, s := range p.Structs {
+		bounds := boundsToString(s.Bounds)
+		fields := structFieldsToString(s.Fields)
+		fmt.Fprintf(&w, "struct %s %s {\n %s \n}\n\n", s.Name, bounds, fields)
+	}
+
 	return w.String()
 }
 
 func main() {
-
 	flag.Parse()
 
 	dataDir := *folder
@@ -219,22 +279,25 @@ func main() {
 			for _, f := range t.Methods {
 				// fmt.Println(f.Recv) string starting with *
 				p.AddMethod(f.Name, f.Recv, f.Decl.Type)
-				//parseFunc(f.Decl.Type)
+				// parseFunc(f.Decl.Type)
 			}
 
 			for _, decl := range t.Decl.Specs {
-				// TODO use switch
-				if ty, ok := decl.(*ast.TypeSpec); ok {
 
-					if s, ok := ty.Type.(*ast.StructType); ok {
-						if s.Fields != nil {
-							for _, param := range s.Fields.List {
-								// fmt.Println(param.Names, param.Type)
-								parseTypeExpr(param.Type)
-								// TODO
-								// p.AddType(f.Name, f.Recv, f.Decl.Type)
-							}
-						}
+				if spec, ok := decl.(*ast.TypeSpec); ok {
+
+					bounds := parseBounds(spec.TypeParams)
+
+					switch ty := spec.Type.(type) {
+
+					case *ast.Ident:
+						p.AddTypeAlias(spec.Name.Name, mono(ty.Name))
+
+					case *ast.StructType:
+						p.AddStruct(spec.Name.Name, bounds, ty.Fields.List)
+
+					default:
+						log.Fatalf("unhandled TySpec, got %T", ty)
 					}
 
 				}
@@ -254,6 +317,21 @@ func main() {
 	if len(SKIPPED_TYPES) > 0 {
 		fmt.Println(SKIPPED_TYPES)
 	}
+}
+
+func parseBounds(list *ast.FieldList) []Bound {
+	bounds := []Bound{}
+
+	if list == nil {
+		return bounds
+	}
+
+	for _, param := range list.List {
+		name := param.Names[0].Name // TODO this is probably very wrong
+		bounds = append(bounds, Bound{Generic: name, Type: parseTypeExpr(param.Type)})
+	}
+
+	return bounds
 }
 
 func parseFunc(f *ast.FuncType) TyFun {
