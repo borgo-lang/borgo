@@ -23,6 +23,25 @@ fn main() {
         assert_eq(sum, 9);
     }
 
+    {
+        let str = "asdf";
+        let mut check = "";
+
+        for c in str {
+          check = check + string(c)
+        }
+
+        assert_eq(str, check);
+        let mut check = "";
+
+        for (index, c) in str.enumerate() {
+          inspect(index);
+          check = check + string(c);
+        }
+
+        assert_eq(str, check);
+    }
+
     let mut n = 20;
 
     match true {
@@ -56,6 +75,10 @@ fn main() {
 }
 
 OUTPUT:
+0
+1
+2
+3
 25
 26
 27
@@ -86,6 +109,29 @@ func main() {
 		}
 
 		assert_eq[int](sum, 9)
+	}
+	{
+
+		str := "asdf"
+
+		check := ""
+
+		for _, c := range str {
+			check = check + string(c)
+		}
+
+		assert_eq[string](str, check)
+
+		check = ""
+
+		for index, c := range string_enumerate(str) {
+
+			inspect[int](index)
+
+			check = check + string(c)
+		}
+
+		assert_eq[string](str, check)
 	}
 
 	n := 20

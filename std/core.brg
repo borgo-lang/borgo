@@ -212,6 +212,12 @@ impl<T> Receiver<T> {
   }
 }
 
+impl string {
+    fn enumerate(self) -> EnumerateSlice<rune> {
+        rawgo!("return []rune(self)")
+    }
+}
+
 #[package(path = __global, name = __global)]
 mod global {
     trait ComplexType {}
@@ -243,7 +249,7 @@ mod global {
     type uintptr = ();
 
     extern "C" {
-        fn string(bytes: [byte]) -> string;
+        fn string(a: any) -> string;
     }
 }
 

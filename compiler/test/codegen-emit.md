@@ -677,6 +677,25 @@ fn main() {
         assert_eq(sum, 9);
     }
 
+    {
+        let str = "asdf";
+        let mut check = "";
+
+        for c in str {
+          check = check + string(c)
+        }
+
+        assert_eq(str, check);
+        let mut check = "";
+
+        for (index, c) in str.enumerate() {
+          inspect(index);
+          check = check + string(c);
+        }
+
+        assert_eq(str, check);
+    }
+
     let mut n = 20;
 
     match true {

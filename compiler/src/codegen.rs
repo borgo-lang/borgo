@@ -2111,7 +2111,7 @@ fn change_collection_methods(fun: &Function) -> (Function, Option<Type>) {
 
 fn is_collection_type(ty: &Type) -> Option<String> {
     let ty_name = ty.remove_references().get_name()?;
-    if ["Slice", "Map", "Channel", "Sender", "Receiver"].contains(&ty_name.as_str()) {
+    if ["Slice", "Map", "Channel", "Sender", "Receiver", "string"].contains(&ty_name.as_str()) {
         return Some(ty_name);
     }
 

@@ -1365,23 +1365,34 @@ has no field or method:
                             .get_args()
                             .unwrap_or_else(|| vec![self.fresh_ty_var(), self.fresh_ty_var()]);
 
-                        let range_ty = if ty_name == "Slice" {
-                            expr_args[0].clone()
-                        } else if ty_name == "EnumerateSlice" {
-                            // (index, value) for slices with .enumerate()
-                            Type::tuple2(Type::int(), expr_args[0].clone())
-                        } else if ty_name == "Map" {
-                            // (key, value) for maps
-                            Type::tuple2(expr_args[0].clone(), expr_args[1].clone())
-                        } else if ty_name == "Receiver" {
-                            expr_args[0].clone()
-                        } else {
-                            self.generic_error(
-                                format!("Can't iterate on type {expr_ty}"),
-                                new_expr.get_span(),
-                            );
+                        let range_ty = match ty_name.as_str() {
+                            "Slice" => expr_args[0].clone(),
 
-                            self.fresh_ty_var()
+                            "EnumerateSlice" => {
+                                // (index, value) for slices with .enumerate()
+                                Type::tuple2(Type::int(), expr_args[0].clone())
+                            }
+
+                            "Map" => {
+                                // (key, value) for maps
+                                Type::tuple2(expr_args[0].clone(), expr_args[1].clone())
+                            }
+
+                            "Receiver" => expr_args[0].clone(),
+
+                            "string" => Type::Con {
+                                name: "rune".to_string(),
+                                args: vec![],
+                            },
+
+                            _ => {
+                                self.generic_error(
+                                    format!("Can't iterate on type {expr_ty}"),
+                                    new_expr.get_span(),
+                                );
+
+                                self.fresh_ty_var()
+                            }
                         };
 
                         // If range_ty is a tuple, then the binding must be a literal tuple.
