@@ -1,8 +1,6 @@
 package main
 
 import (
-	// "bytes"
-	// "flag"
 	"flag"
 	"fmt"
 	"log"
@@ -10,16 +8,11 @@ import (
 	"go/ast"
 	"go/doc"
 	"go/parser"
-	// "go/printer"
 	"go/token"
-	// "io/fs"
-	// "os"
-	// "path/filepath"
-	// "regexp"
-	// "strings"
-	// "testing"
-	// "text/template"
 )
+
+// ast.GenDecl
+// ast.FuncDecl
 
 var folder = flag.String("folder", "", "folder containing packages")
 
@@ -52,9 +45,20 @@ func main() {
 
 		// Types
 		for _, t := range doc.Types {
-			// name := t.Name
+			fmt.Println(t.Name)
+
 			for _, decl := range t.Decl.Specs {
-				fmt.Printf("%+v\n", decl)
+				if ty, ok := decl.(*ast.TypeSpec); ok {
+
+					if s, ok := ty.Type.(*ast.StructType); ok {
+						if s.Fields != nil {
+							for _, param := range s.Fields.List {
+								fmt.Println(param.Names, param.Type)
+							}
+						}
+					}
+
+				}
 			}
 		}
 
@@ -72,11 +76,14 @@ func main() {
 			fmt.Println("")
 
 			fmt.Println("RETURN:")
-			for _, param := range decl.Type.Results.List {
-				fmt.Println(param.Names, param.Type)
+			if decl.Type.Results != nil {
+				for _, param := range decl.Type.Results.List {
+					fmt.Println(param.Names, param.Type)
+				}
 			}
 
 			fmt.Println("")
 		}
+
 	}
 }
