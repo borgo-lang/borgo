@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"log"
+	"reflect"
+	"strings"
 
 	"go/ast"
 	"go/doc"
@@ -13,8 +16,20 @@ import (
 
 var folder = flag.String("folder", "", "folder containing packages")
 
+var SKIPPED_TYPES = []any{}
+
+func SKIP(what any) Type {
+	SKIPPED_TYPES = append(SKIPPED_TYPES, what)
+	return mono("any")
+}
+
+func mono(name string) Type {
+	return TyCon{name: name, args: []Type{}}
+}
+
 type Type interface {
 	IsType()
+	String() string
 }
 
 type TyCon struct {
@@ -24,24 +39,122 @@ type TyCon struct {
 
 func (t TyCon) IsType() {}
 
+func (t TyCon) String() string {
+	// TODO add args
+	if t.name == "Unit" {
+		return "()"
+	}
+
+	if t.name == "Ref" {
+		return "*" + t.args[0].String()
+	}
+
+	if t.name == "Slice" {
+		return "[" + t.args[0].String() + "]"
+	}
+
+	if t.name == "VarArgs" {
+		return "..." + t.args[0].String()
+	}
+
+	if len(t.args) == 0 {
+		return t.name
+	}
+
+	return t.name + "<" + joinTypes(t.args) + ">"
+}
+
 type TyFun struct {
 	bounds []Bound
-	args   []Type
+	args   []FuncArg
 	ret    []Type
 }
 
 func (t TyFun) IsType() {}
+
+func (t TyFun) String() string {
+	// TODO add args
+	args := ""
+	ret := ""
+	return fmt.Sprintf("fn (%s) -> %s", args, ret)
+}
+
+func toReturnType(types []Type) string {
+	if len(types) == 2 && reflect.DeepEqual(types[1], mono("error")) {
+		return "Result<...>"
+	}
+
+	switch len(types) {
+	case 0:
+		return ""
+	case 1:
+		return types[0].String()
+	default:
+		return "(" + joinTypes(types) + ")"
+
+	}
+}
+
+func joinTypes(types []Type) string {
+	args := []string{}
+
+	for _, arg := range types {
+		args = append(args, arg.String())
+	}
+
+	return strings.Join(args, ", ")
+}
 
 type Bound struct {
 	generic    string
 	constraint Type
 }
 
-var SKIPPED_TYPES = []any{}
+type Function struct {
+	Name string
+	Type TyFun
+}
 
-func SKIP(what any) Type {
-	SKIPPED_TYPES = append(SKIPPED_TYPES, what)
-	return TyCon{name: "SKIP", args: []Type{}}
+type FuncArg struct {
+	Name string
+	Type Type
+}
+
+func (p FuncArg) String() string {
+	return p.Name + ": " + p.Type.String()
+}
+
+type Package struct {
+	Types []Type
+	Funcs []Function
+}
+
+func (p *Package) AddFunction(name string, f *ast.FuncType) {
+	function := Function{Name: name, Type: parseFunc(f)}
+	p.Funcs = append(p.Funcs, function)
+}
+
+func (p *Package) AddMethod(name string, recv string, f *ast.FuncType) {
+	function := Function{Name: name, Type: parseFunc(f)}
+	p.Funcs = append(p.Funcs, function)
+}
+
+func (p *Package) String() string {
+	var w bytes.Buffer
+
+	for _, f := range p.Funcs {
+
+		args := []string{}
+
+		for _, arg := range f.Type.args {
+			args = append(args, arg.String())
+		}
+
+		ret := toReturnType(f.Type.ret)
+		fmt.Fprintf(&w, "fn %s (%s) -> %s;\n\n", f.Name, strings.Join(args, ", "), ret)
+	}
+
+	return w.String()
 }
 
 func main() {
@@ -70,21 +183,26 @@ func main() {
 			log.Fatal(err)
 		}
 
+		p := &Package{}
+
 		// Types
 		// functions and methods are attached
 		for _, t := range doc.Types {
-			fmt.Println(t.Name)
+			// fmt.Println(t.Name)
 
 			for _, f := range t.Funcs {
-				parseFunc(f.Decl.Type)
+				p.AddFunction(f.Name, f.Decl.Type)
+				// parseFunc(f.Decl.Type)
 			}
 
 			for _, f := range t.Methods {
 				// fmt.Println(f.Recv) string starting with *
-				parseFunc(f.Decl.Type)
+				p.AddMethod(f.Name, f.Recv, f.Decl.Type)
+				//parseFunc(f.Decl.Type)
 			}
 
 			for _, decl := range t.Decl.Specs {
+				// TODO use switch
 				if ty, ok := decl.(*ast.TypeSpec); ok {
 
 					if s, ok := ty.Type.(*ast.StructType); ok {
@@ -92,6 +210,8 @@ func main() {
 							for _, param := range s.Fields.List {
 								// fmt.Println(param.Names, param.Type)
 								parseTypeExpr(param.Type)
+								// TODO
+								// p.AddType(f.Name, f.Recv, f.Decl.Type)
 							}
 						}
 					}
@@ -103,10 +223,11 @@ func main() {
 		// Functions
 		// Standalone functions
 		for _, f := range doc.Funcs {
-			fmt.Println(f.Name)
-			parseFunc(f.Decl.Type)
+			// parseFunc(f.Decl.Type)
+			p.AddFunction(f.Name, f.Decl.Type)
 		}
 
+		fmt.Println(p)
 	}
 
 	if len(SKIPPED_TYPES) > 0 {
@@ -114,32 +235,39 @@ func main() {
 	}
 }
 
-func parseFunc(f *ast.FuncType) Type {
+func parseFunc(f *ast.FuncType) TyFun {
 	// fmt.Printf("%+v\n", decl.Type)
+
+	bounds := []Bound{}
 
 	// function bounds
 	if f.TypeParams != nil {
 		for _, param := range f.TypeParams.List {
-			// fmt.Println(param.Names, param.Type)
+			// TODO
 			parseTypeExpr(param.Type)
 		}
 	}
 
+	args := []FuncArg{}
+
 	// function params
 	for _, param := range f.Params.List {
-		// fmt.Println(param.Names, param.Type)
-		parseTypeExpr(param.Type)
+		name := param.Names[0].Name // TODO this is probably very wrong
+		args = append(args, FuncArg{Name: name, Type: parseTypeExpr(param.Type)})
 	}
+
+	ret := []Type{}
 
 	// function return
 	if f.Results != nil {
 		for _, param := range f.Results.List {
-			// fmt.Println(param.Names, param.Type)
-			parseTypeExpr(param.Type)
+			ret = append(ret, parseTypeExpr(param.Type))
 		}
+	} else {
+		ret = append(ret, mono("Unit"))
 	}
 
-	return TyFun{}
+	return TyFun{bounds: bounds, args: args, ret: ret}
 }
 
 func parseTypeExpr(expr ast.Expr) Type {
@@ -196,7 +324,7 @@ func parseTypeExpr(expr ast.Expr) Type {
 			return SKIP(fmt.Sprintf("found struct{} declaration with fields %v, skipping", ty.Fields.List))
 		}
 
-		return TyCon{name: "Unit", args: []Type{}}
+		return mono("Unit")
 
 	default:
 		log.Fatalf("unhandled typeExpr %T\n%v", expr, expr)
