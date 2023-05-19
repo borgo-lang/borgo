@@ -73,15 +73,14 @@ type TyFun struct {
 func (t TyFun) IsType() {}
 
 func (t TyFun) String() string {
-	// TODO add args
-	args := ""
-	ret := ""
+	args := functionArgsToString(t.args)
+	ret := toReturnType(t.ret)
 	return fmt.Sprintf("fn (%s) -> %s", args, ret)
 }
 
 func toReturnType(types []Type) string {
 	if len(types) == 2 && reflect.DeepEqual(types[1], mono("error")) {
-		return "Result<...>"
+		return TyCon{name: "Result", args: types}.String()
 	}
 
 	switch len(types) {
@@ -93,6 +92,16 @@ func toReturnType(types []Type) string {
 		return "(" + joinTypes(types) + ")"
 
 	}
+}
+
+func functionArgsToString(fargs []FuncArg) string {
+	args := []string{}
+
+	for _, arg := range fargs {
+		args = append(args, arg.String())
+	}
+
+	return strings.Join(args, ", ")
 }
 
 func joinTypes(types []Type) string {
@@ -144,14 +153,10 @@ func (p *Package) String() string {
 
 	for _, f := range p.Funcs {
 
-		args := []string{}
-
-		for _, arg := range f.Type.args {
-			args = append(args, arg.String())
-		}
+		args := functionArgsToString(f.Type.args)
 
 		ret := toReturnType(f.Type.ret)
-		fmt.Fprintf(&w, "fn %s (%s) -> %s;\n\n", f.Name, strings.Join(args, ", "), ret)
+		fmt.Fprintf(&w, "fn %s (%s) -> %s;\n\n", f.Name, args, ret)
 	}
 
 	return w.String()

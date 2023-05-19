@@ -28,7 +28,7 @@ func (p Person) GetName() string {
 	return p.Name
 }
 
-func WithFunc(f func()) {}
+func WithFunc(f func(x int) string) {}
 
 func WithMap(m map[int]bool) {}
 
