@@ -25,3 +25,13 @@ func Withdata(a int, b []string) Person {
 func (p Person) GetName() string {
 	return p.Name
 }
+
+func WithFunc(f func()) {}
+
+func WithMap(m map[int]bool) {}
+
+func WithGenerics[T any, Y any](x T, y Y) {}
+
+func WithPointers(p *Person) {}
+
+func WithMultipleReturn() (int, error) { return 1, nil }
