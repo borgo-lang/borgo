@@ -136,10 +136,10 @@ func interfaceFieldsToString(list []StructField) string {
 		// hack hack
 		rendered = strings.TrimPrefix(rendered, "fn ")
 
-		fields = append(fields, "fn "+f.Name+" "+rendered)
+		fields = append(fields, "fn "+f.Name+" "+rendered+";")
 	}
 
-	return strings.Join(fields, ",\n")
+	return strings.Join(fields, "\n")
 }
 
 func joinTypes(types []Type) string {
@@ -430,7 +430,6 @@ func parseFunc(f *ast.FuncType) TyFun {
 			nextUnnamed++
 		}
 
-		fmt.Printf("%v", parseTypeExpr(param.Type))
 		args = append(args, FuncArg{Name: name, Type: parseTypeExpr(param.Type)})
 	}
 
