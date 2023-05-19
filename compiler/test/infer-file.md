@@ -486,3 +486,15 @@ fn borgo_main() {
   foo();
 }
 ```
+
+Result with an implicit E must implement error
+
+> errorContains("method Error not found")
+
+```rust
+struct Foo {}
+
+fn foo() -> Result<()> {
+  Err(Foo {})
+}
+```

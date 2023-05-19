@@ -1,0 +1,18 @@
+Result with an implicit E must implement error
+
+SOURCE:
+struct Foo {}
+
+fn foo() -> Result<()> {
+  Err(Foo {})
+}
+
+OUTPUT:
+method Error not found on type Foo
+Expected:
+    Result<(), error>
+Got:
+    Result<(), Foo>
+
+4|    Err(Foo {})
+      ^^^^^^^^^^^
