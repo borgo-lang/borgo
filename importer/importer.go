@@ -44,8 +44,17 @@ func main() {
 		}
 
 		// Types
+		// functions and methods are attached
 		for _, t := range doc.Types {
 			fmt.Println(t.Name)
+
+			for _, f := range t.Funcs {
+				fmt.Println("  ", f.Name)
+			}
+
+			for _, f := range t.Methods {
+				fmt.Println("  ", f.Name)
+			}
 
 			for _, decl := range t.Decl.Specs {
 				if ty, ok := decl.(*ast.TypeSpec); ok {
@@ -63,6 +72,7 @@ func main() {
 		}
 
 		// Functions
+		// Standalone functions
 		for _, f := range doc.Funcs {
 			decl := f.Decl
 			fmt.Println(f.Name)
