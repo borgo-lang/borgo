@@ -37,6 +37,13 @@ type Bound struct {
 	constraint Type
 }
 
+var SKIPPED_TYPES = []any{}
+
+func SKIP(what any) Type {
+	SKIPPED_TYPES = append(SKIPPED_TYPES, what)
+	return TyCon{name: "SKIP", args: []Type{}}
+}
+
 func main() {
 
 	flag.Parse()
@@ -73,6 +80,7 @@ func main() {
 			}
 
 			for _, f := range t.Methods {
+				// fmt.Println(f.Recv) string starting with *
 				parseFunc(f.Decl.Type)
 			}
 
@@ -99,6 +107,10 @@ func main() {
 			parseFunc(f.Decl.Type)
 		}
 
+	}
+
+	if len(SKIPPED_TYPES) > 0 {
+		fmt.Println(SKIPPED_TYPES)
 	}
 }
 
@@ -178,6 +190,13 @@ func parseTypeExpr(expr ast.Expr) Type {
 		}
 
 		return TyCon{name: name, args: []Type{inner}}
+
+	case *ast.StructType:
+		if ty.Fields != nil && len(ty.Fields.List) > 0 {
+			return SKIP(fmt.Sprintf("found struct{} declaration with fields %v, skipping", ty.Fields.List))
+		}
+
+		return TyCon{name: "Unit", args: []Type{}}
 
 	default:
 		log.Fatalf("unhandled typeExpr %T\n%v", expr, expr)

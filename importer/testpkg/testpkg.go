@@ -43,3 +43,5 @@ func WithVariadic(v ...any) {}
 func WithSelector(r io.Reader) {}
 
 func WithChan(read <-chan int, write chan<- string) {}
+
+func WithLiteralStruct(s struct{}) {}
