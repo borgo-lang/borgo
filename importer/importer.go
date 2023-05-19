@@ -94,6 +94,20 @@ func toReturnType(types []Type) string {
 	}
 }
 
+func boundsToString(fbounds []Bound) string {
+	if len(fbounds) == 0 {
+		return ""
+	}
+
+	args := []string{}
+
+	for _, b := range fbounds {
+		args = append(args, b.Generic+" "+b.Type.String())
+	}
+
+	return "[" + strings.Join(args, ", ") + "]"
+}
+
 func functionArgsToString(fargs []FuncArg) string {
 	args := []string{}
 
@@ -115,8 +129,8 @@ func joinTypes(types []Type) string {
 }
 
 type Bound struct {
-	generic    string
-	constraint Type
+	Generic string
+	Type    Type
 }
 
 type Function struct {
@@ -153,10 +167,11 @@ func (p *Package) String() string {
 
 	for _, f := range p.Funcs {
 
+		bounds := boundsToString(f.Type.bounds)
 		args := functionArgsToString(f.Type.args)
-
 		ret := toReturnType(f.Type.ret)
-		fmt.Fprintf(&w, "fn %s (%s) -> %s;\n\n", f.Name, args, ret)
+
+		fmt.Fprintf(&w, "fn %s %s (%s) -> %s;\n\n", f.Name, bounds, args, ret)
 	}
 
 	return w.String()
@@ -248,8 +263,8 @@ func parseFunc(f *ast.FuncType) TyFun {
 	// function bounds
 	if f.TypeParams != nil {
 		for _, param := range f.TypeParams.List {
-			// TODO
-			parseTypeExpr(param.Type)
+			name := param.Names[0].Name // TODO this is probably very wrong
+			bounds = append(bounds, Bound{Generic: name, Type: parseTypeExpr(param.Type)})
 		}
 	}
 
