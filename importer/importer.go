@@ -49,11 +49,11 @@ func main() {
 			fmt.Println(t.Name)
 
 			for _, f := range t.Funcs {
-				fmt.Println("  ", f.Name)
+				parseFunc(f)
 			}
 
 			for _, f := range t.Methods {
-				fmt.Println("  ", f.Name)
+				parseFunc(f)
 			}
 
 			for _, decl := range t.Decl.Specs {
@@ -74,26 +74,30 @@ func main() {
 		// Functions
 		// Standalone functions
 		for _, f := range doc.Funcs {
-			decl := f.Decl
-			fmt.Println(f.Name)
-			// fmt.Printf("%+v\n", decl.Type)
-
-			fmt.Println("PARAMS:")
-			for _, param := range decl.Type.Params.List {
-				fmt.Println(param.Names, param.Type)
-			}
-
-			fmt.Println("")
-
-			fmt.Println("RETURN:")
-			if decl.Type.Results != nil {
-				for _, param := range decl.Type.Results.List {
-					fmt.Println(param.Names, param.Type)
-				}
-			}
-
-			fmt.Println("")
+			parseFunc(f)
 		}
 
 	}
+}
+
+func parseFunc(f *doc.Func) {
+	decl := f.Decl
+	fmt.Println(f.Name)
+	// fmt.Printf("%+v\n", decl.Type)
+
+	fmt.Println("PARAMS:")
+	for _, param := range decl.Type.Params.List {
+		fmt.Println(param.Names, param.Type)
+	}
+
+	fmt.Println("")
+
+	fmt.Println("RETURN:")
+	if decl.Type.Results != nil {
+		for _, param := range decl.Type.Results.List {
+			fmt.Println(param.Names, param.Type)
+		}
+	}
+
+	fmt.Println("")
 }
