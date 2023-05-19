@@ -524,6 +524,7 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
         Expr::Debug { expr, .. } => check(expr, instance),
         Expr::Spawn { expr, .. } => check(expr, instance),
         Expr::Select { arms, .. } => arms.iter().try_for_each(|a| check(&a.expr, instance)),
+        Expr::Defer { expr, .. } => check(expr, instance),
         Expr::Reference { expr, .. } => check(expr, instance),
         Expr::Index { expr, index, .. } => {
             check(expr, instance)?;

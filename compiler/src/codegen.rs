@@ -346,6 +346,7 @@ impl Codegen {
             Expr::Paren { expr, .. } => self.emit_paren(expr),
             Expr::Spawn { expr, .. } => self.emit_spawn(expr),
             Expr::Select { arms, .. } => self.emit_select(arms),
+            Expr::Defer { expr, .. } => self.emit_defer(expr),
             Expr::Reference { expr, .. } => self.emit_reference(expr),
             Expr::Index { expr, index, .. } => self.emit_index(expr, index),
             Expr::Raw { text } => self.emit_raw(text),
@@ -1494,6 +1495,22 @@ if {is_matching} != 2 {{
 {var_binding}
 if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_Option_None }}"
         )
+    }
+
+    fn emit_defer(&mut self, expr: &Expr) -> EmitResult {
+        let mut out = emitter();
+
+        let call = match expr {
+            Expr::Call { func, args, .. } => {
+                let new_expr = self.emit_call(func, args, CallWrapMode::Unwrapped);
+                new_expr.to_statement()
+            }
+
+            _ => unreachable!("expected function call in defer!()"),
+        };
+
+        out.emit(format!("defer {call}"));
+        out.no_value()
     }
 
     fn emit_raw(&self, text: &str) -> EmitResult {

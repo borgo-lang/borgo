@@ -339,6 +339,12 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
+        Expr::Defer { expr, ty, span } => Expr::Defer {
+            expr: substitute_expr(*expr, instance).into(),
+            ty: instance.substitute(ty),
+            span,
+        },
+
         Expr::Reference {
             expr,
             mutable,

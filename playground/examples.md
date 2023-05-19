@@ -658,15 +658,13 @@ fn copy_file(src: string, dst: string) -> Result<(), error> {
   }
 
   let source = os.Open(src)?;
+  defer!(source.Close());
+
   let destination = os.Create(dst)?;
+  defer!(destination.Close());
 
   // ignore number of bytes copied
   let _ = io.Copy(destination, source)?;
-
-  // Close() returns an error
-  // it can be turned into a Result<()> with to_result
-  to_result(source.Close())?;
-  to_result(destination.Close())?;
 
   Ok(())
 }

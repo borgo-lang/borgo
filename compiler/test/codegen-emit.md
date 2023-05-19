@@ -1128,3 +1128,17 @@ fn main() {
   assert_eq(block_result > 4.0, true);
 }
 ```
+
+Defer statements
+
+```rust
+use fmt;
+
+fn main() {
+  fmt.Println("first");
+  defer!(fmt.Println("defer 1"));
+
+  fmt.Println("second");
+  defer!((|| { fmt.Println("defer 2") })());
+}
+```

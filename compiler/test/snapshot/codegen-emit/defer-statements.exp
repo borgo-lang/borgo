@@ -1,0 +1,35 @@
+Defer statements
+
+SOURCE:
+use fmt;
+
+fn main() {
+  fmt.Println("first");
+  defer!(fmt.Println("defer 1"));
+
+  fmt.Println("second");
+  defer!((|| { fmt.Println("defer 2") })());
+}
+
+OUTPUT:
+first
+second
+defer 2
+defer 1
+
+---
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("first")
+	defer fmt.Println("defer 1")
+
+	fmt.Println("second")
+	defer (func() {
+		fmt.Println("defer 2")
+	})()
+}

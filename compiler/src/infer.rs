@@ -1144,6 +1144,25 @@ has no field or method:
                 }
             }
 
+            Expr::Defer { expr, span, .. } => {
+                if !matches!(*expr, Expr::Call { .. }) {
+                    self.generic_error(
+                        "Argument to defer!() must be a function call".to_string(),
+                        span.clone(),
+                    );
+                }
+
+                let ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &ty);
+                self.add_constraint(expected, &Type::unit(), &span);
+
+                Expr::Defer {
+                    expr: new_expr.into(),
+                    ty: expected.clone(),
+                    span,
+                }
+            }
+
             Expr::Reference {
                 expr,
                 mutable,

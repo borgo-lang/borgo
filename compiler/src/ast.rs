@@ -697,6 +697,11 @@ pub enum Expr {
         ty: Type,
         span: Span,
     },
+    Defer {
+        expr: Box<Expr>,
+        ty: Type,
+        span: Span,
+    },
     Raw {
         text: String,
     },
@@ -1168,6 +1173,14 @@ impl Expr {
                 if name == "select" {
                     return Ok(Self::Select {
                         arms: vec![], // will be populated in infer
+                        ty: Type::dummy(),
+                        span: root_span,
+                    });
+                }
+
+                if name == "defer" {
+                    return Ok(Self::Defer {
+                        expr: expr.into(),
                         ty: Type::dummy(),
                         span: root_span,
                     });
@@ -1773,6 +1786,7 @@ impl Expr {
             Self::Debug { ty, .. } => ty,
             Self::Spawn { ty, .. } => ty,
             Self::Select { ty, .. } => ty,
+            Self::Defer { ty, .. } => ty,
             Self::Reference { ty, .. } => ty,
             Self::Index { ty, .. } => ty,
             Self::Raw { .. } => Type::unit(),
@@ -1819,6 +1833,7 @@ impl Expr {
             Self::Debug { ref mut ty, .. } => *ty = new_ty,
             Self::Spawn { ref mut ty, .. } => *ty = new_ty,
             Self::Select { ref mut ty, .. } => *ty = new_ty,
+            Self::Defer { ref mut ty, .. } => *ty = new_ty,
             Self::Reference { ref mut ty, .. } => *ty = new_ty,
             Self::Index { ref mut ty, .. } => *ty = new_ty,
             Self::Raw { .. } => (),
@@ -1866,6 +1881,7 @@ impl Expr {
             Self::Debug { span, .. } => span,
             Self::Spawn { span, .. } => span,
             Self::Select { span, .. } => span,
+            Self::Defer { span, .. } => span,
             Self::Reference { span, .. } => span,
             Self::Index { span, .. } => span,
             Self::Loop { span, .. } => span,
@@ -1914,6 +1930,7 @@ impl Expr {
             Self::Debug { ref mut span, .. } => *span = new_span,
             Self::Spawn { ref mut span, .. } => *span = new_span,
             Self::Select { ref mut span, .. } => *span = new_span,
+            Self::Defer { ref mut span, .. } => *span = new_span,
             Self::Reference { ref mut span, .. } => *span = new_span,
             Self::Index { ref mut span, .. } => *span = new_span,
             Self::Loop { ref mut span, .. } => *span = new_span,
