@@ -13,6 +13,9 @@ build-examples:
 run-examples: build build-examples
   cd compiler/ && deno run -A test/run-examples.ts
 
+run-importer +args:
+  cd importer/ && go run importer.go {{args}}
+
 serve-playground:
   python3 -m http.server 8888 --directory playground/static
 
@@ -37,7 +40,7 @@ playground-prod: playground-js
   mv prod.js bundle.js
 
 watch +command:
-  watchexec -e rs,md,ts,brg,html,js,css "just {{command}}"
+  watchexec -e rs,md,ts,brg,go,html,js,css "just {{command}}"
 
 deploy-playground destination: playground-prod
   cp -R playground/static/* {{destination}}
