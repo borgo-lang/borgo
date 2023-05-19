@@ -152,8 +152,35 @@ func parseTypeExpr(expr ast.Expr) Type {
 		inner := parseTypeExpr(ty.X)
 		return TyCon{name: "Ref", args: []Type{inner}}
 
+	case *ast.Ellipsis:
+		inner := parseTypeExpr(ty.Elt)
+		return TyCon{name: "VarArgs", args: []Type{inner}}
+
+	case *ast.SelectorExpr:
+		inner := parseTypeExpr(ty.X)
+		switch con := inner.(type) {
+		case TyCon:
+			name := con.name + "::" + ty.Sel.Name
+			return TyCon{name: name, args: []Type{}}
+		default:
+			log.Fatalf("expected TyCon in selector, got %T", con)
+		}
+
+	case *ast.ChanType:
+		inner := parseTypeExpr(ty.Value)
+		name := "Channel"
+
+		switch ty.Dir {
+		case ast.RECV:
+			name = "Receiver"
+		case ast.SEND:
+			name = "Sender"
+		}
+
+		return TyCon{name: name, args: []Type{inner}}
+
 	default:
-		log.Fatalf("unhandled typeExpr %T", expr)
+		log.Fatalf("unhandled typeExpr %T\n%v", expr, expr)
 	}
 
 	return TyCon{}

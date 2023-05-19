@@ -1,5 +1,7 @@
 package testpkg
 
+import "io"
+
 type HobbyKind int
 
 const (
@@ -35,3 +37,9 @@ func WithGenerics[T any, Y any](x T, y Y) {}
 func WithPointers(p *Person) {}
 
 func WithMultipleReturn() (int, error) { return 1, nil }
+
+func WithVariadic(v ...any) {}
+
+func WithSelector(r io.Reader) {}
+
+func WithChan(read <-chan int, write chan<- string) {}
