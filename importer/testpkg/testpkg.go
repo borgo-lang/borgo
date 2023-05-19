@@ -31,6 +31,7 @@ type NoEmbedded interface {
 type Foo interface {
 	io.ReadCloser
 	Bar() string
+	TakeFn(f func(rune) bool)
 }
 
 func Simple() {}

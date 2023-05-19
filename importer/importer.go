@@ -229,7 +229,7 @@ func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind
 		name := ""
 
 		if len(f.Names) > 0 {
-			name = f.Names[0].Name // TODO this is probably very wrong
+			name = f.Names[0].Name
 		}
 
 		fields = append(fields, StructField{Name: name, Type: parseTypeExpr(f.Type)})
@@ -414,9 +414,23 @@ func parseFunc(f *ast.FuncType) TyFun {
 
 	args := []FuncArg{}
 
+	nextUnnamed := 0
+
 	// function params
 	for _, param := range f.Params.List {
-		name := param.Names[0].Name // TODO this is probably very wrong
+		// closures passed in as params won't have named parameters
+		// ie. func (f func (rune) bool) the rune is unnamed
+
+		name := "unknown name"
+
+		if len(param.Names) > 0 {
+			name = param.Names[0].Name
+		} else {
+			name = "param" + fmt.Sprint(nextUnnamed)
+			nextUnnamed++
+		}
+
+		fmt.Printf("%v", parseTypeExpr(param.Type))
 		args = append(args, FuncArg{Name: name, Type: parseTypeExpr(param.Type)})
 	}
 
