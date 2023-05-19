@@ -32,7 +32,8 @@ func WithFunc(f func(x int) string) {}
 
 func WithMap(m map[int]bool) {}
 
-func WithGenerics[T any, Y any](x T, y Y) {}
+func WithGenerics[T any, Y any](x T, y Y)          {}
+func WithGenericsConstrained[T io.ReadCloser](x T) {}
 
 func WithPointers(p *Person) {}
 

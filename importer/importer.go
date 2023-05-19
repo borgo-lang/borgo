@@ -40,21 +40,16 @@ type TyCon struct {
 func (t TyCon) IsType() {}
 
 func (t TyCon) String() string {
-	// TODO add args
 	if t.name == "Unit" {
 		return "()"
 	}
 
 	if t.name == "Ref" {
-		return "*" + t.args[0].String()
+		return "&" + t.args[0].String()
 	}
 
 	if t.name == "Slice" {
 		return "[" + t.args[0].String() + "]"
-	}
-
-	if t.name == "VarArgs" {
-		return "..." + t.args[0].String()
 	}
 
 	if len(t.args) == 0 {
@@ -102,10 +97,16 @@ func boundsToString(fbounds []Bound) string {
 	args := []string{}
 
 	for _, b := range fbounds {
-		args = append(args, b.Generic+" "+b.Type.String())
+		arg := b.Generic
+
+		if !reflect.DeepEqual(b.Type, mono("any")) {
+			arg = arg + ": " + b.Type.String()
+		}
+
+		args = append(args, arg)
 	}
 
-	return "[" + strings.Join(args, ", ") + "]"
+	return "<" + strings.Join(args, ", ") + ">"
 }
 
 func functionArgsToString(fargs []FuncArg) string {

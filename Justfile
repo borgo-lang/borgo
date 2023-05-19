@@ -13,7 +13,7 @@ build-examples:
 run-examples: build build-examples
   cd compiler/ && deno run -A test/run-examples.ts
 
-run-importer +args:
+run-importer +args="-folder testpkg":
   cd importer/ && go run importer.go {{args}}
 
 serve-playground:
