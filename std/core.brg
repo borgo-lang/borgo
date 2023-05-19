@@ -11,7 +11,6 @@ type Channel<T> = ();
 type Sender<T> = ();
 type Receiver<T> = ();
 
-
 enum Result<T, E> {
     Ok(T),
     Err(E),
@@ -129,11 +128,13 @@ fn Debug_unreachable<T>() -> T {
 }
 
 fn to_result(e: error) -> Result<()> {
-  rawgo!("if e != nil {
+    rawgo!(
+        "if e != nil {
     return struct{}{}, e
   }
   return struct{}{}, nil
-  ")
+  "
+    )
 }
 
 impl<T> [T] {
@@ -180,36 +181,40 @@ impl<K: comparable, V> Map<K, V> {
     }
 
     fn get(self, k: K) -> Option<V> {
-        rawgo!("
+        rawgo!(
+            "
         v, ok := self[k]
         return v, ok
-        ")
+        "
+        )
     }
 }
 
 impl<T> Channel<T> {
-  fn new() -> (Sender<T>, Receiver<T>) {
-    rawgo!("
+    fn new() -> (Sender<T>, Receiver<T>) {
+        rawgo!(
+            "
     ch := make(chan T)
     return Tuple2[chan<- T, <-chan T]{ first: ch, second: ch }
-    ")
-  }
+    "
+        )
+    }
 }
 
 impl<T> Sender<T> {
-  fn send(&mut self, value: T) {
-    rawgo!("self <- value")
-  }
+    fn send(&mut self, value: T) {
+        rawgo!("self <- value")
+    }
 
-  fn close(&mut self) {
-    rawgo!("close(self)")
-  }
+    fn close(&mut self) {
+        rawgo!("close(self)")
+    }
 }
 
 impl<T> Receiver<T> {
-  fn recv(&self) -> T {
-    rawgo!("return <- self")
-  }
+    fn recv(&self) -> T {
+        rawgo!("return <- self")
+    }
 }
 
 impl string {
@@ -229,7 +234,6 @@ mod global {
     trait comparable {}
     type complex128 = ();
     type complex64 = ();
-    type string = (); // TODO move in appropriate place
     trait error {
         fn Error() -> string;
     }
@@ -241,6 +245,7 @@ mod global {
     type int64 = ();
     type int8 = ();
     type rune = ();
+    type string = ();
     type uint = ();
     type uint16 = ();
     type uint32 = ();
@@ -253,44 +258,10 @@ mod global {
     }
 }
 
-#[package(path = io/fs, name = io::fs)]
-mod fs {
-  struct FileMode {}
-
-  trait FileInfo {
-  	fn Name() -> string;
-    fn Size() -> int64 ;
-    fn Mode() -> FileMode;
-    // fn ModTime() -> time.Time;
-    fn IsDir() -> bool;
-    fn Sys() -> any;
-  }
-
-  extern {
-    fn IsRegular(m: FileMode) -> bool;
-  }
-}
-
 #[package(path = errors, name = errors)]
 mod errors {
     extern "C" {
         fn New(text: string) -> error;
-    }
-}
-
-#[package(path = io, name = io)]
-mod io {
-    trait Writer {
-        fn Write(bytes: [byte]) -> Result<int>;
-    }
-    trait Reader {
-        fn Read(p: [byte]) -> Result<int>;
-    }
-
-    trait ReadWriter: Reader + Writer {}
-
-    extern {
-      fn Copy(dst: &mut Writer, src: &Reader) -> Result<int64>;
     }
 }
 
@@ -305,8 +276,23 @@ mod fmt {
     }
 }
 
+#[package(path = io/fs, name = io::fs)]
+mod fs {
+    struct FileMode {}
 
+    trait FileInfo {
+        fn Name() -> string;
+        fn Size() -> int64;
+        fn Mode() -> FileMode;
+        // fn ModTime() -> time.Time;
+        fn IsDir() -> bool;
+        fn Sys() -> any;
+    }
 
+    extern "C" {
+        fn IsRegular(m: FileMode) -> bool;
+    }
+}
 
 #[package(path = net/http, name = net::http)]
 mod http {
@@ -326,6 +312,22 @@ mod http {
     }
 }
 
+#[package(path = io, name = io)]
+mod io {
+    trait Writer {
+        fn Write(bytes: [byte]) -> Result<int>;
+    }
+    trait Reader {
+        fn Read(p: [byte]) -> Result<int>;
+    }
+
+    trait ReadWriter: Reader + Writer {}
+
+    extern "C" {
+        fn Copy(dst: &mut Writer, src: &Reader) -> Result<int64>;
+    }
+}
+
 #[package(path = log, name = log)]
 mod log {
     extern "C" {
@@ -335,15 +337,7 @@ mod log {
 
 #[package(path = math, name = math)]
 mod math {
-  const Pi: float64 = 0;
-}
-
-#[package(path = math/rand, name = math::rand)]
-mod rand {
-    extern "C" {
-        fn Int() -> int;
-        fn Float64() -> float64;
-    }
+    const Pi: float64 = 0;
 }
 
 #[package(path = os, name = os)]
@@ -364,6 +358,14 @@ mod os {
         fn Stat(name: string) -> Result<fs::FileInfo>;
         fn Write(f: &mut File, b: [byte]) -> Result<int>;
         fn Read(f: &File, b: [byte]) -> Result<int>;
+    }
+}
+
+#[package(path = math/rand, name = math::rand)]
+mod rand {
+    extern "C" {
+        fn Int() -> int;
+        fn Float64() -> float64;
     }
 }
 
@@ -394,4 +396,3 @@ mod sync {
         fn Wait(wg: &mut WaitGroup);
     }
 }
-

@@ -345,11 +345,11 @@ No errors.
                               },
                               "span": {
                                 "start": {
-                                  "line": 15,
+                                  "line": 14,
                                   "col": 0
                                 },
                                 "end": {
-                                  "line": 18,
+                                  "line": 17,
                                   "col": 1
                                 }
                               }

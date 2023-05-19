@@ -2489,6 +2489,10 @@ has no field or method:
     }
 
     fn declare_modules(&mut self, files: &[File]) {
+        // There's a lot of repetition in this function, maybe it can be improved a bit.
+        //
+        // First declare symbols.
+        // This is incomplete, modules will be filled out in the next pass below.
         for f in files {
             for e in &f.decls {
                 if let Expr::Mod {
@@ -2501,10 +2505,39 @@ has no field or method:
                         filename: f.name.clone(),
                     });
 
-                    self.declare_files(&vec![File {
+                    let decls = vec![File {
                         decls: items.clone(),
                         ..f.clone()
-                    }]);
+                    }];
+                    self.declare_symbols(&decls);
+
+                    let module = self.gs.extract_module(name, &pkg);
+                    self.gs.add_module(&pkg.name, module);
+
+                    self.current_file_id = None;
+                    self.gs.exit_scope();
+                }
+            }
+        }
+
+        // Loop over again and declare everything else
+        for f in files {
+            for e in &f.decls {
+                if let Expr::Mod {
+                    name, pkg, items, ..
+                } = e
+                {
+                    self.gs.begin_scope();
+                    self.current_file_id = Some(FileId {
+                        package: name.clone(),
+                        filename: f.name.clone(),
+                    });
+
+                    let decls = vec![File {
+                        decls: items.clone(),
+                        ..f.clone()
+                    }];
+                    self.declare_files(&decls);
 
                     let module = self.gs.extract_module(name, &pkg);
                     self.gs.add_module(&pkg.name, module);
@@ -2594,7 +2627,10 @@ has no field or method:
                 .filter(|e| {
                     matches!(
                         e,
-                        Expr::EnumDef { .. } | Expr::StructDef { .. } | Expr::TypeAlias { .. }
+                        Expr::EnumDef { .. }
+                            | Expr::StructDef { .. }
+                            | Expr::TypeAlias { .. }
+                            | Expr::Trait { .. }
                     )
                 })
                 .for_each(|e| self.declare_type(e));
