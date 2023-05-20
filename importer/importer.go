@@ -263,7 +263,7 @@ func (p *Package) String() string {
 
 	for _, a := range p.Aliases {
 		// TODO ignore actual type for now, the compiler doesn't know what to do with it yet
-		fmt.Fprintf(&w, "type %s = ()\n\n", a.Name)
+		fmt.Fprintf(&w, "type %s = %s;\n\n", a.Name, a.Type.String())
 	}
 
 	for _, s := range p.Types {
