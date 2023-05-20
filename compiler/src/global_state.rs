@@ -52,10 +52,11 @@ pub struct GlobalState {
     types: HashMap<String, TypeDef>,
     enums: HashMap<String, EnumDefinition>,
     structs: HashMap<String, StructDefinition>,
-    aliases: HashMap<String, String>,
+    cons_aliases: HashMap<String, String>, // Ok => Result::Ok
     methods: HashMap<String, HashMap<String, TypeDef>>, // type => (method => signature)
     modules: HashMap<String, Module>,
     interfaces: HashMap<String, Interface>,
+    type_aliases: HashMap<String, TypeDef>,
 }
 
 impl GlobalState {
@@ -67,10 +68,11 @@ impl GlobalState {
             types: Default::default(),
             enums: Default::default(),
             structs: Default::default(),
-            aliases: Default::default(), // Ok -> Result::Ok
+            cons_aliases: Default::default(), // Ok -> Result::Ok
             modules: Default::default(),
             methods: Default::default(),
             interfaces: Default::default(),
+            type_aliases: Default::default(),
         }
     }
 
@@ -99,11 +101,20 @@ impl GlobalState {
     }
 
     pub fn get_global_type(&self, name: &str) -> Option<BoundedType> {
-        self.types.get(name).cloned().map(|t| t.ty)
+        self.get_global_type_declaration(name).map(|t| t.ty)
     }
 
     pub fn get_global_type_declaration(&self, name: &str) -> Option<TypeDef> {
-        self.types.get(name).cloned()
+        self.type_aliases
+            .get(name)
+            .or_else(|| self.types.get(name))
+            .cloned()
+    }
+
+    pub fn add_type_alias(&mut self, name: String, ty: BoundedType, decl: Declaration) {
+        if !self.type_aliases.contains_key(&name) {
+            self.type_aliases.insert(name, TypeDef { ty, decl });
+        }
     }
 
     pub fn add_value(&mut self, name: String, ty: BoundedType, decl: Declaration) {
@@ -126,8 +137,8 @@ impl GlobalState {
         self.structs.insert(name, def);
     }
 
-    pub fn add_alias(&mut self, alias: String, source: String) {
-        self.aliases.insert(alias, source);
+    pub fn add_constructor_alias(&mut self, alias: String, source: String) {
+        self.cons_aliases.insert(alias, source);
     }
 
     pub fn get_enum(&self, name: &str) -> Option<EnumDefinition> {
@@ -140,7 +151,7 @@ impl GlobalState {
 
     /// Follows an alias or returns the input unchanged
     pub fn resolve_name(&self, name: &str) -> String {
-        self.aliases
+        self.cons_aliases
             .get(name)
             .cloned()
             .unwrap_or_else(|| name.to_owned())

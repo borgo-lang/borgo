@@ -2041,7 +2041,8 @@ has no field or method:
                         // Alias each constructor to its full qualified name
                         // Might be a bad idea in the long run.
                         // When this changes, also update eval.ts EnumDef
-                        self.gs.add_alias(name.clone(), qualified.clone());
+                        self.gs
+                            .add_constructor_alias(name.clone(), qualified.clone());
 
                         if c.fields.is_empty() {
                             self.gs.add_value(
