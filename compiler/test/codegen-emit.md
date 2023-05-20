@@ -999,7 +999,7 @@ impl Counter {
   fn ServeHTTP(&mut self, w: http::ResponseWriter, r: &http::Request) {
     self.m.Lock();
     self.count = self.count + 1;
-    let _ = fmt.Fprintf(w, "<h1>count %d</h1>", self.count);
+    fmt.Fprintf(w, "<h1>count %d</h1>", self.count);
     self.m.Unlock();
   }
 }

@@ -298,7 +298,17 @@ impl Codegen {
             Expr::Closure { fun, kind, .. } => self.emit_closure(fun, kind),
             Expr::Block { stmts, .. } => self.emit_block(mode, stmts, false),
             Expr::Call { func, args, ty, .. } => {
-                self.emit_call(func, args, self.call_wrap_mode(ty))
+                let call_mode = if mode.ctx.is_discard() && !mode.should_return {
+                    // if the result should be discarded, there's no point in wrapping the value.
+                    // This is the case when the last expression in a block returns a result (ie.
+                    // fmt.Fprintf) but the current function returns unit so the value can be
+                    // safely dropped and the call doesn't need to be wrapped.
+                    CallWrapMode::Unwrapped
+                } else {
+                    self.call_wrap_mode(ty)
+                };
+
+                self.emit_call(func, args, call_mode)
             }
             Expr::Literal { lit, ty, .. } => self.emit_literal(lit, ty),
             Expr::ExternDecl { .. } => EmitResult::empty(),

@@ -269,7 +269,7 @@ mod errors {
 mod fmt {
     use io;
     extern "C" {
-        fn Printf(format: string, a: VarArgs<any>);
+        fn Printf(format: string, a: VarArgs<any>) -> Result<int>;
         fn Fprintf(w: io::Writer, format: string, a: VarArgs<any>) -> Result<int>;
         fn Errorf(format: string, a: VarArgs<any>) -> error;
         fn Println(a: VarArgs<any>);
