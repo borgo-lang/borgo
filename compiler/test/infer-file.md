@@ -470,7 +470,7 @@ References are maintained after try call
 
 > infer("fn () -> ()")
 
-```rust-only
+```rust
 use os;
 
 fn foo() -> Result<()> {
@@ -505,6 +505,7 @@ Type aliases
 
 ```rust
 type Foo<V> = Map<int, V>;
+type Complex<A, B> = Map<bool, Map<A, Map<B, string>>>;
 
 fn foo(m: Foo<string>) -> string {
     m[1]
@@ -520,5 +521,8 @@ fn borgo_main() {
 
     foo(m);
     takes_map(m);
+
+    let c: Complex<int, bool> = Map::new();
+    c as Map<bool, Map<int, Map<bool, string>>>;
 }
 ```

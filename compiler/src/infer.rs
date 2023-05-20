@@ -2379,7 +2379,11 @@ has no field or method:
         );
         gs.add_builtin_type(
             "RefMut".into(),
-            Type::reference(gen_t).to_bounded_with_generics(vec!["T".to_string()]),
+            Type::Con {
+                name: "RefMut".into(),
+                args: vec![gen_t.clone()],
+            }
+            .to_bounded_with_generics(vec!["T".to_string()]),
         );
     }
 
@@ -2424,16 +2428,12 @@ has no field or method:
         args.to_vec()
     }
 
-    // Turn an annotation into a non-instantiate type (generics are still in the type).
-    // The caller that will call instantiate().
+    // Turn an annotation into a non-instantiated type (generics are still in the type).
+    // The caller is responsible to call instantiate().
     fn to_type(&mut self, ann: &TypeAst, span: &Span) -> Type {
         match ann {
             TypeAst::Con { name, args } => {
                 let existing = self.gs.get_type(name);
-                if name == "RefMut" {
-                    // TODO wtf? return Ref...
-                    // dbg!(&name, &existing);
-                }
 
                 if existing.is_none() {
                     self.generic_error(format!("Type not found: {name}"), span.clone());

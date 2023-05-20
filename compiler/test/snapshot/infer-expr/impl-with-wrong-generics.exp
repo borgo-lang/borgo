@@ -10,7 +10,7 @@ OUTPUT:
 Wrong arity
 
 Expected:
-    (A, A)
+    (T, Y)
 Got:
     (T)
 

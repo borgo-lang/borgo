@@ -7,7 +7,7 @@ OUTPUT:
 Wrong arity
 
 Expected:
-    (A, A)
+    (T, E)
 Got:
     (string, int, bool)
 

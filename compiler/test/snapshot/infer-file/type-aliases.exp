@@ -1,0 +1,2031 @@
+Type aliases
+
+SOURCE:
+type Foo<V> = Map<int, V>;
+type Complex<A, B> = Map<bool, Map<A, Map<B, string>>>;
+
+fn foo(m: Foo<string>) -> string {
+    m[1]
+}
+
+fn takes_map(m: Map<int, string>) -> string {
+    m[1]
+}
+
+fn borgo_main() {
+    let m: Foo<string> = Map::new();
+    m.insert(1, "a");
+
+    foo(m);
+    takes_map(m);
+
+    let c: Complex<int, bool> = Map::new();
+    c as Map<bool, Map<int, Map<bool, string>>>;
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+{
+  "files": [
+    {
+      "name": "test.brg",
+      "decls": [
+        {
+          "TypeAlias": {
+            "def": {
+              "name": "Foo",
+              "generics": [
+                "V"
+              ],
+              "ann": {
+                "Con": {
+                  "name": "Map",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "int",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "V",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              },
+              "attrs": []
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 0
+              },
+              "end": {
+                "line": 1,
+                "col": 26
+              }
+            }
+          }
+        },
+        {
+          "TypeAlias": {
+            "def": {
+              "name": "Complex",
+              "generics": [
+                "A",
+                "B"
+              ],
+              "ann": {
+                "Con": {
+                  "name": "Map",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "bool",
+                        "args": []
+                      }
+                    },
+                    {
+                      "Con": {
+                        "name": "Map",
+                        "args": [
+                          {
+                            "Con": {
+                              "name": "A",
+                              "args": []
+                            }
+                          },
+                          {
+                            "Con": {
+                              "name": "Map",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "B",
+                                    "args": []
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "name": "string",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "attrs": []
+            },
+            "span": {
+              "start": {
+                "line": 2,
+                "col": 0
+              },
+              "end": {
+                "line": 2,
+                "col": 55
+              }
+            }
+          }
+        },
+        {
+          "Closure": {
+            "fun": {
+              "name": "foo",
+              "generics": [],
+              "bounds": [],
+              "args": [
+                {
+                  "pat": {
+                    "Type": {
+                      "ident": "m",
+                      "is_mut": false,
+                      "ann": "Unknown",
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 7
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 8
+                        }
+                      }
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "Foo",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Map",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "ret": {
+                "Con": {
+                  "name": "string",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "string",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Index": {
+                        "expr": {
+                          "Var": {
+                            "value": "m",
+                            "decl": {
+                              "file_id": {
+                                "package": "user",
+                                "filename": "test.brg"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 4,
+                                  "col": 7
+                                },
+                                "end": {
+                                  "line": 4,
+                                  "col": 8
+                                }
+                              }
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Con": {
+                                "name": "Map",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "string",
+                                      "args": []
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 4
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 5
+                              }
+                            }
+                          }
+                        },
+                        "index": {
+                          "Literal": {
+                            "lit": {
+                              "Int": 1
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "int",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 6
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 7
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 5,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 5,
+                            "col": 8
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 33
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Map",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "int",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "string",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "string",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Map",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "string",
+                    "args": []
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 4,
+                "col": 0
+              },
+              "end": {
+                "line": 6,
+                "col": 1
+              }
+            }
+          }
+        },
+        {
+          "Closure": {
+            "fun": {
+              "name": "takes_map",
+              "generics": [],
+              "bounds": [],
+              "args": [
+                {
+                  "pat": {
+                    "Type": {
+                      "ident": "m",
+                      "is_mut": false,
+                      "ann": "Unknown",
+                      "span": {
+                        "start": {
+                          "line": 8,
+                          "col": 13
+                        },
+                        "end": {
+                          "line": 8,
+                          "col": 14
+                        }
+                      }
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "Map",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "name": "Map",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "ret": {
+                "Con": {
+                  "name": "string",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "string",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Index": {
+                        "expr": {
+                          "Var": {
+                            "value": "m",
+                            "decl": {
+                              "file_id": {
+                                "package": "user",
+                                "filename": "test.brg"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 8,
+                                  "col": 13
+                                },
+                                "end": {
+                                  "line": 8,
+                                  "col": 14
+                                }
+                              }
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Con": {
+                                "name": "Map",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "string",
+                                      "args": []
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 9,
+                                "col": 4
+                              },
+                              "end": {
+                                "line": 9,
+                                "col": 5
+                              }
+                            }
+                          }
+                        },
+                        "index": {
+                          "Literal": {
+                            "lit": {
+                              "Int": 1
+                            },
+                            "ty": {
+                              "Con": {
+                                "name": "int",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 9,
+                                "col": 6
+                              },
+                              "end": {
+                                "line": 9,
+                                "col": 7
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 9,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 9,
+                            "col": 8
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 8,
+                      "col": 44
+                    },
+                    "end": {
+                      "line": 10,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "Map",
+                          "args": [
+                            {
+                              "Con": {
+                                "name": "int",
+                                "args": []
+                              }
+                            },
+                            {
+                              "Con": {
+                                "name": "string",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "string",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Map",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "string",
+                    "args": []
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 8,
+                "col": 0
+              },
+              "end": {
+                "line": 10,
+                "col": 1
+              }
+            }
+          }
+        },
+        {
+          "Closure": {
+            "fun": {
+              "name": "borgo_main",
+              "generics": [],
+              "bounds": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Let": {
+                        "binding": {
+                          "pat": {
+                            "Type": {
+                              "ident": "m",
+                              "is_mut": false,
+                              "ann": {
+                                "Con": {
+                                  "name": "Foo",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "string",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 13,
+                                  "col": 8
+                                },
+                                "end": {
+                                  "line": 13,
+                                  "col": 22
+                                }
+                              }
+                            }
+                          },
+                          "ann": {
+                            "Con": {
+                              "name": "Foo",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "string",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "ty": {
+                            "Con": {
+                              "name": "Map",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "int",
+                                    "args": []
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "name": "string",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "value": {
+                          "Call": {
+                            "func": {
+                              "Var": {
+                                "value": "Map::new",
+                                "decl": {
+                                  "file_id": {
+                                    "package": "dummy",
+                                    "filename": "dummy"
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 170,
+                                      "col": 23
+                                    },
+                                    "end": {
+                                      "line": 170,
+                                      "col": 32
+                                    }
+                                  }
+                                },
+                                "generics_instantiated": [
+                                  {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "string",
+                                      "args": []
+                                    }
+                                  }
+                                ],
+                                "ty": {
+                                  "Fun": {
+                                    "args": [],
+                                    "bounds": [
+                                      {
+                                        "generic": {
+                                          "Con": {
+                                            "name": "int",
+                                            "args": []
+                                          }
+                                        },
+                                        "ty": {
+                                          "Con": {
+                                            "name": "comparable",
+                                            "args": []
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "ret": {
+                                      "Con": {
+                                        "name": "Map",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "int",
+                                              "args": []
+                                            }
+                                          },
+                                          {
+                                            "Con": {
+                                              "name": "string",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "id": -1
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 13,
+                                    "col": 25
+                                  },
+                                  "end": {
+                                    "line": 13,
+                                    "col": 33
+                                  }
+                                }
+                              }
+                            },
+                            "args": [],
+                            "ty": {
+                              "Con": {
+                                "name": "Map",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "string",
+                                      "args": []
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 13,
+                                "col": 25
+                              },
+                              "end": {
+                                "line": 13,
+                                "col": 35
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Map",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "int",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "string",
+                                  "args": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 13,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 13,
+                            "col": 36
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Call": {
+                        "func": {
+                          "FieldAccess": {
+                            "expr": {
+                              "Var": {
+                                "value": "m",
+                                "decl": {
+                                  "file_id": {
+                                    "package": "user",
+                                    "filename": "test.brg"
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 13,
+                                      "col": 8
+                                    },
+                                    "end": {
+                                      "line": 13,
+                                      "col": 22
+                                    }
+                                  }
+                                },
+                                "generics_instantiated": [],
+                                "ty": {
+                                  "Con": {
+                                    "name": "Map",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "int",
+                                          "args": []
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "string",
+                                          "args": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 14,
+                                    "col": 4
+                                  },
+                                  "end": {
+                                    "line": 14,
+                                    "col": 5
+                                  }
+                                }
+                              }
+                            },
+                            "field": "insert",
+                            "ty": {
+                              "Fun": {
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "string",
+                                      "args": []
+                                    }
+                                  }
+                                ],
+                                "bounds": [
+                                  {
+                                    "generic": {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    "ty": {
+                                      "Con": {
+                                        "name": "comparable",
+                                        "args": []
+                                      }
+                                    }
+                                  }
+                                ],
+                                "ret": {
+                                  "Con": {
+                                    "name": "Unit",
+                                    "args": []
+                                  }
+                                },
+                                "id": -1
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 14,
+                                "col": 6
+                              },
+                              "end": {
+                                "line": 14,
+                                "col": 12
+                              }
+                            }
+                          }
+                        },
+                        "args": [
+                          {
+                            "Literal": {
+                              "lit": {
+                                "Int": 1
+                              },
+                              "ty": {
+                                "Con": {
+                                  "name": "int",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 14,
+                                  "col": 13
+                                },
+                                "end": {
+                                  "line": 14,
+                                  "col": 14
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "Literal": {
+                              "lit": {
+                                "String": [
+                                  "a",
+                                  null
+                                ]
+                              },
+                              "ty": {
+                                "Con": {
+                                  "name": "string",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 14,
+                                  "col": 16
+                                },
+                                "end": {
+                                  "line": 14,
+                                  "col": 19
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "ty": {
+                          "Con": {
+                            "name": "Unit",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 14,
+                            "col": 6
+                          },
+                          "end": {
+                            "line": 14,
+                            "col": 12
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Call": {
+                        "func": {
+                          "Var": {
+                            "value": "foo",
+                            "decl": {
+                              "file_id": {
+                                "package": "std",
+                                "filename": "core.brg"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 4,
+                                  "col": 0
+                                },
+                                "end": {
+                                  "line": 6,
+                                  "col": 1
+                                }
+                              }
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Fun": {
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "Map",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "name": "int",
+                                            "args": []
+                                          }
+                                        },
+                                        {
+                                          "Con": {
+                                            "name": "string",
+                                            "args": []
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ],
+                                "bounds": [],
+                                "ret": {
+                                  "Con": {
+                                    "name": "string",
+                                    "args": []
+                                  }
+                                },
+                                "id": -1
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 16,
+                                "col": 4
+                              },
+                              "end": {
+                                "line": 16,
+                                "col": 7
+                              }
+                            }
+                          }
+                        },
+                        "args": [
+                          {
+                            "Var": {
+                              "value": "m",
+                              "decl": {
+                                "file_id": {
+                                  "package": "user",
+                                  "filename": "test.brg"
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 13,
+                                    "col": 8
+                                  },
+                                  "end": {
+                                    "line": 13,
+                                    "col": 22
+                                  }
+                                }
+                              },
+                              "generics_instantiated": [],
+                              "ty": {
+                                "Con": {
+                                  "name": "Map",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "string",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 16,
+                                  "col": 8
+                                },
+                                "end": {
+                                  "line": 16,
+                                  "col": 9
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "ty": {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 16,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 16,
+                            "col": 10
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Call": {
+                        "func": {
+                          "Var": {
+                            "value": "takes_map",
+                            "decl": {
+                              "file_id": {
+                                "package": "std",
+                                "filename": "core.brg"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 8,
+                                  "col": 0
+                                },
+                                "end": {
+                                  "line": 10,
+                                  "col": 1
+                                }
+                              }
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Fun": {
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "Map",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "name": "int",
+                                            "args": []
+                                          }
+                                        },
+                                        {
+                                          "Con": {
+                                            "name": "string",
+                                            "args": []
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ],
+                                "bounds": [],
+                                "ret": {
+                                  "Con": {
+                                    "name": "string",
+                                    "args": []
+                                  }
+                                },
+                                "id": -1
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 17,
+                                "col": 4
+                              },
+                              "end": {
+                                "line": 17,
+                                "col": 13
+                              }
+                            }
+                          }
+                        },
+                        "args": [
+                          {
+                            "Var": {
+                              "value": "m",
+                              "decl": {
+                                "file_id": {
+                                  "package": "user",
+                                  "filename": "test.brg"
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 13,
+                                    "col": 8
+                                  },
+                                  "end": {
+                                    "line": 13,
+                                    "col": 22
+                                  }
+                                }
+                              },
+                              "generics_instantiated": [],
+                              "ty": {
+                                "Con": {
+                                  "name": "Map",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "string",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 17,
+                                  "col": 14
+                                },
+                                "end": {
+                                  "line": 17,
+                                  "col": 15
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "ty": {
+                          "Con": {
+                            "name": "string",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 17,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 17,
+                            "col": 16
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Let": {
+                        "binding": {
+                          "pat": {
+                            "Type": {
+                              "ident": "c",
+                              "is_mut": false,
+                              "ann": {
+                                "Con": {
+                                  "name": "Complex",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "bool",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 19,
+                                  "col": 8
+                                },
+                                "end": {
+                                  "line": 19,
+                                  "col": 29
+                                }
+                              }
+                            }
+                          },
+                          "ann": {
+                            "Con": {
+                              "name": "Complex",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "int",
+                                    "args": []
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "name": "bool",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "ty": {
+                            "Con": {
+                              "name": "Map",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "name": "bool",
+                                    "args": []
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "name": "Map",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "name": "int",
+                                          "args": []
+                                        }
+                                      },
+                                      {
+                                        "Con": {
+                                          "name": "Map",
+                                          "args": [
+                                            {
+                                              "Con": {
+                                                "name": "bool",
+                                                "args": []
+                                              }
+                                            },
+                                            {
+                                              "Con": {
+                                                "name": "string",
+                                                "args": []
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "value": {
+                          "Call": {
+                            "func": {
+                              "Var": {
+                                "value": "Map::new",
+                                "decl": {
+                                  "file_id": {
+                                    "package": "dummy",
+                                    "filename": "dummy"
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 170,
+                                      "col": 23
+                                    },
+                                    "end": {
+                                      "line": 170,
+                                      "col": 32
+                                    }
+                                  }
+                                },
+                                "generics_instantiated": [
+                                  {
+                                    "Con": {
+                                      "name": "bool",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "Map",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "name": "int",
+                                            "args": []
+                                          }
+                                        },
+                                        {
+                                          "Con": {
+                                            "name": "Map",
+                                            "args": [
+                                              {
+                                                "Con": {
+                                                  "name": "bool",
+                                                  "args": []
+                                                }
+                                              },
+                                              {
+                                                "Con": {
+                                                  "name": "string",
+                                                  "args": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ],
+                                "ty": {
+                                  "Fun": {
+                                    "args": [],
+                                    "bounds": [
+                                      {
+                                        "generic": {
+                                          "Con": {
+                                            "name": "bool",
+                                            "args": []
+                                          }
+                                        },
+                                        "ty": {
+                                          "Con": {
+                                            "name": "comparable",
+                                            "args": []
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "ret": {
+                                      "Con": {
+                                        "name": "Map",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "bool",
+                                              "args": []
+                                            }
+                                          },
+                                          {
+                                            "Con": {
+                                              "name": "Map",
+                                              "args": [
+                                                {
+                                                  "Con": {
+                                                    "name": "int",
+                                                    "args": []
+                                                  }
+                                                },
+                                                {
+                                                  "Con": {
+                                                    "name": "Map",
+                                                    "args": [
+                                                      {
+                                                        "Con": {
+                                                          "name": "bool",
+                                                          "args": []
+                                                        }
+                                                      },
+                                                      {
+                                                        "Con": {
+                                                          "name": "string",
+                                                          "args": []
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "id": -1
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 19,
+                                    "col": 32
+                                  },
+                                  "end": {
+                                    "line": 19,
+                                    "col": 40
+                                  }
+                                }
+                              }
+                            },
+                            "args": [],
+                            "ty": {
+                              "Con": {
+                                "name": "Map",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "bool",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "Map",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "name": "int",
+                                            "args": []
+                                          }
+                                        },
+                                        {
+                                          "Con": {
+                                            "name": "Map",
+                                            "args": [
+                                              {
+                                                "Con": {
+                                                  "name": "bool",
+                                                  "args": []
+                                                }
+                                              },
+                                              {
+                                                "Con": {
+                                                  "name": "string",
+                                                  "args": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 19,
+                                "col": 32
+                              },
+                              "end": {
+                                "line": 19,
+                                "col": 42
+                              }
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Map",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "bool",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "Map",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "Map",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "bool",
+                                              "args": []
+                                            }
+                                          },
+                                          {
+                                            "Con": {
+                                              "name": "string",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 19,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 19,
+                            "col": 43
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "CheckType": {
+                        "expr": {
+                          "Var": {
+                            "value": "c",
+                            "decl": {
+                              "file_id": {
+                                "package": "user",
+                                "filename": "test.brg"
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 19,
+                                  "col": 8
+                                },
+                                "end": {
+                                  "line": 19,
+                                  "col": 29
+                                }
+                              }
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Con": {
+                                "name": "Map",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "name": "bool",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "name": "Map",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "name": "int",
+                                            "args": []
+                                          }
+                                        },
+                                        {
+                                          "Con": {
+                                            "name": "Map",
+                                            "args": [
+                                              {
+                                                "Con": {
+                                                  "name": "bool",
+                                                  "args": []
+                                                }
+                                              },
+                                              {
+                                                "Con": {
+                                                  "name": "string",
+                                                  "args": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 20,
+                                "col": 4
+                              },
+                              "end": {
+                                "line": 20,
+                                "col": 5
+                              }
+                            }
+                          }
+                        },
+                        "ann": {
+                          "Con": {
+                            "name": "Map",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "bool",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "Map",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "Map",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "bool",
+                                              "args": []
+                                            }
+                                          },
+                                          {
+                                            "Con": {
+                                              "name": "string",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "name": "Map",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "bool",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "Map",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "int",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "Map",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "name": "bool",
+                                              "args": []
+                                            }
+                                          },
+                                          {
+                                            "Con": {
+                                              "name": "string",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 20,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 20,
+                            "col": 47
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "name": "Map",
+                      "args": [
+                        {
+                          "Con": {
+                            "name": "bool",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "name": "Map",
+                            "args": [
+                              {
+                                "Con": {
+                                  "name": "int",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "name": "Map",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "name": "bool",
+                                        "args": []
+                                      }
+                                    },
+                                    {
+                                      "Con": {
+                                        "name": "string",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 21,
+                      "col": 1
+                    }
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "name": "Unit",
+                        "args": []
+                      }
+                    },
+                    "id": -1
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "name": "Unit",
+                    "args": []
+                  }
+                },
+                "id": -1
+              }
+            },
+            "span": {
+              "start": {
+                "line": 12,
+                "col": 0
+              },
+              "end": {
+                "line": 21,
+                "col": 1
+              }
+            }
+          }
+        }
+      ],
+      "source": "type Foo<V> = Map<int, V>;\ntype Complex<A, B> = Map<bool, Map<A, Map<B, string>>>;\n\nfn foo(m: Foo<string>) -> string {\n    m[1]\n}\n\nfn takes_map(m: Map<int, string>) -> string {\n    m[1]\n}\n\nfn borgo_main() {\n    let m: Foo<string> = Map::new();\n    m.insert(1, \"a\");\n\n    foo(m);\n    takes_map(m);\n\n    let c: Complex<int, bool> = Map::new();\n    c as Map<bool, Map<int, Map<bool, string>>>;\n}"
+    }
+  ],
+  "errors": [
+    [
+      "test.brg",
+      []
+    ]
+  ]
+}
