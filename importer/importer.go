@@ -74,7 +74,7 @@ func (t TyFun) String() string {
 
 func toReturnType(types []Type) string {
 	if len(types) == 2 && reflect.DeepEqual(types[1], mono("error")) {
-		return TyCon{name: "Result", args: types}.String()
+		return TyCon{name: "Result", args: []Type{types[0]}}.String()
 	}
 
 	switch len(types) {
@@ -201,6 +201,8 @@ const (
 )
 
 type Package struct {
+	Name    string
+	Path    string
 	Types   []Struct
 	Aliases []Alias
 	Funcs   []Function
@@ -242,6 +244,11 @@ func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind
 func (p *Package) String() string {
 	var w bytes.Buffer
 
+	fmt.Fprintf(&w, "#[package(name = %s, path = %s)]\n", p.Name, p.Path)
+	fmt.Fprintf(&w, "mod %s {\n\n", p.Name)
+
+	fmt.Fprint(&w, "extern {\n\n")
+
 	for _, f := range p.Funcs {
 
 		bounds := boundsToString(f.Type.bounds)
@@ -250,6 +257,9 @@ func (p *Package) String() string {
 
 		fmt.Fprintf(&w, "fn %s %s (%s) -> %s;\n\n", f.Name, bounds, args, ret)
 	}
+
+	// close extern {}
+	fmt.Fprint(&w, "}\n\n")
 
 	for _, a := range p.Aliases {
 		// TODO ignore actual type for now, the compiler doesn't know what to do with it yet
@@ -280,6 +290,9 @@ func (p *Package) String() string {
 		}
 
 	}
+
+	// close mod {}
+	fmt.Fprint(&w, "}\n\n")
 
 	return w.String()
 }
@@ -313,6 +326,10 @@ func main() {
 	}
 
 	for _, pkg := range pkgs {
+		if strings.HasSuffix(pkg.Name, "_test") {
+			continue
+		}
+
 		importPath := dataDir + "/" + pkg.Name
 
 		var files []*ast.File
@@ -325,7 +342,10 @@ func main() {
 			log.Fatal(err)
 		}
 
-		p := &Package{}
+		p := &Package{
+			Name: doc.Name,
+			Path: doc.Name, // TODO how do we get the import path, ie. "net/http"?
+		}
 
 		// Types
 		// functions and methods are attached
