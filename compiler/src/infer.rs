@@ -2424,10 +2424,16 @@ has no field or method:
         args.to_vec()
     }
 
+    // Turn an annotation into a non-instantiate type (generics are still in the type).
+    // The caller that will call instantiate().
     fn to_type(&mut self, ann: &TypeAst, span: &Span) -> Type {
         match ann {
             TypeAst::Con { name, args } => {
                 let existing = self.gs.get_type(name);
+                if name == "RefMut" {
+                    // TODO wtf? return Ref...
+                    // dbg!(&name, &existing);
+                }
 
                 if existing.is_none() {
                     self.generic_error(format!("Type not found: {name}"), span.clone());
@@ -2436,6 +2442,24 @@ has no field or method:
 
                 let existing = existing.unwrap();
 
+                // This bit is quite involved in order to support type aliases.
+                // For example, given an alias Foo<V> = Map<int, V>
+                // We'll get as an input something like Con { Foo, [string] } and need to return
+                // Map<int, string>
+                //
+                // In order to do that we:
+                // - collect all generics in a hashmap (generic => var) [V => 123]
+                // - instantiate the type with those vars Con { Map, [int, 123] }
+                // - create a lookup hashmap $vars [123 => V]
+                // - for each generic, get the corresponding argument at that index
+                //      - var = generics[V] // 123
+                //      - args[0] = string
+                //      - so we insert: vars[var] = string
+                // at this point we need to replace the new vars in the instantiated type
+                // We have:
+                //  instantiated = Con { Map, [int, 123] }
+                //  vars = [ 123 => string ]
+                //  therefore the type is Con { Map, [int, string] }
                 let generics = self.collect_generics_as_vars(&existing.generics);
                 let instantiated = self.instantiate_with_vars(&existing.ty, &generics);
                 let new_args = self.add_optional_error_to_result(&existing.ty, args);
@@ -2449,6 +2473,9 @@ has no field or method:
                 // Restore the types we know about. This is necessary to support type aliases.
                 for (index, g) in existing.generics.iter().enumerate() {
                     let var_index = generics[g];
+
+                    // we should always find an argument at this index, unless the type is
+                    // malformed
                     if let Some(arg_ann) = new_args.get(index) {
                         vars.insert(var_index, self.to_type(&arg_ann, span));
                     }
