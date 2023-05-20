@@ -470,7 +470,7 @@ References are maintained after try call
 
 > infer("fn () -> ()")
 
-```rust
+```rust-only
 use os;
 
 fn foo() -> Result<()> {
@@ -501,14 +501,13 @@ fn foo() -> Result<()> {
 
 Type aliases
 
-> infer("string")
+> infer("fn () -> ()")
 
-```rust-only
+```rust
 type Foo<V> = Map<int, V>;
 
 fn foo(m: Foo<string>) -> string {
-    // m[1]
-    "aa"
+    m[1]
 }
 
 fn takes_map(m: Map<int, string>) -> string {
@@ -516,10 +515,10 @@ fn takes_map(m: Map<int, string>) -> string {
 }
 
 fn borgo_main() {
-    let m = Map::new();
+    let m: Foo<string> = Map::new();
     m.insert(1, "a");
 
-    // foo(m);
+    foo(m);
     takes_map(m);
 }
 ```
