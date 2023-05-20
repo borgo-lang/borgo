@@ -1859,16 +1859,24 @@ has no field or method:
             }
 
             Expr::TypeAlias { def, span, .. } => {
-                let ty = Type::Con {
-                    name: def.name.clone(),
-                    args: def.generics.iter().map(|g| Type::generic(g)).collect(),
-                };
+                let is_native = def.ann == TypeAst::unit();
 
-                self.gs.add_type(
-                    def.name.clone(),
-                    ty.to_bounded_with_generics(def.generics.to_owned()),
-                    self.new_declaration(span),
-                );
+                if is_native {
+                    let ty = Type::Con {
+                        name: def.name.clone(),
+                        args: def.generics.iter().map(|g| Type::generic(g)).collect(),
+                    };
+
+                    self.gs.add_type(
+                        def.name.clone(),
+                        ty.to_bounded_with_generics(def.generics.to_owned()),
+                        self.new_declaration(span),
+                    );
+
+                    return;
+                }
+
+                todo!("figure out what to do with type aliases");
             }
 
             Expr::Closure { fun, span, .. } => {

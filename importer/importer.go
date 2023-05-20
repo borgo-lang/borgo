@@ -413,11 +413,10 @@ func main() {
 		// TODO no consts?
 		for _, c := range doc.Consts {
 			for _, name := range c.Names {
-				fmt.Println(name)
+				_ = name
+				// fmt.Println(name)
 				// p.addVar(name, c.Decl.Specs)
 			}
-			fmt.Println(c.Decl.Specs)
-			log.Fatal("a")
 		}
 
 		fmt.Println(p)

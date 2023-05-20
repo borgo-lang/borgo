@@ -427,7 +427,7 @@ pub struct StructFieldDef {
 pub struct TypeAliasDef {
     pub name: String,
     pub generics: Vec<String>,
-    pub ty: TypeAst,
+    pub ann: TypeAst,
     pub attrs: Vec<String>,
 }
 
@@ -1549,14 +1549,14 @@ impl Expr {
 
             syn::Item::Type(t) => {
                 let span = Span::make(t.span());
-                let ty = parse::type_from_expr(*t.ty);
+                let ann = parse::type_from_expr(*t.ty);
                 let attrs = parse::parse_attrs(&t.attrs);
                 let generics = parse::parse_generics(&t.generics);
 
                 let def = TypeAliasDef {
                     name: t.ident.to_string(),
                     generics,
-                    ty,
+                    ann,
                     attrs,
                 };
 
