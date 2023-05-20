@@ -1859,9 +1859,7 @@ has no field or method:
             }
 
             Expr::TypeAlias { def, span, .. } => {
-                let is_native = def.ann == TypeAst::unit();
-
-                if is_native {
+                if def.is_native() {
                     let ty = Type::Con {
                         name: def.name.clone(),
                         args: def.generics.iter().map(|g| Type::generic(g)).collect(),
@@ -1872,11 +1870,17 @@ has no field or method:
                         ty.to_bounded_with_generics(def.generics.to_owned()),
                         self.new_declaration(span),
                     );
+                } else {
+                    // it's a type alias
+                    // don't parse the type on the right, at this stage we only want to declare it.
+                    let ty = Type::dummy();
 
-                    return;
+                    self.gs.add_type_alias(
+                        def.name.clone(),
+                        ty.to_bounded_with_generics(def.generics.to_owned()),
+                        self.new_declaration(span),
+                    );
                 }
-
-                todo!("figure out what to do with type aliases");
             }
 
             Expr::Closure { fun, span, .. } => {
@@ -2144,6 +2148,20 @@ has no field or method:
                 for i in items {
                     self.declare_variants(i);
                 }
+            }
+
+            Expr::TypeAlias { def, span } => {
+                if def.is_native() {
+                    return;
+                }
+
+                let ty = self.to_type(&def.ann, span);
+
+                self.gs.add_type_alias(
+                    def.name.clone(),
+                    ty.to_bounded_with_generics(def.generics.to_owned()),
+                    self.new_declaration(span),
+                );
             }
 
             _ => (),

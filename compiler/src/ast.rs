@@ -431,6 +431,12 @@ pub struct TypeAliasDef {
     pub attrs: Vec<String>,
 }
 
+impl TypeAliasDef {
+    pub fn is_native(&self) -> bool {
+        self.ann == TypeAst::unit()
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PkgImport {
     pub name: String,
