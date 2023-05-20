@@ -2406,36 +2406,27 @@ has no field or method:
 
     // Allow users to omit the error type, ie. Result<T>
     // This function will add the error type back -> Result<T, E>
-    fn add_optional_error_to_result(&mut self, ty: Type, _span: &Span) -> Type {
-        match &ty {
-            Type::Con { name, args } => {
-                if name == "Result" && args.len() == 1 {
-                    let mut new_args = args.clone();
+    fn add_optional_error_to_result(&mut self, ty: &Type, args: &[TypeAst]) -> Vec<TypeAst> {
+        if let Type::Con { name, .. } = ty {
+            if name == "Result" && args.len() == 1 {
+                let mut new_args = args.to_vec();
 
-                    let error_ty = Type::Con {
-                        name: "error".to_string(),
-                        args: vec![],
-                    };
-                    new_args.push(error_ty);
+                let error_ty = TypeAst::Con {
+                    name: "error".to_string(),
+                    args: vec![],
+                };
+                new_args.push(error_ty);
 
-                    return Type::Con {
-                        name: "Result".to_string(),
-                        args: new_args.clone(),
-                    };
-                }
-
-                ty
+                return new_args;
             }
-
-            _ => ty,
         }
+
+        args.to_vec()
     }
 
     fn to_type(&mut self, ann: &TypeAst, span: &Span) -> Type {
         match ann {
             TypeAst::Con { name, args } => {
-                let new_args = args.iter().map(|a| self.to_type(a, span)).collect();
-
                 let existing = self.gs.get_type(name);
 
                 if existing.is_none() {
@@ -2443,29 +2434,39 @@ has no field or method:
                     return self.fresh_ty_var();
                 }
 
-                let existing = self.instantiate(&existing.unwrap());
+                let existing = existing.unwrap();
 
-                let ty = Type::Con {
-                    name: name.into(),
-                    args: new_args,
-                };
+                let generics = self.collect_generics_as_vars(&existing.generics);
+                let instantiated = self.instantiate_with_vars(&existing.ty, &generics);
+                let new_args = self.add_optional_error_to_result(&existing.ty, args);
 
-                let ty = self.add_optional_error_to_result(ty, span);
+                // i32 => Type
+                let mut vars: HashMap<i32, Type> = generics
+                    .iter()
+                    .map(|(gen, var)| (var.clone(), Type::generic(gen)))
+                    .collect();
 
-                let expected_args = existing.get_args().unwrap();
-                let actual_args = ty.get_args().unwrap();
+                // Restore the types we know about. This is necessary to support type aliases.
+                for (index, g) in existing.generics.iter().enumerate() {
+                    let var_index = generics[g];
+                    if let Some(arg_ann) = new_args.get(index) {
+                        vars.insert(var_index, self.to_type(&arg_ann, span));
+                    }
+                }
 
-                if expected_args.len() != actual_args.len() {
+                let expected_args = existing.generics;
+
+                if expected_args.len() != new_args.len() {
                     let err = ArityError {
-                        expected: expected_args,
-                        actual: actual_args,
+                        expected: expected_args.iter().map(|g| Type::generic(g)).collect(),
+                        actual: new_args.iter().map(|ann| self.to_type(ann, span)).collect(),
                         span: span.clone(),
                     };
 
                     self.errors.push(Error::WrongArity(err));
                 }
 
-                ty
+                Type::replace_vars_with_type(&instantiated, &vars)
             }
 
             TypeAst::Fun { args, ret } => {

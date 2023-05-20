@@ -332,6 +332,46 @@ impl Type {
         }
     }
 
+    pub fn replace_vars_with_type(ty: &Type, vars: &HashMap<i32, Type>) -> Type {
+        match ty {
+            Type::Con { name, args } => Type::Con {
+                name: name.clone(),
+                args: args
+                    .iter()
+                    .map(|a| Self::replace_vars_with_type(a, vars))
+                    .collect(),
+            },
+
+            Type::Fun {
+                args,
+                bounds,
+                ret,
+                id: fx,
+            } => Type::Fun {
+                args: args
+                    .iter()
+                    .map(|a| Self::replace_vars_with_type(a, vars))
+                    .collect(),
+                bounds: bounds
+                    .iter()
+                    .map(|b| Bound {
+                        generic: Self::replace_vars_with_type(&b.generic, vars),
+                        ty: Self::replace_vars_with_type(&b.ty, vars),
+                    })
+                    .collect(),
+                ret: Self::replace_vars_with_type(ret, vars).into(),
+                id: fx.clone(),
+            },
+
+            Type::Var(v) => match vars.get(v) {
+                Some(ty) => ty.clone(),
+                None => {
+                    unreachable!("replacing vars with types, got unexpected variable");
+                }
+            },
+        }
+    }
+
     pub fn get_bounds(&self) -> Vec<Bound> {
         match self {
             Type::Con { .. } => vec![],
