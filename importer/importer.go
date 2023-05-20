@@ -302,7 +302,7 @@ func splitBoundsAndFieldsForInterface(structFields []StructField) ([]string, []S
 	fields := []StructField{}
 
 	for _, f := range structFields {
-		if f.Name == "" || f.Name == "main" {
+		if f.Name == "" {
 			bounds = append(bounds, f.Type.String())
 			continue
 		}
@@ -326,7 +326,7 @@ func main() {
 	}
 
 	for _, pkg := range pkgs {
-		if strings.HasSuffix(pkg.Name, "_test") {
+		if strings.HasSuffix(pkg.Name, "_test") || pkg.Name == "main" {
 			continue
 		}
 
@@ -384,6 +384,14 @@ func main() {
 					case *ast.ArrayType:
 						inner := parseTypeExpr(ty.Elt)
 						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Slice", args: []Type{inner}})
+
+					case *ast.FuncType:
+						p.AddTypeAlias(spec.Name.Name, parseFunc(ty))
+
+					case *ast.MapType:
+						key := parseTypeExpr(ty.Key)
+						val := parseTypeExpr(ty.Value)
+						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Map", args: []Type{key, val}})
 
 					default:
 						fmt.Println(pkg.Name, t.Name)
