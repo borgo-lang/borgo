@@ -2155,7 +2155,14 @@ has no field or method:
                     return;
                 }
 
+                self.gs.begin_scope();
+
+                self.gs
+                    .put_generics_in_scope(&def.generics, self.new_declaration(span));
+
                 let ty = self.to_type(&def.ann, span);
+
+                self.gs.exit_scope();
 
                 self.gs.add_type_alias(
                     def.name.clone(),
@@ -2435,21 +2442,23 @@ has no field or method:
                     return self.fresh_ty_var();
                 }
 
-                let existing = self.instantiate(&existing.unwrap());
+                let existing = existing.unwrap();
+
+                let generics = self.collect_generics(&existing);
+                let instantiated = self.instantiate_with_vars(&existing.ty, &generics);
 
                 let ty = Type::Con {
-                    name: name.into(),
+                    name: existing.ty.get_name().unwrap(),
                     args: new_args,
                 };
 
                 let ty = self.add_optional_error_to_result(ty, span);
 
-                let expected_args = existing.get_args().unwrap();
                 let actual_args = ty.get_args().unwrap();
 
-                if expected_args.len() != actual_args.len() {
+                if existing.generics.len() != actual_args.len() {
                     let err = ArityError {
-                        expected: expected_args,
+                        expected: instantiated.get_args().unwrap(),
                         actual: actual_args,
                         span: span.clone(),
                     };

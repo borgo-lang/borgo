@@ -105,16 +105,27 @@ impl GlobalState {
     }
 
     pub fn get_global_type_declaration(&self, name: &str) -> Option<TypeDef> {
-        self.type_aliases
-            .get(name)
-            .or_else(|| self.types.get(name))
-            .cloned()
+        self.get_type_alias(name)
+            .or_else(|| self.types.get(name).cloned())
     }
 
     pub fn add_type_alias(&mut self, name: String, ty: BoundedType, decl: Declaration) {
-        if !self.type_aliases.contains_key(&name) {
-            self.type_aliases.insert(name, TypeDef { ty, decl });
+        // this is terrible, just like in add_type which gets called multiple times during
+        // inference, we want to ensure that once the right type is being registered, we don't
+        // override it with a dummy one. The fix is somewhere in inference which is doing one too
+        // many passes over the ast, but for now this check is necessary.
+        //
+        if let Some(existing) = self.type_aliases.get(&name) {
+            if existing.ty.ty != Type::dummy() {
+                return;
+            }
         }
+
+        self.type_aliases.insert(name, TypeDef { ty, decl });
+    }
+
+    pub fn get_type_alias(&self, name: &str) -> Option<TypeDef> {
+        self.type_aliases.get(name).cloned()
     }
 
     pub fn add_value(&mut self, name: String, ty: BoundedType, decl: Declaration) {

@@ -498,3 +498,28 @@ fn foo() -> Result<()> {
   Err(Foo {})
 }
 ```
+
+Type aliases
+
+> infer("string")
+
+```rust-only
+type Foo<V> = Map<int, V>;
+
+fn foo(m: Foo<string>) -> string {
+    // m[1]
+    "aa"
+}
+
+fn takes_map(m: Map<int, string>) -> string {
+    m[1]
+}
+
+fn borgo_main() {
+    let m = Map::new();
+    m.insert(1, "a");
+
+    // foo(m);
+    takes_map(m);
+}
+```
