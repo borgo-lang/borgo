@@ -302,7 +302,7 @@ func splitBoundsAndFieldsForInterface(structFields []StructField) ([]string, []S
 	fields := []StructField{}
 
 	for _, f := range structFields {
-		if f.Name == "" {
+		if f.Name == "" || f.Name == "main" {
 			bounds = append(bounds, f.Type.String())
 			continue
 		}
@@ -381,7 +381,12 @@ func main() {
 						p.AddStruct(spec.Name.Name, bounds, ty.Methods.List, TypeInterface)
 						// p.AddInterface(spec.Name.Name, bounds, ty.Fields.List)
 
+					case *ast.ArrayType:
+						inner := parseTypeExpr(ty.Elt)
+						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Slice", args: []Type{inner}})
+
 					default:
+						fmt.Println(pkg.Name, t.Name)
 						log.Fatalf("unhandled TySpec, got %T", ty)
 					}
 
