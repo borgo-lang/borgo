@@ -9,6 +9,8 @@ const (
 	HobbyNoBueno
 )
 
+const SomeConst = 1
+
 type Person struct {
 	Name    string
 	Hobbies []Hobby

@@ -262,7 +262,6 @@ func (p *Package) String() string {
 	fmt.Fprint(&w, "}\n\n")
 
 	for _, a := range p.Aliases {
-		// TODO ignore actual type for now, the compiler doesn't know what to do with it yet
 		fmt.Fprintf(&w, "type %s = %s;\n\n", a.Name, a.Type.String())
 	}
 
@@ -352,15 +351,16 @@ func main() {
 		for _, t := range doc.Types {
 			// fmt.Println(t.Name)
 
+			// TODO also check Vars and Consts
+
 			for _, f := range t.Funcs {
 				p.AddFunction(f.Name, f.Decl.Type)
-				// parseFunc(f.Decl.Type)
 			}
 
 			for _, f := range t.Methods {
+				// TODO parse recv
 				// fmt.Println(f.Recv) string starting with *
 				p.AddMethod(f.Name, f.Recv, f.Decl.Type)
-				// parseFunc(f.Decl.Type)
 			}
 
 			for _, decl := range t.Decl.Specs {
@@ -407,6 +407,17 @@ func main() {
 		for _, f := range doc.Funcs {
 			// parseFunc(f.Decl.Type)
 			p.AddFunction(f.Name, f.Decl.Type)
+		}
+
+		// Consts
+		// TODO no consts?
+		for _, c := range doc.Consts {
+			for _, name := range c.Names {
+				fmt.Println(name)
+				// p.addVar(name, c.Decl.Specs)
+			}
+			fmt.Println(c.Decl.Specs)
+			log.Fatal("a")
 		}
 
 		fmt.Println(p)
