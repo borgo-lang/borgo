@@ -2203,18 +2203,9 @@ has no field or method:
 
                 let ty = self.gs.get_type(&def.name).unwrap();
 
-                let bounds = def
-                    .generics
-                    .iter()
-                    .map(|g| Bound {
-                        generic: Type::generic(g),
-                        ty: Type::generic(g),
-                    })
-                    .collect();
-
                 let constructor = Type::Fun {
                     args: func_args,
-                    bounds,
+                    bounds: vec![],
                     ret: ty.ty.into(),
                     id: TypeId::unset(),
                 };

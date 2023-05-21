@@ -799,22 +799,7 @@ No errors.
                                         }
                                       }
                                     ],
-                                    "bounds": [
-                                      {
-                                        "generic": {
-                                          "Con": {
-                                            "name": "bool",
-                                            "args": []
-                                          }
-                                        },
-                                        "ty": {
-                                          "Con": {
-                                            "name": "bool",
-                                            "args": []
-                                          }
-                                        }
-                                      }
-                                    ],
+                                    "bounds": [],
                                     "ret": {
                                       "Con": {
                                         "name": "Bar",
@@ -1021,22 +1006,7 @@ No errors.
                                         }
                                       }
                                     ],
-                                    "bounds": [
-                                      {
-                                        "generic": {
-                                          "Con": {
-                                            "name": "string",
-                                            "args": []
-                                          }
-                                        },
-                                        "ty": {
-                                          "Con": {
-                                            "name": "string",
-                                            "args": []
-                                          }
-                                        }
-                                      }
-                                    ],
+                                    "bounds": [],
                                     "ret": {
                                       "Con": {
                                         "name": "Bar",
