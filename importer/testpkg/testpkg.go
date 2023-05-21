@@ -19,6 +19,7 @@ type Person struct {
 }
 
 type Hobby struct {
+	Name string
 	Kind HobbyKind
 }
 

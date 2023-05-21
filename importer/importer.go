@@ -172,8 +172,15 @@ func (p FuncArg) String() string {
 }
 
 type Alias struct {
-	Name string
-	Type Type
+	Name   string
+	Type   Type
+	Bounds []Bound
+}
+
+type Newtype struct {
+	Name   string
+	Type   Type
+	Bounds []Bound
 }
 
 type Struct struct {
@@ -201,12 +208,13 @@ const (
 )
 
 type Package struct {
-	Name    string
-	Path    string
-	Types   []Struct
-	Aliases []Alias
-	Funcs   []Function
-	Vars    []Variable // consts and vars
+	Name     string
+	Path     string
+	Types    []Struct
+	Aliases  []Alias
+	Newtypes []Newtype
+	Funcs    []Function
+	Vars     []Variable // consts and vars
 }
 
 func (p *Package) AddFunction(name string, f *ast.FuncType) {
@@ -219,9 +227,14 @@ func (p *Package) AddMethod(name string, recv string, f *ast.FuncType) {
 	p.Funcs = append(p.Funcs, function)
 }
 
-func (p *Package) AddTypeAlias(name string, t Type) {
-	alias := Alias{Name: name, Type: t}
+func (p *Package) AddTypeAlias(name string, t Type, bounds []Bound) {
+	alias := Alias{Name: name, Type: t, Bounds: bounds}
 	p.Aliases = append(p.Aliases, alias)
+}
+
+func (p *Package) AddNewType(name string, t Type, bounds []Bound) {
+	typ := Newtype{Name: name, Type: t, Bounds: bounds}
+	p.Newtypes = append(p.Newtypes, typ)
 }
 
 func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind TypeKind) {
@@ -263,6 +276,10 @@ func (p *Package) String() string {
 
 	for _, a := range p.Aliases {
 		fmt.Fprintf(&w, "type %s = %s;\n\n", a.Name, a.Type.String())
+	}
+
+	for _, a := range p.Newtypes {
+		fmt.Fprintf(&w, "struct %s(%s);\n\n", a.Name, a.Type.String())
 	}
 
 	for _, s := range p.Types {
@@ -372,7 +389,13 @@ func main() {
 					switch ty := spec.Type.(type) {
 
 					case *ast.Ident:
-						p.AddTypeAlias(spec.Name.Name, mono(ty.Name))
+						if spec.Assign > 0 {
+							// if there's a "=" token, then it's an alias
+							p.AddTypeAlias(spec.Name.Name, mono(ty.Name), bounds)
+						} else {
+							// otherwise it's a newtype
+							p.AddNewType(spec.Name.Name, mono(ty.Name), bounds)
+						}
 
 					case *ast.StructType:
 						p.AddStruct(spec.Name.Name, bounds, ty.Fields.List, TypeStruct)
@@ -383,15 +406,15 @@ func main() {
 
 					case *ast.ArrayType:
 						inner := parseTypeExpr(ty.Elt)
-						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Slice", args: []Type{inner}})
+						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Slice", args: []Type{inner}}, bounds)
 
 					case *ast.FuncType:
-						p.AddTypeAlias(spec.Name.Name, parseFunc(ty))
+						p.AddTypeAlias(spec.Name.Name, parseFunc(ty), bounds)
 
 					case *ast.MapType:
 						key := parseTypeExpr(ty.Key)
 						val := parseTypeExpr(ty.Value)
-						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Map", args: []Type{key, val}})
+						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Map", args: []Type{key, val}}, bounds)
 
 					default:
 						fmt.Println(pkg.Name, t.Name)
