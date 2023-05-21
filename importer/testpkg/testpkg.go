@@ -4,6 +4,8 @@ import "io"
 
 type HobbyKind int
 
+type AliasForString = string
+
 const (
 	HobbyBueno HobbyKind = iota
 	HobbyNoBueno
