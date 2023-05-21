@@ -422,6 +422,7 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
 
         Expr::Flow { kind, span } => Expr::Flow { kind, span },
         Expr::TypeAlias { def, span } => Expr::TypeAlias { def, span },
+        Expr::NewtypeDef { def, span } => Expr::NewtypeDef { def, span },
         Expr::UsePackage { import, span } => Expr::UsePackage { import, span },
         Expr::Unit { span } => Expr::Unit { span },
         Expr::Raw { text } => Expr::Raw { text },

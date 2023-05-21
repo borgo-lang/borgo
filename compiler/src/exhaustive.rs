@@ -543,6 +543,7 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
 
         Expr::Flow { .. } => Ok(()),
         Expr::TypeAlias { .. } => Ok(()),
+        Expr::NewtypeDef { .. } => Ok(()),
         Expr::UsePackage { .. } => Ok(()),
         Expr::Unit { .. } => Ok(()),
         Expr::Raw { .. } => Ok(()),

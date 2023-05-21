@@ -361,6 +361,7 @@ impl Codegen {
             Expr::Index { expr, index, .. } => self.emit_index(expr, index),
             Expr::Raw { text } => self.emit_raw(text),
             Expr::TypeAlias { .. } => EmitResult::empty(),
+            Expr::NewtypeDef { .. } => EmitResult::empty(), // TODO asdf emit "type Foo int"
             Expr::UsePackage { .. } => EmitResult::empty(),
             Expr::Mod { .. } => EmitResult::empty(),
             Expr::Trait {

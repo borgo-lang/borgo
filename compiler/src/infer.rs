@@ -1470,6 +1470,7 @@ has no field or method:
             Expr::Flow { kind, span } => Expr::Flow { kind, span },
 
             Expr::TypeAlias { def, span } => Expr::TypeAlias { def, span },
+            Expr::NewtypeDef { def, span } => Expr::NewtypeDef { def, span },
             Expr::UsePackage { import, span } => Expr::UsePackage { import, span },
 
             Expr::Raw { text } => Expr::Raw { text },

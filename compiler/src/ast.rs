@@ -438,6 +438,13 @@ impl TypeAliasDef {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct NewtypeDefinition {
+    pub name: Ident,
+    pub generics: Vec<String>,
+    pub fields: Vec<EnumFieldDef>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PkgImport {
     pub name: String,
     // pub rename: String
@@ -722,6 +729,10 @@ pub enum Expr {
     },
     TypeAlias {
         def: TypeAliasDef,
+        span: Span,
+    },
+    NewtypeDef {
+        def: NewtypeDefinition,
         span: Span,
     },
     UsePackage {
@@ -1382,7 +1393,15 @@ impl Expr {
                         Ok(Expr::StructDef { def, span })
                     }
 
-                    _ => panic!("wrong fields in struct"),
+                    parse::Fields::TupleCons(fields) => {
+                        let def = NewtypeDefinition {
+                            name: e.ident.to_string(),
+                            generics,
+                            fields,
+                        };
+
+                        Ok(Expr::NewtypeDef { def, span })
+                    }
                 }
             }
 
@@ -1799,6 +1818,7 @@ impl Expr {
             Self::Loop { .. } => Type::unit(),
             Self::Flow { .. } => Type::unit(),
             Self::TypeAlias { .. } => Type::unit(),
+            Self::NewtypeDef { .. } => Type::unit(),
             Self::UsePackage { .. } => Type::unit(),
             Self::Trait { .. } => Type::unit(),
             Self::Mod { .. } => Type::unit(),
@@ -1846,6 +1866,7 @@ impl Expr {
             Self::Loop { .. } => (),
             Self::Flow { .. } => (),
             Self::TypeAlias { .. } => (),
+            Self::NewtypeDef { .. } => (),
             Self::UsePackage { .. } => (),
             Self::Trait { .. } => (),
             Self::Mod { .. } => (),
@@ -1893,6 +1914,7 @@ impl Expr {
             Self::Loop { span, .. } => span,
             Self::Flow { span, .. } => span,
             Self::TypeAlias { span, .. } => span,
+            Self::NewtypeDef { span, .. } => span,
             Self::UsePackage { span, .. } => span,
             Self::Trait { span, .. } => span,
             Self::Mod { span, .. } => span,
@@ -1942,6 +1964,7 @@ impl Expr {
             Self::Loop { ref mut span, .. } => *span = new_span,
             Self::Flow { ref mut span, .. } => *span = new_span,
             Self::TypeAlias { ref mut span, .. } => *span = new_span,
+            Self::NewtypeDef { ref mut span, .. } => *span = new_span,
             Self::UsePackage { ref mut span, .. } => *span = new_span,
             Self::Trait { ref mut span, .. } => *span = new_span,
             Self::Mod { ref mut span, .. } => *span = new_span,
