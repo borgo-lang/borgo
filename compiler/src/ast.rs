@@ -1733,6 +1733,8 @@ impl Expr {
             0 => Ok("first".to_string()),
             1 => Ok("second".to_string()),
             2 => Ok("third".to_string()),
+            3 => Ok("fourth".to_string()),
+            4 => Ok("fifth".to_string()),
             n => panic!("unsupported tuple index {}", n),
         }
     }

@@ -1892,6 +1892,19 @@ has no field or method:
                 }
             }
 
+            Expr::NewtypeDef { def, span, .. } => {
+                let ty = Type::Con {
+                    name: def.name.clone(),
+                    args: def.generics.iter().map(|g| Type::generic(g)).collect(),
+                };
+
+                self.gs.add_type(
+                    def.name.clone(),
+                    ty.to_bounded_with_generics(def.generics.to_owned()),
+                    self.new_declaration(span),
+                );
+            }
+
             Expr::Closure { fun, span, .. } => {
                 let ty = self.fresh_ty_var();
 
@@ -2149,6 +2162,71 @@ has no field or method:
                     generics: def.generics.clone(),
                     fields: new_fields,
                 };
+
+                self.gs.add_struct(def.name.clone(), def);
+            }
+
+            Expr::NewtypeDef { def, span, .. } => {
+                let mut func_args = vec![];
+
+                let new_fields = def
+                    .fields
+                    .iter()
+                    .enumerate()
+                    .map(|(index, f)| {
+                        self.gs.begin_scope();
+
+                        self.gs
+                            .put_generics_in_scope(&def.generics, self.new_declaration(span));
+
+                        let typ = self.to_type(&f.ann, span);
+
+                        self.gs.exit_scope();
+
+                        let name = Expr::tuple_index_string(index.try_into().unwrap()).unwrap();
+
+                        func_args.push(typ.clone());
+
+                        StructFieldDef {
+                            name,
+                            ann: f.ann.clone(),
+                            ty: typ.to_bounded(),
+                        }
+                    })
+                    .collect();
+
+                let def = StructDefinition {
+                    name: def.name.clone(),
+                    generics: def.generics.clone(),
+                    fields: new_fields,
+                };
+
+                let ty = self.gs.get_type(&def.name).unwrap();
+
+                let bounds = def
+                    .generics
+                    .iter()
+                    .map(|g| Bound {
+                        generic: Type::generic(g),
+                        ty: Type::generic(g),
+                    })
+                    .collect();
+
+                let constructor = Type::Fun {
+                    args: func_args,
+                    bounds,
+                    ret: ty.ty.into(),
+                    id: TypeId::unset(),
+                };
+
+                // given struct Foo(int, bool)
+                // - add value Foo => Fun { args: [int, bool], ret: Foo }
+                // - add struct Foo => { first: int, second: bool }
+                self.gs.add_value(
+                    def.name.clone(),
+                    constructor.to_bounded_with_generics(def.generics.clone()),
+                    self.new_declaration(span),
+                );
 
                 self.gs.add_struct(def.name.clone(), def);
             }
@@ -2694,6 +2772,7 @@ has no field or method:
                         Expr::EnumDef { .. }
                             | Expr::StructDef { .. }
                             | Expr::TypeAlias { .. }
+                            | Expr::NewtypeDef { .. }
                             | Expr::Trait { .. }
                     )
                 })

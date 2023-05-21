@@ -526,3 +526,30 @@ fn borgo_main() {
     c as Map<bool, Map<int, Map<bool, string>>>;
 }
 ```
+
+Tuple structs
+
+> infer("fn () -> Foo")
+
+```rust
+struct Foo(int);
+
+struct Bar<T>(int, T);
+
+fn check(f: Foo) -> int {
+    f.0
+}
+
+fn bar_check(b: Bar<string>) -> (int, string) {
+    (b.0, b.1)
+}
+
+fn borgo_main() -> Foo {
+    let b = Bar(1, false);
+    let c = Bar(1, "yo");
+    bar_check(c);
+
+    check(Foo(1)) as int;
+    Foo(2)
+}
+```

@@ -1735,20 +1735,3 @@ Trait bounds
   check(Baz { x: 1 })
 }
 ```
-
-Tuple structs
-
-> infer("Foo")
-
-```rust-only
-{
-    struct Foo(int);
-
-    fn check(f: Foo) -> int {
-        f.0
-    }
-
-    check(Foo(1)) as int;
-    Foo(2)
-}
-```
