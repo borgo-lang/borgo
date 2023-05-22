@@ -67,3 +67,5 @@ func WithSelector(r io.Reader) {}
 func WithChan(read <-chan int, write chan<- string) {}
 
 func WithLiteralStruct(s struct{}) {}
+
+func (c *Container[any]) UpdateContainer() {}

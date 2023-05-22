@@ -171,6 +171,11 @@ func (p FuncArg) String() string {
 	return p.Name + ": " + p.Type.String()
 }
 
+type Method struct {
+	Recv string
+	Func Function
+}
+
 type Alias struct {
 	Name   string
 	Type   Type
@@ -214,7 +219,8 @@ type Package struct {
 	Aliases  []Alias
 	Newtypes []Newtype
 	Funcs    []Function
-	Vars     []Variable // consts and vars
+	Methods  map[string][]Method // type => methods
+	Vars     []Variable          // consts and vars
 }
 
 func (p *Package) AddFunction(name string, f *ast.FuncType) {
@@ -224,7 +230,8 @@ func (p *Package) AddFunction(name string, f *ast.FuncType) {
 
 func (p *Package) AddMethod(name string, recv string, f *ast.FuncType) {
 	function := Function{Name: name, Type: parseFunc(f)}
-	p.Funcs = append(p.Funcs, function)
+	method := Method{Recv: recv, Func: function}
+	p.Methods[recv] = append(p.Methods[recv], method)
 }
 
 func (p *Package) AddTypeAlias(name string, t Type, bounds []Bound) {
@@ -260,19 +267,29 @@ func (p *Package) String() string {
 	fmt.Fprintf(&w, "#[package(name = %s, path = %s)]\n", p.Name, p.Path)
 	fmt.Fprintf(&w, "mod %s {\n\n", p.Name)
 
-	fmt.Fprint(&w, "extern {\n\n")
-
 	for _, f := range p.Funcs {
-
 		bounds := boundsToString(f.Type.bounds)
 		args := functionArgsToString(f.Type.args)
 		ret := toReturnType(f.Type.ret)
 
-		fmt.Fprintf(&w, "fn %s %s (%s) -> %s;\n\n", f.Name, bounds, args, ret)
+		fmt.Fprintf(&w, "fn %s %s (%s) -> %s { EXT }\n\n", f.Name, bounds, args, ret)
 	}
 
-	// close extern {}
-	fmt.Fprint(&w, "}\n\n")
+	for ty, methods := range p.Methods {
+		// TODO ty is just a Go string for the type, not exactly what we need.
+		fmt.Fprintf(&w, "impl %s {\n\n", ty)
+
+		for _, m := range methods {
+			f := m.Func
+			bounds := boundsToString(f.Type.bounds)
+			args := functionArgsToString(f.Type.args)
+			ret := toReturnType(f.Type.ret)
+
+			fmt.Fprintf(&w, "fn %s %s (self, %s) -> %s { EXT }\n\n", f.Name, bounds, args, ret)
+		}
+
+		fmt.Fprintf(&w, "}\n\n")
+	}
 
 	for _, a := range p.Aliases {
 		fmt.Fprintf(&w, "type %s = %s;\n\n", a.Name, a.Type.String())
@@ -359,8 +376,9 @@ func main() {
 		}
 
 		p := &Package{
-			Name: doc.Name,
-			Path: doc.Name, // TODO how do we get the import path, ie. "net/http"?
+			Name:    doc.Name,
+			Path:    doc.Name, // TODO how do we get the import path, ie. "net/http"?
+			Methods: map[string][]Method{},
 		}
 
 		// Types
