@@ -11,7 +11,7 @@ impl Counter {
   fn ServeHTTP(&mut self, w: http::ResponseWriter, r: &http::Request) {
     self.m.Lock();
     self.count = self.count + 1;
-    let _ = fmt.Fprintf(w, "<h1>count %d</h1>", self.count);
+    fmt.Fprintf(w, "<h1>count %d</h1>", self.count);
     self.m.Unlock();
   }
 }
@@ -45,15 +45,7 @@ func (self *Counter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	self.count = self.count + 1
 
-	var3_result := func() Result[int, error] {
-		var1_check, var2_err := fmt.Fprintf(w, "<h1>count %d</h1>", self.count)
-		if var2_err != nil {
-			return make_Result_Err[int, error](var2_err)
-		}
-		return make_Result_Ok[int, error](var1_check)
-	}()
-
-	_ = var3_result
+	fmt.Fprintf(w, "<h1>count %d</h1>", self.count)
 	self.m.Unlock()
 }
 
