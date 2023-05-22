@@ -243,14 +243,6 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
-        Expr::ExternDecl { items, span } => Expr::ExternDecl {
-            items: items
-                .iter()
-                .map(|e| substitute_expr(e.clone(), instance))
-                .collect(),
-            span,
-        },
-
         Expr::ImplBlock {
             ann,
             ty,

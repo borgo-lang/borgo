@@ -658,10 +658,6 @@ pub enum Expr {
         ty: Type,
         span: Span,
     },
-    ExternDecl {
-        items: Vec<Expr>,
-        span: Span,
-    },
     ImplBlock {
         ann: TypeAst,
         ty: Type,
@@ -1405,47 +1401,6 @@ impl Expr {
                 }
             }
 
-            syn::Item::ForeignMod(f) => {
-                let items = f
-                    .items
-                    .iter()
-                    .map(|i| match i {
-                        syn::ForeignItem::Fn(fun) => {
-                            let (generics, args, ann) =
-                                parse::parse_signature(fun.sig.clone(), None)?;
-
-                            let bounds = parse::parse_bounds(&fun.sig.generics);
-
-                            let fun_name = fun.sig.ident.to_string();
-
-                            let new_func = Function {
-                                name: fun_name,
-                                args,
-                                generics,
-                                bounds,
-                                ret: Type::dummy(),
-                                ann,
-                                body: Expr::Noop.into(),
-                                bounded_ty: Type::dummy().to_bounded(),
-                            };
-
-                            let span = Span::make(i.span());
-
-                            Ok(Expr::Closure {
-                                fun: new_func,
-                                kind: FunctionKind::Inline,
-                                ty: Type::dummy(),
-                                span,
-                            })
-                        }
-
-                        _ => panic!("not yet implemented {:#?}", i),
-                    })
-                    .collect::<Result<_>>()?;
-
-                Ok(Expr::ExternDecl { items, span })
-            }
-
             syn::Item::Impl(i) => {
                 let base_ann = parse::type_from_expr(*i.self_ty.clone());
                 let impl_generics = parse::parse_generics(&i.generics);
@@ -1804,7 +1759,6 @@ impl Expr {
             Self::MethodCall { ty, .. } => ty,
             Self::Return { ty, .. } => ty,
             Self::Try { ty, .. } => ty,
-            Self::ExternDecl { .. } => Type::unit(),
             Self::ImplBlock { .. } => Type::unit(),
             Self::Binary { ty, .. } => ty,
             Self::Paren { ty, .. } => ty,
@@ -1852,7 +1806,6 @@ impl Expr {
             Self::MethodCall { ref mut ty, .. } => *ty = new_ty,
             Self::Return { ref mut ty, .. } => *ty = new_ty,
             Self::Try { ref mut ty, .. } => *ty = new_ty,
-            Self::ExternDecl { .. } => (),
             Self::ImplBlock { .. } => (),
             Self::Binary { .. } => (),
             Self::Paren { ref mut ty, .. } => *ty = new_ty,
@@ -1901,7 +1854,6 @@ impl Expr {
             Self::MethodCall { span, .. } => span,
             Self::Return { span, .. } => span,
             Self::Try { span, .. } => span,
-            Self::ExternDecl { span, .. } => span,
             Self::ImplBlock { span, .. } => span,
             Self::Binary { span, .. } => span,
             Self::Paren { span, .. } => span,
@@ -1951,7 +1903,6 @@ impl Expr {
             Self::MethodCall { ref mut span, .. } => *span = new_span,
             Self::Return { ref mut span, .. } => *span = new_span,
             Self::Try { ref mut span, .. } => *span = new_span,
-            Self::ExternDecl { .. } => (),
             Self::ImplBlock { .. } => (),
             Self::Binary { .. } => (),
             Self::Paren { ref mut span, .. } => *span = new_span,

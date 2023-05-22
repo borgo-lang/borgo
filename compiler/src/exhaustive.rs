@@ -508,7 +508,6 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
         Expr::Return { expr, .. } => check(expr, instance),
         Expr::Try { expr, .. } => check(expr, instance),
 
-        Expr::ExternDecl { .. } => Ok(()),
         Expr::Trait { .. } => Ok(()),
         Expr::Mod { .. } => Ok(()),
         Expr::ImplBlock { items, .. } => items.iter().try_for_each(|a| check(a, instance)),

@@ -311,7 +311,6 @@ impl Codegen {
                 self.emit_call(func, args, call_mode)
             }
             Expr::Literal { lit, ty, .. } => self.emit_literal(lit, ty),
-            Expr::ExternDecl { .. } => EmitResult::empty(),
             Expr::Debug { kind, expr, ty, .. } => self.emit_debug(kind, expr, ty),
             Expr::Return { expr, .. } => self.emit_return(expr),
             Expr::Var {

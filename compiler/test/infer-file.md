@@ -101,7 +101,7 @@ fn borgo_main() {
 }
 ```
 
-Extern declarations with non existing generics
+Mod declarations with non existing generics
 
 > errorContains("Type not found: K")
 
@@ -110,9 +110,7 @@ struct Foo {}
 
 #[package(path = github.com:yo/test, name = test::pkg)]
 mod f {
-  extern {
-    fn bar<T>(x: T, k: K);
-  }
+  fn bar<T>(x: T, k: K) { EXT }
 }
 
 fn borgo_main() {

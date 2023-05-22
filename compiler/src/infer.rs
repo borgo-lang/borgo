@@ -1273,25 +1273,6 @@ has no field or method:
                 }
             }
 
-            // Both this and Trait are sort of redundant.
-            // Checks are already performed when declaring types, but this is still needed to
-            // update the node in the tree. A better way would be to keep around the result of
-            // declare_type
-            Expr::ExternDecl { items, span } => {
-                let new_items = items
-                    .into_iter()
-                    .map(|e| {
-                        let ty = self.fresh_ty_var();
-                        self.infer_expr(e, &ty)
-                    })
-                    .collect();
-
-                Expr::ExternDecl {
-                    items: new_items,
-                    span,
-                }
-            }
-
             Expr::Trait {
                 name,
                 items,
@@ -1817,7 +1798,7 @@ has no field or method:
             f.decls.iter().for_each(|e| self.declare_variants(e));
         });
 
-        // 3. Declare Closure, Impl, Extern and Const
+        // 3. Declare Closure, Impl and Const
         files.iter().for_each(|f| {
             f.decls.iter().for_each(|e| self.declare_type(e));
         });
@@ -1981,22 +1962,6 @@ has no field or method:
                     .add_value(ident.clone(), ty.to_bounded(), self.new_declaration(span));
             }
 
-            Expr::ExternDecl { items, span, .. } => {
-                for e in items {
-                    let ty = self.fresh_ty_var();
-
-                    let fun = e.as_function();
-                    let new_expr = self.infer_expr(create_func(&fun, span), &ty);
-                    let new_func = new_expr.as_function();
-
-                    self.gs.add_value(
-                        new_func.name.clone(),
-                        new_func.bounded_ty.clone(),
-                        self.new_declaration(&span),
-                    );
-                }
-            }
-
             Expr::Trait {
                 name,
                 items,
@@ -2005,7 +1970,6 @@ has no field or method:
                 span,
             } => {
                 // create a struct that holds one field for each fn
-                // This is similar to what ExternDecl does
                 let struct_name = name;
 
                 let decl = self.new_declaration(&span);
