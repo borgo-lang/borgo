@@ -253,26 +253,33 @@ mod global {
     type uint8 = ();
     type uintptr = ();
 
-    extern "C" {
-        fn string(a: any) -> string;
+    fn string(a: any) -> string {
+        EXT
     }
 }
 
 #[package(path = errors, name = errors)]
 mod errors {
-    extern "C" {
-        fn New(text: string) -> error;
+    fn New(text: string) -> error {
+        EXT
     }
 }
 
 #[package(path = fmt, name = fmt)]
 mod fmt {
     use io;
-    extern "C" {
-        fn Printf(format: string, a: VarArgs<any>) -> Result<int>;
-        fn Fprintf(w: io::Writer, format: string, a: VarArgs<any>) -> Result<int>;
-        fn Errorf(format: string, a: VarArgs<any>) -> error;
-        fn Println(a: VarArgs<any>);
+
+    fn Printf(format: string, a: VarArgs<any>) -> Result<int> {
+        EXT
+    }
+    fn Fprintf(w: io::Writer, format: string, a: VarArgs<any>) -> Result<int> {
+        EXT
+    }
+    fn Errorf(format: string, a: VarArgs<any>) -> error {
+        EXT
+    }
+    fn Println(a: VarArgs<any>) {
+        EXT
     }
 }
 
@@ -289,8 +296,10 @@ mod fs {
         fn Sys() -> any;
     }
 
-    extern "C" {
-        fn IsRegular(m: FileMode) -> bool;
+    impl FileMode {
+        fn IsRegular(&self) -> bool {
+            EXT
+        }
     }
 }
 
@@ -306,9 +315,11 @@ mod http {
         fn ServeHTTP(w: ResponseWriter, r: &Request);
     }
 
-    extern "C" {
-        fn Handle(pattern: string, handler: Handler);
-        fn ListenAndServe(addr: string, handler: Handler);
+    fn Handle(pattern: string, handler: Handler) {
+        EXT
+    }
+    fn ListenAndServe(addr: string, handler: Handler) {
+        EXT
     }
 }
 
@@ -323,15 +334,15 @@ mod io {
 
     trait ReadWriter: Reader + Writer {}
 
-    extern "C" {
-        fn Copy(dst: &mut Writer, src: &Reader) -> Result<int64>;
+    fn Copy(dst: &mut Writer, src: &Reader) -> Result<int64> {
+        EXT
     }
 }
 
 #[package(path = log, name = log)]
 mod log {
-    extern "C" {
-        fn Fatalf(format: string, a: VarArgs<any>);
+    fn Fatalf(format: string, a: VarArgs<any>) {
+        EXT
     }
 }
 
@@ -349,37 +360,56 @@ mod os {
 
     use io::fs;
 
-    extern "C" {
-        fn Close(f: &mut File) -> error;
-        fn Create(name: string) -> Result<&mut File>;
-        fn LookupEnv(key: string) -> Option<string>;
-        fn Open(name: string) -> Result<&mut File>;
-        fn ReadFile(path: string) -> Result<[byte]>;
-        fn Stat(name: string) -> Result<fs::FileInfo>;
-        fn Write(f: &mut File, b: [byte]) -> Result<int>;
-        fn Read(f: &File, b: [byte]) -> Result<int>;
+    impl File {
+        fn Close(&mut self) -> error {
+            EXT
+        }
+        fn Write(&mut self, b: [byte]) -> Result<int> {
+            EXT
+        }
+        fn Read(&self, b: [byte]) -> Result<int> {
+            EXT
+        }
+    }
+
+    fn Create(name: string) -> Result<&mut File> {
+        EXT
+    }
+    fn LookupEnv(key: string) -> Option<string> {
+        EXT
+    }
+    fn Open(name: string) -> Result<&mut File> {
+        EXT
+    }
+    fn ReadFile(path: string) -> Result<[byte]> {
+        EXT
+    }
+    fn Stat(name: string) -> Result<fs::FileInfo> {
+        EXT
     }
 }
 
 #[package(path = math/rand, name = math::rand)]
 mod rand {
-    extern "C" {
-        fn Int() -> int;
-        fn Float64() -> float64;
+    fn Int() -> int {
+        EXT
+    }
+    fn Float64() -> float64 {
+        EXT
     }
 }
 
 #[package(path = reflect, name = reflect)]
 mod reflect {
-    extern "C" {
-        fn DeepEqual<T, Y>(a: T, b: Y) -> bool;
+    fn DeepEqual<T, Y>(a: T, b: Y) -> bool {
+        EXT
     }
 }
 
 #[package(path = strings, name = strings)]
 mod strings {
-    extern "C" {
-        fn HasPrefix(s: string, prefix: string) -> bool;
+    fn HasPrefix(s: string, prefix: string) -> bool {
+        EXT
     }
 }
 
@@ -388,11 +418,25 @@ mod sync {
     struct Mutex {}
     struct WaitGroup {}
 
-    extern "C" {
-        fn Lock(m: &mut Mutex);
-        fn Unlock(m: &mut Mutex);
-        fn Add(wg: &mut WaitGroup, delta: int);
-        fn Done(wg: &mut WaitGroup);
-        fn Wait(wg: &mut WaitGroup);
+    impl Mutex {
+        fn Lock(&mut self) {
+            EXT
+        }
+
+        fn Unlock(&mut self) {
+            EXT
+        }
+    }
+
+    impl WaitGroup {
+        fn Add(&mut self, delta: int) {
+            EXT
+        }
+        fn Done(&mut self) {
+            EXT
+        }
+        fn Wait(&mut self) {
+            EXT
+        }
     }
 }

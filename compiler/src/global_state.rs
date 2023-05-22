@@ -237,13 +237,15 @@ impl GlobalState {
 
     pub fn add_method(
         &mut self,
-        base_ty: &Type,
+        base_ty: &str,
         method_name: &str,
         ty: BoundedType,
         decl: Declaration,
     ) {
-        let base_ty = base_ty.get_name().unwrap();
-        let methods = self.methods.entry(base_ty).or_insert(HashMap::new());
+        let methods = self
+            .methods
+            .entry(base_ty.to_string())
+            .or_insert(HashMap::new());
 
         methods.insert(method_name.to_string(), TypeDef { ty, decl });
     }
@@ -339,6 +341,18 @@ impl GlobalState {
             }
         }
 
+        let mut methods = HashMap::new();
+        for t in &types {
+            let ty = t.1.ty.ty.get_name();
+
+            if let Some(name) = ty {
+                let ty_methods = self.get_type_methods(&name);
+                if !ty_methods.is_empty() {
+                    methods.insert(name, ty_methods);
+                }
+            }
+        }
+
         let mut interfaces = HashMap::new();
         for i in self.interfaces.values() {
             if types.contains_key(&i.name) {
@@ -353,6 +367,7 @@ impl GlobalState {
             enums,
             structs,
             values,
+            methods,
             interfaces,
         }
     }
@@ -373,6 +388,19 @@ impl GlobalState {
             }
 
             self.add_struct(name, def);
+        }
+
+        for (name, methods) in &module.methods {
+            let name = module.rewrite(pkg, name);
+
+            for (method_name, def) in methods {
+                self.add_method(
+                    &name,
+                    method_name,
+                    module.rewrite_type(pkg, &def.ty),
+                    def.decl.clone(),
+                );
+            }
         }
 
         for interface in module.interfaces.values() {
@@ -408,6 +436,15 @@ impl GlobalState {
             .iter()
             .find_map(|scope| scope.assumptions.get(ty_name))
             .cloned()
+    }
+
+    pub fn begin_mod_scope(&mut self) {
+        self.begin_scope();
+        self.add_value(
+            "EXT".to_string(),
+            Type::any().to_bounded(),
+            Declaration::dummy(),
+        );
     }
 }
 
@@ -477,6 +514,7 @@ pub struct Module {
     pub enums: HashMap<String, EnumDefinition>,
     pub structs: HashMap<String, StructDefinition>,
     pub values: HashMap<String, ValueDef>,
+    pub methods: HashMap<String, HashMap<String, TypeDef>>, // type => (method => signature)
     pub interfaces: HashMap<String, Interface>,
 }
 

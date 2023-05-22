@@ -421,10 +421,11 @@ mod regexp {
   // private type
   type Regexp = ();
 
-  extern {
-    fn Compile(expr: string) -> Result<&mut Regexp, error>;
-    fn MustCompile(expr: string) -> &mut Regexp;
-    fn MatchString(re: &Regexp, s: string) -> bool;
+  fn Compile(expr: string) -> Result<&mut Regexp, error> { EXT }
+  fn MustCompile(expr: string) -> &mut Regexp { EXT }
+
+  impl Regexp {
+    fn MatchString(&self, s: string) -> bool { EXT }
   }
 }
 

@@ -1322,6 +1322,8 @@ has no field or method:
                 items,
                 span,
             } => {
+                self.gs.begin_mod_scope();
+
                 let new_items = items
                     .into_iter()
                     .map(|e| {
@@ -1329,6 +1331,8 @@ has no field or method:
                         self.infer_expr(e, &ty)
                     })
                     .collect();
+
+                self.gs.exit_scope();
 
                 Expr::Mod {
                     name,
@@ -1931,7 +1935,7 @@ has no field or method:
                     self.gs
                         .put_generics_in_scope(&generics, self.new_declaration(&span));
 
-                    let base_ty = self.to_type(&ann, &span);
+                    let base_ty = self.to_type(&ann, &span).get_name().unwrap();
 
                     let decl = self.new_declaration(&e.get_span());
                     let ty = self.fresh_ty_var();
@@ -2632,7 +2636,7 @@ has no field or method:
                     name, pkg, items, ..
                 } = e
                 {
-                    self.gs.begin_scope();
+                    self.gs.begin_mod_scope();
                     self.current_file_id = Some(FileId {
                         package: name.clone(),
                         filename: f.name.clone(),
@@ -2660,7 +2664,7 @@ has no field or method:
                     name, pkg, items, ..
                 } = e
                 {
-                    self.gs.begin_scope();
+                    self.gs.begin_mod_scope();
                     self.current_file_id = Some(FileId {
                         package: name.clone(),
                         filename: f.name.clone(),
@@ -2717,16 +2721,6 @@ has no field or method:
                 ann: TypeAst::Unknown,
                 ty: module.rewrite_type(name, &v.ty),
             });
-
-            // If this value has a receiver defined in this package, then add it as a method
-            if let Some((receiver, decl)) = self.external_func_is_method(&name, &v.ty.ty) {
-                self.gs.add_method(
-                    &module.rewrite_type_impl(name, &receiver),
-                    &binding,
-                    module.rewrite_type(name, &v.ty),
-                    decl,
-                );
-            }
         }
 
         let def = StructDefinition {
@@ -2769,19 +2763,6 @@ has no field or method:
                 })
                 .for_each(|e| self.declare_type(e));
         });
-    }
-
-    fn external_func_is_method(&mut self, name: &str, ty: &Type) -> Option<(Type, Declaration)> {
-        let args = ty.get_function_args()?;
-        let receiver = args.first()?;
-        let ty_name = receiver.remove_references().get_name()?;
-        let type_def = self.gs.get_global_type_declaration(&ty_name)?;
-
-        if type_def.decl.file_id.package == name {
-            return Some((receiver.remove_references(), type_def.decl));
-        }
-
-        None
     }
 
     fn check_numeric(&mut self, ty: &Type, span: &Span) {
