@@ -2,13 +2,6 @@ package testpkg
 
 import "io"
 
-type Container[T any] struct {
-	X T
-}
-
-func (c *Container[T]) UpdateContainer() {}
-
-/*
 type HobbyKind int
 
 type AliasForString = string
@@ -75,5 +68,6 @@ func WithChan(read <-chan int, write chan<- string) {}
 
 func WithLiteralStruct(s struct{}) {}
 
-func (c *Container[any]) UpdateContainer() {}
-*/
+func (c *Container[T]) UpdateContainer() {}
+
+func (c Container[Y]) MethodValue() {}

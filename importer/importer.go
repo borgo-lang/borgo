@@ -172,7 +172,7 @@ func (p FuncArg) String() string {
 }
 
 type Method struct {
-	SelfType SelfType
+	SelfType Type
 	Func     Function
 }
 
@@ -185,11 +185,6 @@ type Alias struct {
 type Newtype struct {
 	Name   string
 	Type   Type
-	Bounds []Bound
-}
-
-type SelfType struct {
-	Name   string
 	Bounds []Bound
 }
 
@@ -233,14 +228,38 @@ func (p *Package) AddFunction(name string, f *ast.FuncType) {
 	p.Funcs = append(p.Funcs, function)
 }
 
-func (p *Package) AddMethod(name string, recv string, list *ast.FieldList, f *ast.FuncType) {
+func (p *Package) AddMethod(name string, recv string, isPointer bool, list *ast.FieldList, f *ast.FuncType) {
 	bounds := parseBounds(list)
-	selfType := SelfType{Name: recv, Bounds: bounds}
+	generics := []Type{}
+
+	for _, b := range bounds {
+		generics = append(generics, removeReferences(b.Type))
+	}
+
+	selfType := TyCon{name: recv, args: generics}
+
+	if isPointer {
+		selfType = TyCon{name: "Ref", args: []Type{selfType}}
+	}
 
 	function := Function{Name: name, Type: parseFunc(f)}
 	method := Method{SelfType: selfType, Func: function}
 
 	p.Methods[recv] = append(p.Methods[recv], method)
+}
+
+func removeReferences(ty Type) Type {
+	switch ty := ty.(type) {
+	case TyCon:
+		if ty.name == "Ref" || ty.name == "RefMut" {
+			return ty.args[0]
+		}
+
+	case TyFun:
+		panic("removeReferences on funcs shouldn't be needed...")
+	}
+
+	return ty
 }
 
 func (p *Package) AddTypeAlias(name string, t Type, bounds []Bound) {
@@ -270,6 +289,19 @@ func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind
 	p.Types = append(p.Types, s)
 }
 
+func (p *Package) GroupMethodsByGenerics() map[string][]Method {
+	ret := map[string][]Method{}
+
+	for _, methods := range p.Methods {
+		for _, m := range methods {
+			ty := removeReferences(m.SelfType).String()
+			ret[ty] = append(ret[ty], m)
+		}
+	}
+
+	return ret
+}
+
 func (p *Package) String() string {
 	var w bytes.Buffer
 
@@ -284,7 +316,7 @@ func (p *Package) String() string {
 		fmt.Fprintf(&w, "fn %s %s (%s) -> %s { EXT }\n\n", f.Name, bounds, args, ret)
 	}
 
-	for ty, methods := range p.Methods {
+	for ty, methods := range p.GroupMethodsByGenerics() {
 		// TODO ty is just a Go string for the type, not exactly what we need.
 		fmt.Fprintf(&w, "impl %s {\n\n", ty)
 
@@ -293,8 +325,9 @@ func (p *Package) String() string {
 			bounds := boundsToString(f.Type.bounds)
 			args := functionArgsToString(f.Type.args)
 			ret := toReturnType(f.Type.ret)
+			self := selfTypeToString(m.SelfType)
 
-			fmt.Fprintf(&w, "fn %s %s (self, %s) -> %s { EXT }\n\n", f.Name, bounds, args, ret)
+			fmt.Fprintf(&w, "fn %s %s (%s, %s) -> %s { EXT }\n\n", f.Name, bounds, self, args, ret)
 		}
 
 		fmt.Fprintf(&w, "}\n\n")
@@ -337,6 +370,21 @@ func (p *Package) String() string {
 	fmt.Fprint(&w, "}\n\n")
 
 	return w.String()
+}
+
+func selfTypeToString(ty Type) string {
+	if con, ok := ty.(TyCon); ok {
+		switch con.name {
+		case "Ref":
+			return "&self"
+		case "RefMut":
+			return "&mut self"
+		}
+
+		return "self"
+	}
+
+	panic("expected TyCon as self type")
 }
 
 func splitBoundsAndFieldsForInterface(structFields []StructField) ([]string, []StructField) {
@@ -404,7 +452,8 @@ func main() {
 			for _, f := range t.Methods {
 				// TODO parse recv
 				// fmt.Println(f.Recv) string starting with *
-				p.AddMethod(f.Name, t.Name, f.Decl.Recv, f.Decl.Type)
+				isPointer := strings.HasPrefix(f.Recv, "*")
+				p.AddMethod(f.Name, t.Name, isPointer, f.Decl.Recv, f.Decl.Type)
 			}
 
 			for _, decl := range t.Decl.Specs {
