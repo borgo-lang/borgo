@@ -116,7 +116,7 @@ impl GlobalState {
         // many passes over the ast, but for now this check is necessary.
         //
         if let Some(existing) = self.type_aliases.get(&name) {
-            if existing.ty.ty != Type::dummy() {
+            if !existing.ty.ty.is_var() {
                 return;
             }
         }

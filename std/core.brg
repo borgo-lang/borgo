@@ -353,12 +353,12 @@ mod math {
 
 #[package(path = os, name = os)]
 mod os {
-    // TODO fix when type aliases work
-    // struct FileInfo {}
+    use io::fs;
+
+    type FileInfo = fs::FileInfo;
 
     struct File {}
 
-    use io::fs;
 
     impl File {
         fn Close(&mut self) -> error {
@@ -384,7 +384,7 @@ mod os {
     fn ReadFile(path: string) -> Result<[byte]> {
         EXT
     }
-    fn Stat(name: string) -> Result<fs::FileInfo> {
+    fn Stat(name: string) -> Result<FileInfo> {
         EXT
     }
 }
