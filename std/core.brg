@@ -234,6 +234,7 @@ mod global {
     trait comparable {}
     type complex128 = ();
     type complex64 = ();
+    type string = (); // TODO asdf move this back when trait items are not declared in declare_type anymore
     trait error {
         fn Error() -> string;
     }
@@ -245,7 +246,7 @@ mod global {
     type int64 = ();
     type int8 = ();
     type rune = ();
-    type string = ();
+    // type string = ();
     type uint = ();
     type uint16 = ();
     type uint32 = ();
@@ -355,7 +356,9 @@ mod math {
 mod os {
     use io::fs;
 
-    type FileInfo = fs::FileInfo;
+    // TODO remove this when type aliases across packages work properly
+    // type FileInfo = fs::FileInfo;
+    struct FileInfo {}
 
     struct File {}
 
@@ -384,7 +387,9 @@ mod os {
     fn ReadFile(path: string) -> Result<[byte]> {
         EXT
     }
-    fn Stat(name: string) -> Result<FileInfo> {
+    // TODO change this
+    // fn Stat(name: string) -> Result<FileInfo> {
+    fn Stat(name: string) -> Result<fs::FileInfo> {
         EXT
     }
 }

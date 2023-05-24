@@ -1727,18 +1727,22 @@ has no field or method:
             })
         });
 
-        if errors.is_empty() && !had_errors.is_empty() {
-            // TODO asdf we don't have information about the file that triggered the error here...
-            // so the best we can do is to wrap up the error in a random file and call it a day :/
-            // this is obviously wrong
-            errors.insert(pkg.files.first().unwrap().name.to_string(), had_errors);
-        }
-
-        Package {
+        let mut new_pkg = Package {
             name: pkg.name.clone(),
             files,
             errors,
+        };
+
+        if new_pkg.first_error().is_none() && !had_errors.is_empty() {
+            // TODO asdf we don't have information about the file that triggered the error here...
+            // so the best we can do is to wrap up the error in a random file and call it a day :/
+            // this is obviously wrong
+            new_pkg
+                .errors
+                .insert(new_pkg.files.first().unwrap().name.to_string(), had_errors);
         }
+
+        new_pkg
     }
 
     pub fn infer_file(&mut self, pkg: &Package, file: &File) -> (File, Vec<Error>) {
@@ -1969,6 +1973,10 @@ has no field or method:
                 types,
                 span,
             } => {
+                // TODO asdf at this stage, this should only call add_type,
+                // not create the full struct with all the fields because types referenced by the
+                // methods in the interface may still be undeclared.
+
                 // create a struct that holds one field for each fn
                 let struct_name = name;
 
@@ -2201,7 +2209,14 @@ has no field or method:
                     return;
                 }
 
+                self.gs.begin_scope();
+
+                self.gs
+                    .put_generics_in_scope(&def.generics, self.new_declaration(span));
+
                 let ty = self.to_type(&def.ann, span);
+
+                self.gs.exit_scope();
 
                 self.gs.add_type_alias(
                     def.name.clone(),

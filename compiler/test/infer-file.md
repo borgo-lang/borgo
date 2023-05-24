@@ -551,3 +551,12 @@ fn borgo_main() -> Foo {
     Foo(2)
 }
 ```
+
+Type aliases to non existing types
+
+> errorContains("Type not found: Bar")
+
+```rust-skip
+// TODO this is still broken
+type Foo = Bar;
+```
