@@ -316,9 +316,18 @@ func (p *Package) String() string {
 		fmt.Fprintf(&w, "fn %s %s (%s) -> %s { EXT }\n\n", f.Name, bounds, args, ret)
 	}
 
-	for ty, methods := range p.GroupMethodsByGenerics() {
+	grouped := p.GroupMethodsByGenerics()
+	sortedTypes := []string{}
+
+	for t := range grouped {
+		sortedTypes = append(sortedTypes, t)
+	}
+
+	for _, ty := range sortedTypes {
 		// TODO ty is just a Go string for the type, not exactly what we need.
 		fmt.Fprintf(&w, "impl %s {\n\n", ty)
+
+		methods := grouped[ty]
 
 		for _, m := range methods {
 			f := m.Func
