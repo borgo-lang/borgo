@@ -453,7 +453,14 @@ func main() {
 				// TODO parse recv
 				// fmt.Println(f.Recv) string starting with *
 				isPointer := strings.HasPrefix(f.Recv, "*")
-				p.AddMethod(f.Name, t.Name, isPointer, f.Decl.Recv, f.Decl.Type)
+
+				// this is terrible, I know
+				fieldList := f.Decl.Recv
+				if !strings.Contains(f.Recv, "[") {
+					fieldList = nil
+				}
+
+				p.AddMethod(f.Name, t.Name, isPointer, fieldList, f.Decl.Type)
 			}
 
 			for _, decl := range t.Decl.Specs {

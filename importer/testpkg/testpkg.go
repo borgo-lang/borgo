@@ -69,5 +69,4 @@ func WithChan(read <-chan int, write chan<- string) {}
 func WithLiteralStruct(s struct{}) {}
 
 func (c *Container[T]) UpdateContainer() {}
-
-func (c Container[Y]) MethodValue() {}
+func (c Container[Y]) MethodValue()      {}
