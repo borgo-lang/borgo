@@ -172,8 +172,8 @@ func (p FuncArg) String() string {
 }
 
 type Method struct {
-	Recv string
-	Func Function
+	SelfType SelfType
+	Func     Function
 }
 
 type Alias struct {
@@ -185,6 +185,11 @@ type Alias struct {
 type Newtype struct {
 	Name   string
 	Type   Type
+	Bounds []Bound
+}
+
+type SelfType struct {
+	Name   string
 	Bounds []Bound
 }
 
@@ -228,9 +233,13 @@ func (p *Package) AddFunction(name string, f *ast.FuncType) {
 	p.Funcs = append(p.Funcs, function)
 }
 
-func (p *Package) AddMethod(name string, recv string, f *ast.FuncType) {
+func (p *Package) AddMethod(name string, recv string, list *ast.FieldList, f *ast.FuncType) {
+	bounds := parseBounds(list)
+	selfType := SelfType{Name: recv, Bounds: bounds}
+
 	function := Function{Name: name, Type: parseFunc(f)}
-	method := Method{Recv: recv, Func: function}
+	method := Method{SelfType: selfType, Func: function}
+
 	p.Methods[recv] = append(p.Methods[recv], method)
 }
 
@@ -395,7 +404,7 @@ func main() {
 			for _, f := range t.Methods {
 				// TODO parse recv
 				// fmt.Println(f.Recv) string starting with *
-				p.AddMethod(f.Name, f.Recv, f.Decl.Type)
+				p.AddMethod(f.Name, t.Name, f.Decl.Recv, f.Decl.Type)
 			}
 
 			for _, decl := range t.Decl.Specs {
@@ -586,6 +595,9 @@ func parseTypeExpr(expr ast.Expr) Type {
 		}
 
 		return mono("Unit")
+
+	case *ast.IndexExpr:
+		return parseTypeExpr(ty.Index)
 
 	default:
 		log.Fatalf("unhandled typeExpr %T\n%v", expr, expr)
