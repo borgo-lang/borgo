@@ -1432,7 +1432,7 @@ has no field or method:
                 };
 
                 self.add_constraint(&collection_ty, &expr_ty, &span);
-                self.add_constraint(&index_ty, &expected_index, &span);
+                self.add_constraint(&expected_index, &index_ty, &span);
                 self.add_constraint(expected, &inner_ty, &span);
 
                 Expr::Index {
