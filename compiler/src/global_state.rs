@@ -1,13 +1,11 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::{
-    ast::{
-        EnumDefinition, File, FileId, NewtypeDefinition, PkgImport, Span, StructDefinition,
-        TypeAliasDef,
-    },
-    type_::{BoundedType, ModuleId, Symbol, Type},
+use crate::ast::{
+    EnumDefinition, File, FileId, NewtypeDefinition, PkgImport, Span, StructDefinition,
+    TypeAliasDef,
 };
+use crate::type_::{BoundedType, ModuleId, Symbol, Type};
 
 pub struct GlobalState {
     next_var: i32,

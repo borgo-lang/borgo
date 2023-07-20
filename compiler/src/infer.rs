@@ -21,9 +21,6 @@ pub struct Infer {
     // The return type of the current function being inferred
     current_fn_ret_ty: Option<Type>,
 
-    // The file being processed
-    // current_file_id: Option<FileId>,
-
     // accumulate all errors encountered during inference
     pub errors: Vec<Error>,
 
@@ -3037,20 +3034,8 @@ has no field or method:
             fields,
         };
 
-        {
-            self.add_value(name, ty.to_bounded(), &span);
-            self.add_package(name, def, ty.to_bounded());
-
-            // let m = self.gs.module();
-            // Add the type
-            // m.types.insert(struct_sym.clone(), ty.to_bounded());
-
-            // Add the value
-            // m.values.insert(struct_sym.clone(), ty.to_bounded());
-
-            // Add the struct
-            // m.structs.insert(struct_sym.clone(), def);
-        }
+        self.add_value(name, ty.to_bounded(), &span);
+        self.add_package(name, def, ty.to_bounded());
     }
 
     fn add_package(&mut self, name: &str, def: StructDefinition, ty: BoundedType) {
