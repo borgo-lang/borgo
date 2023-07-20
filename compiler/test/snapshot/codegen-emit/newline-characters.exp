@@ -1,0 +1,24 @@
+Newline characters
+
+SOURCE:
+use fmt;
+
+fn main() {
+  let x = '\n';
+  fmt.Printf("a%sb", x);
+}
+
+OUTPUT:
+a%!s(int32=10)b
+---
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	x := '\n'
+
+	fmt.Printf("a%sb", x)
+}

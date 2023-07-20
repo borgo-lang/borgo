@@ -1,0 +1,123 @@
+fn In(r: rune, ranges: VarArgs<&RangeTable>) -> bool {
+    EXT
+}
+
+fn Is(rangeTab: &RangeTable, r: rune) -> bool {
+    EXT
+}
+
+fn IsControl(r: rune) -> bool {
+    EXT
+}
+
+fn IsDigit(r: rune) -> bool {
+    EXT
+}
+
+fn IsGraphic(r: rune) -> bool {
+    EXT
+}
+
+fn IsLetter(r: rune) -> bool {
+    EXT
+}
+
+fn IsLower(r: rune) -> bool {
+    EXT
+}
+
+fn IsMark(r: rune) -> bool {
+    EXT
+}
+
+fn IsNumber(r: rune) -> bool {
+    EXT
+}
+
+fn IsOneOf(ranges: [&RangeTable], r: rune) -> bool {
+    EXT
+}
+
+fn IsPrint(r: rune) -> bool {
+    EXT
+}
+
+fn IsPunct(r: rune) -> bool {
+    EXT
+}
+
+fn IsSpace(r: rune) -> bool {
+    EXT
+}
+
+fn IsSymbol(r: rune) -> bool {
+    EXT
+}
+
+fn IsTitle(r: rune) -> bool {
+    EXT
+}
+
+fn IsUpper(r: rune) -> bool {
+    EXT
+}
+
+fn SimpleFold(r: rune) -> rune {
+    EXT
+}
+
+fn To(_case: int, r: rune) -> rune {
+    EXT
+}
+
+fn ToLower(r: rune) -> rune {
+    EXT
+}
+
+fn ToTitle(r: rune) -> rune {
+    EXT
+}
+
+fn ToUpper(r: rune) -> rune {
+    EXT
+}
+
+impl SpecialCase {
+    fn ToLower(self, r: rune) -> rune {
+        EXT
+    }
+
+    fn ToTitle(self, r: rune) -> rune {
+        EXT
+    }
+
+    fn ToUpper(self, r: rune) -> rune {
+        EXT
+    }
+}
+
+type SpecialCase = [CaseRange];
+
+struct CaseRange {
+    Lo: uint32,
+    Hi: uint32,
+    // Delta: d // TODO d is not exported so... why is it public?
+}
+
+struct Range16 {
+    Lo: uint16,
+    Hi: uint16,
+    Stride: uint16,
+}
+
+struct Range32 {
+    Lo: uint32,
+    Hi: uint32,
+    Stride: uint32,
+}
+
+struct RangeTable {
+    R16: [Range16],
+    R32: [Range32],
+    LatinOffset: int,
+}

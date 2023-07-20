@@ -1,42 +1,46 @@
 use crate::ast::{
     Arm, Binding, Constructor, EnumDefinition, EnumFieldDef, Expr, File, Function, FunctionKind,
-    Literal, Loop, Operator, Pat, PkgImport, Span, StructDefinition, StructField, StructFieldDef,
-    StructFieldPat, TypeAst, UnOp,
+    Generic, Literal, Loop, NewtypeDefinition, Operator, Pat, PkgImport, Span, StructDefinition,
+    StructField, StructFieldDef, StructFieldPat, TypeAliasDef, TypeAst, UnOp,
 };
 use crate::error::{ArityError, Error, UnificationError};
 use crate::exhaustive;
-use crate::global_state::{Declaration, FileId, GlobalState, Interface, Module, ValueDef};
-use crate::project::Package;
+use crate::global_state::{GlobalState, Interface, Module, ModuleImport, Visibility};
 use crate::substitute;
-use crate::type_::{Bound, BoundedType, Type, TypeId};
+use crate::type_::{Bound, BoundedType, ModuleId, Symbol, Type};
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 pub struct Infer {
     pub gs: GlobalState,
+
+    scopes: VecDeque<Scope>,
+
     substitutions: HashMap<i32, Type>,
 
     // The return type of the current function being inferred
     current_fn_ret_ty: Option<Type>,
 
     // The file being processed
-    current_file_id: Option<FileId>,
+    // current_file_id: Option<FileId>,
 
     // accumulate all errors encountered during inference
-    errors: Vec<Error>,
+    pub errors: Vec<Error>,
+
+    fs: Box<dyn crate::fs::FileSystem>,
 }
 
 impl Infer {
-    pub fn new() -> Self {
-        let mut gs = GlobalState::new();
-        Self::init_builtin_types(&mut gs);
+    pub fn new(fs: Box<dyn crate::fs::FileSystem>) -> Self {
+        let gs = GlobalState::new();
 
         Self {
             gs,
+            scopes: VecDeque::from([Scope::new()]),
             substitutions: Default::default(),
             current_fn_ret_ty: None,
-            current_file_id: None,
             errors: Default::default(),
+            fs,
         }
     }
 
@@ -66,8 +70,33 @@ impl Infer {
     }
 
     pub fn dump(&self) {
-        self.gs.dump();
+        // self.gs.dump();
         eprintln!("SUBS {:#?}", self.substitutions);
+    }
+
+    pub fn get_errors(&self) -> Vec<Error> {
+        self.errors.clone()
+    }
+
+    pub fn first_error(&self) -> Option<String> {
+        self.get_errors().first().map(|e| {
+            let file_id = e.get_span().file;
+            let module_id = self
+                .gs
+                .files
+                .get(&file_id)
+                .expect("All files should be registered in GlobalState");
+
+            let module = self.gs.get_module(module_id).unwrap();
+
+            let source = &module
+                .files
+                .get(&file_id)
+                .expect("Module must have file")
+                .source;
+
+            e.stringify(Some(source))
+        })
     }
 
     pub fn substitute(&mut self, typ: Type) -> Type {
@@ -79,20 +108,15 @@ impl Infer {
 
             Type::Var(_) => typ,
 
-            Type::Con { name, args } => {
+            Type::Con { id: name, args } => {
                 let new_args = args.into_iter().map(|a| self.substitute(a)).collect();
                 Type::Con {
-                    name,
+                    id: name,
                     args: new_args,
                 }
             }
 
-            Type::Fun {
-                args,
-                bounds,
-                ret,
-                id: fx,
-            } => {
+            Type::Fun { args, bounds, ret } => {
                 let new_args = args.into_iter().map(|a| self.substitute(a)).collect();
                 let new_bounds = bounds
                     .into_iter()
@@ -107,61 +131,135 @@ impl Infer {
                     args: new_args,
                     bounds: new_bounds,
                     ret: new_ret.into(),
-                    id: fx,
                 }
             }
         }
+    }
+
+    pub fn begin_scope(&mut self) {
+        let new_scope = self.current_scope().clone();
+        self.scopes.push_front(new_scope);
+    }
+
+    pub fn exit_scope(&mut self) {
+        self.scopes.pop_front();
+    }
+
+    fn current_scope(&mut self) -> &mut Scope {
+        self.scopes.front_mut().unwrap()
+    }
+
+    pub fn reset_scope(&mut self) {
+        self.scopes = VecDeque::from([Scope::new()]);
+    }
+
+    fn resolve(&self, name: &str) -> Option<Symbol> {
+        self.scopes
+            .iter()
+            .find_map(|scope| scope.types.get(name))
+            .cloned()
+    }
+
+    pub fn builtin_type(&self, name: &str) -> Type {
+        let sym = &self.scopes.front().unwrap().types[name];
+        let m = ModuleId("std".to_string());
+        self.gs.modules[&m].types[sym].ty.clone()
+    }
+
+    pub fn type_slice(&self, typ: Type) -> Type {
+        self.builtin_type("Slice").swap_arg(0, typ)
+    }
+
+    pub fn type_map(&self, x: Type, y: Type) -> Type {
+        self.builtin_type("Map").swap_arg(0, x).swap_arg(1, y)
+    }
+
+    pub fn type_tuple2(&self, x: Type, y: Type) -> Type {
+        self.builtin_type("Tuple2").swap_arg(0, x).swap_arg(1, y)
+    }
+
+    pub fn type_result(&self, x: Type, y: Type) -> Type {
+        self.builtin_type("Result").swap_arg(0, x).swap_arg(1, y)
+    }
+
+    pub fn type_reference(&self, typ: Type) -> Type {
+        self.builtin_type("Ref").swap_arg(0, typ)
+    }
+
+    pub fn type_unit(&self) -> Type {
+        self.builtin_type("Unit")
+    }
+    pub fn type_int(&self) -> Type {
+        self.builtin_type("int")
+    }
+    pub fn type_float(&self) -> Type {
+        self.builtin_type("float64")
+    }
+    pub fn type_string(&self) -> Type {
+        self.builtin_type("string")
+    }
+    pub fn type_char(&self) -> Type {
+        self.builtin_type("rune")
+    }
+    pub fn type_bool(&self) -> Type {
+        self.builtin_type("bool")
+    }
+    pub fn type_any(&self) -> Type {
+        self.builtin_type("any")
+    }
+    pub fn type_channel_op(&self, typ: Type) -> Type {
+        self.builtin_type("ChannelOp").swap_arg(0, typ)
     }
 
     pub fn infer_expr(&mut self, expr: Expr, expected: &Type) -> Expr {
         match expr {
             Expr::Literal { lit, span, .. } => match lit {
                 Literal::Bool(b) => {
-                    self.add_constraint(expected, &Type::bool(), &span);
+                    self.add_constraint(expected, &self.type_bool(), &span);
 
                     Expr::Literal {
                         lit: Literal::Bool(b),
-                        ty: Type::bool(),
+                        ty: self.type_bool(),
                         span,
                     }
                 }
 
                 Literal::Int(i) => {
-                    self.add_constraint(expected, &Type::int(), &span);
+                    self.add_constraint(expected, &self.type_int(), &span);
 
                     Expr::Literal {
                         lit: Literal::Int(i),
-                        ty: Type::int(),
+                        ty: self.type_int(),
                         span,
                     }
                 }
 
                 Literal::Float(i) => {
-                    self.add_constraint(expected, &Type::float(), &span);
+                    self.add_constraint(expected, &self.type_float(), &span);
 
                     Expr::Literal {
                         lit: Literal::Float(i),
-                        ty: Type::float(),
+                        ty: self.type_float(),
                         span,
                     }
                 }
 
                 Literal::String(s, token) => {
-                    self.add_constraint(expected, &Type::string(), &span);
+                    self.add_constraint(expected, &self.type_string(), &span);
 
                     Expr::Literal {
                         lit: Literal::String(s, token),
-                        ty: Type::string(),
+                        ty: self.type_string(),
                         span,
                     }
                 }
 
                 Literal::Char(s) => {
-                    self.add_constraint(expected, &Type::char(), &span);
+                    self.add_constraint(expected, &self.type_char(), &span);
 
                     Expr::Literal {
                         lit: Literal::Char(s),
-                        ty: Type::char(),
+                        ty: self.type_char(),
                         span,
                     }
                 }
@@ -170,7 +268,7 @@ impl Infer {
                     let ty = self.fresh_ty_var();
                     let new_elems = elems.into_iter().map(|e| self.infer_expr(e, &ty)).collect();
 
-                    let ty = Type::slice(ty);
+                    let ty = self.type_slice(ty);
                     self.add_constraint(expected, &ty, &span);
 
                     Expr::Literal {
@@ -184,15 +282,19 @@ impl Infer {
             Expr::Block {
                 ref stmts, span, ..
             } => {
+                // NEW SCOPE
+                self.begin_scope();
+
                 let mut stmts = stmts.to_vec();
                 let was_empty = stmts.is_empty();
 
-                // Take the last statement so we can run inference on it later
-                let last = stmts
-                    .pop()
-                    .unwrap_or_else(|| Expr::Unit { span: span.clone() });
+                self.declare_stmts(&stmts, &Visibility::Local);
 
-                stmts.iter().for_each(|e| self.declare_type(e));
+                // Take the last statement so we can run inference on it later
+                let last = stmts.pop().unwrap_or_else(|| Expr::Unit {
+                    ty: self.type_unit(),
+                    span: span.clone(),
+                });
 
                 let mut new_stmts: Vec<_> = stmts
                     .iter()
@@ -217,6 +319,9 @@ impl Infer {
                     new_stmts.push(new_last);
                 }
 
+                self.exit_scope();
+                // END NEW SCOPE
+
                 Expr::Block {
                     stmts: new_stmts,
                     ty: last_ty,
@@ -231,11 +336,10 @@ impl Infer {
                 ..
             } => {
                 // NEW SCOPE
-                self.gs.begin_scope();
+                self.begin_scope();
 
                 // Bring all generics in scope
-                self.gs
-                    .put_generics_in_scope(&fun.generics, self.new_declaration(&span));
+                self.put_generics_in_scope(&fun.generics);
 
                 // If we're passed down a function, then we need to check the current closure
                 // against it. This mostly applies to anonymous lambdas that are inlined into a
@@ -260,8 +364,8 @@ impl Infer {
                         };
 
                         // Otherwise fallback to the annotation, or a fresh tyvar
-                        let ty =
-                            arg_ty_flowing_in.unwrap_or_else(|| self.to_type(&binding.ann, &span));
+                        let ty = arg_ty_flowing_in
+                            .unwrap_or_else(|| self.to_type(&binding.ann, &binding.pat.get_span()));
 
                         let new_pat = self.infer_pat(binding.pat, ty.clone());
 
@@ -276,16 +380,26 @@ impl Infer {
                 // TODO the return type from `expected` should also flow in
                 let new_ret = self.to_type(&fun.ann, &span);
 
-                let new_bounds: Vec<_> = fun
-                    .bounds
-                    .iter()
-                    .map(|(g, ann)| Bound {
-                        generic: Type::generic(g),
-                        ty: self.to_type(ann, &span),
-                    })
-                    .collect();
+                let mut new_bounds = vec![];
 
-                new_bounds.iter().for_each(|b| self.gs.add_assumption(b));
+                for g in &fun.generics {
+                    let sym = self.gs.get_symbol(&g.name, &g.span);
+
+                    for b in &g.bounds {
+                        let ty = self.to_type(b, &span);
+                        self.add_assumption(&sym, &ty);
+
+                        let gen_ty = Type::Con {
+                            id: sym.clone(),
+                            args: vec![],
+                        };
+
+                        new_bounds.push(Bound {
+                            generic: gen_ty,
+                            ty,
+                        });
+                    }
+                }
 
                 // set return type as the current function being evaluated (used by Return branch)
                 let prev_ret_ty = self.current_fn_ret_ty.clone(); // nested functions, save context
@@ -295,12 +409,11 @@ impl Infer {
                     args: new_args.iter().map(|b| b.ty.clone()).collect(),
                     bounds: new_bounds,
                     ret: new_ret.clone().into(),
-                    id: TypeId::unset(),
                 };
 
                 // We don't actually care what the type of the last expression is, if the return
                 // type is unit
-                let body_ty = if new_ret == Type::unit() {
+                let body_ty = if new_ret == self.type_unit() {
                     Type::discard()
                 } else {
                     new_ret.clone()
@@ -308,12 +421,12 @@ impl Infer {
 
                 let new_body = self.infer_expr(*fun.body.clone(), &body_ty);
 
-                self.gs.exit_scope();
+                self.exit_scope();
                 // END NEW SCOPE
 
                 self.current_fn_ret_ty = prev_ret_ty; // Reset current function
 
-                let bounded_ty = typ.to_bounded_with_generics(fun.generics.to_owned());
+                let bounded_ty = typ.to_bounded_with_generics(fun.generics.clone());
 
                 let typ = self.instantiate(&bounded_ty);
 
@@ -323,7 +436,6 @@ impl Infer {
                     fun: Function {
                         name: fun.name.clone(),
                         generics: fun.generics.clone(),
-                        bounds: fun.bounds.clone(),
                         args: new_args,
                         body: new_body.into(),
                         ret: new_ret,
@@ -332,6 +444,52 @@ impl Infer {
                     },
                     ty: typ,
                     kind,
+                    span,
+                }
+            }
+
+            Expr::Unit { span, .. } => {
+                let new_ty = self.fresh_ty_var();
+                self.add_constraint(&new_ty, &self.type_unit(), &span);
+                self.add_constraint(expected, &new_ty, &span);
+                Expr::Unit { ty: new_ty, span }
+            }
+
+            Expr::Var {
+                ref value, span, ..
+            } => {
+                let def = self.get_value(value);
+
+                let def = match def {
+                    Some(def) => def,
+                    None => {
+                        self.generic_error(
+                            format!("variable {} not found in env", value),
+                            span.clone(),
+                        );
+                        self.fresh_ty_var().to_bounded()
+                    }
+                };
+
+                // Instantiate the type manually so we can collect the types and use them later for
+                // codegen.
+                let generics = self.collect_generics(&def);
+                let ty = self.instantiate_with_vars(&def.ty, &generics);
+
+                let mut instances: Vec<_> = generics.into_values().collect();
+                instances.sort();
+                let instances = instances.into_iter().map(Type::Var).collect();
+
+                self.add_constraint(expected, &ty, &span);
+
+                let decl = self.get_span(value).unwrap_or_else(Span::dummy);
+
+                let resolved = self.resolve_name(&value);
+                Expr::Var {
+                    value: resolved,
+                    decl,
+                    generics_instantiated: instances,
+                    ty,
                     span,
                 }
             }
@@ -354,42 +512,6 @@ impl Infer {
                 Expr::Let {
                     binding: new_binding,
                     value: new_value.into(),
-                    ty,
-                    span,
-                }
-            }
-
-            Expr::Var {
-                ref value, span, ..
-            } => {
-                let def = self.gs.get_value(value);
-
-                let def = match def {
-                    Some(def) => def,
-                    None => {
-                        self.generic_error(
-                            format!("variable {} not found in env", value),
-                            span.clone(),
-                        );
-                        ValueDef::dummy()
-                    }
-                };
-
-                // Instantiate the type manually so we can collect the types and use them later for
-                // codegen.
-                let generics = self.collect_generics(&def.ty);
-                let ty = self.instantiate_with_vars(&def.ty.ty, &generics);
-
-                let mut instances: Vec<_> = generics.into_values().collect();
-                instances.sort();
-                let instances = instances.into_iter().map(|v| Type::Var(v)).collect();
-
-                self.add_constraint(expected, &ty, &span);
-
-                Expr::Var {
-                    value: value.clone(),
-                    decl: def.decl,
-                    generics_instantiated: instances,
                     ty,
                     span,
                 }
@@ -528,7 +650,7 @@ impl Infer {
                     _ => true,
                 };
 
-                let new_cond = self.infer_expr(*cond, &Type::bool());
+                let new_cond = self.infer_expr(*cond, &self.type_bool());
                 let new_then = self.infer_expr(*then, &then_ty);
                 let new_els = self.infer_expr(*els, &else_ty);
 
@@ -538,15 +660,15 @@ impl Infer {
                 // In case we are not discarding, then we need an else block
                 // and the types of the then and else branches must unify
                 if !discard_mode {
-                    if !has_else && expected != &Type::unit() {
+                    if !has_else && expected != &self.type_unit() {
                         self.generic_error(
                             "If expression must have an else branch".to_string(),
                             span.clone(),
                         );
                     }
 
-                    self.add_constraint(&expected, &then_ty, &new_then.get_span());
-                    self.add_constraint(&expected, &else_ty, &new_els.get_span());
+                    self.add_constraint(expected, &then_ty, &new_then.get_span());
+                    self.add_constraint(expected, &else_ty, &new_els.get_span());
                 }
 
                 Expr::If {
@@ -583,7 +705,7 @@ impl Infer {
                     .into_iter()
                     .map(|a| {
                         // NEW SCOPE
-                        self.gs.begin_scope();
+                        self.begin_scope();
 
                         // each arm.pat should unify with subject
                         let expected = self.substitute(subject_ty.clone());
@@ -593,7 +715,7 @@ impl Infer {
                         let new_expr = self.infer_expr(a.expr, &ret);
 
                         // EXIT SCOPE
-                        self.gs.exit_scope();
+                        self.exit_scope();
 
                         Arm {
                             pat: new_pat,
@@ -610,11 +732,6 @@ impl Infer {
                     ty: ret,
                     span,
                 }
-            }
-
-            Expr::Unit { span } => {
-                self.add_constraint(expected, &Type::unit(), &span);
-                Expr::Unit { span }
             }
 
             Expr::Tuple { elems, span, .. } => {
@@ -641,31 +758,6 @@ impl Infer {
                 };
 
                 self.infer_expr(new_expr, expected)
-            }
-
-            // Note: for enums and structs, the declaration is actually redundant.
-            // But tests that only deal with expressions still need this logic.
-            // Plus this enables users to define a type in a block and use it locally.
-            Expr::EnumDef { ref def, ref span } => {
-                self.declare_type(&expr);
-                self.declare_variants(&expr);
-
-                let actual_def = self.gs.get_enum(&def.name).unwrap();
-                Expr::EnumDef {
-                    def: actual_def,
-                    span: span.clone(),
-                }
-            }
-
-            Expr::StructDef { ref def, ref span } => {
-                self.declare_type(&expr);
-                self.declare_variants(&expr);
-
-                let actual_def = self.gs.get_struct(&def.name).unwrap();
-                Expr::StructDef {
-                    def: actual_def,
-                    span: span.clone(),
-                }
             }
 
             Expr::StructCall {
@@ -765,12 +857,13 @@ impl Infer {
 
                 // 1. check if it's a struct
                 //      -> yes, check for field
-                // 2. If fails, Lookup method
+                // 2. check if it's a package
+                // 3. otherwise Lookup method
 
-                let def = ty
-                    .remove_references()
-                    .get_name()
-                    .and_then(|name| self.get_struct_by_name(&name));
+                let def = ty.remove_references().get_name().and_then(|name| {
+                    self.get_struct_by_name(&name)
+                        .or_else(|| self.get_package(&name))
+                });
 
                 if let Some((def, struct_ty)) = def {
                     // Lookup the field
@@ -810,7 +903,7 @@ impl Infer {
                 }
 
                 // TODO asdf this should return Ok | expected Ref<T>, RefMut<T> or something
-                let method = self.gs.get_method(&ty, &field);
+                let method = self.get_method(&ty, &field);
 
                 if let Some(method) = method {
                     let mut func_ty = self.instantiate(&method);
@@ -853,21 +946,111 @@ has no field or method:
                 }
             }
 
+            Expr::EnumDef { def, span } => {
+                let sym = self.gs.get_symbol(&def.name, &span);
+                let actual_def = &self.gs.module().enums[&sym];
+
+                Expr::EnumDef {
+                    def: actual_def.clone(),
+                    span,
+                }
+            }
+
+            Expr::StructDef { def, span } => {
+                let sym = self.gs.get_symbol(&def.name, &span);
+                let actual_def = &self.gs.module().structs[&sym];
+
+                Expr::StructDef {
+                    def: actual_def.clone(),
+                    span,
+                }
+            }
+
+            Expr::TypeAlias { def, span } => {
+                if def.is_native() {
+                    return Expr::TypeAlias { def, span };
+                }
+
+                let sym = self.gs.get_symbol(&def.name, &span);
+                let actual_def = &self.gs.module().aliases[&sym];
+
+                Expr::TypeAlias {
+                    def: actual_def.clone(),
+                    span,
+                }
+            }
+
+            Expr::ImplBlock {
+                ann,
+                ty: _,
+                items,
+                generics,
+                span,
+            } => {
+                self.begin_scope();
+
+                self.put_generics_in_scope(&generics);
+
+                let existing = self.to_type(&ann, &span);
+
+                let new_items = items
+                    .into_iter()
+                    .map(|e| {
+                        let ty = self.fresh_ty_var();
+                        self.infer_expr(e, &ty)
+                    })
+                    .collect();
+
+                self.exit_scope();
+
+                Expr::ImplBlock {
+                    ann,
+                    ty: existing,
+                    items: new_items,
+                    generics,
+                    span,
+                }
+            }
+
+            Expr::Trait {
+                name,
+                items,
+                supertraits,
+                types,
+                span,
+            } => {
+                let new_items = items
+                    .into_iter()
+                    .map(|e| {
+                        let ty = self.fresh_ty_var();
+                        self.infer_expr(e, &ty)
+                    })
+                    .collect();
+
+                Expr::Trait {
+                    name,
+                    items: new_items,
+                    supertraits,
+                    types,
+                    span,
+                }
+            }
+
             Expr::VarUpdate {
                 target,
                 value,
                 span,
             } => {
                 let target_ty = self.fresh_ty_var();
-                let new_target = self.infer_expr(*target.clone(), &target_ty);
+                let new_target = self.infer_expr(*target, &target_ty);
 
                 let value_ty = self.fresh_ty_var();
-                let new_value = self.infer_expr(*value.clone(), &value_ty);
+                let new_value = self.infer_expr(*value, &value_ty);
 
                 if let Some(var_name) = new_target.as_var_name() {
                     // This is not really correct, we should check whether the target var is a RefMut.
                     let is_deref = matches!(new_target, Expr::Unary { .. });
-                    if !self.gs.get_mutability(&var_name) && !is_deref {
+                    if !self.get_mutability(&var_name) && !is_deref {
                         self.generic_error(
                         format!("Variable {var_name} is not declared as mutable. Use `let mut {var_name}`.")
                             ,
@@ -889,10 +1072,6 @@ has no field or method:
                     value: new_value.into(),
                     span: span.clone(),
                 }
-            }
-
-            Expr::MethodCall { .. } => {
-                panic!("method calls should have been desugared to FieldAccess during parsing. This is not currently used")
             }
 
             Expr::Return { expr, span, .. } => {
@@ -919,13 +1098,14 @@ has no field or method:
                 // constraint the expression to be a Result
                 let ok_ty = self.fresh_ty_var();
                 let err_ty = self.fresh_ty_var();
-                let inferred = Type::result(&ok_ty, &err_ty);
+                let inferred = self.type_result(ok_ty.clone(), err_ty.clone());
                 let new_expr = self.infer_expr(*expr, &inferred);
 
                 // constraint the function we're currently processing to be a Result
                 // with the same error type
                 let fn_ret = self.current_fn_ret_ty.clone().unwrap();
-                let fn_expected = Type::result(&self.fresh_ty_var(), &err_ty);
+                let expected_ok = self.fresh_ty_var();
+                let fn_expected = self.type_result(expected_ok, err_ty);
 
                 // TODO we need the span of the return type in the function signature,
                 // so that the error points at the right location
@@ -962,7 +1142,7 @@ has no field or method:
                     | Operator::Lt
                     | Operator::Le
                     | Operator::Gt
-                    | Operator::Ge => Type::bool(),
+                    | Operator::Ge => self.type_bool(),
 
                     _ => left_ty.clone(),
                 };
@@ -971,8 +1151,8 @@ has no field or method:
 
                 match op {
                     Operator::And | Operator::Or => {
-                        self.add_constraint(&left_ty, &Type::bool(), &span);
-                        self.add_constraint(&right_ty, &Type::bool(), &span);
+                        self.add_constraint(&left_ty, &self.type_bool(), &span);
+                        self.add_constraint(&right_ty, &self.type_bool(), &span);
                     }
 
                     Operator::Eq | Operator::Ne => {
@@ -1024,7 +1204,7 @@ has no field or method:
                         new_ty.clone()
                     }
 
-                    UnOp::Not => Type::bool(),
+                    UnOp::Not => self.type_bool(),
                     UnOp::Deref => self.fresh_ty_var(),
                 };
 
@@ -1046,8 +1226,8 @@ has no field or method:
                 span,
                 ident,
             } => {
-                let target = self.gs.get_value(&ident).unwrap().ty;
-                let target = self.instantiate(&target);
+                let target = self.to_type(&ann, &span);
+                // let target = self.instantiate(&target);
 
                 let ty = self.fresh_ty_var();
                 let new_expr = self.infer_expr(*expr, &ty);
@@ -1063,277 +1243,17 @@ has no field or method:
                 }
             }
 
-            Expr::Debug {
-                kind,
-                expr,
-                ty: _,
-                span,
-            } => {
-                let ty = self.fresh_ty_var();
-                let new_expr = self.infer_expr(*expr, &ty);
-
-                self.add_constraint(expected, &ty, &span);
-
-                Expr::Debug {
-                    kind,
-                    expr: new_expr.into(),
-                    ty,
-                    span,
-                }
-            }
-
-            Expr::Spawn { expr, span, .. } => {
-                if !matches!(*expr, Expr::Call { .. }) {
-                    self.generic_error(
-                        "Argument to spawn!() must be a function call".to_string(),
-                        span.clone(),
-                    );
-                }
-
-                let ty = self.fresh_ty_var();
-                let new_expr = self.infer_expr(*expr, &ty);
-                self.add_constraint(expected, &Type::unit(), &span);
-
-                Expr::Spawn {
-                    expr: new_expr.into(),
-                    ty: expected.clone(),
-                    span,
-                }
-            }
-
-            Expr::Select { arms, ty: _, span } => {
-                let ret = Type::unit();
-
-                // Each arm is inferred separately
-                // Arm pat must be of type ChannelOp
-                // Return type is unit
-                let new_arms = arms
-                    .into_iter()
-                    .map(|a| {
-                        // NEW SCOPE
-                        self.gs.begin_scope();
-
-                        let var = self.fresh_ty_var();
-                        let channel_op = Type::Con {
-                            name: "ChannelOp".to_string(),
-                            args: vec![var],
-                        };
-
-                        // each arm.pat should unify with ChannelOp
-                        let new_pat = self.infer_pat(a.pat, channel_op);
-
-                        // each arm.expr should unify with ret
-                        let new_expr = self.infer_expr(a.expr, &ret);
-
-                        // EXIT SCOPE
-                        self.gs.exit_scope();
-
-                        Arm {
-                            pat: new_pat,
-                            expr: new_expr,
-                        }
-                    })
-                    .collect();
-
-                self.add_constraint(expected, &ret, &span);
-
-                Expr::Select {
-                    arms: new_arms,
-                    ty: ret,
-                    span,
-                }
-            }
-
-            Expr::Defer { expr, span, .. } => {
-                if !matches!(*expr, Expr::Call { .. }) {
-                    self.generic_error(
-                        "Argument to defer!() must be a function call".to_string(),
-                        span.clone(),
-                    );
-                }
-
-                let ty = self.fresh_ty_var();
-                let new_expr = self.infer_expr(*expr, &ty);
-                self.add_constraint(expected, &Type::unit(), &span);
-
-                Expr::Defer {
-                    expr: new_expr.into(),
-                    ty: expected.clone(),
-                    span,
-                }
-            }
-
-            Expr::Reference {
-                expr,
-                mutable,
-                span,
-                ..
-            } => {
-                let ty = self.fresh_ty_var();
-                let new_expr = self.infer_expr(*expr, &ty);
-
-                let wrapped = Type::reference(ty);
-                self.add_constraint(expected, &wrapped, &span);
-
-                Expr::Reference {
-                    expr: new_expr.into(),
-                    mutable,
-                    ty: wrapped,
-                    span,
-                }
-            }
-
-            Expr::Index {
-                expr, index, span, ..
-            } => {
-                let expr_ty = self.fresh_ty_var();
-                let new_expr = self.infer_expr(*expr, &expr_ty);
-
-                let index_ty = self.fresh_ty_var();
-                let new_index = self.infer_expr(*index, &index_ty);
-                let expr_ty = self.substitute(expr_ty);
-
-                let ty_name = match expr_ty.get_name() {
-                    Some(name) => name,
-                    None => {
-                        self.generic_error(
-                            "Type must be known at this point".to_string(),
-                            new_expr.get_span(),
-                        );
-                        "Slice".to_string()
-                    }
-                };
-
-                let inner_ty = self.fresh_ty_var();
-
-                let (expected_index, collection_ty) = if ty_name == "Slice" {
-                    // slices can be indexed by ints
-                    (Type::int(), Type::slice(inner_ty.clone()))
-                } else if ty_name == "Map" {
-                    // maps can be indexed by whatever the key type is
-                    let key_ty = &expr_ty.get_args().unwrap()[0];
-
-                    (
-                        key_ty.clone(),
-                        Type::Con {
-                            name: "Map".to_string(),
-                            args: vec![key_ty.clone(), inner_ty.clone()],
-                        },
-                    )
-                } else {
-                    self.generic_error(
-                        "Only slices and maps can be indexed".to_string(),
-                        new_expr.get_span(),
-                    );
-                    (self.fresh_ty_var(), self.fresh_ty_var())
-                };
-
-                self.add_constraint(&collection_ty, &expr_ty, &span);
-                self.add_constraint(&index_ty, &expected_index, &span);
-                self.add_constraint(expected, &inner_ty, &span);
-
-                Expr::Index {
-                    expr: new_expr.into(),
-                    index: new_index.into(),
-                    ty: inner_ty,
-                    span,
-                }
-            }
-
-            Expr::ImplBlock {
-                ann,
-                ty: _,
-                items,
-                generics,
-                span,
-            } => {
-                self.gs.begin_scope();
-
-                self.gs
-                    .put_generics_in_scope(&generics, self.new_declaration(&span));
-
-                let existing = self.to_type(&ann, &span);
-
-                let new_items = items
-                    .into_iter()
-                    .map(|e| {
-                        let ty = self.fresh_ty_var();
-                        self.infer_expr(e, &ty)
-                    })
-                    .collect();
-
-                self.gs.exit_scope();
-
-                Expr::ImplBlock {
-                    ann,
-                    ty: existing,
-                    items: new_items,
-                    generics,
-                    span,
-                }
-            }
-
-            Expr::Trait {
-                name,
-                items,
-                supertraits,
-                types,
-                span,
-            } => {
-                let new_items = items
-                    .into_iter()
-                    .map(|e| {
-                        let ty = self.fresh_ty_var();
-                        self.infer_expr(e, &ty)
-                    })
-                    .collect();
-
-                Expr::Trait {
-                    name,
-                    items: new_items,
-                    supertraits,
-                    types,
-                    span,
-                }
-            }
-
-            Expr::Mod {
-                name,
-                pkg,
-                items,
-                span,
-            } => {
-                self.gs.begin_mod_scope();
-
-                let new_items = items
-                    .into_iter()
-                    .map(|e| {
-                        let ty = self.fresh_ty_var();
-                        self.infer_expr(e, &ty)
-                    })
-                    .collect();
-
-                self.gs.exit_scope();
-
-                Expr::Mod {
-                    name,
-                    pkg,
-                    items: new_items,
-                    span,
-                }
-            }
-
             Expr::Loop { kind, body, span } => {
                 match kind {
                     Loop::NoCondition => {
                         let body_ty = Type::discard();
                         let new_body = self.infer_expr(*body, &body_ty);
 
-                        return Expr::Loop {
+                        Expr::Loop {
                             kind,
                             body: new_body.into(),
                             span,
-                        };
+                        }
                     }
 
                     //
@@ -1374,20 +1294,17 @@ has no field or method:
 
                             "EnumerateSlice" => {
                                 // (index, value) for slices with .enumerate()
-                                Type::tuple2(Type::int(), expr_args[0].clone())
+                                self.type_tuple2(self.type_int(), expr_args[0].clone())
                             }
 
                             "Map" => {
                                 // (key, value) for maps
-                                Type::tuple2(expr_args[0].clone(), expr_args[1].clone())
+                                self.type_tuple2(expr_args[0].clone(), expr_args[1].clone())
                             }
 
                             "Receiver" => expr_args[0].clone(),
 
-                            "string" => Type::Con {
-                                name: "rune".to_string(),
-                                args: vec![],
-                            },
+                            "string" => self.type_char(),
 
                             _ => {
                                 self.generic_error(
@@ -1409,7 +1326,7 @@ has no field or method:
                                 Pat::Wild { .. } => (),
                                 _ => {
                                     self.generic_error(
-                                        format!("Use tuple literals \"(k, v)\" in loops."),
+                                        "Use tuple literals \"(k, v)\" in loops.".to_string(),
                                         span.clone(),
                                     );
                                 }
@@ -1437,7 +1354,7 @@ has no field or method:
                     // while $expr { $body }
                     //
                     Loop::While { expr } => {
-                        let new_expr = self.infer_expr(*expr, &Type::bool());
+                        let new_expr = self.infer_expr(*expr, &self.type_bool());
                         let body_ty = Type::discard();
                         let new_body = self.infer_expr(*body, &body_ty);
 
@@ -1452,16 +1369,196 @@ has no field or method:
                 }
             }
 
-            Expr::Flow { kind, span } => Expr::Flow { kind, span },
+            Expr::Reference {
+                expr,
+                mutable,
+                span,
+                ..
+            } => {
+                let ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &ty);
 
-            Expr::TypeAlias { def, span } => Expr::TypeAlias { def, span },
-            Expr::NewtypeDef { def, span } => Expr::NewtypeDef { def, span },
+                let wrapped = self.type_reference(ty);
+                self.add_constraint(expected, &wrapped, &span);
+
+                Expr::Reference {
+                    expr: new_expr.into(),
+                    mutable,
+                    ty: wrapped,
+                    span,
+                }
+            }
+
+            Expr::Index {
+                expr, index, span, ..
+            } => {
+                let expr_ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &expr_ty);
+
+                let index_ty = self.fresh_ty_var();
+                let new_index = self.infer_expr(*index, &index_ty);
+                let expr_ty = self.substitute(expr_ty);
+
+                let ty_name = match expr_ty.get_name() {
+                    Some(name) => name,
+                    None => {
+                        self.generic_error(
+                            "Type must be known at this point".to_string(),
+                            new_expr.get_span(),
+                        );
+                        "Slice".to_string()
+                    }
+                };
+
+                let inner_ty = self.fresh_ty_var();
+
+                let (expected_index, collection_ty) = if ty_name == "Slice" {
+                    // slices can be indexed by ints
+                    (self.type_int(), self.type_slice(inner_ty.clone()))
+                } else if ty_name == "Map" {
+                    // maps can be indexed by whatever the key type is
+                    let key_ty = &expr_ty.get_args().unwrap()[0];
+
+                    (
+                        key_ty.clone(),
+                        self.type_map(key_ty.clone(), inner_ty.clone()),
+                    )
+                } else {
+                    self.generic_error(
+                        format!("Only slices and maps can be indexed. Got {}", expr_ty),
+                        new_expr.get_span(),
+                    );
+                    (self.fresh_ty_var(), self.fresh_ty_var())
+                };
+
+                self.add_constraint(&collection_ty, &expr_ty, &span);
+                self.add_constraint(&index_ty, &expected_index, &span);
+                self.add_constraint(expected, &inner_ty, &span);
+
+                Expr::Index {
+                    expr: new_expr.into(),
+                    index: new_index.into(),
+                    ty: inner_ty,
+                    span,
+                }
+            }
+
+            Expr::Debug {
+                kind,
+                expr,
+                ty: _,
+                span,
+            } => {
+                let ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &ty);
+
+                self.add_constraint(expected, &ty, &span);
+
+                Expr::Debug {
+                    kind,
+                    expr: new_expr.into(),
+                    ty,
+                    span,
+                }
+            }
+
+            Expr::Spawn { expr, span, .. } => {
+                if !matches!(*expr, Expr::Call { .. }) {
+                    self.generic_error(
+                        "Argument to spawn!() must be a function call".to_string(),
+                        span.clone(),
+                    );
+                }
+
+                let ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &ty);
+                self.add_constraint(expected, &self.type_unit(), &span);
+
+                Expr::Spawn {
+                    expr: new_expr.into(),
+                    ty: expected.clone(),
+                    span,
+                }
+            }
+
+            Expr::Select { arms, ty: _, span } => {
+                let ret = self.type_unit();
+
+                // Each arm is inferred separately
+                // Arm pat must be of type ChannelOp
+                // Return type is unit
+                let new_arms = arms
+                    .into_iter()
+                    .map(|a| {
+                        // NEW SCOPE
+                        self.begin_scope();
+
+                        let var = self.fresh_ty_var();
+                        let channel_op = self.type_channel_op(var);
+
+                        // each arm.pat should unify with ChannelOp
+                        let new_pat = self.infer_pat(a.pat, channel_op);
+
+                        // each arm.expr should unify with ret
+                        let new_expr = self.infer_expr(a.expr, &ret);
+
+                        // EXIT SCOPE
+                        self.exit_scope();
+
+                        Arm {
+                            pat: new_pat,
+                            expr: new_expr,
+                        }
+                    })
+                    .collect();
+
+                self.add_constraint(expected, &ret, &span);
+
+                Expr::Select {
+                    arms: new_arms,
+                    ty: ret,
+                    span,
+                }
+            }
+
+            Expr::Defer { expr, span, .. } => {
+                if !matches!(*expr, Expr::Call { .. }) {
+                    self.generic_error(
+                        "Argument to defer!() must be a function call".to_string(),
+                        span.clone(),
+                    );
+                }
+
+                let ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(*expr, &ty);
+                self.add_constraint(expected, &self.type_unit(), &span);
+
+                Expr::Defer {
+                    expr: new_expr.into(),
+                    ty: expected.clone(),
+                    span,
+                }
+            }
+
             Expr::UsePackage { import, span } => Expr::UsePackage { import, span },
+            Expr::NewtypeDef { def, span } => {
+                // let sym = self.gs.get_symbol(&def.name, &span);
+                // let actual_def = &self.gs.module().newtypes[&sym];
+                // TODO should populate module.newtypes
+                let actual_def = def.clone();
 
+                Expr::NewtypeDef {
+                    def: actual_def.clone(),
+                    span,
+                }
+            }
+
+            Expr::Flow { kind, span } => Expr::Flow { kind, span },
             Expr::Raw { text } => Expr::Raw { text },
             Expr::Noop => Expr::Noop,
             Expr::Todo => todo!(),
-            // _ => todo!("{:#?}", expr),
+
+            _ => todo!("uncovered infer_expr {:?}", expr),
         }
     }
 
@@ -1489,10 +1586,10 @@ has no field or method:
         match typ {
             Type::Var(_) => typ.to_owned(),
 
-            Type::Con { name, args } => match new_vars.get(name) {
+            Type::Con { id, args } => match new_vars.get(&id.name) {
                 Some(id) => Type::Var(id.to_owned()),
                 None => Type::Con {
-                    name: name.into(),
+                    id: id.clone(),
                     args: args
                         .iter()
                         .map(|x| self.instantiate_with_vars(x, new_vars))
@@ -1500,12 +1597,7 @@ has no field or method:
                 },
             },
 
-            Type::Fun {
-                args,
-                bounds,
-                ret,
-                id: fx,
-            } => Type::Fun {
+            Type::Fun { args, bounds, ret } => Type::Fun {
                 args: args
                     .iter()
                     .map(|x| self.instantiate_with_vars(x, new_vars))
@@ -1518,7 +1610,6 @@ has no field or method:
                     })
                     .collect(),
                 ret: self.instantiate_with_vars(ret, new_vars).into(),
-                id: fx.clone(),
             },
         }
     }
@@ -1538,13 +1629,9 @@ has no field or method:
                 }
 
                 // Add ident to the scope
-                self.gs.add_value(
-                    ident.clone(),
-                    expected.to_bounded(),
-                    self.new_declaration(&span),
-                );
+                self.add_value(&ident, expected.to_bounded(), &span);
 
-                self.gs.set_mutability(&ident, is_mut);
+                self.set_mutability(&ident, is_mut);
 
                 Pat::Type {
                     ident,
@@ -1579,8 +1666,8 @@ has no field or method:
                 ..
             } => {
                 // If it's a Pat, then we should be able to find a function with this name
-                let def = match self.gs.get_value(ident) {
-                    Some(def) => def.ty,
+                let def = match self.get_value(ident) {
+                    Some(def) => def,
                     None => {
                         self.generic_error(
                             format!("constructor {} not found", &ident),
@@ -1627,7 +1714,7 @@ has no field or method:
 
                 // If the source code contains an alias, make sure we resolve it to the qualified
                 // name. ie. Red -> Color::Red This helps with exhaustiveness checking later.
-                let new_ident = self.gs.resolve_name(ident);
+                let new_ident = self.resolve_name(ident);
                 Pat::Pat {
                     ident: new_ident,
                     elems: new_elems,
@@ -1681,7 +1768,7 @@ has no field or method:
                     })
                     .collect();
 
-                let new_ident = self.gs.resolve_name(ident);
+                let new_ident = self.resolve_name(ident);
 
                 Pat::Struct {
                     ident: new_ident,
@@ -1692,556 +1779,13 @@ has no field or method:
             }
 
             Pat::Wild { span } => Pat::Wild { span },
-            Pat::Unit { span } => {
-                self.add_constraint(&expected, &Type::unit(), &span);
-                Pat::Unit { span }
+            Pat::Unit { span, .. } => {
+                let new_ty = self.fresh_ty_var();
+                self.add_constraint(&new_ty, &self.type_unit(), &span);
+                self.add_constraint(&expected, &new_ty, &span);
+                Pat::Unit { ty: new_ty, span }
             }
         }
-    }
-
-    pub fn infer_package(&mut self, pkg: &Package) -> Package {
-        self.declare_symbols(&pkg.files);
-        self.declare_modules(&pkg.files);
-        self.declare_files(&pkg.files);
-
-        // this is a hack, see below
-        let had_errors = self.errors.clone();
-
-        let mut errors = pkg.errors.clone();
-
-        let files: Vec<_> = pkg
-            .files
-            .iter()
-            .map(|f| {
-                let (new_file, errs) = self.infer_file(pkg, f);
-                errors.entry(f.name.clone()).or_default().extend(errs);
-                new_file
-            })
-            .collect();
-
-        files.iter().for_each(|f| {
-            f.decls.iter().for_each(|expr| {
-                if let Err(e) = exhaustive::check(expr, self) {
-                    errors.entry(f.name.clone()).or_default().push(e);
-                }
-            })
-        });
-
-        let mut new_pkg = Package {
-            name: pkg.name.clone(),
-            files,
-            errors,
-        };
-
-        if new_pkg.first_error().is_none() && !had_errors.is_empty() {
-            // TODO asdf we don't have information about the file that triggered the error here...
-            // so the best we can do is to wrap up the error in a random file and call it a day :/
-            // this is obviously wrong
-            new_pkg
-                .errors
-                .insert(new_pkg.files.first().unwrap().name.to_string(), had_errors);
-        }
-
-        new_pkg
-    }
-
-    pub fn infer_file(&mut self, pkg: &Package, file: &File) -> (File, Vec<Error>) {
-        self.current_file_id = Some(FileId::create(pkg, file));
-        self.errors = vec![];
-
-        let new_decls = file
-            .decls
-            .iter()
-            .map(|e| {
-                let ty = self.fresh_ty_var();
-                let new_expr = self.infer_expr(e.clone(), &ty);
-                substitute::substitute_expr(new_expr, self)
-            })
-            .collect();
-
-        let errors = self.errors.clone();
-        self.errors = vec![];
-
-        (
-            File {
-                name: file.name.clone(),
-                decls: new_decls,
-                source: file.source.clone(),
-            },
-            errors,
-        )
-    }
-
-    /// Prepare a File for inference. Run this with a list of files before running inference.
-    /// All types and functions will be in scope.
-    pub fn declare_files(&mut self, files: &[File]) {
-        // This seems a bit insane, and perhaps it is.
-        // BUT:
-        //   - First put enum and struct names in scope
-        //   - Second declare all the variants for the types we just processed
-        //   - Third declare all overloads, because they are used in trait bounds
-        //   - Fourth derive implementations for known overloads (eq, hash, display).
-        //   - Fifth bring everything else in scope (top level fn, impls, consts)
-        //   - Finally declare all enum/struct variants
-        //
-        //  It's important that all these steps stay separated, otherwise stuff will break
-        //  depending on the order of declarations.
-
-        // 1 Process imports, get external modules in scope
-        files.iter().for_each(|f| {
-            for e in &f.decls {
-                if let Expr::UsePackage { import, span } = e {
-                    self.import_package(import, span);
-                }
-            }
-        });
-
-        // 2. Declare all the actual variants
-        files.iter().for_each(|f| {
-            // Now that all types are in scope, actually parse the enum variants and struct fields.
-            f.decls.iter().for_each(|e| self.declare_variants(e));
-        });
-
-        // 3. Declare Closure, Impl and Const
-        files.iter().for_each(|f| {
-            f.decls.iter().for_each(|e| self.declare_type(e));
-        });
-    }
-
-    fn declare_type(&mut self, e: &Expr) {
-        let create_func = |fun: &Function, span: &Span| -> Expr {
-            let mut new_func = fun.clone();
-            new_func.body = Expr::Noop.into();
-
-            Expr::Closure {
-                fun: new_func,
-                kind: FunctionKind::TopLevel,
-                ty: Type::dummy(),
-                span: span.clone(),
-            }
-        };
-
-        match e {
-            Expr::EnumDef { def, span, .. } => {
-                let ty = Type::Con {
-                    name: def.name.clone(),
-                    args: def.generics.iter().map(|g| Type::generic(g)).collect(),
-                };
-
-                self.gs.add_type(
-                    def.name.clone(),
-                    ty.to_bounded_with_generics(def.generics.to_owned()),
-                    self.new_declaration(span),
-                );
-            }
-
-            Expr::StructDef { def, span, .. } => {
-                let ty = Type::Con {
-                    name: def.name.clone(),
-                    args: def.generics.iter().map(|g| Type::generic(g)).collect(),
-                };
-
-                self.gs.add_type(
-                    def.name.clone(),
-                    ty.to_bounded_with_generics(def.generics.to_owned()),
-                    self.new_declaration(span),
-                );
-            }
-
-            Expr::TypeAlias { def, span, .. } => {
-                if def.is_native() {
-                    let ty = Type::Con {
-                        name: def.name.clone(),
-                        args: def.generics.iter().map(|g| Type::generic(g)).collect(),
-                    };
-
-                    self.gs.add_type(
-                        def.name.clone(),
-                        ty.to_bounded_with_generics(def.generics.to_owned()),
-                        self.new_declaration(span),
-                    );
-                } else {
-                    // it's a type alias
-                    // don't parse the type on the right, at this stage we only want to declare it.
-
-                    self.gs.begin_scope();
-
-                    self.gs
-                        .put_generics_in_scope(&def.generics, self.new_declaration(span));
-
-                    let ty = self.to_type(&def.ann, span);
-
-                    self.gs.exit_scope();
-
-                    self.gs.add_type_alias(
-                        def.name.clone(),
-                        ty.to_bounded_with_generics(def.generics.to_owned()),
-                        self.new_declaration(span),
-                    );
-                }
-            }
-
-            Expr::NewtypeDef { def, span, .. } => {
-                let ty = Type::Con {
-                    name: def.name.clone(),
-                    args: def.generics.iter().map(|g| Type::generic(g)).collect(),
-                };
-
-                self.gs.add_type(
-                    def.name.clone(),
-                    ty.to_bounded_with_generics(def.generics.to_owned()),
-                    self.new_declaration(span),
-                );
-            }
-
-            Expr::Closure { fun, span, .. } => {
-                let ty = self.fresh_ty_var();
-
-                let new_expr = self.infer_expr(create_func(fun, span), &ty);
-                let new_func = new_expr.as_function();
-
-                self.gs.add_value(
-                    new_func.name.clone(),
-                    new_func.bounded_ty.clone(),
-                    self.new_declaration(&span),
-                );
-            }
-
-            Expr::ImplBlock {
-                ann,
-                generics,
-                items,
-                span,
-                ..
-            } => {
-                items.iter().for_each(|e| {
-                    self.gs.begin_scope();
-
-                    self.gs
-                        .put_generics_in_scope(&generics, self.new_declaration(&span));
-
-                    let base_ty = self.to_type(&ann, &span).get_name().unwrap();
-
-                    let decl = self.new_declaration(&e.get_span());
-                    let ty = self.fresh_ty_var();
-
-                    let fun = e.as_function();
-                    let new_expr = self.infer_expr(create_func(&fun, span), &ty);
-                    let new_func = new_expr.as_function();
-                    let method = new_func.as_method();
-
-                    self.gs.exit_scope();
-
-                    match method {
-                        Some((method, _)) => {
-                            // Add method to type
-
-                            self.gs
-                                .add_method(&base_ty, &method.name, method.bounded_ty, decl);
-                        }
-
-                        None => {
-                            // Add static function to global scope
-
-                            self.gs.add_value(
-                                new_func.name,
-                                new_func.bounded_ty.clone(),
-                                self.new_declaration(&span),
-                            );
-                        }
-                    };
-                });
-            }
-
-            Expr::Const {
-                ident, ann, span, ..
-            } => {
-                match &ann {
-                    TypeAst::Unknown => panic!("checking type without type?"),
-                    _ => (),
-                }
-
-                let ty = self.to_type(ann, span);
-                self.gs
-                    .add_value(ident.clone(), ty.to_bounded(), self.new_declaration(span));
-            }
-
-            Expr::Trait {
-                name,
-                items,
-                supertraits,
-                types,
-                span,
-            } => {
-                // TODO asdf at this stage, this should only call add_type,
-                // not create the full struct with all the fields because types referenced by the
-                // methods in the interface may still be undeclared.
-
-                // create a struct that holds one field for each fn
-                let struct_name = name;
-
-                let decl = self.new_declaration(&span);
-
-                let base_ty = Type::Con {
-                    name: struct_name.clone(),
-                    args: vec![],
-                };
-
-                let mut methods: HashMap<String, Type> = HashMap::new();
-
-                // Include all the methods from supertraits
-                for s in supertraits {
-                    let super_methods = self.gs.get_type_methods(s);
-
-                    for (name, mut method) in super_methods {
-                        method.ty.ty.remove_receiver();
-                        methods.insert(name, method.ty.ty);
-                    }
-                }
-
-                for e in items {
-                    let fun = e.as_function();
-
-                    let ty = self.fresh_ty_var();
-                    let expr = self.infer_expr(e.clone(), &ty);
-
-                    methods.insert(fun.name, expr.get_type());
-                }
-
-                self.gs
-                    .add_type(struct_name.to_string(), base_ty.to_bounded(), decl.clone());
-
-                self.gs.add_interface(Interface {
-                    name: struct_name.to_string(),
-                    types: types.to_vec(),
-                    methods,
-                });
-            }
-
-            Expr::Mod { items, .. } => {
-                for i in items {
-                    self.declare_type(i);
-                }
-            }
-
-            _ => (),
-        }
-    }
-
-    fn declare_variants(&mut self, expr: &Expr) {
-        match expr {
-            Expr::EnumDef { def, span, .. } => {
-                let ty = self.gs.get_type(&def.name).unwrap().ty;
-
-                let new_cons = def
-                    .cons
-                    .iter()
-                    .map(|c| {
-                        let name = c.name.clone();
-                        let qualified = c.to_qualified(&def.name);
-
-                        // Alias each constructor to its full qualified name
-                        // Might be a bad idea in the long run.
-                        // When this changes, also update eval.ts EnumDef
-                        self.gs
-                            .add_constructor_alias(name.clone(), qualified.clone());
-
-                        if c.fields.is_empty() {
-                            self.gs.add_value(
-                                qualified,
-                                ty.to_bounded_with_generics(def.generics.to_owned()),
-                                self.new_declaration(span),
-                            );
-
-                            return Constructor {
-                                name,
-                                fields: vec![],
-                            };
-                        }
-
-                        let new_fields: Vec<_> = c
-                            .fields
-                            .iter()
-                            .map(|f| {
-                                self.gs.begin_scope();
-
-                                self.gs.put_generics_in_scope(
-                                    &def.generics,
-                                    self.new_declaration(span),
-                                );
-
-                                let typ = self.to_type(&f.ann, span);
-
-                                self.gs.exit_scope();
-
-                                EnumFieldDef {
-                                    ty: typ,
-                                    ..f.clone()
-                                }
-                            })
-                            .collect();
-
-                        let fun = Type::Fun {
-                            args: new_fields.clone().into_iter().map(|f| f.ty).collect(),
-                            bounds: Default::default(),
-                            ret: ty.clone().into(),
-                            id: TypeId::unset(),
-                        };
-
-                        // let fun = self.generalize(fun, &def.generics, &span);
-
-                        self.gs.add_value(
-                            qualified,
-                            fun.to_bounded_with_generics(def.generics.to_owned()),
-                            self.new_declaration(span),
-                        );
-
-                        Constructor {
-                            name,
-                            fields: new_fields,
-                        }
-                    })
-                    .collect();
-
-                let def = EnumDefinition {
-                    name: def.name.clone(),
-                    generics: def.generics.clone(),
-                    cons: new_cons,
-                };
-
-                self.gs.add_enum(def.name.clone(), def);
-            }
-
-            Expr::StructDef { def, span } => {
-                let new_fields = def
-                    .fields
-                    .iter()
-                    .map(|f| {
-                        self.gs.begin_scope();
-
-                        self.gs
-                            .put_generics_in_scope(&def.generics, self.new_declaration(span));
-
-                        let typ = self.to_type(&f.ann, span);
-
-                        self.gs.exit_scope();
-
-                        StructFieldDef {
-                            ty: typ.to_bounded(), // should this care about generics?
-                            ..f.clone()
-                        }
-                    })
-                    .collect();
-
-                let def = StructDefinition {
-                    name: def.name.clone(),
-                    generics: def.generics.clone(),
-                    fields: new_fields,
-                };
-
-                self.gs.add_struct(def.name.clone(), def);
-            }
-
-            Expr::NewtypeDef { def, span, .. } => {
-                let mut func_args = vec![];
-
-                let new_fields = def
-                    .fields
-                    .iter()
-                    .enumerate()
-                    .map(|(index, f)| {
-                        self.gs.begin_scope();
-
-                        self.gs
-                            .put_generics_in_scope(&def.generics, self.new_declaration(span));
-
-                        let typ = self.to_type(&f.ann, span);
-
-                        self.gs.exit_scope();
-
-                        let name = Expr::tuple_index_string(index.try_into().unwrap()).unwrap();
-
-                        func_args.push(typ.clone());
-
-                        StructFieldDef {
-                            name,
-                            ann: f.ann.clone(),
-                            ty: typ.to_bounded(),
-                        }
-                    })
-                    .collect();
-
-                let def = StructDefinition {
-                    name: def.name.clone(),
-                    generics: def.generics.clone(),
-                    fields: new_fields,
-                };
-
-                let ty = self.gs.get_type(&def.name).unwrap();
-
-                let constructor = Type::Fun {
-                    args: func_args,
-                    bounds: vec![],
-                    ret: ty.ty.into(),
-                    id: TypeId::unset(),
-                };
-
-                // given struct Foo(int, bool)
-                // - add value Foo => Fun { args: [int, bool], ret: Foo }
-                // - add struct Foo => { first: int, second: bool }
-                self.gs.add_value(
-                    def.name.clone(),
-                    constructor.to_bounded_with_generics(def.generics.clone()),
-                    self.new_declaration(span),
-                );
-
-                self.gs.add_struct(def.name.clone(), def);
-            }
-
-            Expr::Mod { items, .. } => {
-                for i in items {
-                    self.declare_variants(i);
-                }
-            }
-
-            Expr::TypeAlias { def, span } => {
-                if def.is_native() {
-                    return;
-                }
-
-                self.gs.begin_scope();
-
-                self.gs
-                    .put_generics_in_scope(&def.generics, self.new_declaration(span));
-
-                let ty = self.to_type(&def.ann, span);
-
-                self.gs.exit_scope();
-
-                self.gs.add_type_alias(
-                    def.name.clone(),
-                    ty.to_bounded_with_generics(def.generics.to_owned()),
-                    self.new_declaration(span),
-                );
-            }
-
-            _ => (),
-        }
-    }
-
-    /// This should be the preferred way of running inference from the outside
-    pub fn infer_expr_with_error(&mut self, e: &Expr) -> (Expr, Vec<Error>, Type) {
-        self.errors = vec![];
-
-        let ty = self.fresh_ty_var();
-        let expr = self.infer_expr(e.clone(), &ty);
-
-        let errors = self.errors.clone();
-        self.errors = vec![];
-
-        let ty = self.substitute(ty);
-        let expr = substitute::substitute_expr(expr, self);
-        (expr, errors, ty)
     }
 
     pub fn sub(&mut self, var: i32) -> Type {
@@ -2291,7 +1835,8 @@ has no field or method:
             return Ok(());
         }
 
-        // Don't bother matching exact numeric types, for now.
+        // Don't bother matching exact numeric types.
+        // Let the Go compiler do the heavy lifting here, mostly as we don't support type sets.
         if t1.is_numeric() && t2.is_numeric() {
             return Ok(());
         }
@@ -2337,19 +1882,22 @@ has no field or method:
             }
 
             // They are both concrete types, check names and args match
-            (Type::Con { name: n1, args: a1 }, Type::Con { name: n2, args: a2 }) => {
+            (Type::Con { id: id1, args: a1 }, Type::Con { id: id2, args: a2 }) => {
+                let n1 = id1.name.as_str();
+                let n2 = id2.name.as_str();
+
                 if n1 == "any" || n2 == "any" {
                     return Ok(());
                 }
 
-                if n1 != n2 {
-                    match self.check_interface_impl(n1, n2) {
+                if id1 != id2 {
+                    match self.check_interface_impl(id1, id2) {
                         CheckInterfaceResult::Ok => return Ok(()),
                         CheckInterfaceResult::NotAnInterface => (),
                         CheckInterfaceResult::Error(e) => return Err(e),
                     }
 
-                    match self.check_interface_impl(n2, n1) {
+                    match self.check_interface_impl(id2, id1) {
                         CheckInterfaceResult::Ok => return Ok(()),
                         CheckInterfaceResult::NotAnInterface => (),
                         CheckInterfaceResult::Error(e) => return Err(e),
@@ -2396,9 +1944,6 @@ has no field or method:
                 args?;
                 ret?;
                 Ok(())
-
-                // TODO need to unify errors? Probably
-                // need to unify effects? Not sure
             }
 
             // Matching functions with constructors is always an error
@@ -2413,59 +1958,16 @@ has no field or method:
         }
     }
 
-    fn init_builtin_types(gs: &mut GlobalState) {
-        // Pretty much all of these could be defined in the stdlib.
-        // They're still here because infer-expr tests don't load the stdlib so I'd need to copy
-        // pasta this types in the prelude. Maybe one day I'll get rid of the prelude and this
-        // function too.
-        let gen_t = Type::generic("T");
-
-        gs.add_builtin_type("Unit".into(), Type::unit().to_bounded());
-        gs.add_builtin_type(
-            "Slice".into(),
-            Type::slice(gen_t.clone()).to_bounded_with_generics(vec!["T".to_string()]),
-        );
-        gs.add_builtin_type("Never".into(), Type::never().to_bounded());
-        gs.add_builtin_type(
-            "Ref".into(),
-            Type::reference(gen_t.clone()).to_bounded_with_generics(vec!["T".to_string()]),
-        );
-        gs.add_builtin_type(
-            "RefMut".into(),
-            Type::Con {
-                name: "RefMut".into(),
-                args: vec![gen_t.clone()],
-            }
-            .to_bounded_with_generics(vec!["T".to_string()]),
-        );
-    }
-
     fn generic_error(&mut self, msg: String, span: Span) {
         let err = Error::Generic(msg, span);
         self.errors.push(err);
     }
 
-    fn get_struct_by_name(&mut self, name: &str) -> Option<(StructDefinition, BoundedType)> {
-        let def = self.gs.get_struct(name)?;
-        let ty = self.gs.get_type(name)?;
-        Some((def, ty))
-    }
-
-    fn new_declaration(&self, span: &Span) -> Declaration {
-        Declaration {
-            file_id: self.current_file_id.clone().unwrap_or_else(|| FileId {
-                package: "dummy".to_string(),
-                filename: "dummy".to_string(),
-            }),
-            span: span.clone(),
-        }
-    }
-
     // Allow users to omit the error type, ie. Result<T>
     // This function will add the error type back -> Result<T, E>
     fn add_optional_error_to_result(&mut self, ty: &Type, args: &[TypeAst]) -> Vec<TypeAst> {
-        if let Type::Con { name, .. } = ty {
-            if name == "Result" && args.len() == 1 {
+        if let Type::Con { id, .. } = ty {
+            if id.name == "Result" && args.len() == 1 {
                 let mut new_args = args.to_vec();
 
                 let error_ty = TypeAst::Con {
@@ -2481,14 +1983,686 @@ has no field or method:
         args.to_vec()
     }
 
+    fn check_reserved_name(&mut self, ident: &str) -> bool {
+        RESERVED_WORDS.contains(&ident)
+    }
+
+    fn check_numeric(&mut self, ty: &Type, span: &Span) {
+        let ty = self.substitute(ty.clone());
+        if !ty.is_numeric() {
+            self.generic_error("Expected numeric type".to_string(), span.clone());
+        }
+    }
+
+    // This is only used in tests.
+    pub fn infer_expr_with_error(&mut self, e: &Expr) -> (Expr, Vec<Error>, Type) {
+        let m = Module::user();
+        self.gs.set_module(m.id.clone());
+        self.gs.modules.insert(m.id.clone(), m);
+
+        let ty = self.fresh_ty_var();
+        let expr = self.infer_expr(e.clone(), &ty);
+
+        let ty = self.substitute(ty);
+        let expr = substitute::substitute_expr(expr, self);
+        let errors = self.errors.clone();
+
+        (expr, errors, ty)
+    }
+
+    pub fn declare_stmts(&mut self, stmts: &[Expr], vis: &Visibility) {
+        let result = self
+            .declare_symbols(stmts, vis)
+            .and_then(|_| self.declare_types(stmts))
+            .and_then(|_| self.declare_values(stmts, vis));
+
+        if let Err(err) = result {
+            self.errors.push(err);
+        }
+    }
+
+    pub fn declare_symbols(&mut self, decls: &[Expr], vis: &Visibility) -> Result<(), Error> {
+        for e in decls.iter() {
+            match e {
+                Expr::TypeAlias { def, span } => {
+                    let sym = self.gs.get_symbol(&def.name, span);
+                    let args = self.declare_generics(&def.generics);
+
+                    let ty = Type::Con {
+                        id: sym.clone(),
+                        args,
+                    };
+
+                    self.gs.module().visibility.insert(sym.clone(), vis.clone());
+
+                    // Add as actual type
+                    self.gs.module().types.insert(
+                        sym.clone(),
+                        ty.to_bounded_with_generics(def.generics.to_owned()),
+                    );
+                }
+
+                Expr::EnumDef { def, span } => {
+                    let sym = self.gs.get_symbol(&def.name, span);
+                    let args = self.declare_generics(&def.generics);
+
+                    let ty = Type::Con {
+                        id: sym.clone(),
+                        args,
+                    };
+
+                    self.gs.module().types.insert(
+                        sym.clone(),
+                        ty.to_bounded_with_generics(def.generics.to_owned()),
+                    );
+
+                    self.gs.module().visibility.insert(sym.clone(), vis.clone());
+                }
+
+                Expr::StructDef { def, span } => {
+                    let sym = self.gs.get_symbol(&def.name, span);
+                    let args = self.declare_generics(&def.generics);
+
+                    let ty = Type::Con {
+                        id: sym.clone(),
+                        args,
+                    };
+
+                    self.gs.module().types.insert(
+                        sym.clone(),
+                        ty.to_bounded_with_generics(def.generics.to_owned()),
+                    );
+
+                    self.gs
+                        .module()
+                        .visibility
+                        .insert(sym.clone(), Visibility::TopLevel);
+                }
+
+                Expr::NewtypeDef { def, span } => {
+                    let sym = self.gs.get_symbol(&def.name, span);
+                    let args = self.declare_generics(&def.generics);
+
+                    let ty = Type::Con {
+                        id: sym.clone(),
+                        args,
+                    };
+
+                    self.gs.module().types.insert(
+                        sym.clone(),
+                        ty.to_bounded_with_generics(def.generics.to_owned()),
+                    );
+
+                    self.gs
+                        .module()
+                        .visibility
+                        .insert(sym.clone(), Visibility::TopLevel);
+                }
+
+                Expr::Trait { name, span, .. } => {
+                    let sym = self.gs.get_symbol(&name, span);
+
+                    let ty = Type::Con {
+                        id: sym.clone(),
+                        args: vec![],
+                    };
+
+                    self.gs.module().types.insert(sym.clone(), ty.to_bounded());
+
+                    self.gs
+                        .module()
+                        .visibility
+                        .insert(sym.clone(), Visibility::TopLevel);
+                }
+
+                _ => (),
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn declare_types(&mut self, decls: &[Expr]) -> Result<(), Error> {
+        for e in decls.iter() {
+            match e {
+                Expr::EnumDef { def, span } => self.declare_enum(def, span),
+                Expr::StructDef { def, span } => self.declare_struct(def, span),
+                Expr::ImplBlock {
+                    ann,
+                    items,
+                    generics,
+                    span,
+                    ..
+                } => self.declare_impl(ann, generics, items, span),
+                Expr::Trait {
+                    name,
+                    supertraits,
+                    items,
+                    span,
+                    types: _,
+                } => self.declare_trait(name, supertraits, items, span),
+
+                Expr::TypeAlias { def, span } => self.declare_type_alias(def, span),
+                Expr::NewtypeDef { def, span } => self.declare_newtype(def, span),
+                _ => (),
+            }
+        }
+
+        Ok(())
+    }
+
+    fn declare_enum(&mut self, def: &EnumDefinition, span: &Span) {
+        let sym = self.gs.get_symbol(&def.name, span);
+
+        // get the type that was previously declared
+        let ty = self.gs.module().types[&sym].clone();
+
+        // declare constructors
+
+        let new_cons = def
+            .cons
+            .iter()
+            .map(|c| {
+                let name = c.name.clone();
+                let _qualified = c.to_qualified(&def.name);
+
+                if c.fields.is_empty() {
+                    return Constructor {
+                        name,
+                        fields: vec![],
+                    };
+                }
+
+                let new_fields: Vec<_> = c
+                    .fields
+                    .iter()
+                    .map(|f| {
+                        self.begin_scope();
+
+                        self.put_generics_in_scope(&def.generics);
+
+                        let typ = self.to_type(&f.ann, span);
+
+                        self.exit_scope();
+
+                        EnumFieldDef {
+                            ty: typ,
+                            ..f.clone()
+                        }
+                    })
+                    .collect();
+
+                Constructor {
+                    name,
+                    fields: new_fields,
+                }
+            })
+            .collect();
+
+        for c in &new_cons {
+            let c: &Constructor = c; // cannot infer type, damn
+
+            let mut cons_ty = ty.clone();
+
+            // If there are fields, turn it into a function.
+            // TODO this is all the same as declare_enum
+            if !c.fields.is_empty() {
+                let fun = Type::Fun {
+                    args: c.fields.clone().into_iter().map(|f| f.ty).collect(),
+                    bounds: Default::default(),
+                    ret: ty.ty.clone().into(),
+                };
+
+                cons_ty = fun.to_bounded_with_generics(def.generics.to_owned());
+            }
+
+            self.add_constructor(&def.name, &c.name, &cons_ty, &sym.span);
+        }
+
+        let new_def = EnumDefinition {
+            name: def.name.clone(),
+            generics: def.generics.clone(),
+            cons: new_cons,
+        };
+
+        // end constructors
+
+        self.add_type(&def.name, &sym);
+
+        self.gs.module().enums.insert(sym.clone(), new_def);
+    }
+
+    fn declare_struct(&mut self, def: &StructDefinition, span: &Span) {
+        let sym = self.gs.get_symbol(&def.name, span);
+
+        // Declare fields
+        let new_fields = def
+            .fields
+            .iter()
+            .map(|f| {
+                self.begin_scope();
+
+                self.put_generics_in_scope(&def.generics);
+
+                let typ = self.to_type(&f.ann, span);
+
+                self.exit_scope();
+
+                StructFieldDef {
+                    ty: typ.to_bounded(), // should this care about generics?
+                    ..f.clone()
+                }
+            })
+            .collect();
+
+        let new_def = StructDefinition {
+            name: def.name.clone(),
+            generics: def.generics.clone(),
+            fields: new_fields,
+        };
+
+        // end fields
+
+        self.add_type(&def.name, &sym);
+
+        self.gs.module().structs.insert(sym.clone(), new_def);
+    }
+
+    fn declare_impl(&mut self, ann: &TypeAst, generics: &[Generic], items: &[Expr], span: &Span) {
+        self.declare_generics(generics);
+
+        items.iter().for_each(|e| {
+            self.begin_scope();
+
+            self.put_generics_in_scope(generics);
+
+            let base_ty = self.to_type(ann, span).get_symbol();
+
+            let ty = self.fresh_ty_var();
+
+            let fun = e.as_function();
+            let new_expr = self.infer_expr(self.create_empty_func(&fun, span), &ty);
+            let new_func = new_expr.as_function();
+            let method = new_func.as_method();
+
+            self.exit_scope();
+
+            match method {
+                Some((method, _)) => {
+                    // Add method to type
+
+                    let m = self.gs.module();
+
+                    let methods = m.methods.entry(base_ty).or_insert(HashMap::new());
+
+                    methods.insert(method.name, method.bounded_ty);
+                }
+
+                None => {
+                    // Add static function to global scope
+                    let sym = self.gs.get_symbol(&new_func.name, span);
+
+                    self.gs
+                        .module()
+                        .values
+                        .insert(sym.clone(), new_func.bounded_ty.clone());
+
+                    self.gs
+                        .module()
+                        .visibility
+                        .insert(sym, Visibility::TopLevel);
+
+                    self.add_value(&new_func.name, new_func.bounded_ty, span);
+                }
+            };
+        });
+    }
+
+    fn declare_trait(&mut self, name: &str, supertraits: &[String], items: &[Expr], span: &Span) {
+        let mut methods: HashMap<String, Type> = HashMap::new();
+
+        // Include all the methods from supertraits
+        for s in supertraits {
+            let sym = self.resolve(s).unwrap();
+            let super_methods = self.get_type_methods(&sym);
+
+            for (name, mut method) in super_methods {
+                method.ty.remove_receiver();
+                methods.insert(name, method.ty);
+            }
+        }
+
+        for e in items {
+            let fun = e.as_function();
+
+            let ty = self.fresh_ty_var();
+            let expr = self.infer_expr(e.clone(), &ty);
+
+            methods.insert(fun.name, expr.get_type());
+        }
+
+        let sym = self.gs.get_symbol(name, span);
+
+        let interface = Interface {
+            name: name.to_string(),
+            types: vec![], // TODO remove types altogether?
+            methods,
+        };
+
+        self.add_type(name, &sym);
+
+        self.gs.module().interfaces.insert(sym.clone(), interface);
+    }
+
+    fn declare_type_alias(&mut self, def: &TypeAliasDef, span: &Span) {
+        let sym = self.gs.get_symbol(&def.name, span);
+
+        if def.is_native() {
+            self.add_type(&def.name, &sym);
+        } else {
+            // it's a type alias
+
+            self.begin_scope();
+
+            self.put_generics_in_scope(&def.generics);
+
+            let ty = self.to_type(&def.ann, span);
+            let new_ty = ty.to_bounded_with_generics(def.generics.clone());
+
+            self.exit_scope();
+
+            let new_def = TypeAliasDef {
+                ty: new_ty.clone(),
+                ..def.clone()
+            };
+
+            self.gs.module().aliases.insert(sym.clone(), new_def);
+
+            // We need to register this again: this time, the type is fully resolved from the
+            // annotation so it's pointing to the actual aliased type.
+            self.gs.module().types.insert(sym.clone(), new_ty);
+        }
+    }
+
+    fn declare_newtype(&mut self, def: &NewtypeDefinition, span: &Span) {
+        let sym = self.gs.get_symbol(&def.name, span);
+
+        let mut func_args = vec![];
+
+        let new_fields = def
+            .fields
+            .iter()
+            .enumerate()
+            .map(|(index, f)| {
+                self.begin_scope();
+
+                self.put_generics_in_scope(&def.generics);
+
+                let typ = self.to_type(&f.ann, span);
+
+                self.exit_scope();
+
+                let name = Expr::tuple_index_string(index.try_into().unwrap()).unwrap();
+
+                func_args.push(typ.clone());
+
+                StructFieldDef {
+                    name,
+                    ann: f.ann.clone(),
+                    ty: typ.to_bounded(),
+                }
+            })
+            .collect();
+
+        let new_def = StructDefinition {
+            name: def.name.clone(),
+            generics: def.generics.clone(),
+            fields: new_fields,
+        };
+
+        let ty = Type::Con {
+            id: sym.clone(),
+            args: def
+                .generics
+                .iter()
+                .map(|g| {
+                    let gen_sym = self.gs.get_symbol(&g.name, &g.span);
+                    Type::Con {
+                        id: gen_sym,
+                        args: vec![],
+                    }
+                })
+                .collect(),
+        };
+
+        let constructor = Type::Fun {
+            args: func_args,
+            bounds: vec![],
+            ret: ty.clone().into(),
+        }
+        .to_bounded_with_generics(def.generics.clone());
+
+        let ty_bounded = ty.to_bounded_with_generics(def.generics.clone());
+
+        // given struct Foo(int, bool)
+        // - add value Foo => Fun { args: [int, bool], ret: Foo }
+        // - add struct Foo => { first: int, second: bool }
+
+        self.add_type(&def.name, &sym);
+        self.add_value(&def.name, constructor, span);
+
+        self.gs
+            .module()
+            .types
+            .insert(sym.clone(), ty_bounded.clone());
+
+        self.gs.module().values.insert(sym.clone(), ty_bounded);
+
+        self.gs.module().structs.insert(sym.clone(), new_def);
+
+        self.gs
+            .module()
+            .visibility
+            .insert(sym.clone(), Visibility::TopLevel);
+    }
+
+    fn create_empty_func(&self, fun: &Function, span: &Span) -> Expr {
+        let mut new_func = fun.clone();
+        new_func.body = Expr::Noop.into();
+
+        Expr::Closure {
+            fun: new_func,
+            kind: FunctionKind::TopLevel, // TODO asdf change with visibility
+            ty: Type::dummy(),
+            span: span.clone(),
+        }
+    }
+
+    pub fn declare_values(&mut self, decls: &[Expr], _vis: &Visibility) -> Result<(), Error> {
+        for e in decls.iter() {
+            match e {
+                Expr::Closure { fun, span, .. } => {
+                    let ty = self.fresh_ty_var();
+
+                    self.declare_generics(&fun.generics);
+
+                    let new_expr = self.infer_expr(self.create_empty_func(fun, span), &ty);
+                    let new_func = new_expr.as_function();
+
+                    let sym = self.gs.get_symbol(&fun.name, span);
+
+                    self.add_value(&fun.name, new_func.bounded_ty.clone(), span);
+
+                    self.gs
+                        .module()
+                        .values
+                        .insert(sym.clone(), new_func.bounded_ty.clone());
+                }
+
+                Expr::Const {
+                    ident, ann, span, ..
+                } => {
+                    let sym = self.gs.get_symbol(ident, span);
+                    let ty = self.to_type(ann, span).to_bounded();
+
+                    self.gs.module().values.insert(sym.clone(), ty);
+                }
+
+                _ => (),
+            }
+        }
+
+        Ok(())
+    }
+
+    fn declare_generics(&mut self, generics: &[Generic]) -> Vec<Type> {
+        generics
+            .iter()
+            .map(|g| {
+                let sym = self.gs.get_symbol(&g.name, &g.span);
+                let ty = Type::Con {
+                    id: sym.clone(),
+                    args: vec![],
+                };
+
+                // Declare the generic type on the module
+                self.gs.module().types.insert(sym.clone(), ty.to_bounded());
+
+                ty
+            })
+            .collect()
+    }
+
+    fn add_type(&mut self, name: &str, sym: &Symbol) {
+        self.current_scope()
+            .types
+            .insert(name.to_string(), sym.clone());
+    }
+
+    pub fn get_type(&mut self, name: &str) -> Option<BoundedType> {
+        let sym = self.resolve(name)?;
+        self.gs.get_module(&sym.module)?.types.get(&sym).cloned()
+    }
+
+    pub fn add_value(&mut self, name: &str, ty: BoundedType, span: &Span) {
+        self.current_scope().values.insert(name.to_string(), ty);
+        self.current_scope()
+            .spans
+            .insert(name.to_string(), span.clone());
+    }
+
+    fn get_value(&mut self, name: &str) -> Option<BoundedType> {
+        let lookup = self.resolve_name(name);
+
+        self.scopes
+            .iter()
+            .find_map(|scope| scope.values.get(&lookup))
+            .cloned()
+    }
+
+    fn get_span(&mut self, name: &str) -> Option<Span> {
+        self.current_scope().spans.get(name).cloned()
+    }
+
+    fn get_method(&mut self, base_ty: &Type, method: &str) -> Option<BoundedType> {
+        match base_ty.remove_references() {
+            Type::Con { id, args: _ } => self.get_type_methods(&id).get(method).cloned(),
+            _ => None,
+        }
+    }
+
+    fn get_type_methods(&self, sym: &Symbol) -> HashMap<String, BoundedType> {
+        let m = self.gs.get_module(&sym.module).unwrap();
+
+        // If it's an interface, return all methods
+        if let Some(interface) = m.interfaces.get(sym).cloned() {
+            let mut ret = HashMap::new();
+
+            for (name, ty) in interface.methods {
+                ret.insert(name, self.add_any_receiver(ty).to_bounded());
+            }
+
+            return ret;
+        }
+
+        // If it's a constraint, return all the methods of all the interfaces implied by that
+        // constraint
+        if let Some(ifaces) = self.get_assumptions(sym) {
+            return ifaces
+                .into_iter()
+                .flat_map(|i| self.get_type_methods(&i))
+                .collect();
+        }
+
+        // Otherwise get all the methods defined on the type
+        m.methods.get(sym).cloned().unwrap_or_default()
+    }
+
+    pub fn add_assumption(&mut self, sym: &Symbol, bound: &Type) {
+        self.current_scope()
+            .assumptions
+            .entry(sym.clone())
+            .or_default()
+            .push(bound.get_symbol());
+    }
+
+    fn get_assumptions(&self, sym: &Symbol) -> Option<Vec<Symbol>> {
+        self.scopes
+            .iter()
+            .find_map(|scope| scope.assumptions.get(sym))
+            .cloned()
+    }
+
+    // shouldn't take a mut reference, but this whole constructors business is probably wrong
+    // anyway
+    fn resolve_name(&mut self, name: &str) -> String {
+        self.current_scope()
+            .constructors
+            .get(name)
+            .cloned()
+            .unwrap_or_else(|| name.to_owned())
+    }
+
+    fn set_mutability(&mut self, name: &str, is_mut: bool) {
+        self.current_scope()
+            .mutability
+            .insert(name.to_string(), is_mut);
+    }
+
+    fn get_mutability(&mut self, name: &str) -> bool {
+        self.current_scope()
+            .mutability
+            .get(name)
+            .cloned()
+            .unwrap_or_default()
+    }
+
+    fn get_struct_by_name(&mut self, name: &str) -> Option<(StructDefinition, BoundedType)> {
+        let sym = self.resolve(name)?;
+        let m = self.gs.get_module(&sym.module)?;
+        let def = m.structs.get(&sym)?;
+        let ty = m.types.get(&sym)?;
+
+        Some((def.clone(), ty.clone()))
+    }
+
+    pub fn put_generics_in_scope(&mut self, generics: &[Generic]) {
+        for g in generics {
+            let sym = self.gs.get_symbol(&g.name, &g.span);
+            self.add_type(&g.name, &sym);
+        }
+    }
+
     // Turn an annotation into a non-instantiated type (generics are still in the type).
     // The caller is responsible to call instantiate().
     fn to_type(&mut self, ann: &TypeAst, span: &Span) -> Type {
         match ann {
             TypeAst::Con { name, args } => {
-                let existing = self.gs.get_type(name);
+                let existing = self.get_type(name);
 
                 if existing.is_none() {
+                    // dbg!(&self.scopes.front().unwrap().types);
+                    // dbg!(&self.gs.modules);
                     self.generic_error(format!("Type not found: {name}"), span.clone());
                     return self.fresh_ty_var();
                 }
@@ -2520,7 +2694,7 @@ has no field or method:
                 // i32 => Type
                 let mut vars: HashMap<i32, Type> = generics
                     .iter()
-                    .map(|(gen, var)| (var.clone(), Type::generic(gen)))
+                    .map(|(gen, var)| (*var, Type::ethereal(gen)))
                     .collect();
 
                 // Restore the types we know about. This is necessary to support type aliases.
@@ -2530,7 +2704,7 @@ has no field or method:
                     // we should always find an argument at this index, unless the type is
                     // malformed
                     if let Some(arg_ann) = new_args.get(index) {
-                        vars.insert(var_index, self.to_type(&arg_ann, span));
+                        vars.insert(var_index, self.to_type(arg_ann, span));
                     }
                 }
 
@@ -2538,7 +2712,7 @@ has no field or method:
 
                 if expected_args.len() != new_args.len() {
                     let err = ArityError {
-                        expected: expected_args.iter().map(|g| Type::generic(g)).collect(),
+                        expected: expected_args.iter().map(|g| Type::ethereal(g)).collect(),
                         actual: new_args.iter().map(|ann| self.to_type(ann, span)).collect(),
                         span: span.clone(),
                     };
@@ -2557,7 +2731,6 @@ has no field or method:
                     args: new_args,
                     bounds: Default::default(),
                     ret: new_ret.into(),
-                    id: TypeId::unset(),
                 }
             }
 
@@ -2565,18 +2738,89 @@ has no field or method:
         }
     }
 
-    fn check_reserved_name(&mut self, ident: &str) -> bool {
-        RESERVED_WORDS.contains(&ident)
+    pub fn import_module(&mut self, prefix: Option<String>, module: &ModuleId) {
+        let m = self.gs.get_module(module).unwrap();
+
+        let to_name = |name: &str| -> String {
+            match &prefix {
+                Some(prefix) => format!("{}::{}", prefix, name),
+                None => name.to_string(),
+            }
+        };
+
+        for (sym, _ty) in &m.types {
+            if m.is_exported(sym) {
+                self.add_type(&to_name(&sym.name), sym)
+            }
+        }
+
+        match &prefix {
+            // If we're importing with a prefix, then create a struct
+            // to hold all values in a module (ie. fmt.Println)
+            Some(prefix) => self.create_pkg_struct(prefix, &m),
+
+            // Otherwise bring in all values as top level bindings
+            None => {
+                for (sym, ty) in m.values {
+                    self.add_value(&to_name(&sym.name), ty, &sym.span);
+                }
+            }
+        }
+
+        for (sym, def) in m.enums {
+            let ty = m.types[&sym].clone();
+
+            for c in def.cons {
+                let mut cons_ty = ty.clone();
+
+                // If there are fields, turn it into a function.
+                // TODO this is all the same as declare_enum
+                if !c.fields.is_empty() {
+                    let fun = Type::Fun {
+                        args: c.fields.clone().into_iter().map(|f| f.ty).collect(),
+                        bounds: Default::default(),
+                        ret: ty.ty.clone().into(),
+                    };
+
+                    cons_ty = fun.to_bounded_with_generics(def.generics.to_owned());
+                }
+
+                self.add_constructor(&def.name, &c.name, &cons_ty, &sym.span);
+            }
+        }
     }
 
-    fn check_interface_impl(&mut self, n1: &str, n2: &str) -> CheckInterfaceResult {
-        let interface = self.gs.get_interface(n1);
+    pub fn add_any_receiver(&self, ty: Type) -> Type {
+        match &ty {
+            Type::Fun { args, bounds, ret } => {
+                let mut new_args = vec![self.type_any()];
+                new_args.extend_from_slice(args);
+
+                Type::Fun {
+                    args: new_args,
+                    bounds: bounds.clone(),
+                    ret: ret.clone(),
+                }
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    fn check_interface_impl(&mut self, id1: &Symbol, id2: &Symbol) -> CheckInterfaceResult {
+        let interface = self
+            .gs
+            .get_module(&id1.module)
+            .unwrap()
+            .interfaces
+            .get(id1)
+            .cloned();
+
         if interface.is_none() {
             return CheckInterfaceResult::NotAnInterface;
         }
 
         let interface = interface.unwrap();
-        let methods = self.gs.get_type_methods(n2);
+        let methods = self.get_type_methods(id2);
 
         for (method_name, method_ty) in interface.methods {
             let candidate = methods.get(&method_name);
@@ -2584,170 +2828,291 @@ has no field or method:
             if candidate.is_none() {
                 return CheckInterfaceResult::Error(format!(
                     "method {} not found on type {}",
-                    method_name, n2
+                    method_name, id2.name
                 ));
             }
 
             // Add a self receiver param on the interface method
-            let interface_method = method_ty.clone().add_any_receiver();
+            let interface_method = self.add_any_receiver(method_ty.clone());
 
             // Check the two unify
-            if let Err(e) = self.unify(&interface_method, &candidate.unwrap().ty.ty, &Span::dummy())
-            {
+            if let Err(e) = self.unify(&interface_method, &candidate.unwrap().ty, &Span::dummy()) {
                 return CheckInterfaceResult::Error(format!(
                     "method {} on type {} has wrong type {}",
-                    method_name, n2, e
+                    method_name, id2.name, e
                 ));
             }
         }
 
-        return CheckInterfaceResult::Ok;
+        CheckInterfaceResult::Ok
     }
 
-    fn declare_modules(&mut self, files: &[File]) {
-        // There's a lot of repetition in this function, maybe it can be improved a bit.
-        //
-        // First declare symbols.
-        // This is incomplete, modules will be filled out in the next pass below.
-        for f in files {
-            for e in &f.decls {
-                if let Expr::Mod {
-                    name, pkg, items, ..
-                } = e
-                {
-                    self.gs.begin_mod_scope();
-                    self.current_file_id = Some(FileId {
-                        package: name.clone(),
-                        filename: f.name.clone(),
-                    });
+    pub fn file_from_source(&mut self, name: &str, source: &str) {
+        let id = self.gs.new_file();
 
-                    let decls = vec![File {
-                        decls: items.clone(),
-                        ..f.clone()
-                    }];
-                    self.declare_symbols(&decls);
+        let mut ast = crate::ast::Ast::new();
+        ast.set_file(&id);
 
-                    let module = self.gs.extract_module(name, &pkg);
-                    self.gs.add_module(&pkg.name, module);
+        let decls = ast.from_file_contents(source).unwrap_or_else(|e| {
+            self.errors.push(Error::Parse(e));
+            vec![]
+        });
 
-                    self.current_file_id = None;
-                    self.gs.exit_scope();
+        let file = File {
+            id: id.clone(),
+            name: name.to_string(),
+            source: source.to_string(),
+            decls,
+        };
+
+        self.gs.module().files.insert(id, file);
+    }
+
+    pub fn module_from_folder(&mut self, import: ModuleImport) {
+        let prev_mod = self.gs.new_module(&import);
+
+        // First ingest all the files
+        let files = self.fs.scan_folder(&import.path);
+        for (name, source) in &files {
+            self.file_from_source(&name, &source);
+        }
+
+        // Then declare and infer module
+        let m = ModuleId::from_str(&import.name);
+        self.declare_module(&m);
+        self.infer_module(&m);
+
+        // Restore previous module
+        self.gs.set_module(prev_mod);
+    }
+
+    // Declare all symbols in a module.
+    // Doesn't update type information.
+    pub fn declare_module(&mut self, id: &ModuleId) {
+        self.gs.set_module(id.clone());
+
+        let m = self.gs.get_module(id).unwrap();
+
+        // First declare all symbols
+        for f in m.files.values() {
+            self.declare_symbols(&f.decls, &Visibility::TopLevel)
+                .unwrap_or_else(|e| {
+                    self.errors.push(e);
+                });
+        }
+
+        // Make sure all this module's dependencies are processed
+        for i in m.all_imports() {
+            let import = self.gs.import_for(&i.name);
+
+            match import {
+                Some(import) => self.module_from_folder(import),
+                None => {
+                    self.generic_error(format!("Module not found {name}", name = i.name), i.span);
                 }
             }
         }
 
-        // Loop over again and declare everything else
-        for f in files {
-            for e in &f.decls {
-                if let Expr::Mod {
-                    name, pkg, items, ..
-                } = e
-                {
-                    self.gs.begin_mod_scope();
-                    self.current_file_id = Some(FileId {
-                        package: name.clone(),
-                        filename: f.name.clone(),
-                    });
+        // Then process types and values
+        for f in m.files.values() {
+            self.reset_scope();
+            self.import_std();
 
-                    let decls = vec![File {
-                        decls: items.clone(),
-                        ..f.clone()
-                    }];
-                    self.declare_files(&decls);
+            // Put current module in scope
+            self.import_module(None, &m.id);
 
-                    let module = self.gs.extract_module(name, &pkg);
-                    self.gs.add_module(&pkg.name, module);
+            // `use` statements
+            self.process_imports(&f.imports());
 
-                    self.current_file_id = None;
-                    self.gs.exit_scope();
-                }
-            }
+            self.declare_types(&f.decls).unwrap_or_else(|e| {
+                self.errors.push(e);
+            });
+
+            self.declare_values(&f.decls, &Visibility::TopLevel)
+                .unwrap_or_else(|e| {
+                    self.errors.push(e);
+                });
         }
     }
 
-    fn import_package(&mut self, import: &PkgImport, span: &Span) {
-        let module = self.gs.get_module(&import.name);
-        if module.is_none() {
-            self.generic_error(
-                format!("Package {name} not found", name = import.name),
-                span.clone(),
-            );
-            return;
+    // Assumes all symbols have been declared
+    pub fn infer_module(&mut self, id: &ModuleId) {
+        self.gs.set_module(id.clone());
+
+        let m = self.gs.get_module(id).unwrap();
+
+        let mut new_files = HashMap::new();
+
+        for (k, f) in m.files.iter() {
+            self.reset_scope();
+            self.import_std();
+
+            // Put current module in scope
+            self.import_module(None, &m.id);
+
+            // `use` statements
+            self.process_imports(&f.imports());
+
+            // TODO asdf this should be configurable
+            self.allow_external_decls();
+
+            let mut new_decls = vec![];
+
+            for e in &f.decls {
+                let ty = self.fresh_ty_var();
+                let new_expr = self.infer_expr(e.clone(), &ty);
+                let new_expr = substitute::substitute_expr(new_expr, self);
+
+                // exhaustivity check
+                if let Err(e) = exhaustive::check(&new_expr, self) {
+                    self.errors.push(e);
+                }
+
+                new_decls.push(new_expr);
+            }
+
+            let f = File {
+                decls: new_decls,
+                ..f.clone()
+            };
+
+            new_files.insert(k.clone(), f);
         }
 
-        let module = module.unwrap();
-        self.gs.import_module(&module.name, module.clone());
-        self.create_pkg_struct(&module.name, &module);
+        // Override files in modules, all declarations are now typed
+        self.gs.module().files = new_files;
+    }
+
+    fn import_std(&mut self) {
+        self.import_module(None, &ModuleId("std".to_string()))
+    }
+
+    pub fn init_std(&mut self) {
+        let import = self.gs.import_for("std").unwrap();
+        self.module_from_folder(import);
+    }
+
+    fn process_imports(&mut self, imports: &[PkgImport]) {
+        for i in imports {
+            let import = self.gs.import_for(&i.name);
+
+            // If the module doesn't exist, an error would have been generated already.
+            if let Some(import) = import {
+                self.import_module(Some(import.prefix()), &import.to_id())
+            }
+        }
     }
 
     fn create_pkg_struct(&mut self, name: &str, module: &Module) {
         // create a struct that holds one field for each fn
         // define a global value for the package (ie. fmt)
-        // TODO asdf store the names of these packages and their values, so that when extracting
-        // modules we can skip them
 
         let struct_name = format!("__Package{name}");
+        let span = Span::dummy();
+
+        let struct_sym = Symbol {
+            module: module.id.clone(),
+            name: name.to_string(),
+            span: span.clone(),
+        };
+
         let ty = Type::Con {
-            name: struct_name.clone(),
+            id: struct_sym,
             args: vec![],
         };
 
         let mut fields = vec![];
 
-        for (binding, v) in &module.values {
+        for (sym, ty) in &module.values {
             fields.push(StructFieldDef {
-                name: binding.clone(),
+                name: sym.name.clone(),
                 ann: TypeAst::Unknown,
-                ty: module.rewrite_type(name, &v.ty),
+                ty: ty.clone(),
             });
         }
 
         let def = StructDefinition {
-            name: struct_name.clone(),
+            name: struct_name,
             generics: vec![],
             fields,
         };
 
-        let span = Span::dummy(); // TODO asdf
-        let decl = self.new_declaration(&span);
+        {
+            self.add_value(name, ty.to_bounded(), &span);
+            self.add_package(name, def, ty.to_bounded());
 
-        // Hacky way to register global functions (ie. string(), int() etc.)
-        if name == "global" {
-            for f in def.fields {
-                self.gs.add_value(f.name, f.ty, decl.clone());
-            }
+            // let m = self.gs.module();
+            // Add the type
+            // m.types.insert(struct_sym.clone(), ty.to_bounded());
 
-            return;
+            // Add the value
+            // m.values.insert(struct_sym.clone(), ty.to_bounded());
+
+            // Add the struct
+            // m.structs.insert(struct_sym.clone(), def);
         }
-
-        self.gs
-            .add_type(struct_name.to_string(), ty.to_bounded(), decl.clone());
-        self.gs.add_struct(struct_name, def);
-        self.gs.add_value(name.to_string(), ty.to_bounded(), decl)
     }
 
-    fn declare_symbols(&mut self, files: &[File]) {
-        files.iter().for_each(|f| {
-            f.decls
-                .iter()
-                .filter(|e| {
-                    matches!(
-                        e,
-                        Expr::EnumDef { .. }
-                            | Expr::StructDef { .. }
-                            | Expr::TypeAlias { .. }
-                            | Expr::NewtypeDef { .. }
-                            | Expr::Trait { .. }
-                    )
-                })
-                .for_each(|e| self.declare_type(e));
-        });
+    fn add_package(&mut self, name: &str, def: StructDefinition, ty: BoundedType) {
+        self.current_scope()
+            .packages
+            .insert(name.to_string(), (def, ty));
     }
 
-    fn check_numeric(&mut self, ty: &Type, span: &Span) {
-        let ty = self.substitute(ty.clone());
-        if !ty.is_numeric() {
-            self.generic_error("Expected numeric type".to_string(), span.clone());
+    fn get_package(&mut self, name: &str) -> Option<(StructDefinition, BoundedType)> {
+        self.current_scope().packages.get(name).cloned()
+    }
+
+    fn allow_external_decls(&mut self) {
+        self.add_value("EXT", self.type_any().to_bounded(), &Span::dummy());
+    }
+
+    fn add_constructor(
+        &mut self,
+        enum_name: &str,
+        cons_name: &str,
+        cons_ty: &BoundedType,
+        span: &Span,
+    ) {
+        let qualified = format!("{}::{}", enum_name, cons_name);
+        self.add_value(&qualified, cons_ty.clone(), span);
+        self.add_value(&cons_name, cons_ty.clone(), span);
+
+        self.current_scope()
+            .constructors
+            .insert(cons_name.to_string(), qualified);
+    }
+}
+
+#[derive(Debug, Clone)]
+struct Scope {
+    // bindings in the type universe, ie. bool => Symbol(builtin, bool)
+    types: HashMap<String, Symbol>,
+    // bindings in the value universe, ie. x => int
+    values: HashMap<String, BoundedType>,
+    // aliases, ie. Ok => Result::Ok
+    constructors: HashMap<String, String>,
+    // track where bindings were defined
+    spans: HashMap<String, Span>,
+    // when importing a package, a corresponding struct is created
+    packages: HashMap<String, (StructDefinition, BoundedType)>,
+
+    // assumptions about a type found in trait bounds, ie. T => comparable. Used for constraint resolution.
+    assumptions: HashMap<Symbol, Vec<Symbol>>,
+    // bindings that were declared with `let mut`
+    mutability: HashMap<String, bool>,
+}
+
+impl Scope {
+    fn new() -> Self {
+        Scope {
+            types: Default::default(),
+            values: Default::default(),
+            constructors: Default::default(),
+            spans: Default::default(),
+            packages: Default::default(),
+            assumptions: Default::default(),
+            mutability: Default::default(),
         }
     }
 }

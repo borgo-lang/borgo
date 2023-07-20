@@ -1142,3 +1142,14 @@ fn main() {
   defer!((|| { fmt.Println("defer 2") })());
 }
 ```
+
+Newline characters
+
+```rust
+use fmt;
+
+fn main() {
+  let x = '\n';
+  fmt.Printf("a%sb", x);
+}
+```

@@ -21,10 +21,6 @@ var foo = func() int {
 	return 1 + 1
 }()
 
-func check() bool {
-	return foo == 2
-}
-
 func main() {
 	assert_eq[bool](check(), true)
 }

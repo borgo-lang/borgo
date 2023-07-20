@@ -11,4 +11,4 @@ OUTPUT:
 Type not found: Y
 
 2|    fn foo<T>(x: Y) -> int {
-      ^--
+                ^

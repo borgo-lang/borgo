@@ -438,11 +438,11 @@ fn collect_ctors(matrix: &RefPatternMatrix) -> HashMap<TagId, Union> {
 // My changes
 // --------
 
-pub type HumanIndex = usize;
-pub type Lowercase = String;
-pub type TagName = String;
-pub type Symbol = String;
-pub type Region = usize;
+type HumanIndex = usize;
+type Lowercase = String;
+type TagName = String;
+type Symbol = String;
+type Region = usize;
 
 pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
     match expr {
@@ -509,7 +509,6 @@ pub fn check(expr: &Expr, instance: &infer::Infer) -> Result<(), error::Error> {
         Expr::Try { expr, .. } => check(expr, instance),
 
         Expr::Trait { .. } => Ok(()),
-        Expr::Mod { .. } => Ok(()),
         Expr::ImplBlock { items, .. } => items.iter().try_for_each(|a| check(a, instance)),
 
         Expr::Binary { left, right, .. } => {
@@ -570,7 +569,7 @@ fn simplify(instance: &infer::Infer, pat: &Pat) -> Pattern {
             ident, elems, ty, ..
         } => {
             let def = match ty {
-                Type::Con { name, .. } => instance.gs.get_enum(name).unwrap(),
+                Type::Con { id, .. } => instance.gs.get_enum(id).unwrap(),
 
                 // If it's not a constructor, then it's likely there is already
                 // an error for this pattern match raised during inference. We
@@ -597,7 +596,9 @@ fn simplify(instance: &infer::Infer, pat: &Pat) -> Pattern {
                 alternatives: alts,
                 render_as: RenderAs::Tag,
             };
-            let name = ident.clone();
+
+            let name = ident.to_string();
+
             Ctor(union, name, pats)
         }
 
@@ -605,7 +606,7 @@ fn simplify(instance: &infer::Infer, pat: &Pat) -> Pattern {
             ident, fields, ty, ..
         } => {
             let def = match ty {
-                Type::Con { name, .. } => instance.gs.get_struct(name).unwrap(),
+                Type::Con { id, .. } => instance.gs.get_struct(id).unwrap(),
 
                 // Same as enums: if it's not a Con then there's an error somewhere else and we
                 // just bail.
@@ -676,7 +677,7 @@ fn subject_is_matchable(
     subject_span: &Span,
 ) -> Result<(), error::Error> {
     match subject_ty {
-        Type::Con { name: _, args } => {
+        Type::Con { id: _, args } => {
             args.iter()
                 .try_for_each(|a| subject_is_matchable(instance, a, subject_span))?;
 

@@ -16,11 +16,10 @@ No errors.
           "fun": {
             "name": "foo",
             "generics": [],
-            "bounds": [],
             "args": [],
             "ret": {
               "Con": {
-                "name": "Unit",
+                "id": "Unit",
                 "args": []
               }
             },
@@ -35,7 +34,7 @@ No errors.
                 "stmts": [],
                 "ty": {
                   "Con": {
-                    "name": "Unit",
+                    "id": "Unit",
                     "args": []
                   }
                 },
@@ -47,7 +46,8 @@ No errors.
                   "end": {
                     "line": 1,
                     "col": 13
-                  }
+                  },
+                  "file": 99
                 }
               }
             },
@@ -59,11 +59,10 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "Unit",
+                      "id": "Unit",
                       "args": []
                     }
-                  },
-                  "id": -1
+                  }
                 }
               }
             }
@@ -75,11 +74,10 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "Unit",
+                  "id": "Unit",
                   "args": []
                 }
-              },
-              "id": -1
+              }
             }
           },
           "span": {
@@ -90,7 +88,8 @@ No errors.
             "end": {
               "line": 1,
               "col": 13
-            }
+            },
+            "file": 99
           }
         }
       }
@@ -101,11 +100,10 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "Unit",
+            "id": "Unit",
             "args": []
           }
-        },
-        "id": -1
+        }
       }
     },
     "span": {
@@ -116,7 +114,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 15
-      }
+      },
+      "file": 99
     }
   }
 }

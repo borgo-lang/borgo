@@ -1,0 +1,4 @@
+
+fn Fatalf(format: string, a: VarArgs<any>) {
+    EXT
+}

@@ -18,7 +18,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "float64",
+            "id": "float64",
             "args": []
           }
         },
@@ -30,7 +30,8 @@ No errors.
           "end": {
             "line": 1,
             "col": 3
-          }
+          },
+          "file": 99
         }
       }
     },
@@ -41,7 +42,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "int",
+            "id": "int",
             "args": []
           }
         },
@@ -53,13 +54,14 @@ No errors.
           "end": {
             "line": 1,
             "col": 7
-          }
+          },
+          "file": 99
         }
       }
     },
     "ty": {
       "Con": {
-        "name": "float64",
+        "id": "float64",
         "args": []
       }
     },
@@ -71,7 +73,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 7
-      }
+      },
+      "file": 99
     }
   }
 }

@@ -27,22 +27,6 @@ OUTPUT:
 ---
 package main
 
-func b(n int) int {
-	if n == 200 {
-		return n
-	}
-
-	return a(n + 20)
-}
-
-func a(n int) int {
-	if n == 100 {
-		return n
-	}
-
-	return b(n + 10)
-}
-
 func main() {
 	assert_eq[int](a(40), 100)
 }

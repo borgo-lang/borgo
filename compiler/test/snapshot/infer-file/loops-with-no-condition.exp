@@ -12,155 +12,137 @@ fn () -> ()
 ---
 No errors.
 ---
-{
-  "files": [
-    {
-      "name": "test.brg",
-      "decls": [
-        {
-          "Closure": {
-            "fun": {
-              "name": "borgo_main",
-              "generics": [],
-              "bounds": [],
-              "args": [],
-              "ret": {
-                "Con": {
-                  "name": "Unit",
-                  "args": []
-                }
-              },
-              "ann": {
-                "Con": {
-                  "name": "Unit",
-                  "args": []
-                }
-              },
-              "body": {
-                "Block": {
-                  "stmts": [
-                    {
-                      "Loop": {
-                        "kind": "NoCondition",
-                        "body": {
-                          "Block": {
-                            "stmts": [
-                              {
-                                "Flow": {
-                                  "kind": "Break",
-                                  "span": {
-                                    "start": {
-                                      "line": 3,
-                                      "col": 4
-                                    },
-                                    "end": {
-                                      "line": 3,
-                                      "col": 9
-                                    }
-                                  }
-                                }
-                              }
-                            ],
-                            "ty": {
-                              "Con": {
-                                "name": "Unit",
-                                "args": []
-                              }
-                            },
+[
+  {
+    "Closure": {
+      "fun": {
+        "name": "borgo_main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Loop": {
+                  "kind": "NoCondition",
+                  "body": {
+                    "Block": {
+                      "stmts": [
+                        {
+                          "Flow": {
+                            "kind": "Break",
                             "span": {
                               "start": {
-                                "line": 2,
-                                "col": 7
+                                "line": 3,
+                                "col": 4
                               },
                               "end": {
-                                "line": 4,
-                                "col": 3
-                              }
+                                "line": 3,
+                                "col": 9
+                              },
+                              "file": 99
                             }
                           }
-                        },
-                        "span": {
-                          "start": {
-                            "line": 2,
-                            "col": 2
-                          },
-                          "end": {
-                            "line": 4,
-                            "col": 3
-                          }
                         }
+                      ],
+                      "ty": {
+                        "Var": -333
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 7
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 3
+                        },
+                        "file": 99
                       }
-                    }
-                  ],
-                  "ty": {
-                    "Con": {
-                      "name": "Unit",
-                      "args": []
                     }
                   },
                   "span": {
                     "start": {
-                      "line": 1,
-                      "col": 16
+                      "line": 2,
+                      "col": 2
                     },
                     "end": {
-                      "line": 5,
-                      "col": 1
-                    }
-                  }
-                }
-              },
-              "bounded_ty": {
-                "generics": [],
-                "ty": {
-                  "Fun": {
-                    "args": [],
-                    "bounds": [],
-                    "ret": {
-                      "Con": {
-                        "name": "Unit",
-                        "args": []
-                      }
+                      "line": 4,
+                      "col": 3
                     },
-                    "id": -1
+                    "file": 99
                   }
                 }
               }
-            },
-            "kind": "TopLevel",
+            ],
             "ty": {
-              "Fun": {
-                "args": [],
-                "bounds": [],
-                "ret": {
-                  "Con": {
-                    "name": "Unit",
-                    "args": []
-                  }
-                },
-                "id": -1
-              }
+              "Var": -333
             },
             "span": {
               "start": {
                 "line": 1,
-                "col": 0
+                "col": 16
               },
               "end": {
                 "line": 5,
                 "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
               }
             }
           }
         }
-      ],
-      "source": "fn borgo_main() {\n  loop {\n    break;\n  }\n}"
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 0
+        },
+        "end": {
+          "line": 5,
+          "col": 1
+        },
+        "file": 99
+      }
     }
-  ],
-  "errors": [
-    [
-      "test.brg",
-      []
-    ]
-  ]
-}
+  }
+]

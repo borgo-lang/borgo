@@ -19,7 +19,6 @@ No errors.
           "fun": {
             "name": "foo",
             "generics": [],
-            "bounds": [],
             "args": [
               {
                 "pat": {
@@ -35,7 +34,8 @@ No errors.
                       "end": {
                         "line": 2,
                         "col": 10
-                      }
+                      },
+                      "file": 99
                     }
                   }
                 },
@@ -47,7 +47,7 @@ No errors.
                 },
                 "ty": {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 }
@@ -55,7 +55,7 @@ No errors.
             ],
             "ret": {
               "Con": {
-                "name": "int",
+                "id": "int",
                 "args": []
               }
             },
@@ -74,20 +74,15 @@ No errors.
                         "Var": {
                           "value": "sum",
                           "decl": {
-                            "file_id": {
-                              "package": "std",
-                              "filename": "builtin.brg"
+                            "start": {
+                              "line": 21,
+                              "col": 0
                             },
-                            "span": {
-                              "start": {
-                                "line": 0,
-                                "col": 0
-                              },
-                              "end": {
-                                "line": 0,
-                                "col": 0
-                              }
-                            }
+                            "end": {
+                              "line": 23,
+                              "col": 1
+                            },
+                            "file": -1
                           },
                           "generics_instantiated": [],
                           "ty": {
@@ -95,13 +90,13 @@ No errors.
                               "args": [
                                 {
                                   "Con": {
-                                    "name": "int",
+                                    "id": "int",
                                     "args": []
                                   }
                                 },
                                 {
                                   "Con": {
-                                    "name": "int",
+                                    "id": "int",
                                     "args": []
                                   }
                                 }
@@ -109,11 +104,10 @@ No errors.
                               "bounds": [],
                               "ret": {
                                 "Con": {
-                                  "name": "int",
+                                  "id": "int",
                                   "args": []
                                 }
-                              },
-                              "id": -1
+                              }
                             }
                           },
                           "span": {
@@ -124,7 +118,8 @@ No errors.
                             "end": {
                               "line": 2,
                               "col": 29
-                            }
+                            },
+                            "file": 99
                           }
                         }
                       },
@@ -133,25 +128,20 @@ No errors.
                           "Var": {
                             "value": "a",
                             "decl": {
-                              "file_id": {
-                                "package": "dummy",
-                                "filename": "dummy"
+                              "start": {
+                                "line": 2,
+                                "col": 9
                               },
-                              "span": {
-                                "start": {
-                                  "line": 2,
-                                  "col": 9
-                                },
-                                "end": {
-                                  "line": 2,
-                                  "col": 10
-                                }
-                              }
+                              "end": {
+                                "line": 2,
+                                "col": 10
+                              },
+                              "file": 99
                             },
                             "generics_instantiated": [],
                             "ty": {
                               "Con": {
-                                "name": "int",
+                                "id": "int",
                                 "args": []
                               }
                             },
@@ -163,7 +153,8 @@ No errors.
                               "end": {
                                 "line": 2,
                                 "col": 31
-                              }
+                              },
+                              "file": 99
                             }
                           }
                         },
@@ -174,7 +165,7 @@ No errors.
                             },
                             "ty": {
                               "Con": {
-                                "name": "int",
+                                "id": "int",
                                 "args": []
                               }
                             },
@@ -186,14 +177,15 @@ No errors.
                               "end": {
                                 "line": 2,
                                 "col": 34
-                              }
+                              },
+                              "file": 99
                             }
                           }
                         }
                       ],
                       "ty": {
                         "Con": {
-                          "name": "int",
+                          "id": "int",
                           "args": []
                         }
                       },
@@ -205,14 +197,15 @@ No errors.
                         "end": {
                           "line": 2,
                           "col": 35
-                        }
+                        },
+                        "file": 99
                       }
                     }
                   }
                 ],
                 "ty": {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 },
@@ -224,7 +217,8 @@ No errors.
                   "end": {
                     "line": 2,
                     "col": 37
-                  }
+                  },
+                  "file": 99
                 }
               }
             },
@@ -235,7 +229,7 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "int",
+                        "id": "int",
                         "args": []
                       }
                     }
@@ -243,11 +237,10 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
-                  },
-                  "id": -1
+                  }
                 }
               }
             }
@@ -258,7 +251,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 }
@@ -266,11 +259,10 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "int",
+                  "id": "int",
                   "args": []
                 }
-              },
-              "id": -1
+              }
             }
           },
           "span": {
@@ -281,7 +273,8 @@ No errors.
             "end": {
               "line": 2,
               "col": 37
-            }
+            },
+            "file": 99
           }
         }
       },
@@ -291,20 +284,15 @@ No errors.
             "Var": {
               "value": "foo",
               "decl": {
-                "file_id": {
-                  "package": "dummy",
-                  "filename": "dummy"
+                "start": {
+                  "line": 2,
+                  "col": 2
                 },
-                "span": {
-                  "start": {
-                    "line": 2,
-                    "col": 2
-                  },
-                  "end": {
-                    "line": 2,
-                    "col": 37
-                  }
-                }
+                "end": {
+                  "line": 2,
+                  "col": 37
+                },
+                "file": 99
               },
               "generics_instantiated": [],
               "ty": {
@@ -312,7 +300,7 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "int",
+                        "id": "int",
                         "args": []
                       }
                     }
@@ -320,11 +308,10 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
-                  },
-                  "id": -1
+                  }
                 }
               },
               "span": {
@@ -335,7 +322,8 @@ No errors.
                 "end": {
                   "line": 3,
                   "col": 5
-                }
+                },
+                "file": 99
               }
             }
           },
@@ -347,7 +335,7 @@ No errors.
                 },
                 "ty": {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 },
@@ -359,14 +347,15 @@ No errors.
                   "end": {
                     "line": 3,
                     "col": 7
-                  }
+                  },
+                  "file": 99
                 }
               }
             }
           ],
           "ty": {
             "Con": {
-              "name": "int",
+              "id": "int",
               "args": []
             }
           },
@@ -378,14 +367,15 @@ No errors.
             "end": {
               "line": 3,
               "col": 8
-            }
+            },
+            "file": 99
           }
         }
       }
     ],
     "ty": {
       "Con": {
-        "name": "int",
+        "id": "int",
         "args": []
       }
     },
@@ -397,7 +387,8 @@ No errors.
       "end": {
         "line": 4,
         "col": 1
-      }
+      },
+      "file": 99
     }
   }
 }

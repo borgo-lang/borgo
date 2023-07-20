@@ -19,7 +19,21 @@ No errors.
           "def": {
             "name": "Maybe",
             "generics": [
-              "T"
+              {
+                "name": "T",
+                "bounds": [],
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 13
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 14
+                  },
+                  "file": 99
+                }
+              }
             ],
             "cons": [
               {
@@ -35,7 +49,7 @@ No errors.
                     },
                     "ty": {
                       "Con": {
-                        "name": "T",
+                        "id": "T",
                         "args": []
                       }
                     }
@@ -56,7 +70,8 @@ No errors.
             "end": {
               "line": 2,
               "col": 33
-            }
+            },
+            "file": 99
           }
         }
       },
@@ -66,25 +81,20 @@ No errors.
             "Var": {
               "value": "Maybe::Just",
               "decl": {
-                "file_id": {
-                  "package": "dummy",
-                  "filename": "dummy"
+                "start": {
+                  "line": 2,
+                  "col": 2
                 },
-                "span": {
-                  "start": {
-                    "line": 2,
-                    "col": 2
-                  },
-                  "end": {
-                    "line": 2,
-                    "col": 33
-                  }
-                }
+                "end": {
+                  "line": 2,
+                  "col": 33
+                },
+                "file": 99
               },
               "generics_instantiated": [
                 {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 }
@@ -94,7 +104,7 @@ No errors.
                   "args": [
                     {
                       "Con": {
-                        "name": "int",
+                        "id": "int",
                         "args": []
                       }
                     }
@@ -102,18 +112,17 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "Maybe",
+                      "id": "Maybe",
                       "args": [
                         {
                           "Con": {
-                            "name": "int",
+                            "id": "int",
                             "args": []
                           }
                         }
                       ]
                     }
-                  },
-                  "id": -1
+                  }
                 }
               },
               "span": {
@@ -124,7 +133,8 @@ No errors.
                 "end": {
                   "line": 3,
                   "col": 13
-                }
+                },
+                "file": 99
               }
             }
           },
@@ -136,7 +146,7 @@ No errors.
                 },
                 "ty": {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 },
@@ -148,18 +158,19 @@ No errors.
                   "end": {
                     "line": 3,
                     "col": 15
-                  }
+                  },
+                  "file": 99
                 }
               }
             }
           ],
           "ty": {
             "Con": {
-              "name": "Maybe",
+              "id": "Maybe",
               "args": [
                 {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 }
@@ -174,18 +185,19 @@ No errors.
             "end": {
               "line": 3,
               "col": 16
-            }
+            },
+            "file": 99
           }
         }
       }
     ],
     "ty": {
       "Con": {
-        "name": "Maybe",
+        "id": "Maybe",
         "args": [
           {
             "Con": {
-              "name": "int",
+              "id": "int",
               "args": []
             }
           }
@@ -200,7 +212,8 @@ No errors.
       "end": {
         "line": 4,
         "col": 1
-      }
+      },
+      "file": 99
     }
   }
 }

@@ -3,7 +3,7 @@
 <head>
   <title>Borgo Programming Language</title>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <header>
@@ -13,12 +13,31 @@
   <main>
     <div class="links-pane">
       <section id="examples">
+        <% it.examples.forEach(e => { %>
+          <a
+            href="#<%= e.slug %>"
+            onClick="Borgo.selectExample('<%= e.slug %>')"
+          >
+              <%= e.title %>
+          </a>
+        <% }) %>
       </section>
     </div>
 
-    <section class="content-pane">
-      <h2 id="section-title"></h2>
-      <div id="section-description"></div>
+    <section id="content" class="content-pane">
+        <% it.examples.forEach(e => { %>
+          <article data-slug="<%= e.slug %>">
+            <h2>
+              <%= e.title %>
+            </h2>
+
+            <div>
+              <%~ e.description %>
+            </div>
+
+            <pre data-example="<%= JSON.stringify(e.code) %>"><%= e.code %></pre>
+          </article>
+        <% }) %>
     </section>
 
     <section class="editor-pane">
@@ -28,39 +47,37 @@
 
       <div id="editor">
         <div>
-          Loading compiler...
+          Loading compiler &amp; stdlib...
         </div>
 
         <textarea style="display: none;">/// Start editing
+    use fmt;
     fn main() {
-      inspect("Hello world");
+      fmt.Println("Hello world");
     }</textarea>
       </div>
 
       <pre id="output"></pre>
+
       <pre id="errors"></pre>
     </section>
   </main>
 
   <footer>
-    <p>
-      <a href="https://github.com/borgo-lang/borgo">Borgo on Github</a>
+    <p><a href="https://github.com/borgo-lang/borgo">Borgo on Github</a>
     </p>
   </footer>
-
+  <script type="module">document.documentElement.classList.add("has-js");</script>
   <script src="/bundle.js"></script> 
   <script type="module">
-
     // Rust compiler
     import { default as initRust, compile_wasm } from "/pkg/wasm.js";
 
-    await initRust()
+    initRust().then(() => window.Borgo.compiler_ready())
 
     window.Borgo.compile_wasm = compile_wasm
 
     window.Borgo.main()
-
-    // --------------------
   </script>
 </body>
 </html>

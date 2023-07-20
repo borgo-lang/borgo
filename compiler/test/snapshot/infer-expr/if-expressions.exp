@@ -21,7 +21,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "bool",
+            "id": "bool",
             "args": []
           }
         },
@@ -33,7 +33,8 @@ No errors.
           "end": {
             "line": 1,
             "col": 7
-          }
+          },
+          "file": 99
         }
       }
     },
@@ -47,7 +48,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "int",
+                  "id": "int",
                   "args": []
                 }
               },
@@ -59,14 +60,15 @@ No errors.
                 "end": {
                   "line": 2,
                   "col": 3
-                }
+                },
+                "file": 99
               }
             }
           }
         ],
         "ty": {
           "Con": {
-            "name": "int",
+            "id": "int",
             "args": []
           }
         },
@@ -78,7 +80,8 @@ No errors.
           "end": {
             "line": 3,
             "col": 1
-          }
+          },
+          "file": 99
         }
       }
     },
@@ -92,7 +95,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "int",
+                  "id": "int",
                   "args": []
                 }
               },
@@ -104,14 +107,15 @@ No errors.
                 "end": {
                   "line": 4,
                   "col": 3
-                }
+                },
+                "file": 99
               }
             }
           }
         ],
         "ty": {
           "Con": {
-            "name": "int",
+            "id": "int",
             "args": []
           }
         },
@@ -123,13 +127,14 @@ No errors.
           "end": {
             "line": 5,
             "col": 1
-          }
+          },
+          "file": 99
         }
       }
     },
     "ty": {
       "Con": {
-        "name": "int",
+        "id": "int",
         "args": []
       }
     },
@@ -141,7 +146,8 @@ No errors.
       "end": {
         "line": 5,
         "col": 1
-      }
+      },
+      "file": 99
     }
   }
 }

@@ -1,7 +1,12 @@
 import { marked } from "https://esm.sh/marked@4.0.18";
 import { slugify } from "../compiler/test/runner.ts";
+import { walkSync } from "https://deno.land/std/fs/mod.ts";
+import { dirname } from "https://deno.land/std/path/mod.ts";
+import { Eta } from "https://deno.land/x/eta@v3.0.3/src/index.ts";
 
 Deno.chdir(Deno.cwd() + "/playground");
+
+let EXAMPLES;
 
 type TourBlock = {
   title: string;
@@ -112,30 +117,47 @@ function decode(s: any) {
     result.push({ ...b, code: output });
   }
 
-  Deno.writeTextFileSync("./static/examples.out.json", JSON.stringify(result));
-}
-
-// --------------------
-// Build home
-// --------------------
-
-{
-  const tpl = Deno.readTextFileSync("./home.html");
-  const readme = Deno.readTextFileSync("../README.md");
-
-  const md = marked.parse(readme);
-
-  const content = tpl.replace("[content]", md);
-  Deno.writeTextFileSync("./static/index.html", content);
+  EXAMPLES = result;
+  Deno.writeTextFileSync("./examples.out.json", JSON.stringify(result));
 }
 
 // --------------------
 // Build playground
 // --------------------
 {
-  try {
-    Deno.mkdirSync("./static/playground");
-  } catch (e) {}
-
-  Deno.copyFileSync("./playground.html", "./static/playground/index.html");
+  const eta = new Eta({ views: "." });
+  const html = eta.render("./playground", { examples: EXAMPLES });
+  Deno.writeTextFileSync("./static/index.html", html);
 }
+
+// --------------------
+// Build std
+// --------------------
+
+{
+  const oldCwd = Deno.cwd();
+
+  Deno.chdir(Deno.cwd() + "/../std");
+
+  // Walk std/ and create a single json file with all packages
+  const packages = {};
+
+  for (const entry of walkSync(".", { includeDirs: false })) {
+    const folder = dirname(entry.path);
+
+    if (folder == ".") {
+      continue;
+    }
+
+    packages[folder] = packages[folder] || {};
+    packages[folder][entry.name] = Deno.readTextFileSync(entry.path);
+  }
+
+  Deno.chdir(oldCwd);
+  Deno.writeTextFileSync(
+    "./static/std.out.json",
+    JSON.stringify(packages),
+  );
+}
+
+console.log("DONE");

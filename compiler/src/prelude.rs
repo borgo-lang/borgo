@@ -1,28 +1,44 @@
-use crate::ast;
-use crate::global_state;
-use crate::infer;
-use crate::type_::Type;
-use crate::type_::TypeId;
+use crate::{
+    error,
+    global_state::{Visibility},
+    infer,
+};
 
 /// Initialize types and functions only used in tests
 
-pub fn init(instance: &mut infer::Infer) {
-    let source = include_str!("../test/prelude.txt");
-    let source = format!("{{ {} }}", source); // turn it into a block
-    let e = syn::parse_str::<syn::Expr>(&source).unwrap();
-    let expr = ast::Expr::from_expr(e).unwrap();
+pub fn init(instance: &mut infer::Infer) -> Result<(), error::Error> {
+    let source = include_str!("../test/prelude.brg");
+    // let source = format!("{{ {} }}", source); // turn it into a block
+    let parsed = syn::parse_str::<syn::File>(source).unwrap();
 
-    populate_prelude(&mut instance.gs);
-    let (_, errors, _) = instance.infer_expr_with_error(&expr);
+    let ast = crate::ast::Ast::new();
+    let file = ast
+        .from_file("prelude.brg".to_string(), source.to_string(), parsed)
+        .unwrap();
 
+    // Add any in scope
+    // let any_ty = instance.get_type("any").unwrap();
+    // instance.add_value("EXT", any_ty, &Span::dummy());
+
+    instance.declare_stmts(&file.decls, &Visibility::TopLevel);
+
+    // let m = instance.gs.get_module(&ModuleId("std".to_string()));
+    // dbg!(m);
+
+    // let (_, errors, _) = instance.infer_expr_with_error(&expr);
+
+    let errors = &instance.errors;
     if !errors.is_empty() {
         panic!(
             "Got error while initializing prelude {:#?}",
             errors.first().unwrap(),
         );
     }
+
+    Ok(())
 }
 
+/*
 pub fn populate_prelude(gs: &mut global_state::GlobalState) {
     let gen_t = Type::generic("T");
     let gen_y = Type::generic("Y");
@@ -203,3 +219,4 @@ pub fn populate_prelude(gs: &mut global_state::GlobalState) {
         .to_bounded(),
     );
 }
+*/

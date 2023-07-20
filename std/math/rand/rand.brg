@@ -1,0 +1,160 @@
+fn New(src: Source) -> &Rand {
+    EXT
+}
+
+fn NewSource(seed: int64) -> Source {
+    EXT
+}
+
+fn NewZipf(r: &Rand, s: float64, v: float64, imax: uint64) -> &Zipf {
+    EXT
+}
+
+fn ExpFloat64() -> float64 {
+    EXT
+}
+
+fn Float32() -> float32 {
+    EXT
+}
+
+fn Float64() -> float64 {
+    EXT
+}
+
+fn Int() -> int {
+    EXT
+}
+
+fn Int31() -> int32 {
+    EXT
+}
+
+fn Int31n(n: int32) -> int32 {
+    EXT
+}
+
+fn Int63() -> int64 {
+    EXT
+}
+
+fn Int63n(n: int64) -> int64 {
+    EXT
+}
+
+fn Intn(n: int) -> int {
+    EXT
+}
+
+fn NormFloat64() -> float64 {
+    EXT
+}
+
+fn Perm(n: int) -> [int] {
+    EXT
+}
+
+fn Read(p: [byte]) -> Result<int> {
+    EXT
+}
+
+fn Seed(seed: int64) -> () {
+    EXT
+}
+
+fn Shuffle(n: int, swap: fn(i: int) -> ()) -> () {
+    EXT
+}
+
+fn Uint32() -> uint32 {
+    EXT
+}
+
+fn Uint64() -> uint64 {
+    EXT
+}
+
+impl Rand {
+    fn ExpFloat64(&self) -> float64 {
+        EXT
+    }
+
+    fn Float32(&self) -> float32 {
+        EXT
+    }
+
+    fn Float64(&self) -> float64 {
+        EXT
+    }
+
+    fn Int(&self) -> int {
+        EXT
+    }
+
+    fn Int31(&self) -> int32 {
+        EXT
+    }
+
+    fn Int31n(&self, n: int32) -> int32 {
+        EXT
+    }
+
+    fn Int63(&self) -> int64 {
+        EXT
+    }
+
+    fn Int63n(&self, n: int64) -> int64 {
+        EXT
+    }
+
+    fn Intn(&self, n: int) -> int {
+        EXT
+    }
+
+    fn NormFloat64(&self) -> float64 {
+        EXT
+    }
+
+    fn Perm(&self, n: int) -> [int] {
+        EXT
+    }
+
+    fn Read(&self, p: [byte]) -> Result<int> {
+        EXT
+    }
+
+    fn Seed(&self, seed: int64) -> () {
+        EXT
+    }
+
+    fn Shuffle(&self, n: int, swap: fn(i: int) -> ()) -> () {
+        EXT
+    }
+
+    fn Uint32(&self) -> uint32 {
+        EXT
+    }
+
+    fn Uint64(&self) -> uint64 {
+        EXT
+    }
+}
+
+impl Zipf {
+    fn Uint64(&self) -> uint64 {
+        EXT
+    }
+}
+
+struct Rand {}
+
+trait Source {
+    fn Int63() -> int64;
+    fn Seed(seed: int64) -> ();
+}
+
+trait Source64: Source {
+    fn Uint64() -> uint64;
+}
+
+struct Zipf {}

@@ -8,6 +8,7 @@ test-runner test_suite="": build
   cd compiler/ && deno run -A test/runner.ts {{test_suite}}
 
 build-examples:
+  mkdir -p playground/static
   deno run -A playground/build-examples.ts
 
 run-examples: build build-examples
@@ -20,8 +21,6 @@ serve-playground:
   python3 -m http.server 8888 --directory playground/static
 
 playground-js: build-examples
-  mkdir -p playground/static
-  cp -R std playground/static
   cp playground/style.css playground/static
   cd playground && npx esbuild --bundle wasm-index.js --outfile=static/bundle.js
 
@@ -40,7 +39,7 @@ playground-prod: playground-js
   mv prod.js bundle.js
 
 watch +command:
-  watchexec -e rs,md,ts,brg,go,html,js,css "just {{command}}"
+  watchexec -e rs,md,ts,brg,go,html,js,css,eta "just {{command}}"
 
 deploy-playground destination: playground-prod
   cp -R playground/static/* {{destination}}
@@ -51,7 +50,7 @@ init-project folder:
 
   DEST={{folder}}
   ROOT="."
-  MAIN="app.brg"
+  MAIN="main.brg"
 
   if [ -d "$DEST" ];
   then

@@ -11,17 +11,28 @@ const Borgo = {
 window.Borgo = Borgo;
 
 let output = [];
-let EXAMPLES;
+
+let READY = { data: false, compiler: false };
 let STD_SOURCE;
 
 const elements = {
   output: document.getElementById("output"),
   errors: document.getElementById("errors"),
-  examples: document.getElementById("examples"),
-  links: () => document.querySelectorAll("#examples a"),
-  section_title: document.getElementById("section-title"),
-  section_description: document.getElementById("section-description"),
+  examples: Array.from(document.getElementById("examples").children),
+  content: Array.from(document.getElementById("content").children),
 };
+
+// Build up index of examples source code
+const EXAMPLES = elements.content.reduce((acc, item) => {
+  const slug = item.dataset.slug;
+
+  const code = JSON.parse(
+    item.querySelector("pre[data-example]").dataset.example,
+  );
+
+  acc[slug] = { code };
+  return acc;
+}, {});
 
 function updateLog(s) {
   output.push(s);
@@ -39,16 +50,7 @@ function updateError(err) {
 }
 
 async function initStaticData() {
-  EXAMPLES = await (fetch("/examples.out.json").then((res) => res.json()));
-  STD_SOURCE = await (fetch("/std/core.brg").then((res) => res.text()));
-}
-
-async function initExamples() {
-  EXAMPLES.forEach((e) => {
-    const link =
-      `<a href="#${e.slug}" onClick="Borgo.selectExample(${e.slug})">${e.title}</a>`;
-    elements.examples.innerHTML += link;
-  });
+  STD_SOURCE = await (fetch("/std.out.json").then((res) => res.json()));
 }
 
 async function callGoPlayground(code) {
@@ -68,16 +70,16 @@ async function callGoPlayground(code) {
   return await res.json();
 }
 
-function aggregateProject(project) {
+function aggregateProject(emitted_files) {
   let source = [];
   let imports = {};
 
-  for (const pkg of Object.values(project)) {
-    for (const [path, name] of Object.entries(pkg.imports)) {
+  for (const file of emitted_files) {
+    for (const [path, name] of file.imports) {
       imports[path] = name ?? "";
     }
 
-    source.push(pkg.source);
+    source.push(file.source);
   }
 
   const rendered_imports = Object.entries(imports).map(([path, name]) => {
@@ -92,9 +94,9 @@ function aggregateProject(project) {
 function initRouting() {
   function refresh() {
     const hash = window.location.hash ||
-      elements.links()[0].getAttribute("href");
+      elements.examples[0].getAttribute("href");
 
-    Borgo.selectExample(hash.substr(1));
+    Borgo.selectExample(hash.substring(1));
   }
 
   window.addEventListener("hashchange", refresh);
@@ -103,7 +105,7 @@ function initRouting() {
 }
 
 Borgo.selectExample = function (slug) {
-  const e = EXAMPLES.find((e) => e.slug == slug);
+  const e = EXAMPLES[slug];
   const state = Borgo.view.state;
 
   const update = state.update({
@@ -114,25 +116,33 @@ Borgo.selectExample = function (slug) {
   Borgo.view.update([update]);
   resetLogs();
 
-  elements.section_title.textContent = e.title;
-  elements.section_description.innerHTML = e.description;
-
-  // Update active link in sidebar
-  const links = elements.links();
-  links.forEach((e) => {
+  // Set section as visible
+  elements.content.forEach((e) => {
     e.classList.remove("active");
 
-    if (e.getAttribute("href").substr(1) == slug) {
+    if (e.dataset.slug == slug) {
+      e.classList.add("active");
+    }
+  });
+
+  // Update active link in sidebar
+  elements.examples.forEach((e) => {
+    e.classList.remove("active");
+
+    if (e.getAttribute("href").substring(1) == slug) {
       e.classList.add("active");
     }
   });
 };
 
-Borgo.main = async function () {
+Borgo.compiler_ready = function () {
+  READY.compiler = true;
   resetLogs();
+};
 
-  await initStaticData();
-  initExamples();
+Borgo.main = async function () {
+  initStaticData()
+    .then(() => READY.data = true);
 
   const editor = document.getElementById("editor");
   const initial_content = editor.getElementsByTagName("textarea")[0].value;
@@ -169,14 +179,25 @@ Borgo.main = async function () {
   Borgo.compile = async function () {
     resetLogs();
 
+    if (!READY.compiler || !READY.data) {
+      updateLog("Compiler still loading :(");
+      return;
+    }
+
     const user_source = view.state.doc.toString();
 
+    const std = { packages: STD_SOURCE };
+
     try {
-      const compiler_res = Borgo.compile_wasm(user_source, STD_SOURCE);
-      const project = JSON.parse(compiler_res);
+      const project = Borgo.compile_wasm(user_source, std);
+
+      if (project.error) {
+        updateError(project.error);
+        return;
+      }
 
       updateLog("Waiting for server...");
-      const full_source = aggregateProject(project);
+      const full_source = aggregateProject(project.emitted);
       const result = await (callGoPlayground(full_source));
 
       if (result) {

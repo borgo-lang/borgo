@@ -1,0 +1,190 @@
+fn NopCloser(r: Reader) -> ReadCloser {
+    EXT
+}
+
+fn LimitReader(r: Reader, n: int64) -> Reader {
+    EXT
+}
+
+fn MultiReader(readers: VarArgs<Reader>) -> Reader {
+    EXT
+}
+
+fn TeeReader(r: Reader, w: Writer) -> Reader {
+    EXT
+}
+
+fn NewSectionReader(r: ReaderAt, off: int64, n: int64) -> &SectionReader {
+    EXT
+}
+
+fn MultiWriter(writers: VarArgs<Writer>) -> Writer {
+    EXT
+}
+
+fn Copy(dst: Writer, src: Reader) -> Result<int64> {
+    EXT
+}
+
+fn CopyBuffer(dst: Writer, src: Reader, buf: [byte]) -> Result<int64> {
+    EXT
+}
+
+fn CopyN(dst: Writer, src: Reader, n: int64) -> Result<int64> {
+    EXT
+}
+
+fn Pipe() -> (&PipeReader, &PipeWriter) {
+    EXT
+}
+
+fn ReadAll(r: Reader) -> Result<[byte]> {
+    EXT
+}
+
+fn ReadAtLeast(r: Reader, buf: [byte], min: int) -> Result<int> {
+    EXT
+}
+
+fn ReadFull(r: Reader, buf: [byte]) -> Result<int> {
+    EXT
+}
+
+fn WriteString(w: Writer, s: string) -> Result<int> {
+    EXT
+}
+
+impl SectionReader {
+    fn Read(&self, p: [byte]) -> Result<int> {
+        EXT
+    }
+
+    fn ReadAt(&self, p: [byte], off: int64) -> Result<int> {
+        EXT
+    }
+
+    fn Seek(&self, offset: int64, whence: int) -> Result<int64> {
+        EXT
+    }
+
+    fn Size(&self) -> int64 {
+        EXT
+    }
+}
+
+impl LimitedReader {
+    fn Read(&self, p: [byte]) -> Result<int> {
+        EXT
+    }
+}
+
+impl PipeReader {
+    fn Close(&self) -> error {
+        EXT
+    }
+
+    fn CloseWithError(&self, err: error) -> error {
+        EXT
+    }
+
+    fn Read(&self, data: [byte]) -> Result<int> {
+        EXT
+    }
+}
+
+impl PipeWriter {
+    fn Close(&self) -> error {
+        EXT
+    }
+
+    fn CloseWithError(&self, err: error) -> error {
+        EXT
+    }
+
+    fn Write(&self, data: [byte]) -> Result<int> {
+        EXT
+    }
+}
+
+trait ByteReader {
+    fn ReadByte() -> Result<byte>;
+}
+
+trait ByteScanner: ByteReader {
+    fn UnreadByte() -> error;
+}
+
+trait ByteWriter {
+    fn WriteByte(c: byte) -> error;
+}
+
+trait Closer {
+    fn Close() -> error;
+}
+
+struct LimitedReader {
+    R: Reader,
+    N: int64,
+}
+
+struct PipeReader {}
+
+struct PipeWriter {}
+
+trait ReadCloser: Reader + Closer {}
+
+trait ReadSeekCloser: Reader + Seeker + Closer {}
+
+trait ReadSeeker: Reader + Seeker {}
+
+trait ReadWriteCloser: Reader + Writer + Closer {}
+
+trait ReadWriteSeeker: Reader + Writer + Seeker {}
+
+trait ReadWriter: Reader + Writer {}
+
+trait Reader {
+    fn Read(p: [byte]) -> Result<int>;
+}
+
+trait ReaderAt {
+    fn ReadAt(p: [byte], off: int64) -> Result<int>;
+}
+
+trait ReaderFrom {
+    fn ReadFrom(r: Reader) -> Result<int64>;
+}
+
+trait RuneReader {
+    fn ReadRune() -> (rune, int, error);
+}
+
+trait RuneScanner: RuneReader {
+    fn UnreadRune() -> error;
+}
+
+struct SectionReader {}
+
+trait Seeker {
+    fn Seek(offset: int64, whence: int) -> Result<int64>;
+}
+
+trait StringWriter {
+    fn WriteString(s: string) -> Result<int>;
+}
+
+trait WriteCloser: Writer + Closer {}
+
+trait WriteSeeker: Writer + Seeker {}
+
+trait Writer {
+    fn Write(p: [byte]) -> Result<int>;
+}
+
+trait WriterAt {
+    fn WriteAt(p: [byte], off: int64) -> Result<int>;
+}
+
+trait WriterTo {
+    fn WriteTo(w: Writer) -> Result<int64>;
+}

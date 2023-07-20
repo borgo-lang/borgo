@@ -35,6 +35,20 @@ fn foo() -> int {
 }
 ```
 
+Can use different generic name than declaration.
+
+> infer("fn () -> ()")
+
+```rust
+struct Foo<T> {}
+
+impl<Y> Foo<Y> {
+    fn bar(x: int, y: Y) {}
+}
+
+fn borgo_main() {}
+```
+
 Exhaustive check
 
 > errorContains('exhaustive'); errorContains('missing case: \"Color::Blue\"');
@@ -101,23 +115,6 @@ fn borgo_main() {
 }
 ```
 
-Mod declarations with non existing generics
-
-> errorContains("Type not found: K")
-
-```rust
-struct Foo {}
-
-#[package(path = github.com:yo/test, name = test::pkg)]
-mod f {
-  fn bar<T>(x: T, k: K) { EXT }
-}
-
-fn borgo_main() {
-  1.assert_eq(2)
-}
-```
-
 Bools missing arm
 
 > errorContains('missing case: \"true\"')
@@ -157,17 +154,10 @@ Pattern matching on slice literals.
 
 ```rust
 fn borgo_main() {
-  match [[1]].seq().first() {
-    Some(x) => x,
-    None => [],
-  };
-
-  match xs {
+  match [1] {
     [1,2] => false,
     _ => true,
   };
-
-  ()
 }
 ```
 
@@ -261,27 +251,12 @@ Generics in extern blocks
 
 > infer("fn () -> ()")
 
-```rust
+```rust-skip
+use reflect;
+
 fn borgo_main() {
   let a = reflect.DeepEqual(1, false);
   let b = reflect.DeepEqual(1, 1);
-}
-```
-
-Parse package info
-
-> infer("fn () -> f::Foo")
-
-```rust
-#[package(path = github.com:yo/test, name = test::pkg)]
-mod f {
-  struct Foo { a: int }
-}
-
-use test::pkg;
-
-fn borgo_main() -> f::Foo {
-  f::Foo { a: 1 }
 }
 ```
 

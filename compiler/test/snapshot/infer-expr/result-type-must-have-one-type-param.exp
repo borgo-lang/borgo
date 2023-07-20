@@ -1,0 +1,19 @@
+Result type must have one type param.
+
+SOURCE:
+{
+    fn foo() -> Result {
+      Ok(1)
+    }
+}
+
+OUTPUT:
+Wrong arity
+
+Expected:
+    (T, E)
+Got:
+    ()
+
+2|      fn foo() -> Result {
+        ^--

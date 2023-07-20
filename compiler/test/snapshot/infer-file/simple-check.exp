@@ -8,126 +8,112 @@ fn () -> int
 ---
 No errors.
 ---
-{
-  "files": [
-    {
-      "name": "test.brg",
-      "decls": [
-        {
-          "Closure": {
-            "fun": {
-              "name": "foo",
-              "generics": [],
-              "bounds": [],
-              "args": [],
-              "ret": {
-                "Con": {
-                  "name": "int",
-                  "args": []
-                }
-              },
-              "ann": {
-                "Con": {
-                  "name": "int",
-                  "args": []
-                }
-              },
-              "body": {
-                "Block": {
-                  "stmts": [
-                    {
-                      "Literal": {
-                        "lit": {
-                          "Int": 1
-                        },
-                        "ty": {
-                          "Con": {
-                            "name": "int",
-                            "args": []
-                          }
-                        },
-                        "span": {
-                          "start": {
-                            "line": 1,
-                            "col": 18
-                          },
-                          "end": {
-                            "line": 1,
-                            "col": 19
-                          }
-                        }
-                      }
-                    }
-                  ],
+[
+  {
+    "Closure": {
+      "fun": {
+        "name": "foo",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "int",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "int",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Literal": {
+                  "lit": {
+                    "Int": 1
+                  },
                   "ty": {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
                   },
                   "span": {
                     "start": {
                       "line": 1,
-                      "col": 16
+                      "col": 18
                     },
                     "end": {
                       "line": 1,
-                      "col": 21
-                    }
-                  }
-                }
-              },
-              "bounded_ty": {
-                "generics": [],
-                "ty": {
-                  "Fun": {
-                    "args": [],
-                    "bounds": [],
-                    "ret": {
-                      "Con": {
-                        "name": "int",
-                        "args": []
-                      }
+                      "col": 19
                     },
-                    "id": -1
+                    "file": 99
                   }
                 }
               }
-            },
-            "kind": "TopLevel",
+            ],
             "ty": {
-              "Fun": {
-                "args": [],
-                "bounds": [],
-                "ret": {
-                  "Con": {
-                    "name": "int",
-                    "args": []
-                  }
-                },
-                "id": -1
+              "Con": {
+                "id": "int",
+                "args": []
               }
             },
             "span": {
               "start": {
                 "line": 1,
-                "col": 0
+                "col": 16
               },
               "end": {
                 "line": 1,
                 "col": 21
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
               }
             }
           }
         }
-      ],
-      "source": "fn foo() -> int { 1 }"
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "int",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 21
+        },
+        "file": 99
+      }
     }
-  ],
-  "errors": [
-    [
-      "test.brg",
-      []
-    ]
-  ]
-}
+  }
+]

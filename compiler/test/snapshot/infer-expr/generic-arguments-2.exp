@@ -16,19 +16,18 @@ No errors.
           "fun": {
             "name": "foo",
             "generics": [],
-            "bounds": [],
             "args": [],
             "ret": {
               "Con": {
-                "name": "Slice",
+                "id": "Slice",
                 "args": [
                   {
                     "Con": {
-                      "name": "Slice",
+                      "id": "Slice",
                       "args": [
                         {
                           "Con": {
-                            "name": "int",
+                            "id": "int",
                             "args": []
                           }
                         }
@@ -76,7 +75,7 @@ No errors.
                                       },
                                       "ty": {
                                         "Con": {
-                                          "name": "int",
+                                          "id": "int",
                                           "args": []
                                         }
                                       },
@@ -88,7 +87,8 @@ No errors.
                                         "end": {
                                           "line": 1,
                                           "col": 27
-                                        }
+                                        },
+                                        "file": 99
                                       }
                                     }
                                   }
@@ -96,11 +96,11 @@ No errors.
                               },
                               "ty": {
                                 "Con": {
-                                  "name": "Slice",
+                                  "id": "Slice",
                                   "args": [
                                     {
                                       "Con": {
-                                        "name": "int",
+                                        "id": "int",
                                         "args": []
                                       }
                                     }
@@ -115,7 +115,8 @@ No errors.
                                 "end": {
                                   "line": 1,
                                   "col": 28
-                                }
+                                },
+                                "file": 99
                               }
                             }
                           }
@@ -123,15 +124,15 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "Slice",
+                          "id": "Slice",
                           "args": [
                             {
                               "Con": {
-                                "name": "Slice",
+                                "id": "Slice",
                                 "args": [
                                   {
                                     "Con": {
-                                      "name": "int",
+                                      "id": "int",
                                       "args": []
                                     }
                                   }
@@ -149,22 +150,23 @@ No errors.
                         "end": {
                           "line": 1,
                           "col": 29
-                        }
+                        },
+                        "file": 99
                       }
                     }
                   }
                 ],
                 "ty": {
                   "Con": {
-                    "name": "Slice",
+                    "id": "Slice",
                     "args": [
                       {
                         "Con": {
-                          "name": "Slice",
+                          "id": "Slice",
                           "args": [
                             {
                               "Con": {
-                                "name": "int",
+                                "id": "int",
                                 "args": []
                               }
                             }
@@ -182,7 +184,8 @@ No errors.
                   "end": {
                     "line": 1,
                     "col": 30
-                  }
+                  },
+                  "file": 99
                 }
               }
             },
@@ -194,15 +197,15 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "Slice",
+                      "id": "Slice",
                       "args": [
                         {
                           "Con": {
-                            "name": "Slice",
+                            "id": "Slice",
                             "args": [
                               {
                                 "Con": {
-                                  "name": "int",
+                                  "id": "int",
                                   "args": []
                                 }
                               }
@@ -211,8 +214,7 @@ No errors.
                         }
                       ]
                     }
-                  },
-                  "id": -1
+                  }
                 }
               }
             }
@@ -224,15 +226,15 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "Slice",
+                  "id": "Slice",
                   "args": [
                     {
                       "Con": {
-                        "name": "Slice",
+                        "id": "Slice",
                         "args": [
                           {
                             "Con": {
-                              "name": "int",
+                              "id": "int",
                               "args": []
                             }
                           }
@@ -241,8 +243,7 @@ No errors.
                     }
                   ]
                 }
-              },
-              "id": -1
+              }
             }
           },
           "span": {
@@ -253,7 +254,8 @@ No errors.
             "end": {
               "line": 1,
               "col": 30
-            }
+            },
+            "file": 99
           }
         }
       }
@@ -264,15 +266,15 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "Slice",
+            "id": "Slice",
             "args": [
               {
                 "Con": {
-                  "name": "Slice",
+                  "id": "Slice",
                   "args": [
                     {
                       "Con": {
-                        "name": "int",
+                        "id": "int",
                         "args": []
                       }
                     }
@@ -281,8 +283,7 @@ No errors.
               }
             ]
           }
-        },
-        "id": -1
+        }
       }
     },
     "span": {
@@ -293,7 +294,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 32
-      }
+      },
+      "file": 99
     }
   }
 }

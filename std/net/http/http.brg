@@ -1,0 +1,17 @@
+
+struct Request {}
+
+trait ResponseWriter {
+    fn Write(bytes: [byte]) -> Result<int>;
+}
+
+trait Handler {
+    fn ServeHTTP(w: ResponseWriter, r: &Request);
+}
+
+fn Handle(pattern: string, handler: Handler) {
+    EXT
+}
+fn ListenAndServe(addr: string, handler: Handler) {
+    EXT
+}

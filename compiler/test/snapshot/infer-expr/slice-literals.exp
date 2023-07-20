@@ -22,7 +22,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
                   },
@@ -34,7 +34,8 @@ No errors.
                     "end": {
                       "line": 1,
                       "col": 4
-                    }
+                    },
+                    "file": 99
                   }
                 }
               },
@@ -45,7 +46,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
                   },
@@ -57,7 +58,8 @@ No errors.
                     "end": {
                       "line": 1,
                       "col": 6
-                    }
+                    },
+                    "file": 99
                   }
                 }
               },
@@ -68,7 +70,7 @@ No errors.
                   },
                   "ty": {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
                   },
@@ -80,7 +82,8 @@ No errors.
                     "end": {
                       "line": 1,
                       "col": 8
-                    }
+                    },
+                    "file": 99
                   }
                 }
               }
@@ -88,11 +91,11 @@ No errors.
           },
           "ty": {
             "Con": {
-              "name": "Slice",
+              "id": "Slice",
               "args": [
                 {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 }
@@ -107,18 +110,19 @@ No errors.
             "end": {
               "line": 1,
               "col": 9
-            }
+            },
+            "file": 99
           }
         }
       }
     ],
     "ty": {
       "Con": {
-        "name": "Slice",
+        "id": "Slice",
         "args": [
           {
             "Con": {
-              "name": "int",
+              "id": "int",
               "args": []
             }
           }
@@ -133,7 +137,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 11
-      }
+      },
+      "file": 99
     }
   }
 }

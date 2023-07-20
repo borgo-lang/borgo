@@ -1,0 +1,74 @@
+[
+  {
+    "path": "core",
+    "name": "std"
+  },
+  {
+    "path": "errors",
+    "name": "errors"
+  },
+  {
+    "path": "time",
+    "name": "time"
+  },
+  {
+    "path": "unicode",
+    "name": "unicode"
+  },
+  {
+    "path": "strconv",
+    "name": "strconv"
+  },
+  {
+    "path": "io",
+    "name": "io"
+  },
+  {
+    "path": "strings",
+    "name": "strings"
+  },
+  {
+    "path": "regexp",
+    "name": "regexp"
+  },
+  {
+    "path": "io/fs",
+    "name": "io::fs"
+  },
+  {
+    "path": "fmt",
+    "name": "fmt"
+  },
+  {
+    "path": "reflect",
+    "name": "reflect"
+  },
+  {
+    "path": "log",
+    "name": "log"
+  },
+  {
+    "path": "math",
+    "name": "math"
+  },
+  {
+    "path": "math/rand",
+    "name": "math::rand"
+  },
+  {
+    "path": "os",
+    "name": "os"
+  },
+  {
+    "path": "sync",
+    "name": "sync"
+  },
+  {
+    "path": "bufio",
+    "name": "bufio"
+  },
+  {
+    "path": "net/http",
+    "name": "net::http"
+  }
+]

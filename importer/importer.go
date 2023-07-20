@@ -22,13 +22,17 @@ func SKIP(what any) Type {
 	return mono("any")
 }
 
-func mono(name string) Type {
-	return TyCon{name: name, args: []Type{}}
+var RESERVED_WORDS = map[string]bool{
+	"match": true,
 }
 
 type Type interface {
 	IsType()
 	String() string
+}
+
+func mono(name string) Type {
+	return TyCon{name: name, args: []Type{}}
 }
 
 type TyCon struct {
@@ -71,6 +75,372 @@ func (t TyFun) String() string {
 	ret := toReturnType(t.ret)
 	return fmt.Sprintf("fn (%s) -> %s", args, ret)
 }
+
+type Bound struct {
+	Generic string
+	Type    Type
+}
+
+type Function struct {
+	Name string
+	Type TyFun
+}
+
+type FuncArg struct {
+	Name string
+	Type Type
+}
+
+func (p FuncArg) String() string {
+	return p.Name + ": " + p.Type.String()
+}
+
+type Method struct {
+	SelfType Type
+	Func     Function
+}
+
+type Alias struct {
+	Name   string
+	Type   Type
+	Bounds []Bound
+}
+
+type Newtype struct {
+	Name   string
+	Type   Type
+	Bounds []Bound
+}
+
+type Struct struct {
+	Name   string
+	Bounds []Bound
+	Fields []StructField
+	Kind   TypeKind
+}
+
+type StructField struct {
+	Name string
+	Type Type
+}
+
+type Variable struct {
+	Name string
+	Type Type
+}
+
+type TypeKind int
+
+const (
+	TypeStruct TypeKind = iota
+	TypeInterface
+)
+
+type Package struct {
+	Name     string
+	Path     string
+	Imports  []string
+	Types    []Struct
+	Aliases  []Alias
+	Newtypes []Newtype
+	Funcs    []Function
+	Methods  map[string][]Method // type => methods
+	Vars     []Variable          // consts and vars
+}
+
+func (p *Package) AddFunction(name string, f *ast.FuncType) {
+	function := Function{Name: name, Type: p.parseFunc(f)}
+	p.Funcs = append(p.Funcs, function)
+}
+
+func (p *Package) AddMethod(name string, recv string, isPointer bool, list *ast.FieldList, f *ast.FuncType) {
+	bounds := p.parseBounds(list)
+	generics := []Type{}
+
+	for _, b := range bounds {
+		generics = append(generics, removeReferences(b.Type))
+	}
+
+	selfType := TyCon{name: recv, args: generics}
+
+	if isPointer {
+		selfType = TyCon{name: "Ref", args: []Type{selfType}}
+	}
+
+	function := Function{Name: name, Type: p.parseFunc(f)}
+	method := Method{SelfType: selfType, Func: function}
+
+	p.Methods[recv] = append(p.Methods[recv], method)
+}
+
+func (p *Package) AddTypeAlias(name string, t Type, bounds []Bound) {
+	alias := Alias{Name: name, Type: t, Bounds: bounds}
+	p.Aliases = append(p.Aliases, alias)
+}
+
+func (p *Package) AddNewType(name string, t Type, bounds []Bound) {
+	typ := Newtype{Name: name, Type: t, Bounds: bounds}
+	p.Newtypes = append(p.Newtypes, typ)
+}
+
+func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind TypeKind) {
+	fields := []StructField{}
+
+	for _, f := range list {
+		name := ""
+
+		if len(f.Names) > 0 {
+			name = f.Names[0].Name
+		}
+
+		fields = append(fields, StructField{Name: name, Type: p.parseTypeExpr(f.Type)})
+	}
+
+	s := Struct{Name: name, Bounds: bounds, Fields: fields, Kind: kind}
+	p.Types = append(p.Types, s)
+}
+
+func (p *Package) GroupMethodsByGenerics() map[string][]Method {
+	ret := map[string][]Method{}
+
+	for _, methods := range p.Methods {
+		for _, m := range methods {
+			ty := removeReferences(m.SelfType).String()
+			ret[ty] = append(ret[ty], m)
+		}
+	}
+
+	return ret
+}
+
+func (p *Package) String() string {
+	var w bytes.Buffer
+
+	for _, pkg := range p.Imports {
+		fmt.Fprintf(&w, "use %s;\n", pkg)
+	}
+
+	fmt.Fprintf(&w, "\n\n")
+
+	for _, f := range p.Funcs {
+		bounds := boundsToString(f.Type.bounds)
+		args := functionArgsToString(f.Type.args)
+		ret := toReturnType(f.Type.ret)
+
+		fmt.Fprintf(&w, "fn %s %s (%s) -> %s { EXT }\n\n", f.Name, bounds, args, ret)
+	}
+
+	grouped := p.GroupMethodsByGenerics()
+	sortedTypes := []string{}
+
+	for t := range grouped {
+		sortedTypes = append(sortedTypes, t)
+	}
+
+	for _, ty := range sortedTypes {
+		// TODO ty is just a Go string for the type, not exactly what we need.
+		fmt.Fprintf(&w, "impl %s {\n\n", ty)
+
+		methods := grouped[ty]
+
+		for _, m := range methods {
+			f := m.Func
+			bounds := boundsToString(f.Type.bounds)
+			args := functionArgsToString(f.Type.args)
+			ret := toReturnType(f.Type.ret)
+			self := selfTypeToString(m.SelfType)
+
+			fmt.Fprintf(&w, "fn %s %s (%s, %s) -> %s { EXT }\n\n", f.Name, bounds, self, args, ret)
+		}
+
+		fmt.Fprintf(&w, "}\n\n")
+	}
+
+	for _, a := range p.Aliases {
+		fmt.Fprintf(&w, "type %s = %s;\n\n", a.Name, a.Type.String())
+	}
+
+	for _, a := range p.Newtypes {
+		fmt.Fprintf(&w, "struct %s(%s);\n\n", a.Name, a.Type.String())
+	}
+
+	for _, s := range p.Types {
+
+		switch s.Kind {
+		case TypeStruct:
+			bounds := boundsToString(s.Bounds)
+			fields := structFieldsToString(s.Fields)
+			def := "struct " + s.Name + bounds + "{\n" + fields + "\n}\n\n"
+			fmt.Fprint(&w, def)
+
+		case TypeInterface:
+			bounds, fields := splitBoundsAndFieldsForInterface(s.Fields)
+
+			newBounds := strings.Join(bounds, " + ")
+			newFields := interfaceFieldsToString(fields)
+
+			if len(bounds) > 0 {
+				newBounds = ": " + newBounds + " "
+			}
+
+			def := "trait " + s.Name + newBounds + "{\n" + newFields + "\n}\n\n"
+			fmt.Fprint(&w, def)
+		}
+
+	}
+
+	return w.String()
+}
+
+func (p *Package) parseBounds(list *ast.FieldList) []Bound {
+	bounds := []Bound{}
+
+	if list == nil {
+		return bounds
+	}
+
+	for _, param := range list.List {
+		name := param.Names[0].Name // TODO this is probably very wrong
+		bounds = append(bounds, Bound{Generic: name, Type: p.parseTypeExpr(param.Type)})
+	}
+
+	return bounds
+}
+
+func (p *Package) parseFunc(f *ast.FuncType) TyFun {
+	// fmt.Printf("%+v\n", decl.Type)
+
+	bounds := []Bound{}
+
+	// function bounds
+	if f.TypeParams != nil {
+		for _, param := range f.TypeParams.List {
+			name := param.Names[0].Name // TODO this is probably very wrong
+			bounds = append(bounds, Bound{Generic: name, Type: p.parseTypeExpr(param.Type)})
+		}
+	}
+
+	args := []FuncArg{}
+
+	nextUnnamed := 0
+
+	// function params
+	for _, param := range f.Params.List {
+		// closures passed in as params won't have named parameters
+		// ie. func (f func (rune) bool) the rune is unnamed
+
+		arg := FuncArg{Name: "unnamed param", Type: p.parseTypeExpr(param.Type)}
+
+		for _, name := range param.Names {
+			arg := arg
+			arg.Name = replaceReserved(name.Name)
+			args = append(args, arg)
+		}
+
+		if len(param.Names) == 0 {
+			arg := arg
+			arg.Name = fmt.Sprintf("param%d", nextUnnamed)
+			args = append(args, arg)
+			nextUnnamed++
+		}
+
+	}
+
+	ret := []Type{}
+
+	// function return
+	if f.Results != nil {
+		for _, param := range f.Results.List {
+			ret = append(ret, p.parseTypeExpr(param.Type))
+		}
+	} else {
+		ret = append(ret, mono("Unit"))
+	}
+
+	return TyFun{bounds: bounds, args: args, ret: ret}
+}
+
+func (p *Package) ensureImport(name string) {
+	for _, i := range p.Imports {
+		if i == name {
+			return
+		}
+	}
+
+	p.Imports = append(p.Imports, name)
+}
+
+func (p *Package) parseTypeExpr(expr ast.Expr) Type {
+	switch ty := expr.(type) {
+
+	case *ast.Ident:
+		return TyCon{name: ty.Name, args: []Type{}}
+
+	case *ast.ArrayType:
+		inner := p.parseTypeExpr(ty.Elt)
+		return TyCon{name: "Slice", args: []Type{inner}}
+
+	case *ast.MapType:
+		key := p.parseTypeExpr(ty.Key)
+		val := p.parseTypeExpr(ty.Value)
+		return TyCon{name: "Map", args: []Type{key, val}}
+
+	case *ast.FuncType:
+		return p.parseFunc(ty)
+
+	case *ast.StarExpr:
+		inner := p.parseTypeExpr(ty.X)
+		return TyCon{name: "Ref", args: []Type{inner}}
+
+	case *ast.Ellipsis:
+		inner := p.parseTypeExpr(ty.Elt)
+		return TyCon{name: "VarArgs", args: []Type{inner}}
+
+	case *ast.SelectorExpr:
+		inner := p.parseTypeExpr(ty.X)
+		switch con := inner.(type) {
+		case TyCon:
+			// TODO asdf this is not sufficient, need to get the full package path
+			p.ensureImport(con.name)
+			name := con.name + "::" + ty.Sel.Name
+			return TyCon{name: name, args: []Type{}}
+		default:
+			log.Fatalf("expected TyCon in selector, got %T", con)
+		}
+
+	case *ast.ChanType:
+		inner := p.parseTypeExpr(ty.Value)
+		name := "Channel"
+
+		switch ty.Dir {
+		case ast.RECV:
+			name = "Receiver"
+		case ast.SEND:
+			name = "Sender"
+		}
+
+		return TyCon{name: name, args: []Type{inner}}
+
+	case *ast.StructType:
+		if ty.Fields != nil && len(ty.Fields.List) > 0 {
+			return SKIP(fmt.Sprintf("found struct{} declaration with fields %v, skipping", ty.Fields.List))
+		}
+
+		return mono("Unit")
+
+	case *ast.IndexExpr:
+		return p.parseTypeExpr(ty.Index)
+
+	default:
+		log.Fatalf("unhandled typeExpr %T\n%v", expr, expr)
+	}
+
+	return TyCon{}
+}
+
+/// --------------
+/// Formatting to string
+/// --------------
 
 func toReturnType(types []Type) string {
 	if len(types) == 2 && reflect.DeepEqual(types[1], mono("error")) {
@@ -152,235 +522,6 @@ func joinTypes(types []Type) string {
 	return strings.Join(args, ", ")
 }
 
-type Bound struct {
-	Generic string
-	Type    Type
-}
-
-type Function struct {
-	Name string
-	Type TyFun
-}
-
-type FuncArg struct {
-	Name string
-	Type Type
-}
-
-func (p FuncArg) String() string {
-	return p.Name + ": " + p.Type.String()
-}
-
-type Method struct {
-	SelfType Type
-	Func     Function
-}
-
-type Alias struct {
-	Name   string
-	Type   Type
-	Bounds []Bound
-}
-
-type Newtype struct {
-	Name   string
-	Type   Type
-	Bounds []Bound
-}
-
-type Struct struct {
-	Name   string
-	Bounds []Bound
-	Fields []StructField
-	Kind   TypeKind
-}
-
-type StructField struct {
-	Name string
-	Type Type
-}
-
-type Variable struct {
-	Name string
-	Type Type
-}
-
-type TypeKind int
-
-const (
-	TypeStruct TypeKind = iota
-	TypeInterface
-)
-
-type Package struct {
-	Name     string
-	Path     string
-	Types    []Struct
-	Aliases  []Alias
-	Newtypes []Newtype
-	Funcs    []Function
-	Methods  map[string][]Method // type => methods
-	Vars     []Variable          // consts and vars
-}
-
-func (p *Package) AddFunction(name string, f *ast.FuncType) {
-	function := Function{Name: name, Type: parseFunc(f)}
-	p.Funcs = append(p.Funcs, function)
-}
-
-func (p *Package) AddMethod(name string, recv string, isPointer bool, list *ast.FieldList, f *ast.FuncType) {
-	bounds := parseBounds(list)
-	generics := []Type{}
-
-	for _, b := range bounds {
-		generics = append(generics, removeReferences(b.Type))
-	}
-
-	selfType := TyCon{name: recv, args: generics}
-
-	if isPointer {
-		selfType = TyCon{name: "Ref", args: []Type{selfType}}
-	}
-
-	function := Function{Name: name, Type: parseFunc(f)}
-	method := Method{SelfType: selfType, Func: function}
-
-	p.Methods[recv] = append(p.Methods[recv], method)
-}
-
-func removeReferences(ty Type) Type {
-	switch ty := ty.(type) {
-	case TyCon:
-		if ty.name == "Ref" || ty.name == "RefMut" {
-			return ty.args[0]
-		}
-
-	case TyFun:
-		panic("removeReferences on funcs shouldn't be needed...")
-	}
-
-	return ty
-}
-
-func (p *Package) AddTypeAlias(name string, t Type, bounds []Bound) {
-	alias := Alias{Name: name, Type: t, Bounds: bounds}
-	p.Aliases = append(p.Aliases, alias)
-}
-
-func (p *Package) AddNewType(name string, t Type, bounds []Bound) {
-	typ := Newtype{Name: name, Type: t, Bounds: bounds}
-	p.Newtypes = append(p.Newtypes, typ)
-}
-
-func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind TypeKind) {
-	fields := []StructField{}
-
-	for _, f := range list {
-		name := ""
-
-		if len(f.Names) > 0 {
-			name = f.Names[0].Name
-		}
-
-		fields = append(fields, StructField{Name: name, Type: parseTypeExpr(f.Type)})
-	}
-
-	s := Struct{Name: name, Bounds: bounds, Fields: fields, Kind: kind}
-	p.Types = append(p.Types, s)
-}
-
-func (p *Package) GroupMethodsByGenerics() map[string][]Method {
-	ret := map[string][]Method{}
-
-	for _, methods := range p.Methods {
-		for _, m := range methods {
-			ty := removeReferences(m.SelfType).String()
-			ret[ty] = append(ret[ty], m)
-		}
-	}
-
-	return ret
-}
-
-func (p *Package) String() string {
-	var w bytes.Buffer
-
-	fmt.Fprintf(&w, "#[package(name = %s, path = %s)]\n", p.Name, p.Path)
-	fmt.Fprintf(&w, "mod %s {\n\n", p.Name)
-
-	for _, f := range p.Funcs {
-		bounds := boundsToString(f.Type.bounds)
-		args := functionArgsToString(f.Type.args)
-		ret := toReturnType(f.Type.ret)
-
-		fmt.Fprintf(&w, "fn %s %s (%s) -> %s { EXT }\n\n", f.Name, bounds, args, ret)
-	}
-
-	grouped := p.GroupMethodsByGenerics()
-	sortedTypes := []string{}
-
-	for t := range grouped {
-		sortedTypes = append(sortedTypes, t)
-	}
-
-	for _, ty := range sortedTypes {
-		// TODO ty is just a Go string for the type, not exactly what we need.
-		fmt.Fprintf(&w, "impl %s {\n\n", ty)
-
-		methods := grouped[ty]
-
-		for _, m := range methods {
-			f := m.Func
-			bounds := boundsToString(f.Type.bounds)
-			args := functionArgsToString(f.Type.args)
-			ret := toReturnType(f.Type.ret)
-			self := selfTypeToString(m.SelfType)
-
-			fmt.Fprintf(&w, "fn %s %s (%s, %s) -> %s { EXT }\n\n", f.Name, bounds, self, args, ret)
-		}
-
-		fmt.Fprintf(&w, "}\n\n")
-	}
-
-	for _, a := range p.Aliases {
-		fmt.Fprintf(&w, "type %s = %s;\n\n", a.Name, a.Type.String())
-	}
-
-	for _, a := range p.Newtypes {
-		fmt.Fprintf(&w, "struct %s(%s);\n\n", a.Name, a.Type.String())
-	}
-
-	for _, s := range p.Types {
-
-		switch s.Kind {
-		case TypeStruct:
-			bounds := boundsToString(s.Bounds)
-			fields := structFieldsToString(s.Fields)
-			def := "struct " + s.Name + bounds + "{\n" + fields + "\n}\n\n"
-			fmt.Fprint(&w, def)
-
-		case TypeInterface:
-			bounds, fields := splitBoundsAndFieldsForInterface(s.Fields)
-
-			newBounds := strings.Join(bounds, ", ")
-			newFields := interfaceFieldsToString(fields)
-
-			if len(bounds) > 0 {
-				newBounds = ": " + newBounds + " "
-			}
-
-			def := "trait " + s.Name + newBounds + "{\n" + newFields + "\n}\n\n"
-			fmt.Fprint(&w, def)
-		}
-
-	}
-
-	// close mod {}
-	fmt.Fprint(&w, "}\n\n")
-
-	return w.String()
-}
-
 func selfTypeToString(ty Type) string {
 	if con, ok := ty.(TyCon); ok {
 		switch con.name {
@@ -410,6 +551,28 @@ func splitBoundsAndFieldsForInterface(structFields []StructField) ([]string, []S
 	}
 
 	return bounds, fields
+}
+
+func removeReferences(ty Type) Type {
+	switch ty := ty.(type) {
+	case TyCon:
+		if ty.name == "Ref" || ty.name == "RefMut" {
+			return ty.args[0]
+		}
+
+	case TyFun:
+		panic("removeReferences on funcs shouldn't be needed...")
+	}
+
+	return ty
+}
+
+func replaceReserved(name string) string {
+	if _, ok := RESERVED_WORDS[name]; ok {
+		return name + "_"
+	}
+
+	return name
 }
 
 func main() {
@@ -476,7 +639,7 @@ func main() {
 
 				if spec, ok := decl.(*ast.TypeSpec); ok {
 
-					bounds := parseBounds(spec.TypeParams)
+					bounds := p.parseBounds(spec.TypeParams)
 
 					switch ty := spec.Type.(type) {
 
@@ -497,15 +660,15 @@ func main() {
 						// p.AddInterface(spec.Name.Name, bounds, ty.Fields.List)
 
 					case *ast.ArrayType:
-						inner := parseTypeExpr(ty.Elt)
+						inner := p.parseTypeExpr(ty.Elt)
 						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Slice", args: []Type{inner}}, bounds)
 
 					case *ast.FuncType:
-						p.AddTypeAlias(spec.Name.Name, parseFunc(ty), bounds)
+						p.AddTypeAlias(spec.Name.Name, p.parseFunc(ty), bounds)
 
 					case *ast.MapType:
-						key := parseTypeExpr(ty.Key)
-						val := parseTypeExpr(ty.Value)
+						key := p.parseTypeExpr(ty.Key)
+						val := p.parseTypeExpr(ty.Value)
 						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Map", args: []Type{key, val}}, bounds)
 
 					default:
@@ -540,133 +703,4 @@ func main() {
 	if len(SKIPPED_TYPES) > 0 {
 		fmt.Println(SKIPPED_TYPES)
 	}
-}
-
-func parseBounds(list *ast.FieldList) []Bound {
-	bounds := []Bound{}
-
-	if list == nil {
-		return bounds
-	}
-
-	for _, param := range list.List {
-		name := param.Names[0].Name // TODO this is probably very wrong
-		bounds = append(bounds, Bound{Generic: name, Type: parseTypeExpr(param.Type)})
-	}
-
-	return bounds
-}
-
-func parseFunc(f *ast.FuncType) TyFun {
-	// fmt.Printf("%+v\n", decl.Type)
-
-	bounds := []Bound{}
-
-	// function bounds
-	if f.TypeParams != nil {
-		for _, param := range f.TypeParams.List {
-			name := param.Names[0].Name // TODO this is probably very wrong
-			bounds = append(bounds, Bound{Generic: name, Type: parseTypeExpr(param.Type)})
-		}
-	}
-
-	args := []FuncArg{}
-
-	nextUnnamed := 0
-
-	// function params
-	for _, param := range f.Params.List {
-		// closures passed in as params won't have named parameters
-		// ie. func (f func (rune) bool) the rune is unnamed
-
-		name := "unknown name"
-
-		if len(param.Names) > 0 {
-			name = param.Names[0].Name
-		} else {
-			name = "param" + fmt.Sprint(nextUnnamed)
-			nextUnnamed++
-		}
-
-		args = append(args, FuncArg{Name: name, Type: parseTypeExpr(param.Type)})
-	}
-
-	ret := []Type{}
-
-	// function return
-	if f.Results != nil {
-		for _, param := range f.Results.List {
-			ret = append(ret, parseTypeExpr(param.Type))
-		}
-	} else {
-		ret = append(ret, mono("Unit"))
-	}
-
-	return TyFun{bounds: bounds, args: args, ret: ret}
-}
-
-func parseTypeExpr(expr ast.Expr) Type {
-	switch ty := expr.(type) {
-
-	case *ast.Ident:
-		return TyCon{name: ty.Name, args: []Type{}}
-
-	case *ast.ArrayType:
-		inner := parseTypeExpr(ty.Elt)
-		return TyCon{name: "Slice", args: []Type{inner}}
-
-	case *ast.MapType:
-		key := parseTypeExpr(ty.Key)
-		val := parseTypeExpr(ty.Value)
-		return TyCon{name: "Map", args: []Type{key, val}}
-
-	case *ast.FuncType:
-		return parseFunc(ty)
-
-	case *ast.StarExpr:
-		inner := parseTypeExpr(ty.X)
-		return TyCon{name: "Ref", args: []Type{inner}}
-
-	case *ast.Ellipsis:
-		inner := parseTypeExpr(ty.Elt)
-		return TyCon{name: "VarArgs", args: []Type{inner}}
-
-	case *ast.SelectorExpr:
-		inner := parseTypeExpr(ty.X)
-		switch con := inner.(type) {
-		case TyCon:
-			name := con.name + "::" + ty.Sel.Name
-			return TyCon{name: name, args: []Type{}}
-		default:
-			log.Fatalf("expected TyCon in selector, got %T", con)
-		}
-
-	case *ast.ChanType:
-		inner := parseTypeExpr(ty.Value)
-		name := "Channel"
-
-		switch ty.Dir {
-		case ast.RECV:
-			name = "Receiver"
-		case ast.SEND:
-			name = "Sender"
-		}
-
-		return TyCon{name: name, args: []Type{inner}}
-
-	case *ast.StructType:
-		if ty.Fields != nil && len(ty.Fields.List) > 0 {
-			return SKIP(fmt.Sprintf("found struct{} declaration with fields %v, skipping", ty.Fields.List))
-		}
-
-		return mono("Unit")
-
-	case *ast.IndexExpr:
-		return parseTypeExpr(ty.Index)
-
-	default:
-		log.Fatalf("unhandled typeExpr %T\n%v", expr, expr)
-	}
-
-	return TyCon{}
 }

@@ -12,20 +12,15 @@ No errors.
   "Var": {
     "value": "list_map",
     "decl": {
-      "file_id": {
-        "package": "std",
-        "filename": "builtin.brg"
+      "start": {
+        "line": 28,
+        "col": 0
       },
-      "span": {
-        "start": {
-          "line": 0,
-          "col": 0
-        },
-        "end": {
-          "line": 0,
-          "col": 0
-        }
-      }
+      "end": {
+        "line": 30,
+        "col": 1
+      },
+      "file": -1
     },
     "generics_instantiated": [
       {
@@ -40,7 +35,7 @@ No errors.
         "args": [
           {
             "Con": {
-              "name": "Slice",
+              "id": "Slice",
               "args": [
                 {
                   "Var": 99
@@ -58,23 +53,21 @@ No errors.
               "bounds": [],
               "ret": {
                 "Var": 99
-              },
-              "id": -1
+              }
             }
           }
         ],
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "Slice",
+            "id": "Slice",
             "args": [
               {
                 "Var": 99
               }
             ]
           }
-        },
-        "id": -1
+        }
       }
     },
     "span": {
@@ -85,7 +78,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 8
-      }
+      },
+      "file": 99
     }
   }
 }

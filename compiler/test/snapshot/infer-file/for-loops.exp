@@ -17,185 +17,264 @@ fn () -> ()
 ---
 No errors.
 ---
-{
-  "files": [
-    {
-      "name": "test.brg",
-      "decls": [
-        {
-          "Closure": {
-            "fun": {
-              "name": "borgo_main",
-              "generics": [],
-              "bounds": [],
-              "args": [],
-              "ret": {
-                "Con": {
-                  "name": "Unit",
-                  "args": []
-                }
-              },
-              "ann": {
-                "Con": {
-                  "name": "Unit",
-                  "args": []
-                }
-              },
-              "body": {
-                "Block": {
-                  "stmts": [
-                    {
-                      "Loop": {
-                        "kind": {
-                          "WithCondition": {
-                            "binding": {
-                              "pat": {
-                                "Type": {
-                                  "ident": "x",
-                                  "is_mut": false,
-                                  "ann": "Unknown",
+[
+  {
+    "Closure": {
+      "fun": {
+        "name": "borgo_main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Loop": {
+                  "kind": {
+                    "WithCondition": {
+                      "binding": {
+                        "pat": {
+                          "Type": {
+                            "ident": "x",
+                            "is_mut": false,
+                            "ann": "Unknown",
+                            "span": {
+                              "start": {
+                                "line": 2,
+                                "col": 6
+                              },
+                              "end": {
+                                "line": 2,
+                                "col": 7
+                              },
+                              "file": 99
+                            }
+                          }
+                        },
+                        "ann": "Unknown",
+                        "ty": {
+                          "Con": {
+                            "id": "string",
+                            "args": []
+                          }
+                        }
+                      },
+                      "expr": {
+                        "Literal": {
+                          "lit": {
+                            "Slice": [
+                              {
+                                "Literal": {
+                                  "lit": {
+                                    "String": [
+                                      "a",
+                                      null
+                                    ]
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "id": "string",
+                                      "args": []
+                                    }
+                                  },
                                   "span": {
                                     "start": {
                                       "line": 2,
-                                      "col": 6
+                                      "col": 12
                                     },
                                     "end": {
                                       "line": 2,
-                                      "col": 7
-                                    }
+                                      "col": 15
+                                    },
+                                    "file": 99
                                   }
                                 }
-                              },
-                              "ann": "Unknown",
-                              "ty": {
-                                "Con": {
-                                  "name": "string",
-                                  "args": []
-                                }
                               }
+                            ]
+                          },
+                          "ty": {
+                            "Con": {
+                              "id": "Slice",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "id": "string",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 2,
+                              "col": 11
                             },
+                            "end": {
+                              "line": 2,
+                              "col": 16
+                            },
+                            "file": 99
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "body": {
+                    "Block": {
+                      "stmts": [
+                        {
+                          "CheckType": {
                             "expr": {
-                              "Literal": {
-                                "lit": {
-                                  "Slice": [
-                                    {
-                                      "Literal": {
-                                        "lit": {
-                                          "String": [
-                                            "a",
-                                            null
-                                          ]
-                                        },
-                                        "ty": {
-                                          "Con": {
-                                            "name": "string",
-                                            "args": []
-                                          }
-                                        },
-                                        "span": {
-                                          "start": {
-                                            "line": 2,
-                                            "col": 12
-                                          },
-                                          "end": {
-                                            "line": 2,
-                                            "col": 15
-                                          }
-                                        }
-                                      }
-                                    }
-                                  ]
+                              "Var": {
+                                "value": "x",
+                                "decl": {
+                                  "start": {
+                                    "line": 2,
+                                    "col": 6
+                                  },
+                                  "end": {
+                                    "line": 2,
+                                    "col": 7
+                                  },
+                                  "file": 99
                                 },
+                                "generics_instantiated": [],
                                 "ty": {
                                   "Con": {
-                                    "name": "Slice",
-                                    "args": [
-                                      {
-                                        "Con": {
-                                          "name": "string",
-                                          "args": []
-                                        }
-                                      }
-                                    ]
+                                    "id": "string",
+                                    "args": []
                                   }
                                 },
                                 "span": {
                                   "start": {
-                                    "line": 2,
-                                    "col": 11
+                                    "line": 3,
+                                    "col": 4
                                   },
                                   "end": {
-                                    "line": 2,
-                                    "col": 16
-                                  }
+                                    "line": 3,
+                                    "col": 5
+                                  },
+                                  "file": 99
                                 }
                               }
+                            },
+                            "ann": {
+                              "Con": {
+                                "name": "string",
+                                "args": []
+                              }
+                            },
+                            "ty": {
+                              "Con": {
+                                "id": "string",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 3,
+                                "col": 4
+                              },
+                              "end": {
+                                "line": 3,
+                                "col": 15
+                              },
+                              "file": 99
                             }
                           }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "id": "string",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 17
                         },
-                        "body": {
-                          "Block": {
-                            "stmts": [
+                        "end": {
+                          "line": 4,
+                          "col": 3
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 3
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              {
+                "Loop": {
+                  "kind": {
+                    "WithCondition": {
+                      "binding": {
+                        "pat": {
+                          "Struct": {
+                            "ident": "Tuple2",
+                            "fields": [
                               {
-                                "CheckType": {
-                                  "expr": {
-                                    "Var": {
-                                      "value": "x",
-                                      "decl": {
-                                        "file_id": {
-                                          "package": "user",
-                                          "filename": "test.brg"
-                                        },
-                                        "span": {
-                                          "start": {
-                                            "line": 2,
-                                            "col": 6
-                                          },
-                                          "end": {
-                                            "line": 2,
-                                            "col": 7
-                                          }
-                                        }
+                                "name": "first",
+                                "value": {
+                                  "Type": {
+                                    "ident": "index",
+                                    "is_mut": false,
+                                    "ann": "Unknown",
+                                    "span": {
+                                      "start": {
+                                        "line": 6,
+                                        "col": 7
                                       },
-                                      "generics_instantiated": [],
-                                      "ty": {
-                                        "Con": {
-                                          "name": "string",
-                                          "args": []
-                                        }
+                                      "end": {
+                                        "line": 6,
+                                        "col": 12
                                       },
-                                      "span": {
-                                        "start": {
-                                          "line": 3,
-                                          "col": 4
-                                        },
-                                        "end": {
-                                          "line": 3,
-                                          "col": 5
-                                        }
-                                      }
+                                      "file": 99
                                     }
-                                  },
-                                  "ann": {
-                                    "Con": {
-                                      "name": "string",
-                                      "args": []
-                                    }
-                                  },
-                                  "ty": {
-                                    "Con": {
-                                      "name": "string",
-                                      "args": []
-                                    }
-                                  },
-                                  "span": {
-                                    "start": {
-                                      "line": 3,
-                                      "col": 4
-                                    },
-                                    "end": {
-                                      "line": 3,
-                                      "col": 15
+                                  }
+                                }
+                              },
+                              {
+                                "name": "second",
+                                "value": {
+                                  "Type": {
+                                    "ident": "value",
+                                    "is_mut": false,
+                                    "ann": "Unknown",
+                                    "span": {
+                                      "start": {
+                                        "line": 6,
+                                        "col": 14
+                                      },
+                                      "end": {
+                                        "line": 6,
+                                        "col": 19
+                                      },
+                                      "file": 99
                                     }
                                   }
                                 }
@@ -203,97 +282,101 @@ No errors.
                             ],
                             "ty": {
                               "Con": {
-                                "name": "string",
-                                "args": []
+                                "id": "Tuple2",
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "id": "int",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "id": "string",
+                                      "args": []
+                                    }
+                                  }
+                                ]
                               }
                             },
                             "span": {
                               "start": {
-                                "line": 2,
-                                "col": 17
+                                "line": 6,
+                                "col": 6
                               },
                               "end": {
-                                "line": 4,
-                                "col": 3
-                              }
+                                "line": 6,
+                                "col": 20
+                              },
+                              "file": 99
                             }
                           }
                         },
-                        "span": {
-                          "start": {
-                            "line": 2,
-                            "col": 2
-                          },
-                          "end": {
-                            "line": 4,
-                            "col": 3
+                        "ann": "Unknown",
+                        "ty": {
+                          "Con": {
+                            "id": "Tuple2",
+                            "args": [
+                              {
+                                "Con": {
+                                  "id": "int",
+                                  "args": []
+                                }
+                              },
+                              {
+                                "Con": {
+                                  "id": "string",
+                                  "args": []
+                                }
+                              }
+                            ]
                           }
                         }
-                      }
-                    },
-                    {
-                      "Loop": {
-                        "kind": {
-                          "WithCondition": {
-                            "binding": {
-                              "pat": {
-                                "Struct": {
-                                  "ident": "Tuple2",
-                                  "fields": [
-                                    {
-                                      "name": "first",
-                                      "value": {
-                                        "Type": {
-                                          "ident": "index",
-                                          "is_mut": false,
-                                          "ann": "Unknown",
+                      },
+                      "expr": {
+                        "Call": {
+                          "func": {
+                            "FieldAccess": {
+                              "expr": {
+                                "Literal": {
+                                  "lit": {
+                                    "Slice": [
+                                      {
+                                        "Literal": {
+                                          "lit": {
+                                            "String": [
+                                              "a",
+                                              null
+                                            ]
+                                          },
+                                          "ty": {
+                                            "Con": {
+                                              "id": "string",
+                                              "args": []
+                                            }
+                                          },
                                           "span": {
                                             "start": {
                                               "line": 6,
-                                              "col": 7
+                                              "col": 25
                                             },
                                             "end": {
                                               "line": 6,
-                                              "col": 12
-                                            }
-                                          }
-                                        }
-                                      }
-                                    },
-                                    {
-                                      "name": "second",
-                                      "value": {
-                                        "Type": {
-                                          "ident": "value",
-                                          "is_mut": false,
-                                          "ann": "Unknown",
-                                          "span": {
-                                            "start": {
-                                              "line": 6,
-                                              "col": 14
+                                              "col": 28
                                             },
-                                            "end": {
-                                              "line": 6,
-                                              "col": 19
-                                            }
+                                            "file": 99
                                           }
                                         }
                                       }
-                                    }
-                                  ],
+                                    ]
+                                  },
                                   "ty": {
                                     "Con": {
-                                      "name": "Tuple2",
+                                      "id": "Slice",
                                       "args": [
                                         {
                                           "Con": {
-                                            "name": "int",
-                                            "args": []
-                                          }
-                                        },
-                                        {
-                                          "Con": {
-                                            "name": "string",
+                                            "id": "string",
                                             "args": []
                                           }
                                         }
@@ -303,390 +386,293 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 6,
-                                      "col": 6
+                                      "col": 24
                                     },
                                     "end": {
                                       "line": 6,
-                                      "col": 20
+                                      "col": 29
+                                    },
+                                    "file": 99
+                                  }
+                                }
+                              },
+                              "field": "enumerate",
+                              "ty": {
+                                "Fun": {
+                                  "args": [],
+                                  "bounds": [],
+                                  "ret": {
+                                    "Con": {
+                                      "id": "EnumerateSlice",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "id": "string",
+                                            "args": []
+                                          }
+                                        }
+                                      ]
                                     }
                                   }
                                 }
                               },
-                              "ann": "Unknown",
-                              "ty": {
-                                "Con": {
-                                  "name": "Tuple2",
-                                  "args": [
-                                    {
-                                      "Con": {
-                                        "name": "int",
-                                        "args": []
-                                      }
-                                    },
-                                    {
-                                      "Con": {
-                                        "name": "string",
-                                        "args": []
-                                      }
-                                    }
-                                  ]
-                                }
-                              }
-                            },
-                            "expr": {
-                              "Call": {
-                                "func": {
-                                  "FieldAccess": {
-                                    "expr": {
-                                      "Literal": {
-                                        "lit": {
-                                          "Slice": [
-                                            {
-                                              "Literal": {
-                                                "lit": {
-                                                  "String": [
-                                                    "a",
-                                                    null
-                                                  ]
-                                                },
-                                                "ty": {
-                                                  "Con": {
-                                                    "name": "string",
-                                                    "args": []
-                                                  }
-                                                },
-                                                "span": {
-                                                  "start": {
-                                                    "line": 6,
-                                                    "col": 25
-                                                  },
-                                                  "end": {
-                                                    "line": 6,
-                                                    "col": 28
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          ]
-                                        },
-                                        "ty": {
-                                          "Con": {
-                                            "name": "Slice",
-                                            "args": [
-                                              {
-                                                "Con": {
-                                                  "name": "string",
-                                                  "args": []
-                                                }
-                                              }
-                                            ]
-                                          }
-                                        },
-                                        "span": {
-                                          "start": {
-                                            "line": 6,
-                                            "col": 24
-                                          },
-                                          "end": {
-                                            "line": 6,
-                                            "col": 29
-                                          }
-                                        }
-                                      }
-                                    },
-                                    "field": "enumerate",
-                                    "ty": {
-                                      "Fun": {
-                                        "args": [],
-                                        "bounds": [],
-                                        "ret": {
-                                          "Con": {
-                                            "name": "EnumerateSlice",
-                                            "args": [
-                                              {
-                                                "Con": {
-                                                  "name": "string",
-                                                  "args": []
-                                                }
-                                              }
-                                            ]
-                                          }
-                                        },
-                                        "id": -1
-                                      }
-                                    },
-                                    "span": {
-                                      "start": {
-                                        "line": 6,
-                                        "col": 30
-                                      },
-                                      "end": {
-                                        "line": 6,
-                                        "col": 39
-                                      }
-                                    }
-                                  }
+                              "span": {
+                                "start": {
+                                  "line": 6,
+                                  "col": 30
                                 },
-                                "args": [],
+                                "end": {
+                                  "line": 6,
+                                  "col": 39
+                                },
+                                "file": 99
+                              }
+                            }
+                          },
+                          "args": [],
+                          "ty": {
+                            "Con": {
+                              "id": "EnumerateSlice",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "id": "string",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 6,
+                              "col": 30
+                            },
+                            "end": {
+                              "line": 6,
+                              "col": 39
+                            },
+                            "file": 99
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "body": {
+                    "Block": {
+                      "stmts": [
+                        {
+                          "CheckType": {
+                            "expr": {
+                              "Var": {
+                                "value": "index",
+                                "decl": {
+                                  "start": {
+                                    "line": 6,
+                                    "col": 7
+                                  },
+                                  "end": {
+                                    "line": 6,
+                                    "col": 12
+                                  },
+                                  "file": 99
+                                },
+                                "generics_instantiated": [],
                                 "ty": {
                                   "Con": {
-                                    "name": "EnumerateSlice",
-                                    "args": [
-                                      {
-                                        "Con": {
-                                          "name": "string",
-                                          "args": []
-                                        }
-                                      }
-                                    ]
+                                    "id": "int",
+                                    "args": []
                                   }
                                 },
                                 "span": {
                                   "start": {
-                                    "line": 6,
-                                    "col": 30
+                                    "line": 7,
+                                    "col": 6
                                   },
                                   "end": {
-                                    "line": 6,
-                                    "col": 39
-                                  }
+                                    "line": 7,
+                                    "col": 11
+                                  },
+                                  "file": 99
                                 }
                               }
-                            }
-                          }
-                        },
-                        "body": {
-                          "Block": {
-                            "stmts": [
-                              {
-                                "CheckType": {
-                                  "expr": {
-                                    "Var": {
-                                      "value": "index",
-                                      "decl": {
-                                        "file_id": {
-                                          "package": "user",
-                                          "filename": "test.brg"
-                                        },
-                                        "span": {
-                                          "start": {
-                                            "line": 6,
-                                            "col": 7
-                                          },
-                                          "end": {
-                                            "line": 6,
-                                            "col": 12
-                                          }
-                                        }
-                                      },
-                                      "generics_instantiated": [],
-                                      "ty": {
-                                        "Con": {
-                                          "name": "int",
-                                          "args": []
-                                        }
-                                      },
-                                      "span": {
-                                        "start": {
-                                          "line": 7,
-                                          "col": 6
-                                        },
-                                        "end": {
-                                          "line": 7,
-                                          "col": 11
-                                        }
-                                      }
-                                    }
-                                  },
-                                  "ann": {
-                                    "Con": {
-                                      "name": "int",
-                                      "args": []
-                                    }
-                                  },
-                                  "ty": {
-                                    "Con": {
-                                      "name": "int",
-                                      "args": []
-                                    }
-                                  },
-                                  "span": {
-                                    "start": {
-                                      "line": 7,
-                                      "col": 6
-                                    },
-                                    "end": {
-                                      "line": 7,
-                                      "col": 18
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "CheckType": {
-                                  "expr": {
-                                    "Var": {
-                                      "value": "value",
-                                      "decl": {
-                                        "file_id": {
-                                          "package": "user",
-                                          "filename": "test.brg"
-                                        },
-                                        "span": {
-                                          "start": {
-                                            "line": 6,
-                                            "col": 14
-                                          },
-                                          "end": {
-                                            "line": 6,
-                                            "col": 19
-                                          }
-                                        }
-                                      },
-                                      "generics_instantiated": [],
-                                      "ty": {
-                                        "Con": {
-                                          "name": "string",
-                                          "args": []
-                                        }
-                                      },
-                                      "span": {
-                                        "start": {
-                                          "line": 8,
-                                          "col": 6
-                                        },
-                                        "end": {
-                                          "line": 8,
-                                          "col": 11
-                                        }
-                                      }
-                                    }
-                                  },
-                                  "ann": {
-                                    "Con": {
-                                      "name": "string",
-                                      "args": []
-                                    }
-                                  },
-                                  "ty": {
-                                    "Con": {
-                                      "name": "string",
-                                      "args": []
-                                    }
-                                  },
-                                  "span": {
-                                    "start": {
-                                      "line": 8,
-                                      "col": 6
-                                    },
-                                    "end": {
-                                      "line": 8,
-                                      "col": 21
-                                    }
-                                  }
-                                }
+                            },
+                            "ann": {
+                              "Con": {
+                                "name": "int",
+                                "args": []
                               }
-                            ],
+                            },
                             "ty": {
                               "Con": {
-                                "name": "string",
+                                "id": "int",
                                 "args": []
                               }
                             },
                             "span": {
                               "start": {
-                                "line": 6,
-                                "col": 42
+                                "line": 7,
+                                "col": 6
                               },
                               "end": {
-                                "line": 9,
-                                "col": 3
-                              }
+                                "line": 7,
+                                "col": 18
+                              },
+                              "file": 99
                             }
                           }
                         },
-                        "span": {
-                          "start": {
-                            "line": 6,
-                            "col": 2
-                          },
-                          "end": {
-                            "line": 9,
-                            "col": 3
+                        {
+                          "CheckType": {
+                            "expr": {
+                              "Var": {
+                                "value": "value",
+                                "decl": {
+                                  "start": {
+                                    "line": 6,
+                                    "col": 14
+                                  },
+                                  "end": {
+                                    "line": 6,
+                                    "col": 19
+                                  },
+                                  "file": 99
+                                },
+                                "generics_instantiated": [],
+                                "ty": {
+                                  "Con": {
+                                    "id": "string",
+                                    "args": []
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 8,
+                                    "col": 6
+                                  },
+                                  "end": {
+                                    "line": 8,
+                                    "col": 11
+                                  },
+                                  "file": 99
+                                }
+                              }
+                            },
+                            "ann": {
+                              "Con": {
+                                "name": "string",
+                                "args": []
+                              }
+                            },
+                            "ty": {
+                              "Con": {
+                                "id": "string",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 8,
+                                "col": 6
+                              },
+                              "end": {
+                                "line": 8,
+                                "col": 21
+                              },
+                              "file": 99
+                            }
                           }
                         }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "id": "string",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 6,
+                          "col": 42
+                        },
+                        "end": {
+                          "line": 9,
+                          "col": 3
+                        },
+                        "file": 99
                       }
-                    }
-                  ],
-                  "ty": {
-                    "Con": {
-                      "name": "Unit",
-                      "args": []
                     }
                   },
                   "span": {
                     "start": {
-                      "line": 1,
-                      "col": 16
+                      "line": 6,
+                      "col": 2
                     },
                     "end": {
-                      "line": 10,
-                      "col": 1
-                    }
-                  }
-                }
-              },
-              "bounded_ty": {
-                "generics": [],
-                "ty": {
-                  "Fun": {
-                    "args": [],
-                    "bounds": [],
-                    "ret": {
-                      "Con": {
-                        "name": "Unit",
-                        "args": []
-                      }
+                      "line": 9,
+                      "col": 3
                     },
-                    "id": -1
+                    "file": 99
                   }
                 }
               }
-            },
-            "kind": "TopLevel",
+            ],
             "ty": {
-              "Fun": {
-                "args": [],
-                "bounds": [],
-                "ret": {
-                  "Con": {
-                    "name": "Unit",
-                    "args": []
-                  }
-                },
-                "id": -1
-              }
+              "Var": -333
             },
             "span": {
               "start": {
                 "line": 1,
-                "col": 0
+                "col": 16
               },
               "end": {
                 "line": 10,
                 "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
               }
             }
           }
         }
-      ],
-      "source": "fn borgo_main() {\n  for x in [\"a\"] {\n    x as string;\n  }\n\n  for (index, value) in [\"a\"].enumerate() {\n      index as int;\n      value as string;\n  }\n}"
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 0
+        },
+        "end": {
+          "line": 10,
+          "col": 1
+        },
+        "file": 99
+      }
     }
-  ],
-  "errors": [
-    [
-      "test.brg",
-      []
-    ]
-  ]
-}
+  }
+]

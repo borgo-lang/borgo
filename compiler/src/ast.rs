@@ -1,7 +1,8 @@
-use crate::type_::{BoundedType, Type};
-use crate::{global_state::Declaration, parse};
+use crate::parse;
+use crate::type_::{BoundedType, ModuleId, Symbol, Type};
 use proc_macro2::{LineColumn as ProcLine, Span as ProcSpan};
 use serde::{Deserialize, Serialize};
+use syn;
 use syn::spanned::Spanned;
 
 pub type Ident = String;
@@ -16,35 +17,15 @@ pub struct ParseError {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Binding {
-    pub pat: Pat,
+    pub pat: Pat, // contains span
     pub ann: TypeAst,
     pub ty: Type,
-    // TODO needs a span
-    // span: Span
-}
-
-impl Binding {
-    pub fn from_pat(pat: syn::Pat) -> Result<Self> {
-        let pat = Pat::from_pat_expr(pat)?;
-
-        let ann = match pat {
-            Pat::Type { ref ann, .. } => ann.clone(),
-            _ => TypeAst::Unknown,
-        };
-
-        Ok(Self {
-            pat,
-            ann,
-            ty: Type::dummy(),
-        })
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Function {
     pub name: Ident,
-    pub generics: Vec<String>,
-    pub bounds: Vec<(String, TypeAst)>,
+    pub generics: Vec<Generic>,
     pub args: Vec<Binding>,
     pub ret: Type,
     pub ann: TypeAst,
@@ -67,6 +48,18 @@ impl Function {
         }
 
         None
+    }
+
+    pub fn is_external(&self) -> bool {
+        if let Expr::Block { ref stmts, .. } = *self.body {
+            if let Some(Expr::Var { value, .. }) = stmts.first() {
+                if value == "EXT" {
+                    return true;
+                }
+            }
+        }
+
+        false
     }
 }
 
@@ -99,6 +92,7 @@ pub enum Pat {
         span: Span,
     },
     Unit {
+        ty: Type,
         span: Span,
     },
 }
@@ -119,141 +113,6 @@ impl Pat {
             .join("::")
     }
 
-    pub fn from_pat_expr(p: syn::Pat) -> Result<Self> {
-        // TODO fix this
-        // Add Pat::Ident for new variables
-        // Pat::Path always refers to ctors
-        // Basically like TupleStruct but with no args
-        let span = Span::make(p.span());
-
-        match p {
-            syn::Pat::Type(ty) => Ok(Pat::Type {
-                ident: Self::parse_ident(*ty.pat.clone())?,
-                is_mut: Pat::parse_mutability(&*ty.pat),
-                ann: parse::type_from_expr(*ty.ty),
-                span,
-            }),
-
-            syn::Pat::Ident(_) => {
-                let ident = Self::parse_ident(p.clone())?;
-
-                // syn cannot distinguish between Foo (constructor) and foo (binding).
-                // So let's use a dumb heuristic:
-                //   - if the first letter is uppercase it's a ctor
-                //   - otherwise it's a binding
-
-                let first = ident.chars().next().unwrap();
-                if first.is_uppercase() {
-                    return Ok(Pat::Pat {
-                        ident,
-                        elems: vec![],
-                        ty: Type::dummy(),
-                        span,
-                    });
-                }
-
-                Ok(Pat::Type {
-                    ident,
-                    is_mut: Pat::parse_mutability(&p),
-                    ann: TypeAst::Unknown,
-                    span,
-                })
-            }
-
-            syn::Pat::Lit(l) => {
-                let expr = Expr::from_expr(*l.expr)?;
-                match expr {
-                    Expr::Literal { lit, ty, span } => Ok(Pat::Lit { lit, ty, span }),
-                    _ => panic!("Pat::Lit should parse to a Literal"),
-                }
-            }
-
-            syn::Pat::Path(p) => {
-                let ident = Self::parse_path(p.path);
-
-                Ok(Pat::Pat {
-                    ident,
-                    elems: vec![],
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Pat::TupleStruct(t) => {
-                let ident = Self::parse_path(t.path);
-                let elems = t
-                    .pat
-                    .elems
-                    .into_iter()
-                    .map(Self::from_pat_expr)
-                    .collect::<Result<_>>()?;
-
-                Ok(Pat::Pat {
-                    ident,
-                    elems,
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Pat::Struct(t) => {
-                let ident = Self::parse_path(t.path);
-                let fields = t
-                    .fields
-                    .into_iter()
-                    .map(|p| {
-                        Ok(StructFieldPat {
-                            name: parse::parse_member(p.member)?,
-                            value: Self::from_pat_expr(*p.pat)?,
-                        })
-                    })
-                    .collect::<Result<_>>()?;
-
-                Ok(Pat::Struct {
-                    ident,
-                    fields,
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Pat::Tuple(t) => {
-                if t.elems.is_empty() {
-                    return Ok(Pat::Unit { span });
-                }
-
-                let name = format!("Tuple{}", t.elems.len());
-                let fields = t
-                    .elems
-                    .into_iter()
-                    .enumerate()
-                    .map(|(index, p)| {
-                        Ok(StructFieldPat {
-                            name: Expr::tuple_index_string(index.try_into().unwrap())?,
-                            value: Self::from_pat_expr(p)?,
-                        })
-                    })
-                    .collect::<Result<_>>()?;
-
-                Ok(Pat::Struct {
-                    ident: name,
-                    fields,
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Pat::Slice(e) => Err(ParseError {
-                msg: "Can't pattern match on slice literals".to_string(),
-                span: Span::make(e.span()),
-            }),
-
-            syn::Pat::Wild(_) => Ok(Pat::Wild { span }),
-
-            _ => panic!("unexpected pat expression {:#?}", &p),
-        }
-    }
-
     pub fn get_span(&self) -> Span {
         match self {
             Pat::Type { span, .. } => span.clone(),
@@ -261,7 +120,7 @@ impl Pat {
             Pat::Pat { span, .. } => span.clone(),
             Pat::Struct { span, .. } => span.clone(),
             Pat::Wild { span } => span.clone(),
-            Pat::Unit { span } => span.clone(),
+            Pat::Unit { span, .. } => span.clone(),
         }
     }
 
@@ -272,7 +131,7 @@ impl Pat {
             Pat::Pat { ty, .. } => Some(ty.clone()),
             Pat::Struct { ty, .. } => Some(ty.clone()),
             Pat::Wild { .. } => None,
-            Pat::Unit { .. } => Some(Type::unit()),
+            Pat::Unit { ty, .. } => Some(ty.clone()),
         }
     }
 
@@ -280,12 +139,9 @@ impl Pat {
         // Nasty hack, build a dummy expr so that the type can be shown
         let make_expr = |ty: Option<Type>, span: Span| Expr::Var {
             value: "not really a var, used in match pat".to_string(),
-            decl: Declaration::dummy(),
+            decl: Span::dummy(),
             generics_instantiated: vec![],
-            ty: ty.unwrap_or_else(|| Type::Con {
-                name: "_".to_string(),
-                args: vec![],
-            }),
+            ty: ty.unwrap_or_else(Type::discard),
             span,
         };
 
@@ -334,7 +190,7 @@ impl Pat {
                 }
             }
 
-            Pat::Unit { span } => {
+            Pat::Unit { span, .. } => {
                 if span.contains(target) {
                     Some(make_expr(None, span.clone()))
                 } else {
@@ -356,21 +212,12 @@ impl Pat {
 pub struct StructFieldPat {
     pub name: Ident,
     pub value: Pat,
-    // TODO add span
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Arm {
     pub pat: Pat,
     pub expr: Expr,
-}
-
-impl Arm {
-    fn parse(input: syn::Arm) -> Result<Self> {
-        let pat = Pat::from_pat_expr(input.pat)?;
-        let expr = Expr::from_expr(*input.body)?;
-        Ok(Self { pat, expr })
-    }
 }
 
 // struc access ie. struct.field
@@ -384,7 +231,7 @@ pub struct StructField {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EnumDefinition {
     pub name: Ident,
-    pub generics: Vec<String>,
+    pub generics: Vec<Generic>,
     pub cons: Vec<Constructor>,
 }
 
@@ -412,7 +259,7 @@ pub struct EnumFieldDef {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StructDefinition {
     pub name: Ident,
-    pub generics: Vec<String>,
+    pub generics: Vec<Generic>,
     pub fields: Vec<StructFieldDef>,
 }
 
@@ -426,21 +273,22 @@ pub struct StructFieldDef {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TypeAliasDef {
     pub name: String,
-    pub generics: Vec<String>,
+    pub generics: Vec<Generic>,
     pub ann: TypeAst,
+    pub ty: BoundedType,
     pub attrs: Vec<String>,
 }
 
 impl TypeAliasDef {
     pub fn is_native(&self) -> bool {
-        self.ann == TypeAst::unit()
+        self.ann == TypeAst::ext()
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NewtypeDefinition {
     pub name: Ident,
-    pub generics: Vec<String>,
+    pub generics: Vec<Generic>,
     pub fields: Vec<EnumFieldDef>,
 }
 
@@ -448,12 +296,7 @@ pub struct NewtypeDefinition {
 pub struct PkgImport {
     pub name: String,
     // pub rename: String
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct PkgInfo {
-    pub name: String, // net::http
-    pub path: String, // net/http
+    pub span: Span,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -469,13 +312,14 @@ pub enum Loop {
     While { expr: Box<Expr> },
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct Span {
     pub start: LineColumn,
     pub end: LineColumn,
+    pub file: FileId,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct LineColumn {
     pub line: usize,
     pub col: usize,
@@ -491,10 +335,11 @@ impl LineColumn {
 }
 
 impl Span {
-    pub fn make(s: ProcSpan) -> Self {
+    pub fn make(s: ProcSpan, file: &FileId) -> Self {
         Self {
             start: LineColumn::make(s.start()),
             end: LineColumn::make(s.end()),
+            file: file.clone(),
         }
     }
 
@@ -504,18 +349,7 @@ impl Span {
         Self {
             start: line.clone(),
             end: line,
-        }
-    }
-
-    pub fn from_position(line: u32, col: u32) -> Self {
-        let l = LineColumn {
-            line: line.try_into().unwrap(),
-            col: col.try_into().unwrap(),
-        };
-
-        Self {
-            start: l.clone(),
-            end: l,
+            file: FileId::dummy(),
         }
     }
 
@@ -537,6 +371,26 @@ impl Span {
         }
 
         true
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Generic {
+    pub name: String,
+    pub bounds: Vec<TypeAst>,
+    pub span: Span,
+}
+
+impl Generic {
+    pub fn to_type(&self, module: &ModuleId) -> Type {
+        Type::Con {
+            id: Symbol {
+                name: self.name.clone(),
+                module: module.clone(),
+                span: self.span.clone(),
+            },
+            args: vec![],
+        }
     }
 }
 
@@ -580,7 +434,8 @@ pub enum Expr {
     },
     Var {
         value: Ident,
-        decl: Declaration,
+        // TODO asdf should this go? Track spans in Scope::spans?
+        decl: Span,
         generics_instantiated: Vec<Type>,
         ty: Type,
         span: Span,
@@ -662,7 +517,7 @@ pub enum Expr {
         ann: TypeAst,
         ty: Type,
         items: Vec<Expr>,
-        generics: Vec<String>,
+        generics: Vec<Generic>,
         span: Span,
     },
     Binary {
@@ -748,12 +603,6 @@ pub enum Expr {
         types: Vec<String>,
         span: Span,
     },
-    Mod {
-        name: String,
-        pkg: PkgInfo,
-        items: Vec<Expr>,
-        span: Span,
-    },
     Index {
         expr: Box<Expr>,
         index: Box<Expr>,
@@ -762,6 +611,7 @@ pub enum Expr {
     },
 
     Unit {
+        ty: Type,
         span: Span,
     },
     Noop,
@@ -774,7 +624,7 @@ pub enum Literal {
     Float(f64),
     Bool(bool),
     String(String, Option<String> /* token like r"asdf" */),
-    Char(String),
+    Char(char),
     Slice(Vec<Expr>),
 }
 
@@ -802,63 +652,47 @@ pub enum UnOp {
     Deref,
 }
 
-#[derive(Deserialize, Clone, Debug)]
-pub struct UnparsedFile {
-    pub filename: String,
-    pub contents: String,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct File {
+    pub id: FileId,
     pub name: String,
-    pub decls: Vec<Expr>,
     pub source: String,
+    pub decls: Vec<Expr>,
 }
 
 impl File {
-    pub fn from_file(name: String, source: String, input: syn::File) -> Result<Self> {
-        let decls = input
-            .items
-            .into_iter()
-            .map(|e| Expr::from_item(e, FunctionKind::TopLevel))
-            .collect::<Result<Vec<_>>>()?;
-
-        Ok(Self {
-            name,
-            source,
-            decls,
-        })
-    }
-
-    pub fn from_file_contents(filename: &str, contents: &str) -> (Self, Vec<ParseError>) {
-        syn::parse_str::<syn::File>(contents)
-            .map_err(|err| ParseError {
-                msg: err.to_string(),
-                span: Span::make(err.span()),
-            })
-            .and_then(|file| {
-                let file = File::from_file(filename.to_string(), contents.to_string(), file)?;
-                Ok((file, vec![]))
-            })
-            .unwrap_or_else(|err| {
-                let file = File {
-                    name: filename.to_string(),
-                    source: contents.to_string(),
-                    decls: vec![],
-                };
-
-                (file, vec![err])
-            })
-    }
-
     pub fn find_expr_at_position(&self, span: &Span) -> Option<Expr> {
         self.decls.iter().find_map(|e| e.find_at_position(span))
     }
+
+    pub fn go_filename(&self) -> String {
+        std::path::Path::new(&self.name)
+            .with_extension("go")
+            .display()
+            .to_string()
+    }
+
+    pub fn imports(&self) -> Vec<PkgImport> {
+        self.decls
+            .iter()
+            .filter_map(|e| {
+                if let Expr::UsePackage { import, .. } = e {
+                    Some(import.clone())
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
 }
 
-impl Expr {
-    pub fn from_expr(input: syn::Expr) -> Result<Self> {
-        let root_span = Span::make(input.span());
+pub struct Ast {
+    current_file: FileId,
+}
+
+impl Ast {
+    pub fn from_expr(&self, input: syn::Expr) -> Result<Expr> {
+        let root_span = self.make_span(input.span());
 
         match input {
             syn::Expr::Lit(lit) => match lit.lit {
@@ -884,7 +718,7 @@ impl Expr {
                     span: root_span,
                 }),
                 syn::Lit::Str(s) => {
-                    let token = if s.token().to_string().starts_with("r") {
+                    let token = if s.token().to_string().starts_with('r') {
                         Some("r".to_string())
                     } else {
                         None
@@ -897,7 +731,7 @@ impl Expr {
                     })
                 }
                 syn::Lit::Char(c) => Ok(Expr::Literal {
-                    lit: Literal::Char(c.value().to_string()),
+                    lit: Literal::Char(c.value()),
                     ty: Type::dummy(),
                     span: root_span,
                 }),
@@ -908,7 +742,7 @@ impl Expr {
                 let stmts = block
                     .stmts
                     .into_iter()
-                    .map(Self::from_statement)
+                    .map(|e| self.from_statement(e))
                     .collect::<Result<_>>()?;
 
                 Ok(Expr::Block {
@@ -922,7 +756,7 @@ impl Expr {
                 let value = parse::parse_ident_from_path(path);
                 Ok(Expr::Var {
                     value,
-                    decl: Declaration::dummy(),
+                    decl: Span::dummy(),
                     generics_instantiated: vec![],
                     ty: Type::dummy(),
                     span: root_span,
@@ -930,11 +764,11 @@ impl Expr {
             }
 
             syn::Expr::Call(call) => {
-                let func = Self::from_expr(*call.func)?;
+                let func = self.from_expr(*call.func)?;
                 let args = call
                     .args
                     .into_iter()
-                    .map(Self::from_expr)
+                    .map(|e| self.from_expr(e))
                     .collect::<Result<_>>()?;
 
                 Ok(Expr::Call {
@@ -949,7 +783,7 @@ impl Expr {
                 let elems = arr
                     .elems
                     .into_iter()
-                    .map(Self::from_expr)
+                    .map(|e| self.from_expr(e))
                     .collect::<Result<_>>()?;
 
                 Ok(Expr::Literal {
@@ -960,7 +794,7 @@ impl Expr {
             }
 
             syn::Expr::Cast(c) => {
-                let expr = Self::from_expr(*c.expr)?;
+                let expr = self.from_expr(*c.expr)?;
                 let ann = parse::type_from_expr(*c.ty);
 
                 Ok(Expr::CheckType {
@@ -975,16 +809,15 @@ impl Expr {
                 let args = c
                     .inputs
                     .into_iter()
-                    .map(Binding::from_pat)
+                    .map(|e| self.from_pat(e))
                     .collect::<Result<_>>()?;
 
-                let body = Self::from_expr(*c.body)?;
+                let body = self.from_expr(*c.body)?;
                 let ann = parse::parse_output(c.output, TypeAst::Unknown);
 
                 let fun = Function {
                     name: "__anonymous".into(),
                     generics: vec![],
-                    bounds: vec![],
                     args,
                     body: body.into(),
                     ann,
@@ -1001,11 +834,11 @@ impl Expr {
             }
 
             syn::Expr::If(i) => {
-                let cond = Self::from_expr(*i.cond)?;
-                let then = Self::from_block(i.then_branch)?;
+                let cond = self.from_expr(*i.cond)?;
+                let then = self.from_block(i.then_branch)?;
                 let els = i
                     .else_branch
-                    .map(|(_, block)| Self::from_expr(*block))
+                    .map(|(_, block)| self.from_expr(*block))
                     .unwrap_or(Ok(Expr::Block {
                         stmts: vec![],
                         ty: Type::dummy(),
@@ -1022,8 +855,12 @@ impl Expr {
             }
 
             syn::Expr::Match(m) => {
-                let subject = Self::from_expr(*m.expr)?;
-                let arms = m.arms.into_iter().map(Arm::parse).collect::<Result<_>>()?;
+                let subject = self.from_expr(*m.expr)?;
+                let arms = m
+                    .arms
+                    .into_iter()
+                    .map(|e| self.parse_arm(e))
+                    .collect::<Result<_>>()?;
 
                 Ok(Expr::Match {
                     subject: subject.into(),
@@ -1035,13 +872,16 @@ impl Expr {
 
             syn::Expr::Tuple(t) => {
                 if t.elems.is_empty() {
-                    return Ok(Expr::Unit { span: root_span });
+                    return Ok(Expr::Unit {
+                        ty: Type::dummy(),
+                        span: root_span,
+                    });
                 }
 
                 let elems = t
                     .elems
                     .into_iter()
-                    .map(Self::from_expr)
+                    .map(|e| self.from_expr(e))
                     .collect::<Result<_>>()?;
 
                 Ok(Expr::Tuple {
@@ -1059,12 +899,12 @@ impl Expr {
                     .map(|f| {
                         Ok(StructField {
                             name: parse::parse_member(f.member)?,
-                            value: Self::from_expr(f.expr)?,
+                            value: self.from_expr(f.expr)?,
                         })
                     })
                     .collect::<Result<_>>()?;
 
-                let rest = s.rest.map(|e| Self::from_expr(*e)).transpose()?;
+                let rest = s.rest.map(|e| self.from_expr(*e)).transpose()?;
 
                 Ok(Expr::StructCall {
                     name,
@@ -1076,7 +916,7 @@ impl Expr {
             }
 
             syn::Expr::Field(f) => {
-                let expr = Self::from_expr(*f.base)?;
+                let expr = self.from_expr(*f.base)?;
                 let field = parse::parse_member(f.member)?;
 
                 Ok(Expr::FieldAccess {
@@ -1088,8 +928,8 @@ impl Expr {
             }
 
             syn::Expr::Assign(a) => {
-                let target = Self::from_expr(*a.left)?;
-                let value = Self::from_expr(*a.right)?;
+                let target = self.from_expr(*a.left)?;
+                let value = self.from_expr(*a.right)?;
 
                 Ok(Expr::VarUpdate {
                     target: target.into(),
@@ -1099,15 +939,15 @@ impl Expr {
             }
 
             syn::Expr::MethodCall(m) => {
-                let target = Self::from_expr(*m.receiver)?;
+                let target = self.from_expr(*m.receiver)?;
                 let method = m.method.to_string();
                 let args = m
                     .args
                     .into_iter()
-                    .map(Self::from_expr)
+                    .map(|e| self.from_expr(e))
                     .collect::<Result<_>>()?;
 
-                let span = Span::make(m.method.span());
+                let span = self.make_span(m.method.span());
 
                 let func = Expr::FieldAccess {
                     expr: target.into(),
@@ -1137,7 +977,7 @@ impl Expr {
             syn::Expr::Return(r) => {
                 let expr = r
                     .expr
-                    .map(|e| Self::from_expr(*e))
+                    .map(|e| self.from_expr(*e))
                     .transpose()?
                     .unwrap_or(Expr::Noop);
 
@@ -1154,11 +994,11 @@ impl Expr {
                     .mac
                     .parse_body::<syn::Expr>()
                     .ok()
-                    .map(Self::from_expr)
+                    .map(|e| self.from_expr(e))
                     .unwrap_or_else(|| Ok(Expr::Noop))?;
 
                 if name == "todo" {
-                    return Ok(Self::Debug {
+                    return Ok(Expr::Debug {
                         kind: DebugKind::Todo,
                         expr: expr.into(),
                         ty: Type::dummy(),
@@ -1167,7 +1007,7 @@ impl Expr {
                 }
 
                 if name == "unreachable" {
-                    return Ok(Self::Debug {
+                    return Ok(Expr::Debug {
                         kind: DebugKind::Unreachable,
                         expr: expr.into(),
                         ty: Type::dummy(),
@@ -1176,7 +1016,7 @@ impl Expr {
                 }
 
                 if name == "spawn" {
-                    return Ok(Self::Spawn {
+                    return Ok(Expr::Spawn {
                         expr: expr.into(),
                         ty: Type::dummy(),
                         span: root_span,
@@ -1184,7 +1024,7 @@ impl Expr {
                 }
 
                 if name == "select" {
-                    return Ok(Self::Select {
+                    return Ok(Expr::Select {
                         arms: vec![], // will be populated in infer
                         ty: Type::dummy(),
                         span: root_span,
@@ -1192,7 +1032,7 @@ impl Expr {
                 }
 
                 if name == "defer" {
-                    return Ok(Self::Defer {
+                    return Ok(Expr::Defer {
                         expr: expr.into(),
                         ty: Type::dummy(),
                         span: root_span,
@@ -1207,15 +1047,15 @@ impl Expr {
                         },
                         _ => panic!("was expecting string in rawgo block"),
                     };
-                    return Ok(Self::Raw { text });
+                    return Ok(Expr::Raw { text });
                 }
 
                 panic!("Unknown macro {}", name);
             }
 
             syn::Expr::Try(t) => {
-                let expr = Self::from_expr(*t.expr)?;
-                Ok(Self::Try {
+                let expr = self.from_expr(*t.expr)?;
+                Ok(Expr::Try {
                     expr: expr.into(),
                     ty: Type::dummy(),
                     span: root_span,
@@ -1224,10 +1064,10 @@ impl Expr {
 
             syn::Expr::Binary(b) => {
                 let op = parse::parse_operator(b.op)?;
-                let left = Self::from_expr(*b.left)?;
-                let right = Self::from_expr(*b.right)?;
+                let left = self.from_expr(*b.left)?;
+                let right = self.from_expr(*b.right)?;
 
-                Ok(Self::Binary {
+                Ok(Expr::Binary {
                     op,
                     left: left.into(),
                     right: right.into(),
@@ -1237,9 +1077,9 @@ impl Expr {
             }
 
             syn::Expr::Paren(p) => {
-                let expr = Self::from_expr(*p.expr)?;
+                let expr = self.from_expr(*p.expr)?;
 
-                Ok(Self::Paren {
+                Ok(Expr::Paren {
                     expr: expr.into(),
                     ty: Type::dummy(),
                     span: root_span,
@@ -1248,9 +1088,9 @@ impl Expr {
 
             syn::Expr::Unary(u) => {
                 let op = parse::parse_unop(u.op)?;
-                let expr = Self::from_expr(*u.expr)?;
+                let expr = self.from_expr(*u.expr)?;
 
-                Ok(Self::Unary {
+                Ok(Expr::Unary {
                     op,
                     expr: expr.into(),
                     ty: Type::dummy(),
@@ -1259,11 +1099,11 @@ impl Expr {
             }
 
             syn::Expr::ForLoop(f) => {
-                let binding = Binding::from_pat(f.pat)?;
-                let expr = Self::from_expr(*f.expr)?;
-                let body = Self::from_block(f.body)?;
+                let binding = self.from_pat(f.pat)?;
+                let expr = self.from_expr(*f.expr)?;
+                let body = self.from_block(f.body)?;
 
-                Ok(Self::Loop {
+                Ok(Expr::Loop {
                     kind: Loop::WithCondition {
                         binding,
                         expr: Box::new(expr),
@@ -1274,9 +1114,9 @@ impl Expr {
             }
 
             syn::Expr::Loop(l) => {
-                let body = Self::from_block(l.body)?;
+                let body = self.from_block(l.body)?;
 
-                Ok(Self::Loop {
+                Ok(Expr::Loop {
                     kind: Loop::NoCondition,
                     body: Box::new(body),
                     span: root_span,
@@ -1284,10 +1124,10 @@ impl Expr {
             }
 
             syn::Expr::While(w) => {
-                let expr = Self::from_expr(*w.cond)?;
-                let body = Self::from_block(w.body)?;
+                let expr = self.from_expr(*w.cond)?;
+                let body = self.from_block(w.body)?;
 
-                Ok(Self::Loop {
+                Ok(Expr::Loop {
                     kind: Loop::While {
                         expr: Box::new(expr),
                     },
@@ -1296,20 +1136,20 @@ impl Expr {
                 })
             }
 
-            syn::Expr::Break(_) => Ok(Self::Flow {
+            syn::Expr::Break(_) => Ok(Expr::Flow {
                 kind: LoopFlow::Break,
                 span: root_span,
             }),
 
-            syn::Expr::Continue(_) => Ok(Self::Flow {
+            syn::Expr::Continue(_) => Ok(Expr::Flow {
                 kind: LoopFlow::Continue,
                 span: root_span,
             }),
 
             syn::Expr::Reference(r) => {
-                let expr = Self::from_expr(*r.expr)?;
+                let expr = self.from_expr(*r.expr)?;
 
-                Ok(Self::Reference {
+                Ok(Expr::Reference {
                     expr: expr.into(),
                     mutable: r.mutability.is_some(),
                     ty: Type::dummy(),
@@ -1318,10 +1158,10 @@ impl Expr {
             }
 
             syn::Expr::Index(i) => {
-                let expr = Self::from_expr(*i.expr)?;
-                let index = Self::from_expr(*i.index)?;
+                let expr = self.from_expr(*i.expr)?;
+                let index = self.from_expr(*i.index)?;
 
-                Ok(Self::Index {
+                Ok(Expr::Index {
                     expr: expr.into(),
                     index: index.into(),
                     ty: Type::dummy(),
@@ -1333,19 +1173,19 @@ impl Expr {
         }
     }
 
-    pub fn from_item(item: syn::Item, kind: FunctionKind) -> Result<Self> {
-        let span = Span::make(item.span());
+    pub fn from_item(&self, item: syn::Item, kind: FunctionKind) -> Result<Expr> {
+        let span = self.make_span(item.span());
 
         match item {
-            syn::Item::Fn(fun) => Ok(Self::Closure {
-                fun: parse::parse_item_fn(fun)?,
+            syn::Item::Fn(fun) => Ok(Expr::Closure {
+                fun: self.parse_item_fn(fun)?,
                 ty: Type::dummy(),
                 kind,
                 span,
             }),
 
             syn::Item::Enum(e) => {
-                let generics = parse::parse_generics(&e.generics);
+                let generics = self.parse_generics(&e.generics);
                 let cons = e
                     .variants
                     .into_iter()
@@ -1375,7 +1215,7 @@ impl Expr {
             }
 
             syn::Item::Struct(e) => {
-                let generics = parse::parse_generics(&e.generics);
+                let generics = self.parse_generics(&e.generics);
                 let fields = parse::parse_fields(e.fields);
 
                 match fields {
@@ -1403,30 +1243,26 @@ impl Expr {
 
             syn::Item::Impl(i) => {
                 let base_ann = parse::type_from_expr(*i.self_ty.clone());
-                let impl_generics = parse::parse_generics(&i.generics);
-                let impl_bounds = parse::parse_bounds(&i.generics);
+                let impl_generics = self.parse_generics(&i.generics);
 
                 let items = i
                     .items
                     .into_iter()
                     .map(|item| match item {
                         syn::ImplItem::Method(fun) => {
-                            let root_span = Span::make(fun.span());
+                            let root_span = self.make_span(fun.span());
 
-                            let (mut generics, args, ann) = parse::parse_signature(
+                            let mut sig = self.parse_signature(
                                 fun.sig.clone(),
                                 Some((base_ann.clone(), span.clone())),
                             )?;
 
                             // add generics to signature
                             for g in impl_generics.iter() {
-                                if !generics.contains(&g) {
-                                    generics.push(g.to_string());
+                                if !sig.generics.contains(g) {
+                                    sig.generics.push(g.clone());
                                 }
                             }
-
-                            let mut bounds = parse::parse_bounds(&fun.sig.generics);
-                            bounds.extend_from_slice(&impl_bounds);
 
                             // TODO all this stuff is the same as parse_item_fn, refactor
                             let span = fun.block.span();
@@ -1434,23 +1270,22 @@ impl Expr {
                                 .block
                                 .stmts
                                 .into_iter()
-                                .map(Expr::from_statement)
+                                .map(|e| self.from_statement(e))
                                 .collect::<Result<_>>()?;
 
                             let body = Expr::Block {
                                 stmts,
                                 ty: Type::dummy(),
-                                span: Span::make(span),
+                                span: self.make_span(span),
                             };
 
                             let name = fun.sig.ident.to_string();
 
                             let mut new_fun = Function {
                                 name,
-                                generics,
-                                bounds,
-                                args,
-                                ann: ann.clone(),
+                                generics: sig.generics,
+                                args: sig.args,
+                                ann: sig.ret,
                                 ret: Type::dummy(),
                                 body: body.into(),
                                 bounded_ty: Type::dummy().to_bounded(),
@@ -1477,7 +1312,7 @@ impl Expr {
                     })
                     .collect::<Result<_>>()?;
 
-                let span = Span::make(i.self_ty.span());
+                let span = self.make_span(i.self_ty.span());
 
                 Ok(Expr::ImplBlock {
                     ann: base_ann,
@@ -1489,8 +1324,8 @@ impl Expr {
             }
 
             syn::Item::Const(c) => {
-                let span = Span::make(c.span());
-                let expr = Self::from_expr(*c.expr)?;
+                let span = self.make_span(c.span());
+                let expr = self.from_expr(*c.expr)?;
                 let ann = parse::type_from_expr(*c.ty);
 
                 Ok(Expr::Const {
@@ -1510,7 +1345,7 @@ impl Expr {
                     .mac
                     .parse_body::<syn::Expr>()
                     .ok()
-                    .map(Self::from_expr)
+                    .map(|e| self.from_expr(e))
                     .unwrap_or_else(|| Ok(Expr::Noop))?;
 
                 if name == "rawgo" {
@@ -1521,32 +1356,39 @@ impl Expr {
                         },
                         _ => panic!("was expecting string in rawgo block"),
                     };
-                    return Ok(Self::Raw { text });
+                    return Ok(Expr::Raw { text });
                 }
 
                 panic!("Unknown macro {}", name);
             }
 
             syn::Item::Type(t) => {
-                let span = Span::make(t.span());
+                let span = self.make_span(t.span());
                 let ann = parse::type_from_expr(*t.ty);
                 let attrs = parse::parse_attrs(&t.attrs);
-                let generics = parse::parse_generics(&t.generics);
+                let generics = self.parse_generics(&t.generics);
 
                 let def = TypeAliasDef {
                     name: t.ident.to_string(),
                     generics,
                     ann,
                     attrs,
+                    ty: BoundedType {
+                        generics: vec![],
+                        ty: Type::dummy(),
+                    },
                 };
 
                 Ok(Expr::TypeAlias { def, span })
             }
 
             syn::Item::Use(u) => {
-                let span = Span::make(u.span());
+                let span = self.make_span(u.span());
                 let name = parse::parse_use(u.tree);
-                let import = PkgImport { name };
+                let import = PkgImport {
+                    name,
+                    span: span.clone(),
+                };
                 Ok(Expr::UsePackage { import, span })
             }
 
@@ -1557,23 +1399,21 @@ impl Expr {
                 for i in t.items.iter() {
                     match i {
                         syn::TraitItem::Method(fun) => {
-                            let (generics, args, ann) =
-                                parse::parse_signature(fun.sig.clone(), None)?;
+                            let sig = self.parse_signature(fun.sig.clone(), None)?;
 
                             let fun_name = fun.sig.ident.to_string();
 
                             let new_func = Function {
                                 name: fun_name,
-                                args,
-                                generics,
-                                bounds: vec![],
+                                args: sig.args,
+                                generics: sig.generics,
                                 ret: Type::dummy(),
-                                ann,
+                                ann: sig.ret,
                                 body: Expr::Noop.into(),
                                 bounded_ty: Type::dummy().to_bounded(),
                             };
 
-                            let span = Span::make(i.span());
+                            let span = self.make_span(i.span());
 
                             items.push(Expr::Closure {
                                 fun: new_func,
@@ -1609,66 +1449,43 @@ impl Expr {
                 })
             }
 
-            syn::Item::Mod(m) => {
-                let name = m.ident.to_string();
-                let pkg = parse::parse_pkgmod_info(&m.attrs).map_err(|err| ParseError {
-                    msg: err,
-                    span: Span::make(m.span()),
-                })?;
-
-                let items: Vec<Expr> = m
-                    .content
-                    .unwrap()
-                    .1
-                    .into_iter()
-                    .map(|item| Expr::from_item(item, FunctionKind::TopLevel))
-                    .collect::<Result<Vec<_>>>()?;
-
-                Ok(Expr::Mod {
-                    name,
-                    pkg,
-                    items,
-                    span,
-                })
-            }
-
             _ => panic!("unimplemented from_item {:?}", item),
         }
     }
 
-    pub fn from_statement(stmt: syn::Stmt) -> Result<Self> {
+    pub fn from_statement(&self, stmt: syn::Stmt) -> Result<Expr> {
         match stmt {
-            syn::Stmt::Item(item) => Self::from_item(item, FunctionKind::Inline),
+            syn::Stmt::Item(item) => self.from_item(item, FunctionKind::Inline),
 
             syn::Stmt::Local(syn::Local {
                 ref init, ref pat, ..
             }) => {
-                let binding = Binding::from_pat(pat.clone())?;
+                let binding = self.from_pat(pat.clone())?;
                 let value = init
                     .clone()
-                    .map(|(_, e)| Self::from_expr(*e))
-                    .unwrap_or_else(|| Ok(Self::Noop))?;
+                    .map(|(_, e)| self.from_expr(*e))
+                    .unwrap_or_else(|| Ok(Expr::Noop))?;
 
-                Ok(Self::Let {
+                Ok(Expr::Let {
                     binding,
                     value: Box::new(value),
                     ty: Type::dummy(),
-                    span: Span::make(stmt.span()),
+                    span: self.make_span(stmt.span()),
                 })
             }
 
-            syn::Stmt::Expr(e) => Self::from_expr(e),
+            syn::Stmt::Expr(e) => self.from_expr(e),
 
-            syn::Stmt::Semi(e, _) => Self::from_expr(e),
+            syn::Stmt::Semi(e, _) => self.from_expr(e),
         }
     }
 
-    pub fn from_block(block: syn::Block) -> Result<Self> {
-        let span = Span::make(block.span());
+    pub fn from_block(&self, block: syn::Block) -> Result<Expr> {
+        let span = self.make_span(block.span());
         let stmts = block
             .stmts
             .into_iter()
-            .map(Self::from_statement)
+            .map(|e| self.from_statement(e))
             .collect::<Result<_>>()?;
 
         Ok(Expr::Block {
@@ -1678,6 +1495,340 @@ impl Expr {
         })
     }
 
+    pub fn from_file(&self, name: String, source: String, input: syn::File) -> Result<File> {
+        let decls = input
+            .items
+            .into_iter()
+            .map(|e| self.from_item(e, FunctionKind::TopLevel))
+            .collect::<Result<Vec<_>>>()?;
+
+        Ok(File {
+            id: FileId::dummy(),
+            name,
+            source,
+            decls,
+        })
+    }
+
+    pub fn from_file_contents(&self, contents: &str) -> Result<Vec<Expr>> {
+        let file = syn::parse_str::<syn::File>(contents).map_err(|err| ParseError {
+            msg: err.to_string(),
+            span: self.make_span(err.span()),
+        })?;
+
+        file.items
+            .into_iter()
+            .map(|e| self.from_item(e, FunctionKind::TopLevel))
+            .collect::<Result<Vec<_>>>()
+    }
+
+    pub fn from_pat_expr(&self, p: syn::Pat) -> Result<Pat> {
+        // TODO fix this
+        // Add Pat::Ident for new variables
+        // Pat::Path always refers to ctors
+        // Basically like TupleStruct but with no args
+        let span = self.make_span(p.span());
+
+        match p {
+            syn::Pat::Type(ty) => Ok(Pat::Type {
+                ident: Pat::parse_ident(*ty.pat.clone())?,
+                is_mut: Pat::parse_mutability(&ty.pat),
+                ann: parse::type_from_expr(*ty.ty),
+                span,
+            }),
+
+            syn::Pat::Ident(_) => {
+                let ident = Pat::parse_ident(p.clone())?;
+
+                // syn cannot distinguish between Foo (constructor) and foo (binding).
+                // So let's use a dumb heuristic:
+                //   - if the first letter is uppercase it's a ctor
+                //   - otherwise it's a binding
+
+                let first = ident.chars().next().unwrap();
+                if first.is_uppercase() {
+                    return Ok(Pat::Pat {
+                        ident,
+                        elems: vec![],
+                        ty: Type::dummy(),
+                        span,
+                    });
+                }
+
+                Ok(Pat::Type {
+                    ident,
+                    is_mut: Pat::parse_mutability(&p),
+                    ann: TypeAst::Unknown,
+                    span,
+                })
+            }
+
+            syn::Pat::Lit(l) => {
+                let expr = self.from_expr(*l.expr)?;
+                match expr {
+                    Expr::Literal { lit, ty, span } => Ok(Pat::Lit { lit, ty, span }),
+                    _ => panic!("Pat::Lit should parse to a Literal"),
+                }
+            }
+
+            syn::Pat::Path(p) => {
+                let ident = Pat::parse_path(p.path);
+
+                Ok(Pat::Pat {
+                    ident,
+                    elems: vec![],
+                    ty: Type::dummy(),
+                    span,
+                })
+            }
+
+            syn::Pat::TupleStruct(t) => {
+                let ident = Pat::parse_path(t.path);
+                let elems = t
+                    .pat
+                    .elems
+                    .into_iter()
+                    .map(|e| self.from_pat_expr(e))
+                    .collect::<Result<_>>()?;
+
+                Ok(Pat::Pat {
+                    ident,
+                    elems,
+                    ty: Type::dummy(),
+                    span,
+                })
+            }
+
+            syn::Pat::Struct(t) => {
+                let ident = Pat::parse_path(t.path);
+                let fields = t
+                    .fields
+                    .into_iter()
+                    .map(|p| {
+                        Ok(StructFieldPat {
+                            name: parse::parse_member(p.member)?,
+                            value: self.from_pat_expr(*p.pat)?,
+                        })
+                    })
+                    .collect::<Result<_>>()?;
+
+                Ok(Pat::Struct {
+                    ident,
+                    fields,
+                    ty: Type::dummy(),
+                    span,
+                })
+            }
+
+            syn::Pat::Tuple(t) => {
+                if t.elems.is_empty() {
+                    return Ok(Pat::Unit {
+                        ty: Type::dummy(),
+                        span,
+                    });
+                }
+
+                let name = format!("Tuple{}", t.elems.len());
+                let fields = t
+                    .elems
+                    .into_iter()
+                    .enumerate()
+                    .map(|(index, p)| {
+                        Ok(StructFieldPat {
+                            name: Expr::tuple_index_string(index.try_into().unwrap())?,
+                            value: self.from_pat_expr(p)?,
+                        })
+                    })
+                    .collect::<Result<_>>()?;
+
+                Ok(Pat::Struct {
+                    ident: name,
+                    fields,
+                    ty: Type::dummy(),
+                    span,
+                })
+            }
+
+            syn::Pat::Slice(e) => Err(ParseError {
+                msg: "Can't pattern match on slice literals".to_string(),
+                span: self.make_span(e.span()),
+            }),
+
+            syn::Pat::Wild(_) => Ok(Pat::Wild { span }),
+
+            _ => panic!("unexpected pat expression {:#?}", &p),
+        }
+    }
+
+    pub fn from_pat(&self, pat: syn::Pat) -> Result<Binding> {
+        let pat = self.from_pat_expr(pat)?;
+
+        let ann = match pat {
+            Pat::Type { ref ann, .. } => ann.clone(),
+            _ => TypeAst::Unknown,
+        };
+
+        Ok(Binding {
+            pat,
+            ann,
+            ty: Type::dummy(),
+        })
+    }
+
+    fn parse_arm(&self, input: syn::Arm) -> Result<Arm> {
+        let pat = self.from_pat_expr(input.pat)?;
+        let expr = self.from_expr(*input.body)?;
+        Ok(Arm { pat, expr })
+    }
+
+    fn parse_item_fn(&self, fun: syn::ItemFn) -> Result<Function> {
+        let sig = self.parse_signature(fun.sig.clone(), None)?;
+
+        let span = (*fun.block).span();
+        let stmts = fun
+            .block
+            .stmts
+            .into_iter()
+            .map(|e| self.from_statement(e))
+            .collect::<Result<_>>()?;
+
+        let body = Expr::Block {
+            stmts,
+            ty: Type::dummy(),
+            span: self.make_span(span),
+        };
+
+        Ok(Function {
+            name: fun.sig.ident.to_string(),
+            generics: sig.generics,
+            args: sig.args,
+            ann: sig.ret,
+            ret: Type::dummy(),
+            body: body.into(),
+            bounded_ty: Type::dummy().to_bounded(),
+        })
+    }
+
+    pub fn parse_input(
+        &self,
+        input: syn::FnArg,
+        receiver: Option<(TypeAst, Span)>,
+    ) -> Result<Binding> {
+        match input {
+            syn::FnArg::Typed(arg) => {
+                let pat = self.from_pat_expr(*arg.pat)?;
+                let ann = parse::type_from_expr(*arg.ty);
+
+                Ok(Binding {
+                    pat,
+                    ann,
+                    ty: Type::dummy(),
+                })
+                // todo!("{:#?}", arg.pat)
+            }
+
+            syn::FnArg::Receiver(r) => match receiver {
+                Some((ann, span)) => {
+                    // TODO asdf this logic should be applied to other args too, not just self
+                    let is_mut = r.mutability.is_some();
+
+                    let reference = if r.reference.is_some() {
+                        if is_mut {
+                            Some("RefMut")
+                        } else {
+                            Some("Ref")
+                        }
+                    } else {
+                        None
+                    };
+
+                    let ann = match reference {
+                        Some(name) => TypeAst::Con {
+                            name: name.to_string(),
+                            args: vec![ann],
+                        },
+                        None => ann,
+                    };
+
+                    Ok(Binding {
+                        pat: Pat::Type {
+                            ident: "self".to_string(),
+                            is_mut,
+                            ann: ann.clone(),
+                            span,
+                        },
+                        ann,
+                        ty: Type::dummy(),
+                    })
+                }
+                _ => panic!("found receiver but no arg provided"),
+            },
+        }
+    }
+
+    pub fn parse_signature(
+        &self,
+        sig: syn::Signature,
+        receiver: Option<(TypeAst, Span)>,
+    ) -> Result<Signature> {
+        let generics = self.parse_generics(&sig.generics);
+        let args = sig
+            .inputs
+            .into_iter()
+            .map(|i| self.parse_input(i, receiver.clone()))
+            .collect::<Result<_>>()?;
+
+        let ret = parse::parse_output(sig.output, TypeAst::unit());
+        Ok(Signature {
+            generics,
+            args,
+            ret,
+        })
+    }
+
+    pub fn parse_generics(&self, generics: &syn::Generics) -> Vec<Generic> {
+        generics
+            .type_params()
+            .map(|x| {
+                let name = x.ident.to_string();
+
+                let bounds = x
+                    .bounds
+                    .iter()
+                    .map(|b| match b {
+                        syn::TypeParamBound::Trait(b) => parse::type_from_path(&b.path),
+                        syn::TypeParamBound::Lifetime(_) => panic!("we don't need no lifetimes"),
+                    })
+                    .collect();
+
+                let span = self.make_span(x.span());
+                Generic { name, bounds, span }
+            })
+            .collect()
+    }
+
+    pub fn new() -> Self {
+        Ast {
+            current_file: FileId::dummy(),
+        }
+    }
+
+    pub fn make_span(&self, s: ProcSpan) -> Span {
+        Span::make(s, &self.current_file)
+    }
+
+    pub fn set_file(&mut self, file: &FileId) {
+        self.current_file = file.clone();
+    }
+}
+
+pub struct Signature {
+    pub generics: Vec<Generic>,
+    pub args: Vec<Binding>,
+    pub ret: TypeAst,
+}
+
+impl Expr {
     /// Only used in tests
     pub fn from_source(source: &str) -> syn::Expr {
         syn::parse_str::<syn::Expr>(source).unwrap()
@@ -1751,15 +1902,15 @@ impl Expr {
             Self::CheckType { ty, .. } => ty,
             Self::Match { ty, .. } => ty,
             Self::Tuple { ty, .. } => ty,
-            Self::EnumDef { .. } => Type::unit(),
-            Self::StructDef { .. } => Type::unit(),
+            Self::EnumDef { .. } => Type::discard(),
+            Self::StructDef { .. } => Type::discard(),
             Self::StructCall { ty, .. } => ty,
             Self::FieldAccess { ty, .. } => ty,
-            Self::VarUpdate { .. } => Type::unit(),
+            Self::VarUpdate { .. } => Type::discard(),
             Self::MethodCall { ty, .. } => ty,
             Self::Return { ty, .. } => ty,
             Self::Try { ty, .. } => ty,
-            Self::ImplBlock { .. } => Type::unit(),
+            Self::ImplBlock { .. } => Type::discard(),
             Self::Binary { ty, .. } => ty,
             Self::Paren { ty, .. } => ty,
             Self::Unary { ty, .. } => ty,
@@ -1770,18 +1921,17 @@ impl Expr {
             Self::Defer { ty, .. } => ty,
             Self::Reference { ty, .. } => ty,
             Self::Index { ty, .. } => ty,
-            Self::Raw { .. } => Type::unit(),
-            Self::Loop { .. } => Type::unit(),
-            Self::Flow { .. } => Type::unit(),
-            Self::TypeAlias { .. } => Type::unit(),
-            Self::NewtypeDef { .. } => Type::unit(),
-            Self::UsePackage { .. } => Type::unit(),
-            Self::Trait { .. } => Type::unit(),
-            Self::Mod { .. } => Type::unit(),
+            Self::Raw { .. } => Type::discard(),
+            Self::Loop { .. } => Type::discard(),
+            Self::Flow { .. } => Type::discard(),
+            Self::TypeAlias { .. } => Type::discard(),
+            Self::NewtypeDef { .. } => Type::discard(),
+            Self::UsePackage { .. } => Type::discard(),
+            Self::Trait { .. } => Type::discard(),
 
-            Self::Unit { .. } => Type::unit(),
-            Self::Noop => Type::unit(),
-            Self::Todo => Type::unit(),
+            Self::Unit { ty, .. } => ty,
+            Self::Noop => Type::discard(),
+            Self::Todo => Type::discard(),
         }
     }
 
@@ -1824,7 +1974,6 @@ impl Expr {
             Self::NewtypeDef { .. } => (),
             Self::UsePackage { .. } => (),
             Self::Trait { .. } => (),
-            Self::Mod { .. } => (),
 
             Self::Unit { .. } => (),
             Self::Noop => (),
@@ -1871,7 +2020,6 @@ impl Expr {
             Self::NewtypeDef { span, .. } => span,
             Self::UsePackage { span, .. } => span,
             Self::Trait { span, .. } => span,
-            Self::Mod { span, .. } => span,
 
             Self::Unit { span, .. } => span,
             Self::Raw { .. } => Span::dummy(),
@@ -1920,7 +2068,6 @@ impl Expr {
             Self::NewtypeDef { ref mut span, .. } => *span = new_span,
             Self::UsePackage { ref mut span, .. } => *span = new_span,
             Self::Trait { ref mut span, .. } => *span = new_span,
-            Self::Mod { ref mut span, .. } => *span = new_span,
 
             Self::Unit { .. } => (),
             Self::Raw { .. } => (),
@@ -1962,8 +2109,8 @@ impl Expr {
         }?;
 
         match variant {
-            "Ok" => Some(Ok(())),
-            "Err" => Some(Err(())),
+            "Result::Ok" => Some(Ok(())),
+            "Result::Err" => Some(Err(())),
             _ => None,
         }
     }
@@ -1975,8 +2122,8 @@ impl Expr {
         }?;
 
         match variant {
-            "Some" => Some(Ok(())),
-            "None" => Some(Err(())),
+            "Option::Some" => Some(Ok(())),
+            "Option::None" => Some(Err(())),
             _ => None,
         }
     }
@@ -2001,5 +2148,21 @@ impl TypeAst {
             Self::Con { name, .. } => Some(name.to_string()),
             _ => None,
         }
+    }
+
+    fn ext() -> TypeAst {
+        TypeAst::Con {
+            name: "EXT".to_string(),
+            args: vec![],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
+pub struct FileId(pub i32);
+
+impl FileId {
+    fn dummy() -> FileId {
+        FileId(-1)
     }
 }

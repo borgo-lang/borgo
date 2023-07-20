@@ -23,7 +23,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "int",
+                  "id": "int",
                   "args": []
                 }
               },
@@ -35,7 +35,8 @@ No errors.
                 "end": {
                   "line": 2,
                   "col": 3
-                }
+                },
+                "file": 99
               }
             }
           },
@@ -46,7 +47,7 @@ No errors.
               },
               "ty": {
                 "Con": {
-                  "name": "int",
+                  "id": "int",
                   "args": []
                 }
               },
@@ -58,13 +59,14 @@ No errors.
                 "end": {
                   "line": 2,
                   "col": 8
-                }
+                },
+                "file": 99
               }
             }
           },
           "ty": {
             "Con": {
-              "name": "bool",
+              "id": "bool",
               "args": []
             }
           },
@@ -76,14 +78,15 @@ No errors.
             "end": {
               "line": 2,
               "col": 8
-            }
+            },
+            "file": 99
           }
         }
       }
     ],
     "ty": {
       "Con": {
-        "name": "bool",
+        "id": "bool",
         "args": []
       }
     },
@@ -95,7 +98,8 @@ No errors.
       "end": {
         "line": 3,
         "col": 1
-      }
+      },
+      "file": 99
     }
   }
 }

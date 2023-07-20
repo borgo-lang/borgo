@@ -1,0 +1,17 @@
+
+struct FileMode {}
+
+trait FileInfo {
+    fn Name() -> string;
+    fn Size() -> int64;
+    fn Mode() -> FileMode;
+    // fn ModTime() -> time.Time;
+    fn IsDir() -> bool;
+    fn Sys() -> any;
+}
+
+impl FileMode {
+    fn IsRegular(&self) -> bool {
+        EXT
+    }
+}

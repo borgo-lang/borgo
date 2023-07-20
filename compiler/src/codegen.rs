@@ -2,13 +2,13 @@ use std::collections::{HashMap, VecDeque};
 
 use crate::{
     ast::{
-        Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, Function,
-        FunctionKind, Literal, Loop, LoopFlow, Operator, Pat, Span, StructDefinition, StructField,
-        TypeAst, UnOp,
+        Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, File, FileId,
+        Function, FunctionKind, Generic, Literal, Loop, LoopFlow, Operator, Pat, Span,
+        StructDefinition, StructField, UnOp,
     },
-    global_state,
-    project::Package,
-    type_::Type,
+    global_state::Module,
+    infer,
+    type_::{ModuleId, Symbol, Type},
 };
 
 use serde::{Deserialize, Serialize};
@@ -87,6 +87,7 @@ struct EmitResult {
     output: String,
     value: Option<String>,
 }
+
 impl EmitResult {
     fn empty() -> EmitResult {
         EmitResult {
@@ -121,6 +122,7 @@ enum Ctx {
     Var(String), // emit to this specific var
     Arg,         // emit to a new var and tell me which it is
 }
+
 impl Ctx {
     fn to_mode(self) -> EmitMode {
         EmitMode {
@@ -151,6 +153,7 @@ struct EmitMode {
     ctx: Ctx,
     should_return: bool,
 }
+
 impl EmitMode {
     fn top_level() -> EmitMode {
         EmitMode {
@@ -216,7 +219,7 @@ pub struct Codegen {
     pub make_functions: HashMap<String, String>,
 
     // resolve type aliases
-    pub gs: global_state::GlobalState,
+    pub instance: infer::Infer,
 
     // let bindings are re-bound to temporary vars
     // ie. let x = 1
@@ -227,63 +230,62 @@ pub struct Codegen {
 
     // The return type of the current function being generated
     current_fn_ret_ty: Option<Type>,
+
+    // The module being emitted (this is only here to skip emitting traits in std)
+    current_module: ModuleId,
 }
 
 impl Codegen {
-    pub fn new(gs: &global_state::GlobalState) -> Self {
+    pub fn new(instance: infer::Infer) -> Self {
         Self {
             next_var: 0,
             make_functions: Default::default(),
-            gs: gs.clone(),
+            instance,
             scope: Scope::new(),
             current_fn_ret_ty: None,
+            current_module: ModuleId::empty(),
         }
     }
 
-    pub fn compile_package(&mut self, pkg: &Package) -> EmittedFile {
-        let mut source = emitter();
+    pub fn compile_module(&mut self, module: &Module) -> Vec<EmittedFile> {
+        self.current_module = module.id.clone();
 
-        let imports = self.collect_imports(pkg);
+        // collect make functions first so that all enums are registered
+        let make_functions = self.collect_make_functions(&module.files);
 
-        // emit make functions first
-        pkg.files.iter().for_each(|file| {
-            file.decls.iter().for_each(|expr| {
-                if let Expr::EnumDef { def, .. } = expr {
-                    source.emit(self.create_make_function(def));
+        module
+            .files
+            .values()
+            .map(|file| {
+                let mut source = emitter();
+
+                // A bit dumb, but std can't have dependencies for now at least
+                let imports = if module.id == ModuleId::from_str("std") {
+                    self.get_std_imports()
+                } else {
+                    self.collect_imports(file)
+                };
+
+                // emit make functions
+                for f in make_functions.get(&file.id).cloned().unwrap_or_default() {
+                    source.emit(f);
                 }
 
-                if let Expr::Const { ident, expr, .. } = expr {
-                    let body = self
-                        .emit_expr(
-                            EmitMode {
-                                ctx: Ctx::Discard,
-                                should_return: true,
-                            },
-                            &ensure_wrapped_in_block(&expr),
-                        )
-                        .to_statement();
+                file.decls.iter().for_each(|expr| {
+                    self.next_var = 0;
+                    self.scope.reset();
 
-                    let instantiated = to_type(&expr.get_type());
-                    source.emit(format!("var {ident} = func () {instantiated} {body}()"));
+                    let value = self.emit_expr(EmitMode::top_level(), expr);
+                    source.emit(value.to_statement())
+                });
+
+                EmittedFile {
+                    name: file.go_filename(),
+                    imports,
+                    source: source.render(),
                 }
-            });
-        });
-
-        pkg.files.iter().for_each(|file| {
-            file.decls.iter().for_each(|expr| {
-                self.next_var = 0;
-                self.scope.reset();
-
-                let value = self.emit_expr(EmitMode::top_level(), expr);
-                source.emit(value.to_statement())
-            });
-        });
-
-        EmittedFile {
-            name: pkg.name.to_string() + ".go",
-            imports,
-            source: source.render(),
-        }
+            })
+            .collect()
     }
 
     fn fresh_var(&mut self) -> String {
@@ -350,7 +352,7 @@ impl Codegen {
 
             Expr::Flow { kind, .. } => self.emit_loop_flow(kind),
             Expr::VarUpdate { value, target, .. } => self.emit_var_update(value, target),
-            Expr::Const { .. } => EmitResult::empty(),
+            Expr::Const { ident, expr, .. } => self.emit_const(ident, expr),
             Expr::CheckType { .. } => EmitResult::empty(),
             Expr::Paren { expr, .. } => self.emit_paren(expr),
             Expr::Spawn { expr, .. } => self.emit_spawn(expr),
@@ -362,7 +364,6 @@ impl Codegen {
             Expr::TypeAlias { .. } => EmitResult::empty(),
             Expr::NewtypeDef { .. } => EmitResult::empty(), // TODO asdf emit "type Foo int"
             Expr::UsePackage { .. } => EmitResult::empty(),
-            Expr::Mod { .. } => EmitResult::empty(),
             Expr::Trait {
                 name,
                 items,
@@ -432,8 +433,9 @@ if {is_matching} != 1 && {value} == {subject} {{
                     out.emit(format!("{new_is_matching} := 0"));
                 }
 
+                let (_, con_name) = ident.split_once("::").unwrap();
+
                 elems.iter().enumerate().for_each(|(index, p)| {
-                    let (_, con_name) = ident.split_once("::").unwrap();
                     let field = constructor_field_name(con_name, elems.len(), index);
                     let new_subject = format!("{subject}.{field}");
                     let pat = self.emit_pattern(&new_subject, &new_is_matching, p);
@@ -507,6 +509,10 @@ if {new_is_matching} != 1 {{
         let mut out = emitter();
         let mut args_destructure = emitter();
 
+        if fun.is_external() {
+            return out.no_value();
+        }
+
         let prev_ret_ty = self.current_fn_ret_ty.clone(); // nested functions, save context
         self.current_fn_ret_ty = Some(fun.ret.clone());
 
@@ -532,7 +538,7 @@ if {new_is_matching} != 1 {{
                     }
                 };
 
-                name + " " + &to_type(&a.ty)
+                name + " " + &self.to_type(&a.ty)
             })
             .collect::<Vec<_>>()
             .join(", ");
@@ -564,13 +570,13 @@ if {new_is_matching} != 1 {{
         };
 
         let generics = if receiver_ty.is_none() {
-            generics_to_string(&fun.generics, &fun.bounds)
+            generics_to_string(&fun.generics)
         } else {
             "".to_string()
         };
 
         let receiver = if let Some(ty) = receiver_ty {
-            format!("(self {ty})", ty = to_type(&ty))
+            format!("(self {ty})", ty = self.to_type(&ty))
         } else {
             "".to_string()
         };
@@ -584,7 +590,7 @@ if {new_is_matching} != 1 {{
                 let typed_args = fun
                     .args
                     .iter()
-                    .map(|t| to_type(&t.ty))
+                    .map(|t| self.to_type(&t.ty))
                     .collect::<Vec<_>>()
                     .join(", ");
 
@@ -623,6 +629,7 @@ if {new_is_matching} != 1 {{
         }
 
         let unit = Expr::Unit {
+            ty: self.instance.type_unit(),
             span: Span::dummy(),
         };
 
@@ -708,7 +715,7 @@ if {new_is_matching} != 1 {{
             Expr::Var {
                 generics_instantiated,
                 ..
-            } => render_generics_instantiated(generics_instantiated),
+            } => self.render_generics_instantiated(generics_instantiated),
 
             _ => "".to_string(),
         };
@@ -741,7 +748,7 @@ if {new_is_matching} != 1 {{
         let ret = func.get_type().get_function_ret().unwrap();
 
         // Instantiate return type
-        let instantiated = render_generics_instantiated(&ret.get_args().unwrap());
+        let instantiated = self.render_generics_instantiated(&ret.get_args().unwrap());
 
         // Handle Result<T, E>
         if ret.is_result() {
@@ -800,7 +807,14 @@ if {new_is_matching} != 1 {{
                     format!("`{}`", s)
                 }
             }
-            Literal::Char(s) => format!("\'{}\'", s),
+            Literal::Char(s) => {
+                // TODO find a way to escape all other whitespace chars
+                if s == &'\n' {
+                    "'\\n'".to_string()
+                } else {
+                    format!("\'{}\'", s)
+                }
+            }
             Literal::Slice(elems) => {
                 let new_elems = elems
                     .iter()
@@ -808,7 +822,7 @@ if {new_is_matching} != 1 {{
                     .collect::<Vec<_>>()
                     .join(", ");
 
-                let instantiated = to_type(ty.get_args().unwrap().first().unwrap());
+                let instantiated = self.to_type(ty.get_args().unwrap().first().unwrap());
                 format!("[]{instantiated} {{ {new_elems} }}")
             }
         };
@@ -826,7 +840,7 @@ if {new_is_matching} != 1 {{
         };
 
         let fn_name = format!("{:#?}", kind).to_lowercase();
-        let instantiated = to_type(&ty);
+        let instantiated = self.to_type(&ty);
         out.emit_value(format!("Debug_{fn_name}[{instantiated}]({var})"))
     }
 
@@ -841,7 +855,7 @@ if {new_is_matching} != 1 {{
 
         let mut out = emitter();
 
-        let value = if self.current_fn_ret_ty == Some(Type::unit()) {
+        let value = if self.current_fn_ret_ty == Some(self.instance.type_unit()) {
             "".to_string()
         } else {
             self.emit_local(expr, &mut out)
@@ -901,10 +915,11 @@ if {is_matching} != 2 {{
     }
 
     fn emit_var(&mut self, value: &str, ty: &Type, generics_instantiated: &[Type]) -> EmitResult {
-        let name = self
-            .scope
-            .get_binding(value)
-            .unwrap_or_else(|| self.gs.resolve_name(value));
+        let name = self.scope.get_binding(value).unwrap_or_else(|| {
+            value.to_string()
+            // panic!("failed to resolve {}", value);
+        });
+        // .unwrap_or_else(|| self.gs.resolve_name(value));
 
         let make_fn = self.make_functions.get(&name);
 
@@ -912,7 +927,7 @@ if {is_matching} != 2 {{
         // In that case, it's not sufficient to resolve it as a bare function.
         // We need to actually call the function and instantiate the generics.
         if matches!(ty, Type::Con { .. }) && make_fn.is_some() {
-            let generics = render_generics_instantiated(generics_instantiated);
+            let generics = self.render_generics_instantiated(generics_instantiated);
             let call = format!("{fun}{generics}()", fun = to_name(make_fn.unwrap()));
             return EmitResult {
                 output: "".to_string(),
@@ -975,7 +990,7 @@ if {is_matching} != 2 {{
 
                 Ctx::Var(var) => {
                     if needs_declaration {
-                        let instantiated = to_type(&value.get_type());
+                        let instantiated = self.to_type(&value.get_type());
                         out.emit(format!("var {var} {instantiated}"));
                     };
 
@@ -1098,7 +1113,7 @@ if {is_matching} != 2 {{
         out.emit(")".to_string());
 
         // Emit type
-        let generics = generics_to_string(&def.generics, &[]);
+        let generics = generics_to_string(&def.generics);
 
         out.emit(format!(
             "type {name}{generics} struct {{
@@ -1115,7 +1130,7 @@ if {is_matching} != 2 {{
                     "{field_name}{index} {typ}",
                     field_name = con.name,
                     index = index.map(|i| format!("{i}")).unwrap_or("".to_string()),
-                    typ = to_type(&field.ty)
+                    typ = self.to_type(&field.ty)
                 )
             };
 
@@ -1140,12 +1155,12 @@ if {is_matching} != 2 {{
 
         let name = def.name.clone();
 
-        let generics = generics_to_string(&def.generics, &[]);
+        let generics = generics_to_string(&def.generics);
         out.emit(format!("type {name}{generics} struct {{"));
 
         def.fields.iter().for_each(|f| {
             let field = &f.name;
-            let ty = to_type(&f.ty.ty);
+            let ty = self.to_type(&f.ty.ty);
             out.emit(format!("  {field} {ty}"));
         });
 
@@ -1176,7 +1191,7 @@ if {is_matching} != 2 {{
         let mut out = emitter();
 
         let has_rest = rest.is_some();
-        let instantiated = to_type(ty);
+        let instantiated = self.to_type(ty);
 
         let new_fields = fields
             .iter()
@@ -1536,7 +1551,7 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
         def.cons.iter().for_each(|con| {
             let constructor = def.name.clone() + "::" + &con.name;
             let name = to_name(&format!("make_{constructor}"));
-            out.emit(constructor_make_function(&def, &name, con));
+            out.emit(self.constructor_make_function(&def, &name, con));
             self.make_functions.insert(constructor, name);
         });
 
@@ -1582,6 +1597,12 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
 
     fn emit_interface(&self, name: &str, items: &[Expr], supertraits: &[String]) -> EmitResult {
         let mut out = emitter();
+
+        // TODO asdf this is a hack to prevent stuff like comparable or any to get emitted
+        if self.current_module == ModuleId::from_str("std") {
+            return out.no_value();
+        }
+
         out.emit(format!("type {name} interface {{"));
 
         for s in supertraits {
@@ -1596,11 +1617,11 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
                 .get_function_args()
                 .unwrap()
                 .iter()
-                .map(to_type)
+                .map(|a| self.to_type(a))
                 .collect::<Vec<_>>()
                 .join(", ");
 
-            let ret = to_type(&ty.get_function_ret().unwrap());
+            let ret = self.to_type(&ty.get_function_ret().unwrap());
 
             out.emit(format!("{name} ({args}) {ret}"));
         }
@@ -1609,7 +1630,27 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
         return out.no_value();
     }
 
-    // methods on Slice, Maps and Channels are actually function calls
+    fn emit_const(&mut self, ident: &str, expr: &Expr) -> EmitResult {
+        let mut out = emitter();
+
+        let body = self
+            .emit_expr(
+                EmitMode {
+                    ctx: Ctx::Discard,
+                    should_return: true,
+                },
+                &ensure_wrapped_in_block(&expr),
+            )
+            .to_statement();
+
+        let instantiated = self.to_type(&expr.get_type());
+        out.emit(format!("var {ident} = func () {instantiated} {body}()"));
+        out.no_value()
+    }
+
+    // methods on Slice, Maps and Channels are actually function calls.
+    // TODO asdf this could actually incline the rawgo!(..) implementation
+    // instead of emitting an extra function call.
     fn emit_collection_method(
         &mut self,
         func: &Expr,
@@ -1630,7 +1671,8 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
                 .collect::<Vec<_>>()
                 .join(", ");
 
-            let instantiated = render_generics_instantiated(&expr.get_type().get_args().unwrap());
+            let instantiated =
+                self.render_generics_instantiated(&expr.get_type().get_args().unwrap());
 
             let fn_name = to_name(&format!("{ty_name}::{field}"));
             let call = format!("{fn_name}{instantiated}({new_args})");
@@ -1644,7 +1686,7 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
     fn current_zero_value(&self) -> String {
         let ty = &self.current_fn_ret_ty.as_ref().unwrap().get_args().unwrap()[0];
 
-        format!("*new({ty})", ty = to_type(&ty))
+        format!("*new({ty})", ty = self.to_type(&ty))
     }
 
     fn return_value_is_result(&mut self, expr: &Expr) -> Option<EmitResult> {
@@ -1762,22 +1804,26 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
         return Some(out.no_value());
     }
 
-    fn collect_imports(&self, pkg: &Package) -> HashMap<String, String> {
+    fn collect_imports(&self, file: &File) -> HashMap<String, String> {
         let mut ret = HashMap::new();
 
-        for file in &pkg.files {
-            for e in &file.decls {
-                if let Expr::UsePackage { import, .. } = e {
-                    let module = self.gs.get_module(&import.name).unwrap();
+        for e in &file.decls {
+            if let Expr::UsePackage { import, .. } = e {
+                let m = self
+                    .instance
+                    .gs
+                    .get_module(&ModuleId::from_str(&import.name))
+                    .unwrap();
 
-                    let name = if module.name != module.pkg.path {
-                        module.name
-                    } else {
-                        "".to_string()
-                    };
+                // let module = self.instance.gs.get_module(&import.name).unwrap();
 
-                    ret.insert(module.pkg.path, name);
-                }
+                let name = if m.import.name != m.import.path {
+                    m.import.prefix()
+                } else {
+                    "".to_string()
+                };
+
+                ret.insert(m.import.path, name);
             }
         }
 
@@ -1797,7 +1843,7 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
             Ctx::Var(var) => Ctx::Var(var.to_string()),
             Ctx::Arg => {
                 let var = self.fresh_var();
-                let instantiated = to_type(&ty);
+                let instantiated = self.to_type(&ty);
                 out.emit(format!("var {var} {instantiated}"));
                 Ctx::Var(var.to_string())
             }
@@ -1813,11 +1859,12 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
         if ret.is_result() {
             // A Result<T, E> can only be wrapped if the E is an interface
             // otherwise the err != nil check would fail
-            let err_ty = ret.get_args().unwrap()[1].get_name().unwrap();
+            let err_sym = ret.get_args().unwrap()[1].get_symbol();
 
             // TODO asdf this check is not even correct, it should be any type that implements
             // the error interface or is an interface.
-            let is_interface = self.gs.get_interface(&err_ty);
+            let m = self.instance.gs.get_module(&err_sym.module).unwrap();
+            let is_interface = m.interfaces.get(&err_sym);
 
             return if is_interface.is_some() {
                 CallWrapMode::Wrapped
@@ -1833,21 +1880,232 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
         if self.call_wrap_mode(ret) == CallWrapMode::Wrapped {
             if ret.is_result() {
                 let args = ret.get_args().unwrap();
-                let ok = to_type(&args[0]);
-                let err = to_type(&args[1]);
+                let ok = self.to_type(&args[0]);
+                let err = self.to_type(&args[1]);
 
                 return format!("({ok}, {err})");
             }
 
             if ret.is_option() {
                 let args = ret.get_args().unwrap();
-                let ok = to_type(&args[0]);
+                let ok = self.to_type(&args[0]);
 
                 return format!("({ok}, bool)");
             }
         }
 
-        to_type(ret)
+        self.to_type(ret)
+    }
+
+    fn constructor_make_function(
+        &self,
+        def: &EnumDefinition,
+        name: &str,
+        con: &Constructor,
+    ) -> String {
+        let mut out = emitter();
+
+        let ty_name = &def.name;
+        let tag = format!("{ty_name}_{cons}", cons = con.name);
+
+        let (fields, params): (Vec<_>, Vec<_>) = con
+            .fields
+            .iter()
+            .enumerate()
+            .map(|(index, f)| {
+                let arg = format!("arg_{index}");
+                let sig = self.to_type(&f.ty);
+                let param = format!("{arg} {sig}");
+
+                let field_name = constructor_field_name(&con.name, con.fields.len(), index);
+                let field = format!("{field_name}: {arg}");
+
+                (field, param)
+            })
+            .unzip();
+
+        let fields = fields.join(", ");
+        let params = params.join(", ");
+
+        let (generic_params, generic_args) = if def.generics.is_empty() {
+            ("".to_string(), "".to_string())
+        } else {
+            let args = def
+                .generics
+                .clone()
+                .into_iter()
+                .map(|g| g.name)
+                .collect::<Vec<_>>()
+                .join(", ");
+            let generics = generics_to_string(&def.generics);
+            (generics, format!("[{args}]"))
+        };
+
+        let ret = Type::Con {
+            id: Symbol::ethereal(&def.name),
+            args: def
+                .generics
+                .iter()
+                .map(|g| Type::Con {
+                    id: Symbol::ethereal(&g.name),
+                    args: vec![],
+                })
+                .collect(),
+        };
+
+        let ret = self.to_type(&ret);
+
+        out.emit(format!(
+            "
+func {name} {generic_params} ({params}) {ret} {{
+    return {ty_name} {generic_args} {{ tag: {tag}, {fields} }}
+}}",
+        ));
+
+        out.render()
+    }
+
+    fn get_std_imports(&self) -> HashMap<String, String> {
+        vec![
+            ("fmt".to_string(), "".to_string()),
+            ("reflect".to_string(), "".to_string()),
+        ]
+        .into_iter()
+        .collect()
+    }
+
+    fn to_type(&self, ty: &Type) -> String {
+        match ty {
+            Type::Con { id, args } => {
+                // TODO asdf this should look at the whole symbol, checking that all these types are
+                // actually defined in "std"
+
+                // if the name isn't local and it isn't from std
+                // then it's an imported type and we need to render it with the package prefixed
+                let name = if !id.module.is_std()
+                    && !id.module.is_empty()
+                    && id.module != self.current_module
+                {
+                    let m = self.instance.gs.get_module(&id.module).unwrap();
+
+                    // TODO resolve to the correct import name, if it's been renamed in "use" stmt
+                    let import = m.import.prefix();
+
+                    format!("{}::{}", import, id.name)
+                } else {
+                    id.name.to_string()
+                };
+
+                let name = name.replace("::", ".");
+
+                let new_args = args
+                    .iter()
+                    .map(|a| self.to_type(a))
+                    .collect::<Vec<_>>()
+                    .join(", ");
+
+                if name == "Unit" {
+                    return "struct{}".to_string();
+                }
+
+                if let Some(coll) = is_collection_type(ty) {
+                    let new_args = ty.remove_references().get_args().unwrap();
+
+                    if coll == "Slice" {
+                        return format!("[]{k}", k = self.to_type(&new_args[0]));
+                    }
+
+                    if coll == "Map" {
+                        return format!(
+                            "map[{k}]{v}",
+                            k = self.to_type(&new_args[0]),
+                            v = self.to_type(&new_args[1])
+                        );
+                    }
+
+                    if coll == "Channel" {
+                        return format!("chan {k}", k = self.to_type(&new_args[0]));
+                    }
+
+                    if coll == "Sender" {
+                        return format!("chan<- {k}", k = self.to_type(&new_args[0]));
+                    }
+
+                    if coll == "Receiver" {
+                        return format!("<-chan {k}", k = self.to_type(&new_args[0]));
+                    }
+                }
+
+                if name == "Ref" || name == "RefMut" {
+                    return format!("*{new_args}");
+                }
+
+                if name == "EnumerateSlice" {
+                    return format!("[]{new_args}");
+                }
+
+                if name == "VarArgs" {
+                    return format!("...{new_args}");
+                }
+
+                if args.is_empty() {
+                    return name.to_string();
+                }
+
+                format!("{name}[{new_args}]")
+            }
+
+            Type::Fun { args, ret, .. } => {
+                let args = args
+                    .iter()
+                    .map(|a| self.to_type(a))
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                let ret = self.to_type(ret);
+                format!("func ({args}) {ret}")
+            }
+
+            Type::Var(_) => format!("TO_TYPE_FAILED"),
+            // Type::Var(_) => panic!("unexpected Type::Var in to_type"),
+        }
+    }
+
+    fn render_generics_instantiated(&self, generics_instantiated: &[Type]) -> String {
+        if generics_instantiated.is_empty() {
+            "".to_string()
+        } else {
+            let instantiated = generics_instantiated
+                .iter()
+                .map(|t| self.to_type(t))
+                .collect::<Vec<_>>()
+                .join(", ");
+
+            format!("[{instantiated}]")
+        }
+    }
+
+    fn collect_make_functions(
+        &mut self,
+        files: &HashMap<FileId, File>,
+    ) -> HashMap<FileId, Vec<String>> {
+        let mut ret: HashMap<FileId, Vec<String>> = HashMap::new();
+
+        for file in files.values() {
+            for expr in &file.decls {
+                // TODO asdf use module.enums instead?
+                // for def in module.enums.values() {
+                //     source.emit(self.create_make_function(&def));
+                // }
+
+                if let Expr::EnumDef { def, .. } = expr {
+                    ret.entry(file.id.clone())
+                        .or_default()
+                        .push(self.create_make_function(&def));
+                }
+            }
+        }
+
+        ret
     }
 }
 
@@ -1856,20 +2114,6 @@ fn wrap_block_and_get_statements(expr: &Expr) -> Vec<Expr> {
     match body {
         Expr::Block { stmts, .. } => stmts,
         _ => unreachable!(),
-    }
-}
-
-fn render_generics_instantiated(generics_instantiated: &[Type]) -> String {
-    if generics_instantiated.is_empty() {
-        "".to_string()
-    } else {
-        let instantiated = generics_instantiated
-            .iter()
-            .map(|t| to_type(t))
-            .collect::<Vec<_>>()
-            .join(", ");
-
-        format!("[{instantiated}]")
     }
 }
 
@@ -1897,7 +2141,10 @@ fn ensure_wrapped_in_block(expr: &Expr) -> Expr {
 }
 
 fn ensure_wrapped_in_return(expr: &Expr) -> Expr {
-    if matches!(expr, Expr::Return { .. }) || expr.get_type().is_unit() {
+    if matches!(expr, Expr::Return { .. })
+        || expr.get_type().is_unit()
+        || expr.get_type().is_discard()
+    {
         return expr.clone();
     }
 
@@ -1948,122 +2195,6 @@ fn to_name(value: &str) -> String {
     value.replace("::", "_")
 }
 
-fn to_type(ty: &Type) -> String {
-    match ty {
-        Type::Con { name, args } => {
-            let name = name.replace("::", ".");
-            let new_args = args.iter().map(to_type).collect::<Vec<_>>().join(", ");
-
-            if name == "Unit" {
-                return "struct{}".to_string();
-            }
-
-            if let Some(coll) = is_collection_type(ty) {
-                let new_args = ty.remove_references().get_args().unwrap();
-
-                if coll == "Slice" {
-                    return format!("[]{k}", k = to_type(&new_args[0]));
-                }
-
-                if coll == "Map" {
-                    return format!(
-                        "map[{k}]{v}",
-                        k = to_type(&new_args[0]),
-                        v = to_type(&new_args[1])
-                    );
-                }
-
-                if coll == "Channel" {
-                    return format!("chan {k}", k = to_type(&new_args[0]));
-                }
-
-                if coll == "Sender" {
-                    return format!("chan<- {k}", k = to_type(&new_args[0]));
-                }
-
-                if coll == "Receiver" {
-                    return format!("<-chan {k}", k = to_type(&new_args[0]));
-                }
-            }
-
-            if name == "Ref" || name == "RefMut" {
-                return format!("*{new_args}");
-            }
-
-            if name == "EnumerateSlice" {
-                return format!("[]{new_args}");
-            }
-
-            if name == "VarArgs" {
-                return format!("...{new_args}");
-            }
-
-            if args.is_empty() {
-                return name.to_string();
-            }
-
-            format!("{name}[{new_args}]")
-        }
-
-        Type::Fun { args, ret, .. } => {
-            let args = args.iter().map(to_type).collect::<Vec<_>>().join(", ");
-            let ret = to_type(ret);
-            format!("func ({args}) {ret}")
-        }
-
-        Type::Var(_) => panic!("unexpected Type::Var in to_type"),
-    }
-}
-
-fn constructor_make_function(def: &EnumDefinition, name: &str, con: &Constructor) -> String {
-    let mut out = emitter();
-
-    let ty_name = &def.name;
-    let tag = format!("{ty_name}_{cons}", cons = con.name);
-
-    let (fields, params): (Vec<_>, Vec<_>) = con
-        .fields
-        .iter()
-        .enumerate()
-        .map(|(index, f)| {
-            let arg = format!("arg_{index}");
-            let sig = to_type(&f.ty);
-            let param = format!("{arg} {sig}");
-
-            let field_name = constructor_field_name(&con.name, con.fields.len(), index);
-            let field = format!("{field_name}: {arg}");
-
-            (field, param)
-        })
-        .unzip();
-
-    let fields = fields.join(", ");
-    let params = params.join(", ");
-
-    let (generic_params, generic_args) = if def.generics.is_empty() {
-        ("".to_string(), "".to_string())
-    } else {
-        let args = def.generics.clone().join(", ");
-        let generics = generics_to_string(&def.generics, &[]);
-        (generics, format!("[{args}]"))
-    };
-
-    let ret = Type::Con {
-        name: def.name.clone(),
-        args: def.generics.iter().map(|g| Type::generic(g)).collect(),
-    };
-    let ret = to_type(&ret);
-
-    out.emit(format!(
-        "
-func {name} {generic_params} ({params}) {ret} {{
-    return {ty_name} {generic_args} {{ tag: {tag}, {fields} }}
-}}",
-    ));
-
-    out.render()
-}
-
 fn constructor_field_name(con_name: &str, fields_count: usize, index: usize) -> String {
     format!(
         "{field_name}{index}",
@@ -2076,7 +2207,7 @@ fn constructor_field_name(con_name: &str, fields_count: usize, index: usize) -> 
     )
 }
 
-fn generics_to_string(generics: &[String], bounds: &[(String, TypeAst)]) -> String {
+fn generics_to_string(generics: &[Generic]) -> String {
     if generics.is_empty() {
         return "".to_string();
     }
@@ -2084,18 +2215,7 @@ fn generics_to_string(generics: &[String], bounds: &[(String, TypeAst)]) -> Stri
     let generics = generics
         .iter()
         .map(|g| {
-            let matching: Vec<_> = bounds
-                .iter()
-                .filter_map(
-                    |(generic, ann)| {
-                        if generic == g {
-                            ann.get_name()
-                        } else {
-                            None
-                        }
-                    },
-                )
-                .collect();
+            let matching: Vec<_> = g.bounds.iter().map(|ann| ann.get_name().unwrap()).collect();
 
             let constraint = match matching.len() {
                 0 => "any".to_string(),
@@ -2106,7 +2226,7 @@ fn generics_to_string(generics: &[String], bounds: &[(String, TypeAst)]) -> Stri
                 }
             };
 
-            format!("{g} {constraint}")
+            format!("{name} {constraint}", name = g.name)
         })
         .collect::<Vec<_>>()
         .join(", ");

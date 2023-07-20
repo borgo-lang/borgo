@@ -18,7 +18,7 @@ No errors.
         },
         "ty": {
           "Con": {
-            "name": "bool",
+            "id": "bool",
             "args": []
           }
         },
@@ -30,13 +30,14 @@ No errors.
           "end": {
             "line": 1,
             "col": 6
-          }
+          },
+          "file": 99
         }
       }
     },
     "ty": {
       "Con": {
-        "name": "bool",
+        "id": "bool",
         "args": []
       }
     },
@@ -48,7 +49,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 6
-      }
+      },
+      "file": 99
     }
   }
 }

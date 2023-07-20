@@ -1,10 +1,9 @@
-use std::vec;
-
-use compiler::ast::{Expr, Span, UnparsedFile};
-use compiler::codegen;
-use compiler::infer;
-use compiler::prelude;
-use compiler::project::{self, Package, Project};
+use compiler::ast::{Expr, FileId};
+use compiler::codegen::EmittedFile;
+use compiler::global_state::Module;
+use compiler::type_::ModuleId;
+use compiler::{codegen, infer};
+use compiler::{fs, prelude};
 
 use serde::Deserialize;
 
@@ -14,89 +13,79 @@ enum Input {
     InferPackage(String),
 }
 
-fn scan_folder(name: &str, folder: &str) -> Package {
-    let files = std::fs::read_dir(folder)
-        .unwrap()
-        .filter_map(|entry| {
-            let path = entry
-                .unwrap()
-                .path()
-                .canonicalize()
-                .unwrap()
-                .to_str()
-                .unwrap()
-                .to_string();
+fn build_project() {
+    let filesystem = Box::new(fs::LocalFS::new("."));
+    let mut instance = infer::Infer::new(filesystem);
 
-            if path.ends_with(".brg") {
-                let contents = std::fs::read_to_string(&path).unwrap();
-                return Some(UnparsedFile {
-                    filename: std::path::Path::new(&path)
-                        .file_name()
-                        .unwrap()
-                        .to_os_string()
-                        .into_string()
-                        .unwrap(),
-                    contents,
-                });
-            }
+    instance.init_std();
 
-            None
-        })
-        .collect();
+    let m = Module::user();
 
-    Package::from_file_contents(name.to_string(), files)
-}
+    let import = compiler::global_state::ModuleImport {
+        path: "*current*".to_string(),
+        name: m.id.0.to_string(),
+    };
 
-fn init_project() -> Project {
-    let std = scan_folder("std", "./std");
-    let user = scan_folder("user", ".");
+    instance.module_from_folder(import);
 
-    Project::from_packages(vec![std, user])
-}
-
-fn build_project() -> project::Project {
-    let mut project = init_project();
-    let mut instance = infer::Infer::new();
-
-    project.infer(&mut instance);
-
-    if let Some(err) = project.to_json().first_error {
-        eprintln!("{}", err.msg);
+    if let Some(err) = instance.first_error() {
+        eprintln!("{}", err);
         std::process::exit(1);
     }
 
-    let mut gen = codegen::Codegen::new(&instance.gs);
-    project.build(&mut gen);
-    project
-}
+    {
+        let std = instance.gs.get_module(&ModuleId::from_str("std")).unwrap();
+        let user = instance.gs.get_module(&ModuleId::from_str("user")).unwrap();
 
-fn emit_files(project: Project) {
-    project.output.iter().for_each(|(_, file)| {
-        std::fs::write(&file.name, &file.render_source()).unwrap();
-    });
-}
+        let mut gen = codegen::Codegen::new(instance);
 
-fn main() {
-    // TODO use a proper parsing lib
-    let args = std::env::args().last().unwrap();
-
-    if args == "build" {
-        let project = build_project();
-        emit_files(project);
-        println!("done");
-        return;
+        // TODO should output multiple files, as many as in module.files
+        emit_files(gen.compile_module(&std));
+        emit_files(gen.compile_module(&user));
     }
+}
 
-    let input: Input = serde_json::from_str(&args).unwrap();
+fn emit_files(files: Vec<EmittedFile>) {
+    for file in files {
+        std::fs::write(&file.name, &file.render_source()).unwrap();
+    }
+}
+
+fn help() {
+    println!(
+        "
+Commands:
+
+  build         compile all .brg files into .go files
+
+"
+    );
+}
+
+fn run_tests(input: &str) {
+    let input: Input = serde_json::from_str(input).unwrap();
 
     match input {
         Input::InferExpr(source) => {
+            let mut ast = compiler::ast::Ast::new();
+
+            let filesystem = Box::new(fs::NoopFS {});
+            let mut instance = infer::Infer::new(filesystem);
+
+            prelude::init(&mut instance).unwrap();
+
+            // This shouldn't be necessary,
+            // but better do it anyway just to make sure there's no left-over state
+            instance.reset_scope();
+
+            let file = FileId(1);
+            ast.set_file(&file);
+
             let e = Expr::from_source(&source);
-            let expr = Expr::from_expr(e).unwrap();
+            let expr = ast.from_expr(e).unwrap();
 
-            let mut instance = infer::Infer::new();
-
-            prelude::init(&mut instance);
+            // import builtin module
+            instance.import_module(None, &compiler::type_::ModuleId("std".to_string()));
 
             let (new_expr, errors, typ) = instance.infer_expr_with_error(&expr);
 
@@ -110,56 +99,65 @@ fn main() {
         }
 
         Input::InferPackage(source) => {
-            let mut instance = infer::Infer::new();
+            let filesystem = Box::new(fs::LocalFS::new(".."));
+            let mut instance = infer::Infer::new(filesystem);
 
-            let files = vec![UnparsedFile {
-                filename: "test.brg".to_string(),
-                contents: source,
-            }];
+            instance.init_std();
 
-            let std = scan_folder("std", "../std");
-            let pkg = Package::from_file_contents(project::Project::user(), files);
+            let m = Module::user();
+            instance.gs.set_module(m.id.clone());
+            instance.gs.modules.insert(m.id.clone(), m.clone());
 
-            let mut project = Project::from_packages(vec![std, pkg]);
+            let test_file = "test.brg";
+            instance.file_from_source(test_file, &source);
 
-            project.infer(&mut instance);
+            // run inference
+            instance.declare_module(&m.id);
+            instance.infer_module(&m.id);
 
-            let new_pkg = project
-                .packages
-                .get(&project::Project::user())
-                .cloned()
-                .unwrap();
-
-            let json = project::PackageJSON(new_pkg.clone());
-            let json = serde_json::to_string_pretty(&json).unwrap();
-
-            // Check for errors in stdlib first
-            let new_std = project
-                .packages
-                .get(&project::Project::std())
-                .cloned()
-                .unwrap();
-
-            if let Some((file, err)) = new_std.first_error() {
-                println!("a\n---\n{}\n---\n", err.stringify(Some(&file.source)));
-                std::process::exit(0);
-            }
-
-            let expr = if new_pkg.first_error().is_none() {
-                new_pkg.files.first().unwrap().decls.last().unwrap().clone()
-            } else {
-                Expr::Unit {
-                    span: Span::dummy(),
-                }
-            };
-
-            let typ = expr.get_type();
-            let err = new_pkg
+            let err = instance
                 .first_error()
-                .map(|(file, e)| e.stringify(Some(&file.source)))
                 .unwrap_or_else(|| "No errors.".to_string());
 
+            let decls = instance
+                .gs
+                .get_module(&m.id)
+                .unwrap()
+                .get_file(test_file)
+                .unwrap()
+                .decls;
+
+            let expr = decls.last().cloned().unwrap_or_else(|| Expr::Noop);
+            let typ = expr.get_type();
+
+            let json = serde_json::to_string_pretty(&decls).unwrap();
             println!("{}\n---\n{}\n---\n{}", typ, err, json);
         }
     }
+}
+
+fn main() {
+    // TODO use a proper parsing lib
+    let cmd = std::env::args().nth(1);
+
+    if cmd.is_none() {
+        help();
+        return;
+    }
+
+    let cmd = cmd.unwrap();
+
+    if cmd == "build" {
+        build_project();
+        println!("done");
+        return;
+    }
+
+    if cmd == "test" {
+        let input = std::env::args().nth(2).unwrap();
+        run_tests(&input);
+        return;
+    }
+
+    help();
 }

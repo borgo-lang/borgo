@@ -1,0 +1,15 @@
+
+use io;
+
+fn Printf(format: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+fn Fprintf(w: io::Writer, format: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+fn Errorf(format: string, a: VarArgs<any>) -> error {
+    EXT
+}
+fn Println(a: VarArgs<any>) {
+    EXT
+}

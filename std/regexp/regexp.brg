@@ -1,0 +1,185 @@
+use io;
+
+fn Compile(expr: string) -> Result<&Regexp> {
+    EXT
+}
+
+fn CompilePOSIX(expr: string) -> Result<&Regexp> {
+    EXT
+}
+
+fn MustCompile(str: string) -> &Regexp {
+    EXT
+}
+
+fn MustCompilePOSIX(str: string) -> &Regexp {
+    EXT
+}
+
+fn Match(pattern: string, b: [byte]) -> Result<bool> {
+    EXT
+}
+
+fn MatchReader(pattern: string, r: io::RuneReader) -> Result<bool> {
+    EXT
+}
+
+fn MatchString(pattern: string, s: string) -> Result<bool> {
+    EXT
+}
+
+fn QuoteMeta(s: string) -> string {
+    EXT
+}
+
+impl Regexp {
+    fn Copy(&self) -> &Regexp {
+        EXT
+    }
+
+    fn Expand(&self, dst: [byte], template: [byte], src: [byte], match_: [int]) -> [byte] {
+        EXT
+    }
+
+    fn ExpandString(&self, dst: [byte], template: string, src: string, match_: [int]) -> [byte] {
+        EXT
+    }
+
+    fn Find(&self, b: [byte]) -> [byte] {
+        EXT
+    }
+
+    fn FindAll(&self, b: [byte], n: int) -> [[byte]] {
+        EXT
+    }
+
+    fn FindAllIndex(&self, b: [byte], n: int) -> [[int]] {
+        EXT
+    }
+
+    fn FindAllString(&self, s: string, n: int) -> [string] {
+        EXT
+    }
+
+    fn FindAllStringIndex(&self, s: string, n: int) -> [[int]] {
+        EXT
+    }
+
+    fn FindAllStringSubmatch(&self, s: string, n: int) -> [[string]] {
+        EXT
+    }
+
+    fn FindAllStringSubmatchIndex(&self, s: string, n: int) -> [[int]] {
+        EXT
+    }
+
+    fn FindAllSubmatch(&self, b: [byte], n: int) -> [[[byte]]] {
+        EXT
+    }
+
+    fn FindAllSubmatchIndex(&self, b: [byte], n: int) -> [[int]] {
+        EXT
+    }
+
+    fn FindIndex(&self, b: [byte]) -> [int] {
+        EXT
+    }
+
+    fn FindReaderIndex(&self, r: io::RuneReader) -> [int] {
+        EXT
+    }
+
+    fn FindReaderSubmatchIndex(&self, r: io::RuneReader) -> [int] {
+        EXT
+    }
+
+    fn FindString(&self, s: string) -> string {
+        EXT
+    }
+
+    fn FindStringIndex(&self, s: string) -> [int] {
+        EXT
+    }
+
+    fn FindStringSubmatch(&self, s: string) -> [string] {
+        EXT
+    }
+
+    fn FindStringSubmatchIndex(&self, s: string) -> [int] {
+        EXT
+    }
+
+    fn FindSubmatch(&self, b: [byte]) -> [[byte]] {
+        EXT
+    }
+
+    fn FindSubmatchIndex(&self, b: [byte]) -> [int] {
+        EXT
+    }
+
+    fn LiteralPrefix(&self) -> (string, bool) {
+        EXT
+    }
+
+    fn Longest(&self) -> () {
+        EXT
+    }
+
+    fn Match(&self, b: [byte]) -> bool {
+        EXT
+    }
+
+    fn MatchReader(&self, r: io::RuneReader) -> bool {
+        EXT
+    }
+
+    fn MatchString(&self, s: string) -> bool {
+        EXT
+    }
+
+    fn NumSubexp(&self) -> int {
+        EXT
+    }
+
+    fn ReplaceAll(&self, src: [byte], repl: [byte]) -> [byte] {
+        EXT
+    }
+
+    fn ReplaceAllFunc(&self, src: [byte], repl: fn(param0: [byte]) -> [byte]) -> [byte] {
+        EXT
+    }
+
+    fn ReplaceAllLiteral(&self, src: [byte], repl: [byte]) -> [byte] {
+        EXT
+    }
+
+    fn ReplaceAllLiteralString(&self, src: string, repl: string) -> string {
+        EXT
+    }
+
+    fn ReplaceAllString(&self, src: string, repl: string) -> string {
+        EXT
+    }
+
+    fn ReplaceAllStringFunc(&self, src: string, repl: fn(param0: string) -> string) -> string {
+        EXT
+    }
+
+    fn Split(&self, s: string, n: int) -> [string] {
+        EXT
+    }
+
+    fn String(&self) -> string {
+        EXT
+    }
+
+    fn SubexpIndex(&self, name: string) -> int {
+        EXT
+    }
+
+    fn SubexpNames(&self) -> [string] {
+        EXT
+    }
+}
+
+struct Regexp {}

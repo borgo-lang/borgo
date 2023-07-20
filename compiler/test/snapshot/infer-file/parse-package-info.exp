@@ -48,7 +48,7 @@ No errors.
                           "generics": [],
                           "ty": {
                             "Con": {
-                              "name": "int",
+                              "id": "int",
                               "args": []
                             }
                           }
@@ -103,11 +103,10 @@ No errors.
             "fun": {
               "name": "borgo_main",
               "generics": [],
-              "bounds": [],
               "args": [],
               "ret": {
                 "Con": {
-                  "name": "f::Foo",
+                  "id": "f::Foo",
                   "args": []
                 }
               },
@@ -133,7 +132,7 @@ No errors.
                                 },
                                 "ty": {
                                   "Con": {
-                                    "name": "int",
+                                    "id": "int",
                                     "args": []
                                   }
                                 },
@@ -154,7 +153,7 @@ No errors.
                         "rest": null,
                         "ty": {
                           "Con": {
-                            "name": "f::Foo",
+                            "id": "f::Foo",
                             "args": []
                           }
                         },
@@ -173,7 +172,7 @@ No errors.
                   ],
                   "ty": {
                     "Con": {
-                      "name": "f::Foo",
+                      "id": "f::Foo",
                       "args": []
                     }
                   },
@@ -197,7 +196,7 @@ No errors.
                     "bounds": [],
                     "ret": {
                       "Con": {
-                        "name": "f::Foo",
+                        "id": "f::Foo",
                         "args": []
                       }
                     },
@@ -213,7 +212,7 @@ No errors.
                 "bounds": [],
                 "ret": {
                   "Con": {
-                    "name": "f::Foo",
+                    "id": "f::Foo",
                     "args": []
                   }
                 },

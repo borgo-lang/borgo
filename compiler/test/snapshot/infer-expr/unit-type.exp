@@ -10,6 +10,12 @@ No errors.
 ---
 {
   "Unit": {
+    "ty": {
+      "Con": {
+        "id": "Unit",
+        "args": []
+      }
+    },
     "span": {
       "start": {
         "line": 1,
@@ -18,7 +24,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 2
-      }
+      },
+      "file": 99
     }
   }
 }

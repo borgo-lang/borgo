@@ -1,17 +1,18 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use crate::ast::{Generic, Span};
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Type {
     Con {
-        name: String,
+        id: Symbol,
         args: Vec<Type>,
     },
     Fun {
         args: Vec<Type>,
         bounds: Vec<Bound>,
         ret: Box<Type>,
-        id: TypeId,
     },
     Var(i32),
 }
@@ -29,107 +30,13 @@ pub struct Bound {
 }
 
 impl Type {
-    pub fn unit() -> Self {
+    // Build up a type that doesn't exist in any module.
+    // This is useful in certain parts of the compiler where we still need to make up types,
+    // but can't produce reasonable symbols or spans. Think generating error messages or anywhere
+    // where a concrete type is desirable but more as a placeholder than an actual real type.
+    pub fn ethereal(name: &str) -> Self {
         Self::Con {
-            name: "Unit".into(),
-            args: vec![],
-        }
-    }
-
-    pub fn bool() -> Self {
-        Self::Con {
-            name: "bool".into(),
-            args: vec![],
-        }
-    }
-
-    pub fn int() -> Self {
-        Self::Con {
-            name: "int".into(),
-            args: vec![],
-        }
-    }
-
-    pub fn float() -> Type {
-        Self::Con {
-            name: "float64".into(),
-            args: vec![],
-        }
-    }
-
-    pub fn string() -> Self {
-        Self::Con {
-            name: "string".into(),
-            args: vec![],
-        }
-    }
-
-    pub fn char() -> Self {
-        Self::Con {
-            name: "rune".into(),
-            args: vec![],
-        }
-    }
-
-    pub fn slice(typ: Type) -> Self {
-        Self::Con {
-            name: "Slice".into(),
-            args: vec![typ],
-        }
-    }
-
-    pub fn tuple2(t1: Type, t2: Type) -> Self {
-        Self::Con {
-            name: "Tuple2".into(),
-            args: vec![t1, t2],
-        }
-    }
-
-    pub fn never() -> Type {
-        Type::Con {
-            name: "Never".to_string(),
-            args: vec![],
-        }
-    }
-
-    pub fn any() -> Type {
-        Type::Con {
-            name: "any".to_string(),
-            args: vec![],
-        }
-    }
-
-    pub fn receiver(typ: &Type) -> Self {
-        Self::Con {
-            name: "Receiver".into(),
-            args: vec![typ.clone()],
-        }
-    }
-
-    pub fn sender(typ: &Type) -> Self {
-        Self::Con {
-            name: "Sender".into(),
-            args: vec![typ.clone()],
-        }
-    }
-
-    pub fn option(typ: &Type) -> Self {
-        Self::Con {
-            name: "Option".into(),
-            args: vec![typ.clone()],
-        }
-    }
-
-    pub fn result(ok: &Type, err: &Type) -> Self {
-        Self::Con {
-            name: "Result".into(),
-            args: vec![ok.clone(), err.clone()],
-        }
-    }
-
-    pub fn generic(name: &str) -> Self {
-        Self::Con {
-            name: name.to_string(),
+            id: Symbol::ethereal(name),
             args: vec![],
         }
     }
@@ -139,33 +46,37 @@ impl Type {
         Self::Var(-1)
     }
 
-    // Magic value used during inference to evaluate if expressions as statements
+    // Magic value used during inference to indicate that this type isn't really relevant.
+    // This stops unification and skips constraining other types in certain contexts
+    // ie. an if expression used as a statement, we don't really need to assign a type.
     pub fn discard() -> Self {
         Self::Var(-333)
     }
 
     pub fn is_result(&self) -> bool {
         match self {
-            Type::Con { name, .. } => name == "Result",
+            Type::Con { id, .. } => id.name == "Result",
             _ => false,
         }
     }
 
     pub fn is_option(&self) -> bool {
         match self {
-            Type::Con { name, .. } => name == "Option",
+            Type::Con { id, .. } => id.name == "Option",
             _ => false,
         }
     }
 
     pub fn stringify(&self, generics: &[String], skip_generics: bool) -> String {
         match self {
-            Type::Con { name, args } => {
+            Type::Con { id, args } => {
                 let args_formatted = args
                     .iter()
                     .map(|a| a.stringify(generics, true))
                     .collect::<Vec<_>>()
                     .join(", ");
+
+                let name = id.name.as_str();
 
                 // Special case Unit
                 if name == "Unit" {
@@ -173,7 +84,7 @@ impl Type {
                 }
 
                 // Special case slices
-                if name.starts_with("Slice") {
+                if name == "Slice" {
                     return format!("[{}]", args_formatted);
                 }
 
@@ -239,7 +150,7 @@ impl Type {
         }
 
         match self {
-            Type::Con { name, .. } => Some(name.clone()),
+            Type::Con { id, .. } => Some(id.name.clone()),
             _ => None,
         }
     }
@@ -269,9 +180,9 @@ impl Type {
         self.to_bounded_with_generics(vec![])
     }
 
-    pub fn to_bounded_with_generics(&self, generics: Vec<String>) -> BoundedType {
+    pub fn to_bounded_with_generics(&self, generics: Vec<Generic>) -> BoundedType {
         BoundedType {
-            generics,
+            generics: generics.iter().map(|g| g.name.to_string()).collect(),
             ty: self.to_owned(),
         }
     }
@@ -288,20 +199,15 @@ impl Type {
 
     fn remove_vars_impl(ty: &Type, vars: &mut HashMap<i32, String>) -> Type {
         match ty {
-            Type::Con { name, args } => Type::Con {
-                name: name.clone(),
+            Type::Con { id: name, args } => Type::Con {
+                id: name.clone(),
                 args: args
                     .iter()
                     .map(|a| Self::remove_vars_impl(a, vars))
                     .collect(),
             },
 
-            Type::Fun {
-                args,
-                bounds,
-                ret,
-                id: fx,
-            } => Type::Fun {
+            Type::Fun { args, bounds, ret } => Type::Fun {
                 args: args
                     .iter()
                     .map(|a| Self::remove_vars_impl(a, vars))
@@ -314,11 +220,10 @@ impl Type {
                     })
                     .collect(),
                 ret: Self::remove_vars_impl(ret, vars).into(),
-                id: fx.clone(),
             },
 
             Type::Var(v) => match vars.get(v) {
-                Some(g) => Self::generic(g),
+                Some(g) => Self::ethereal(g),
                 None => {
                     let g = char::from_digit((vars.len() + 10).try_into().unwrap(), 16)
                         .unwrap()
@@ -326,7 +231,7 @@ impl Type {
                         .to_string();
 
                     vars.insert(v.to_owned(), g.to_string());
-                    Self::generic(&g)
+                    Self::ethereal(&g)
                 }
             },
         }
@@ -334,20 +239,15 @@ impl Type {
 
     pub fn replace_vars_with_type(ty: &Type, vars: &HashMap<i32, Type>) -> Type {
         match ty {
-            Type::Con { name, args } => Type::Con {
-                name: name.clone(),
+            Type::Con { id: name, args } => Type::Con {
+                id: name.clone(),
                 args: args
                     .iter()
                     .map(|a| Self::replace_vars_with_type(a, vars))
                     .collect(),
             },
 
-            Type::Fun {
-                args,
-                bounds,
-                ret,
-                id: fx,
-            } => Type::Fun {
+            Type::Fun { args, bounds, ret } => Type::Fun {
                 args: args
                     .iter()
                     .map(|a| Self::replace_vars_with_type(a, vars))
@@ -360,7 +260,6 @@ impl Type {
                     })
                     .collect(),
                 ret: Self::replace_vars_with_type(ret, vars).into(),
-                id: fx.clone(),
             },
 
             Type::Var(v) => match vars.get(v) {
@@ -389,26 +288,29 @@ impl Type {
     }
 
     pub fn is_unit(&self) -> bool {
-        self == &Type::unit()
+        match self {
+            Type::Con { id, .. } => id.name == "Unit",
+            _ => false,
+        }
     }
 
     pub fn is_reference(&self) -> bool {
         match self {
-            Type::Con { name, .. } => name == "Ref",
+            Type::Con { id, .. } => id.name == "Ref",
             _ => false,
         }
     }
 
     pub fn is_mut_reference(&self) -> bool {
         match self {
-            Type::Con { name, .. } => name == "RefMut",
+            Type::Con { id, .. } => id.name == "RefMut",
             _ => false,
         }
     }
 
     pub fn is_receiver(&self) -> bool {
         match self {
-            Type::Con { name, .. } => name == "Receiver",
+            Type::Con { id, .. } => id.name == "Receiver",
             _ => false,
         }
     }
@@ -417,41 +319,12 @@ impl Type {
         self.get_args().and_then(|args| args.get(0).cloned())
     }
 
-    pub fn reference(typ: Type) -> Self {
-        Self::Con {
-            name: "Ref".into(),
-            args: vec![typ],
-        }
-    }
-
-    pub fn add_any_receiver(&self) -> Type {
-        match self {
-            Type::Fun {
-                args,
-                bounds,
-                ret,
-                id,
-            } => {
-                let mut new_args = vec![Type::any()];
-                new_args.extend_from_slice(args);
-
-                Type::Fun {
-                    args: new_args,
-                    bounds: bounds.clone(),
-                    ret: ret.clone(),
-                    id: id.clone(),
-                }
-            }
-            _ => unreachable!(),
-        }
-    }
-
     pub fn remove_references(&self) -> Type {
         if self.is_reference() || self.is_mut_reference() {
             return self.inner().unwrap().remove_references();
         }
 
-        return self.clone();
+        self.clone()
     }
 
     pub fn remove_receiver(&mut self) {
@@ -482,14 +355,14 @@ impl Type {
     // conversions between the specific types are left as an exercises to the go compiler.
     pub fn is_numeric(&self) -> bool {
         match self {
-            Type::Con { name, .. } => NUMERIC_TYPES.contains(&name.as_str()),
+            Type::Con { id, .. } => NUMERIC_TYPES.contains(&id.name.as_str()),
             _ => false,
         }
     }
 
     pub fn is_string(&self) -> bool {
         match self {
-            Type::Con { name, .. } => name == "string",
+            Type::Con { id, .. } => id.name == "string",
             _ => false,
         }
     }
@@ -498,6 +371,27 @@ impl Type {
         match self {
             Type::Var(_) => true,
             _ => false,
+        }
+    }
+
+    pub fn get_symbol(&self) -> Symbol {
+        match self.remove_references() {
+            Type::Con { id, .. } => id,
+            _ => panic!("called get_symbol on {:#?}", self),
+        }
+    }
+
+    pub fn swap_arg(&self, index: usize, typ: Type) -> Type {
+        match self {
+            Type::Con { id, args } => {
+                let mut new_args = args.clone();
+                new_args[index] = typ;
+                Type::Con {
+                    id: id.clone(),
+                    args: new_args,
+                }
+            }
+            _ => panic!("called swap_arg on {:#?}", self),
         }
     }
 }
@@ -528,12 +422,51 @@ impl std::fmt::Display for Type {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct TypeId(pub i32);
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
+pub struct ModuleId(pub String);
 
-impl TypeId {
-    pub fn unset() -> TypeId {
-        TypeId(-1)
+impl ModuleId {
+    pub fn from_str(name: &str) -> ModuleId {
+        ModuleId(name.to_string())
+    }
+
+    pub fn is_std(&self) -> bool {
+        self.0 == "std"
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0 == "**empty"
+    }
+
+    pub fn empty() -> ModuleId {
+        ModuleId::from_str("**empty")
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Deserialize)]
+pub struct Symbol {
+    pub module: ModuleId,
+    pub name: String,
+    pub span: Span,
+}
+
+impl Symbol {
+    // This is only used from Type::ethereal. See the explanation there.
+    pub fn ethereal(name: &str) -> Symbol {
+        Symbol {
+            module: ModuleId::empty(),
+            name: name.to_string(),
+            span: Span::dummy(),
+        }
+    }
+}
+
+impl Serialize for Symbol {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.name)
     }
 }
 

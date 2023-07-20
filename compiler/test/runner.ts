@@ -130,7 +130,7 @@ async function writeExpectation(folder: string, out: string, block: CodeBlock) {
 
   SEEN_EXPECTATIONS.add(exp);
 
-  const new_out = replaceUnboundVars(out);
+  const new_out = replaceSpans(replaceUnboundVars(out));
   const content = `${block.description}
 
 SOURCE:
@@ -146,7 +146,7 @@ ${new_out}`;
 }
 
 async function callCompiler(input: any): Promise<string> {
-  const cmd = [BIN, JSON.stringify(input)];
+  const cmd = [BIN, "test", JSON.stringify(input)];
   const { code, err, output } = await runShell(cmd);
 
   if (code === 0 && err) {
@@ -253,7 +253,7 @@ function splitInFiles(input: string) {
   let files = input.split("file:");
   if (files.length == 1) {
     // No "file:" found
-    return [{ filename: "app.brg", contents: input }];
+    return [{ filename: "main.brg", contents: input }];
   }
 
   return files.filter(Boolean).map((f) => {
@@ -280,8 +280,8 @@ export async function initProject(folder: string, block: CodeBlock) {
     exit(err);
   }
 
-  // Delete app.brg otherwise it may conflict with other definitions
-  Deno.removeSync(folder + "/app.brg");
+  // Delete main.brg otherwise it may conflict with other definitions
+  Deno.removeSync(folder + "/main.brg");
 
   // Switch to the test folder
   Deno.chdir(folder);
@@ -327,7 +327,7 @@ export async function buildAndRunProject() {
 
 function appendGoSource(output: string) {
   // Append go source code to expectation output
-  const source = Deno.readTextFileSync("user.go");
+  const source = Deno.readTextFileSync("main.go");
   return [output, source].join("\n---\n");
 }
 
@@ -340,6 +340,13 @@ function replaceUnboundVars(output: string) {
     }
 
     return `"Var": 99`;
+  });
+}
+
+function replaceSpans(output: string) {
+  // Same deal as with vars, we don't want the expectation file to change when new files are added to the std (bumping the id of the test file)
+  return output.replaceAll(/"file": (\d+)/gm, () => {
+    return `"file": 99`;
   });
 }
 

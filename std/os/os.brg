@@ -1,0 +1,40 @@
+
+use io::fs;
+
+const Stdin: File = File {};
+
+// TODO remove this when type aliases across packages work properly
+// type FileInfo = fs::FileInfo;
+struct FileInfo {}
+
+struct File {}
+
+impl File {
+    fn Close(&mut self) -> error {
+        EXT
+    }
+    fn Write(&mut self, b: [byte]) -> Result<int> {
+        EXT
+    }
+    fn Read(&self, b: [byte]) -> Result<int> {
+        EXT
+    }
+}
+
+fn Create(name: string) -> Result<&mut File> {
+    EXT
+}
+fn LookupEnv(key: string) -> Option<string> {
+    EXT
+}
+fn Open(name: string) -> Result<&mut File> {
+    EXT
+}
+fn ReadFile(path: string) -> Result<[byte]> {
+    EXT
+}
+// TODO change this
+// fn Stat(name: string) -> Result<FileInfo> {
+fn Stat(name: string) -> Result<fs::FileInfo> {
+    EXT
+}

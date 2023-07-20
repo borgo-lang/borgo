@@ -21,11 +21,10 @@ No errors.
             "fun": {
               "name": "borgo_main",
               "generics": [],
-              "bounds": [],
               "args": [],
               "ret": {
                 "Con": {
-                  "name": "Unit",
+                  "id": "Unit",
                   "args": []
                 }
               },
@@ -61,7 +60,7 @@ No errors.
                           "ann": "Unknown",
                           "ty": {
                             "Con": {
-                              "name": "bool",
+                              "id": "bool",
                               "args": []
                             }
                           }
@@ -92,7 +91,7 @@ No errors.
                                     "generics_instantiated": [],
                                     "ty": {
                                       "Con": {
-                                        "name": "__Packagereflect",
+                                        "id": "__Packagereflect",
                                         "args": []
                                       }
                                     },
@@ -114,13 +113,13 @@ No errors.
                                     "args": [
                                       {
                                         "Con": {
-                                          "name": "int",
+                                          "id": "int",
                                           "args": []
                                         }
                                       },
                                       {
                                         "Con": {
-                                          "name": "bool",
+                                          "id": "bool",
                                           "args": []
                                         }
                                       }
@@ -128,7 +127,7 @@ No errors.
                                     "bounds": [],
                                     "ret": {
                                       "Con": {
-                                        "name": "bool",
+                                        "id": "bool",
                                         "args": []
                                       }
                                     },
@@ -155,7 +154,7 @@ No errors.
                                   },
                                   "ty": {
                                     "Con": {
-                                      "name": "int",
+                                      "id": "int",
                                       "args": []
                                     }
                                   },
@@ -178,7 +177,7 @@ No errors.
                                   },
                                   "ty": {
                                     "Con": {
-                                      "name": "bool",
+                                      "id": "bool",
                                       "args": []
                                     }
                                   },
@@ -197,7 +196,7 @@ No errors.
                             ],
                             "ty": {
                               "Con": {
-                                "name": "bool",
+                                "id": "bool",
                                 "args": []
                               }
                             },
@@ -215,7 +214,7 @@ No errors.
                         },
                         "ty": {
                           "Con": {
-                            "name": "bool",
+                            "id": "bool",
                             "args": []
                           }
                         },
@@ -254,7 +253,7 @@ No errors.
                           "ann": "Unknown",
                           "ty": {
                             "Con": {
-                              "name": "bool",
+                              "id": "bool",
                               "args": []
                             }
                           }
@@ -285,7 +284,7 @@ No errors.
                                     "generics_instantiated": [],
                                     "ty": {
                                       "Con": {
-                                        "name": "__Packagereflect",
+                                        "id": "__Packagereflect",
                                         "args": []
                                       }
                                     },
@@ -307,13 +306,13 @@ No errors.
                                     "args": [
                                       {
                                         "Con": {
-                                          "name": "int",
+                                          "id": "int",
                                           "args": []
                                         }
                                       },
                                       {
                                         "Con": {
-                                          "name": "int",
+                                          "id": "int",
                                           "args": []
                                         }
                                       }
@@ -321,7 +320,7 @@ No errors.
                                     "bounds": [],
                                     "ret": {
                                       "Con": {
-                                        "name": "bool",
+                                        "id": "bool",
                                         "args": []
                                       }
                                     },
@@ -348,7 +347,7 @@ No errors.
                                   },
                                   "ty": {
                                     "Con": {
-                                      "name": "int",
+                                      "id": "int",
                                       "args": []
                                     }
                                   },
@@ -371,7 +370,7 @@ No errors.
                                   },
                                   "ty": {
                                     "Con": {
-                                      "name": "int",
+                                      "id": "int",
                                       "args": []
                                     }
                                   },
@@ -390,7 +389,7 @@ No errors.
                             ],
                             "ty": {
                               "Con": {
-                                "name": "bool",
+                                "id": "bool",
                                 "args": []
                               }
                             },
@@ -408,7 +407,7 @@ No errors.
                         },
                         "ty": {
                           "Con": {
-                            "name": "bool",
+                            "id": "bool",
                             "args": []
                           }
                         },
@@ -427,7 +426,7 @@ No errors.
                   ],
                   "ty": {
                     "Con": {
-                      "name": "bool",
+                      "id": "bool",
                       "args": []
                     }
                   },
@@ -451,7 +450,7 @@ No errors.
                     "bounds": [],
                     "ret": {
                       "Con": {
-                        "name": "Unit",
+                        "id": "Unit",
                         "args": []
                       }
                     },
@@ -467,7 +466,7 @@ No errors.
                 "bounds": [],
                 "ret": {
                   "Con": {
-                    "name": "Unit",
+                    "id": "Unit",
                     "args": []
                   }
                 },

@@ -1,0 +1,384 @@
+Can use different generic name than declaration.
+
+SOURCE:
+struct Foo<T> {}
+
+impl<Y> Foo<Y> {
+    fn bar(x: int, y: Y) {}
+}
+
+fn borgo_main() {}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+[
+  {
+    "StructDef": {
+      "def": {
+        "name": "Foo",
+        "generics": [
+          {
+            "name": "T",
+            "bounds": [],
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 11
+              },
+              "end": {
+                "line": 1,
+                "col": 12
+              },
+              "file": 99
+            }
+          }
+        ],
+        "fields": []
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 16
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "ImplBlock": {
+      "ann": {
+        "Con": {
+          "name": "Foo",
+          "args": [
+            {
+              "Con": {
+                "name": "Y",
+                "args": []
+              }
+            }
+          ]
+        }
+      },
+      "ty": {
+        "Con": {
+          "id": "Foo",
+          "args": [
+            {
+              "Con": {
+                "id": "Y",
+                "args": []
+              }
+            }
+          ]
+        }
+      },
+      "items": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "Foo::bar",
+              "generics": [
+                {
+                  "name": "Y",
+                  "bounds": [],
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 5
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 6
+                    },
+                    "file": 99
+                  }
+                }
+              ],
+              "args": [
+                {
+                  "pat": {
+                    "Type": {
+                      "ident": "x",
+                      "is_mut": false,
+                      "ann": "Unknown",
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 11
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 12
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  }
+                },
+                {
+                  "pat": {
+                    "Type": {
+                      "ident": "y",
+                      "is_mut": false,
+                      "ann": "Unknown",
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 19
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 20
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "Y",
+                      "args": []
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "Y",
+                      "args": []
+                    }
+                  }
+                }
+              ],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "Unit",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [],
+                  "ty": {
+                    "Con": {
+                      "id": "Unit",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 25
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 27
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [
+                  "Y"
+                ],
+                "ty": {
+                  "Fun": {
+                    "args": [
+                      {
+                        "Con": {
+                          "id": "int",
+                          "args": []
+                        }
+                      },
+                      {
+                        "Con": {
+                          "id": "Y",
+                          "args": []
+                        }
+                      }
+                    ],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "id": "Unit",
+                        "args": []
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [
+                  {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Var": 99
+                  }
+                ],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "id": "Unit",
+                    "args": []
+                  }
+                }
+              }
+            },
+            "span": {
+              "start": {
+                "line": 4,
+                "col": 4
+              },
+              "end": {
+                "line": 4,
+                "col": 27
+              },
+              "file": 99
+            }
+          }
+        }
+      ],
+      "generics": [
+        {
+          "name": "Y",
+          "bounds": [],
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 5
+            },
+            "end": {
+              "line": 3,
+              "col": 6
+            },
+            "file": 99
+          }
+        }
+      ],
+      "span": {
+        "start": {
+          "line": 3,
+          "col": 8
+        },
+        "end": {
+          "line": 3,
+          "col": 14
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "borgo_main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [],
+            "ty": {
+              "Con": {
+                "id": "Unit",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 7,
+                "col": 16
+              },
+              "end": {
+                "line": 7,
+                "col": 18
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 7,
+          "col": 0
+        },
+        "end": {
+          "line": 7,
+          "col": 18
+        },
+        "file": 99
+      }
+    }
+  }
+]

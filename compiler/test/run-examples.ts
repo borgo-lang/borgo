@@ -1,6 +1,6 @@
 import { buildAndRunProject, initProject } from "./runner.ts";
 
-const content = Deno.readTextFileSync(`../playground/static/examples.out.json`);
+const content = Deno.readTextFileSync(`../playground/examples.out.json`);
 const examples = JSON.parse(content);
 
 for (const e of examples) {

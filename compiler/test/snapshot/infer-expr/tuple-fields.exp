@@ -30,24 +30,25 @@ No errors.
                   "end": {
                     "line": 2,
                     "col": 7
-                  }
+                  },
+                  "file": 99
                 }
               }
             },
             "ann": "Unknown",
             "ty": {
               "Con": {
-                "name": "Tuple2",
+                "id": "Tuple2",
                 "args": [
                   {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
                   },
                   {
                     "Con": {
-                      "name": "string",
+                      "id": "string",
                       "args": []
                     }
                   }
@@ -68,7 +69,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "int",
+                          "id": "int",
                           "args": []
                         }
                       },
@@ -80,7 +81,8 @@ No errors.
                         "end": {
                           "line": 2,
                           "col": 12
-                        }
+                        },
+                        "file": 99
                       }
                     }
                   }
@@ -97,7 +99,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "string",
+                          "id": "string",
                           "args": []
                         }
                       },
@@ -109,7 +111,8 @@ No errors.
                         "end": {
                           "line": 2,
                           "col": 17
-                        }
+                        },
+                        "file": 99
                       }
                     }
                   }
@@ -118,17 +121,17 @@ No errors.
               "rest": null,
               "ty": {
                 "Con": {
-                  "name": "Tuple2",
+                  "id": "Tuple2",
                   "args": [
                     {
                       "Con": {
-                        "name": "int",
+                        "id": "int",
                         "args": []
                       }
                     },
                     {
                       "Con": {
-                        "name": "string",
+                        "id": "string",
                         "args": []
                       }
                     }
@@ -143,23 +146,24 @@ No errors.
                 "end": {
                   "line": 2,
                   "col": 18
-                }
+                },
+                "file": 99
               }
             }
           },
           "ty": {
             "Con": {
-              "name": "Tuple2",
+              "id": "Tuple2",
               "args": [
                 {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 },
                 {
                   "Con": {
-                    "name": "string",
+                    "id": "string",
                     "args": []
                   }
                 }
@@ -174,7 +178,8 @@ No errors.
             "end": {
               "line": 2,
               "col": 19
-            }
+            },
+            "file": 99
           }
         }
       },
@@ -184,35 +189,30 @@ No errors.
             "Var": {
               "value": "a",
               "decl": {
-                "file_id": {
-                  "package": "dummy",
-                  "filename": "dummy"
+                "start": {
+                  "line": 2,
+                  "col": 6
                 },
-                "span": {
-                  "start": {
-                    "line": 2,
-                    "col": 6
-                  },
-                  "end": {
-                    "line": 2,
-                    "col": 7
-                  }
-                }
+                "end": {
+                  "line": 2,
+                  "col": 7
+                },
+                "file": 99
               },
               "generics_instantiated": [],
               "ty": {
                 "Con": {
-                  "name": "Tuple2",
+                  "id": "Tuple2",
                   "args": [
                     {
                       "Con": {
-                        "name": "int",
+                        "id": "int",
                         "args": []
                       }
                     },
                     {
                       "Con": {
-                        "name": "string",
+                        "id": "string",
                         "args": []
                       }
                     }
@@ -227,14 +227,15 @@ No errors.
                 "end": {
                   "line": 3,
                   "col": 3
-                }
+                },
+                "file": 99
               }
             }
           },
           "field": "first",
           "ty": {
             "Con": {
-              "name": "int",
+              "id": "int",
               "args": []
             }
           },
@@ -246,14 +247,15 @@ No errors.
             "end": {
               "line": 3,
               "col": 5
-            }
+            },
+            "file": 99
           }
         }
       }
     ],
     "ty": {
       "Con": {
-        "name": "int",
+        "id": "int",
         "args": []
       }
     },
@@ -265,7 +267,8 @@ No errors.
       "end": {
         "line": 4,
         "col": 1
-      }
+      },
+      "file": 99
     }
   }
 }

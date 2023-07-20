@@ -21,79 +21,463 @@ fn () -> ()
 ---
 No errors.
 ---
-{
-  "files": [
-    {
-      "name": "test.brg",
-      "decls": [
-        {
-          "UsePackage": {
-            "import": {
-              "name": "os"
-            },
-            "span": {
-              "start": {
-                "line": 1,
-                "col": 0
+[
+  {
+    "UsePackage": {
+      "import": {
+        "name": "os",
+        "span": {
+          "start": {
+            "line": 1,
+            "col": 0
+          },
+          "end": {
+            "line": 1,
+            "col": 7
+          },
+          "file": 99
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 7
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "foo",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Result",
+            "args": [
+              {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
               },
-              "end": {
-                "line": 1,
-                "col": 7
+              {
+                "Con": {
+                  "id": "error",
+                  "args": []
+                }
               }
-            }
+            ]
           }
         },
-        {
-          "Closure": {
-            "fun": {
-              "name": "foo",
-              "generics": [],
-              "bounds": [],
-              "args": [],
-              "ret": {
+        "ann": {
+          "Con": {
+            "name": "Result",
+            "args": [
+              {
                 "Con": {
-                  "name": "Result",
-                  "args": [
-                    {
-                      "Con": {
-                        "name": "Unit",
-                        "args": []
+                  "name": "Unit",
+                  "args": []
+                }
+              }
+            ]
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Let": {
+                  "binding": {
+                    "pat": {
+                      "Type": {
+                        "ident": "f",
+                        "is_mut": false,
+                        "ann": "Unknown",
+                        "span": {
+                          "start": {
+                            "line": 4,
+                            "col": 6
+                          },
+                          "end": {
+                            "line": 4,
+                            "col": 7
+                          },
+                          "file": 99
+                        }
                       }
                     },
-                    {
+                    "ann": "Unknown",
+                    "ty": {
                       "Con": {
-                        "name": "error",
-                        "args": []
+                        "id": "RefMut",
+                        "args": [
+                          {
+                            "Con": {
+                              "id": "File",
+                              "args": []
+                            }
+                          }
+                        ]
                       }
                     }
-                  ]
+                  },
+                  "value": {
+                    "Try": {
+                      "expr": {
+                        "Call": {
+                          "func": {
+                            "FieldAccess": {
+                              "expr": {
+                                "Var": {
+                                  "value": "os",
+                                  "decl": {
+                                    "start": {
+                                      "line": 0,
+                                      "col": 0
+                                    },
+                                    "end": {
+                                      "line": 0,
+                                      "col": 0
+                                    },
+                                    "file": -1
+                                  },
+                                  "generics_instantiated": [],
+                                  "ty": {
+                                    "Con": {
+                                      "id": "os",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 4,
+                                      "col": 10
+                                    },
+                                    "end": {
+                                      "line": 4,
+                                      "col": 12
+                                    },
+                                    "file": 99
+                                  }
+                                }
+                              },
+                              "field": "Open",
+                              "ty": {
+                                "Fun": {
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "id": "string",
+                                        "args": []
+                                      }
+                                    }
+                                  ],
+                                  "bounds": [],
+                                  "ret": {
+                                    "Con": {
+                                      "id": "Result",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "id": "RefMut",
+                                            "args": [
+                                              {
+                                                "Con": {
+                                                  "id": "File",
+                                                  "args": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "Con": {
+                                            "id": "error",
+                                            "args": []
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 4,
+                                  "col": 13
+                                },
+                                "end": {
+                                  "line": 4,
+                                  "col": 17
+                                },
+                                "file": 99
+                              }
+                            }
+                          },
+                          "args": [
+                            {
+                              "Literal": {
+                                "lit": {
+                                  "String": [
+                                    "file",
+                                    null
+                                  ]
+                                },
+                                "ty": {
+                                  "Con": {
+                                    "id": "string",
+                                    "args": []
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 4,
+                                    "col": 18
+                                  },
+                                  "end": {
+                                    "line": 4,
+                                    "col": 24
+                                  },
+                                  "file": 99
+                                }
+                              }
+                            }
+                          ],
+                          "ty": {
+                            "Con": {
+                              "id": "Result",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "id": "RefMut",
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "id": "File",
+                                          "args": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "id": "error",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 4,
+                              "col": 13
+                            },
+                            "end": {
+                              "line": 4,
+                              "col": 17
+                            },
+                            "file": 99
+                          }
+                        }
+                      },
+                      "ty": {
+                        "Con": {
+                          "id": "RefMut",
+                          "args": [
+                            {
+                              "Con": {
+                                "id": "File",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 10
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 26
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "RefMut",
+                      "args": [
+                        {
+                          "Con": {
+                            "id": "File",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 27
+                    },
+                    "file": 99
+                  }
                 }
               },
-              "ann": {
-                "Con": {
-                  "name": "Result",
+              {
+                "Call": {
+                  "func": {
+                    "Var": {
+                      "value": "Result::Ok",
+                      "decl": {
+                        "start": {
+                          "line": 52,
+                          "col": 0
+                        },
+                        "end": {
+                          "line": 55,
+                          "col": 1
+                        },
+                        "file": 99
+                      },
+                      "generics_instantiated": [
+                        {
+                          "Con": {
+                            "id": "Unit",
+                            "args": []
+                          }
+                        },
+                        {
+                          "Con": {
+                            "id": "error",
+                            "args": []
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Fun": {
+                          "args": [
+                            {
+                              "Con": {
+                                "id": "Unit",
+                                "args": []
+                              }
+                            }
+                          ],
+                          "bounds": [],
+                          "ret": {
+                            "Con": {
+                              "id": "Result",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "id": "Unit",
+                                    "args": []
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "id": "error",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 5,
+                          "col": 2
+                        },
+                        "end": {
+                          "line": 5,
+                          "col": 4
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
                   "args": [
                     {
-                      "Con": {
-                        "name": "Unit",
-                        "args": []
-                      }
-                    }
-                  ]
-                }
-              },
-              "body": {
-                "Block": {
-                  "stmts": [
-                    {
-                      "Let": {
-                        "binding": {
-                          "pat": {
-                            "Type": {
-                              "ident": "f",
-                              "is_mut": false,
-                              "ann": "Unknown",
-                              "span": {
+                      "Call": {
+                        "func": {
+                          "Var": {
+                            "value": "bar",
+                            "decl": {
+                              "start": {
+                                "line": 8,
+                                "col": 0
+                              },
+                              "end": {
+                                "line": 10,
+                                "col": 1
+                              },
+                              "file": 99
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Fun": {
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "id": "RefMut",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "id": "File",
+                                            "args": []
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ],
+                                "bounds": [],
+                                "ret": {
+                                  "Con": {
+                                    "id": "Unit",
+                                    "args": []
+                                  }
+                                }
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 5
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 8
+                              },
+                              "file": 99
+                            }
+                          }
+                        },
+                        "args": [
+                          {
+                            "Var": {
+                              "value": "f",
+                              "decl": {
                                 "start": {
                                   "line": 4,
                                   "col": 6
@@ -101,491 +485,70 @@ No errors.
                                 "end": {
                                   "line": 4,
                                   "col": 7
-                                }
-                              }
-                            }
-                          },
-                          "ann": "Unknown",
-                          "ty": {
-                            "Con": {
-                              "name": "RefMut",
-                              "args": [
-                                {
-                                  "Con": {
-                                    "name": "os::File",
-                                    "args": []
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        "value": {
-                          "Try": {
-                            "expr": {
-                              "Call": {
-                                "func": {
-                                  "FieldAccess": {
-                                    "expr": {
-                                      "Var": {
-                                        "value": "os",
-                                        "decl": {
-                                          "file_id": {
-                                            "package": "std",
-                                            "filename": "core.brg"
-                                          },
-                                          "span": {
-                                            "start": {
-                                              "line": 0,
-                                              "col": 0
-                                            },
-                                            "end": {
-                                              "line": 0,
-                                              "col": 0
-                                            }
-                                          }
-                                        },
-                                        "generics_instantiated": [],
-                                        "ty": {
-                                          "Con": {
-                                            "name": "__Packageos",
-                                            "args": []
-                                          }
-                                        },
-                                        "span": {
-                                          "start": {
-                                            "line": 4,
-                                            "col": 10
-                                          },
-                                          "end": {
-                                            "line": 4,
-                                            "col": 12
-                                          }
-                                        }
-                                      }
-                                    },
-                                    "field": "Open",
-                                    "ty": {
-                                      "Fun": {
-                                        "args": [
-                                          {
-                                            "Con": {
-                                              "name": "string",
-                                              "args": []
-                                            }
-                                          }
-                                        ],
-                                        "bounds": [],
-                                        "ret": {
-                                          "Con": {
-                                            "name": "Result",
-                                            "args": [
-                                              {
-                                                "Con": {
-                                                  "name": "RefMut",
-                                                  "args": [
-                                                    {
-                                                      "Con": {
-                                                        "name": "os::File",
-                                                        "args": []
-                                                      }
-                                                    }
-                                                  ]
-                                                }
-                                              },
-                                              {
-                                                "Con": {
-                                                  "name": "error",
-                                                  "args": []
-                                                }
-                                              }
-                                            ]
-                                          }
-                                        },
-                                        "id": -1
-                                      }
-                                    },
-                                    "span": {
-                                      "start": {
-                                        "line": 4,
-                                        "col": 13
-                                      },
-                                      "end": {
-                                        "line": 4,
-                                        "col": 17
-                                      }
-                                    }
-                                  }
                                 },
-                                "args": [
-                                  {
-                                    "Literal": {
-                                      "lit": {
-                                        "String": [
-                                          "file",
-                                          null
-                                        ]
-                                      },
-                                      "ty": {
-                                        "Con": {
-                                          "name": "string",
-                                          "args": []
-                                        }
-                                      },
-                                      "span": {
-                                        "start": {
-                                          "line": 4,
-                                          "col": 18
-                                        },
-                                        "end": {
-                                          "line": 4,
-                                          "col": 24
-                                        }
-                                      }
-                                    }
-                                  }
-                                ],
-                                "ty": {
-                                  "Con": {
-                                    "name": "Result",
-                                    "args": [
-                                      {
-                                        "Con": {
-                                          "name": "RefMut",
-                                          "args": [
-                                            {
-                                              "Con": {
-                                                "name": "os::File",
-                                                "args": []
-                                              }
-                                            }
-                                          ]
-                                        }
-                                      },
-                                      {
-                                        "Con": {
-                                          "name": "error",
-                                          "args": []
-                                        }
-                                      }
-                                    ]
-                                  }
-                                },
-                                "span": {
-                                  "start": {
-                                    "line": 4,
-                                    "col": 13
-                                  },
-                                  "end": {
-                                    "line": 4,
-                                    "col": 17
-                                  }
-                                }
-                              }
-                            },
-                            "ty": {
-                              "Con": {
-                                "name": "RefMut",
-                                "args": [
-                                  {
-                                    "Con": {
-                                      "name": "os::File",
-                                      "args": []
-                                    }
-                                  }
-                                ]
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 4,
-                                "col": 10
+                                "file": 99
                               },
-                              "end": {
-                                "line": 4,
-                                "col": 26
-                              }
-                            }
-                          }
-                        },
-                        "ty": {
-                          "Con": {
-                            "name": "RefMut",
-                            "args": [
-                              {
-                                "Con": {
-                                  "name": "os::File",
-                                  "args": []
-                                }
-                              }
-                            ]
-                          }
-                        },
-                        "span": {
-                          "start": {
-                            "line": 4,
-                            "col": 2
-                          },
-                          "end": {
-                            "line": 4,
-                            "col": 27
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "Call": {
-                        "func": {
-                          "Var": {
-                            "value": "Ok",
-                            "decl": {
-                              "file_id": {
-                                "package": "std",
-                                "filename": "core.brg"
-                              },
-                              "span": {
-                                "start": {
-                                  "line": 14,
-                                  "col": 0
-                                },
-                                "end": {
-                                  "line": 17,
-                                  "col": 1
-                                }
-                              }
-                            },
-                            "generics_instantiated": [
-                              {
-                                "Con": {
-                                  "name": "Unit",
-                                  "args": []
-                                }
-                              },
-                              {
-                                "Con": {
-                                  "name": "error",
-                                  "args": []
-                                }
-                              }
-                            ],
-                            "ty": {
-                              "Fun": {
-                                "args": [
-                                  {
-                                    "Con": {
-                                      "name": "Unit",
-                                      "args": []
-                                    }
-                                  }
-                                ],
-                                "bounds": [],
-                                "ret": {
-                                  "Con": {
-                                    "name": "Result",
-                                    "args": [
-                                      {
-                                        "Con": {
-                                          "name": "Unit",
-                                          "args": []
-                                        }
-                                      },
-                                      {
-                                        "Con": {
-                                          "name": "error",
-                                          "args": []
-                                        }
-                                      }
-                                    ]
-                                  }
-                                },
-                                "id": -1
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 5,
-                                "col": 2
-                              },
-                              "end": {
-                                "line": 5,
-                                "col": 4
-                              }
-                            }
-                          }
-                        },
-                        "args": [
-                          {
-                            "Call": {
-                              "func": {
-                                "Var": {
-                                  "value": "bar",
-                                  "decl": {
-                                    "file_id": {
-                                      "package": "std",
-                                      "filename": "core.brg"
-                                    },
-                                    "span": {
-                                      "start": {
-                                        "line": 8,
-                                        "col": 0
-                                      },
-                                      "end": {
-                                        "line": 10,
-                                        "col": 1
-                                      }
-                                    }
-                                  },
-                                  "generics_instantiated": [],
-                                  "ty": {
-                                    "Fun": {
-                                      "args": [
-                                        {
-                                          "Con": {
-                                            "name": "RefMut",
-                                            "args": [
-                                              {
-                                                "Con": {
-                                                  "name": "os::File",
-                                                  "args": []
-                                                }
-                                              }
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      "bounds": [],
-                                      "ret": {
-                                        "Con": {
-                                          "name": "Unit",
-                                          "args": []
-                                        }
-                                      },
-                                      "id": -1
-                                    }
-                                  },
-                                  "span": {
-                                    "start": {
-                                      "line": 5,
-                                      "col": 5
-                                    },
-                                    "end": {
-                                      "line": 5,
-                                      "col": 8
-                                    }
-                                  }
-                                }
-                              },
-                              "args": [
-                                {
-                                  "Var": {
-                                    "value": "f",
-                                    "decl": {
-                                      "file_id": {
-                                        "package": "user",
-                                        "filename": "test.brg"
-                                      },
-                                      "span": {
-                                        "start": {
-                                          "line": 4,
-                                          "col": 6
-                                        },
-                                        "end": {
-                                          "line": 4,
-                                          "col": 7
-                                        }
-                                      }
-                                    },
-                                    "generics_instantiated": [],
-                                    "ty": {
-                                      "Con": {
-                                        "name": "RefMut",
-                                        "args": [
-                                          {
-                                            "Con": {
-                                              "name": "os::File",
-                                              "args": []
-                                            }
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "span": {
-                                      "start": {
-                                        "line": 5,
-                                        "col": 9
-                                      },
-                                      "end": {
-                                        "line": 5,
-                                        "col": 10
-                                      }
-                                    }
-                                  }
-                                }
-                              ],
+                              "generics_instantiated": [],
                               "ty": {
                                 "Con": {
-                                  "name": "Unit",
-                                  "args": []
+                                  "id": "RefMut",
+                                  "args": [
+                                    {
+                                      "Con": {
+                                        "id": "File",
+                                        "args": []
+                                      }
+                                    }
+                                  ]
                                 }
                               },
                               "span": {
                                 "start": {
                                   "line": 5,
-                                  "col": 5
+                                  "col": 9
                                 },
                                 "end": {
                                   "line": 5,
-                                  "col": 11
-                                }
+                                  "col": 10
+                                },
+                                "file": 99
                               }
                             }
                           }
                         ],
                         "ty": {
                           "Con": {
-                            "name": "Result",
-                            "args": [
-                              {
-                                "Con": {
-                                  "name": "Unit",
-                                  "args": []
-                                }
-                              },
-                              {
-                                "Con": {
-                                  "name": "error",
-                                  "args": []
-                                }
-                              }
-                            ]
+                            "id": "Unit",
+                            "args": []
                           }
                         },
                         "span": {
                           "start": {
                             "line": 5,
-                            "col": 2
+                            "col": 5
                           },
                           "end": {
                             "line": 5,
-                            "col": 12
-                          }
+                            "col": 11
+                          },
+                          "file": 99
                         }
                       }
                     }
                   ],
                   "ty": {
                     "Con": {
-                      "name": "Result",
+                      "id": "Result",
                       "args": [
                         {
                           "Con": {
-                            "name": "Unit",
+                            "id": "Unit",
                             "args": []
                           }
                         },
                         {
                           "Con": {
-                            "name": "error",
+                            "id": "error",
                             "args": []
                           }
                         }
@@ -594,370 +557,365 @@ No errors.
                   },
                   "span": {
                     "start": {
-                      "line": 3,
-                      "col": 23
+                      "line": 5,
+                      "col": 2
                     },
                     "end": {
-                      "line": 6,
-                      "col": 1
-                    }
-                  }
-                }
-              },
-              "bounded_ty": {
-                "generics": [],
-                "ty": {
-                  "Fun": {
-                    "args": [],
-                    "bounds": [],
-                    "ret": {
-                      "Con": {
-                        "name": "Result",
-                        "args": [
-                          {
-                            "Con": {
-                              "name": "Unit",
-                              "args": []
-                            }
-                          },
-                          {
-                            "Con": {
-                              "name": "error",
-                              "args": []
-                            }
-                          }
-                        ]
-                      }
+                      "line": 5,
+                      "col": 12
                     },
-                    "id": -1
+                    "file": 99
                   }
                 }
               }
-            },
-            "kind": "TopLevel",
+            ],
             "ty": {
-              "Fun": {
-                "args": [],
-                "bounds": [],
-                "ret": {
-                  "Con": {
-                    "name": "Result",
-                    "args": [
-                      {
-                        "Con": {
-                          "name": "Unit",
-                          "args": []
-                        }
-                      },
-                      {
-                        "Con": {
-                          "name": "error",
-                          "args": []
-                        }
-                      }
-                    ]
+              "Con": {
+                "id": "Result",
+                "args": [
+                  {
+                    "Con": {
+                      "id": "Unit",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "id": "error",
+                      "args": []
+                    }
                   }
-                },
-                "id": -1
+                ]
               }
             },
             "span": {
               "start": {
                 "line": 3,
-                "col": 0
+                "col": 23
               },
               "end": {
                 "line": 6,
                 "col": 1
-              }
+              },
+              "file": 99
             }
           }
         },
-        {
-          "Closure": {
-            "fun": {
-              "name": "bar",
-              "generics": [],
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
               "bounds": [],
-              "args": [
-                {
-                  "pat": {
-                    "Type": {
-                      "ident": "f",
-                      "is_mut": false,
-                      "ann": "Unknown",
-                      "span": {
-                        "start": {
-                          "line": 8,
-                          "col": 7
-                        },
-                        "end": {
-                          "line": 8,
-                          "col": 8
-                        }
-                      }
-                    }
-                  },
-                  "ann": {
-                    "Con": {
-                      "name": "RefMut",
-                      "args": [
-                        {
-                          "Con": {
-                            "name": "os::File",
-                            "args": []
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "ty": {
-                    "Con": {
-                      "name": "RefMut",
-                      "args": [
-                        {
-                          "Con": {
-                            "name": "os::File",
-                            "args": []
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              ],
               "ret": {
                 "Con": {
-                  "name": "Unit",
-                  "args": []
-                }
-              },
-              "ann": {
-                "Con": {
-                  "name": "Unit",
-                  "args": []
-                }
-              },
-              "body": {
-                "Block": {
-                  "stmts": [],
-                  "ty": {
-                    "Con": {
-                      "name": "Unit",
-                      "args": []
-                    }
-                  },
-                  "span": {
-                    "start": {
-                      "line": 8,
-                      "col": 25
-                    },
-                    "end": {
-                      "line": 10,
-                      "col": 1
-                    }
-                  }
-                }
-              },
-              "bounded_ty": {
-                "generics": [],
-                "ty": {
-                  "Fun": {
-                    "args": [
-                      {
-                        "Con": {
-                          "name": "RefMut",
-                          "args": [
-                            {
-                              "Con": {
-                                "name": "os::File",
-                                "args": []
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    ],
-                    "bounds": [],
-                    "ret": {
+                  "id": "Result",
+                  "args": [
+                    {
                       "Con": {
-                        "name": "Unit",
+                        "id": "Unit",
                         "args": []
                       }
                     },
-                    "id": -1
-                  }
+                    {
+                      "Con": {
+                        "id": "error",
+                        "args": []
+                      }
+                    }
+                  ]
                 }
               }
-            },
-            "kind": "TopLevel",
-            "ty": {
-              "Fun": {
-                "args": [
-                  {
-                    "Con": {
-                      "name": "RefMut",
-                      "args": [
-                        {
-                          "Con": {
-                            "name": "os::File",
-                            "args": []
-                          }
-                        }
-                      ]
-                    }
-                  }
-                ],
-                "bounds": [],
-                "ret": {
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Result",
+              "args": [
+                {
                   "Con": {
-                    "name": "Unit",
+                    "id": "Unit",
                     "args": []
                   }
                 },
-                "id": -1
+                {
+                  "Con": {
+                    "id": "error",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 3,
+          "col": 0
+        },
+        "end": {
+          "line": 6,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "bar",
+        "generics": [],
+        "args": [
+          {
+            "pat": {
+              "Type": {
+                "ident": "f",
+                "is_mut": false,
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 8,
+                    "col": 7
+                  },
+                  "end": {
+                    "line": 8,
+                    "col": 8
+                  },
+                  "file": 99
+                }
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "RefMut",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "os::File",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "ty": {
+              "Con": {
+                "id": "RefMut",
+                "args": [
+                  {
+                    "Con": {
+                      "id": "File",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [],
+            "ty": {
+              "Con": {
+                "id": "Unit",
+                "args": []
               }
             },
             "span": {
               "start": {
                 "line": 8,
-                "col": 0
+                "col": 25
               },
               "end": {
                 "line": 10,
                 "col": 1
-              }
+              },
+              "file": 99
             }
           }
         },
-        {
-          "Closure": {
-            "fun": {
-              "name": "borgo_main",
-              "generics": [],
-              "bounds": [],
-              "args": [],
-              "ret": {
-                "Con": {
-                  "name": "Unit",
-                  "args": []
-                }
-              },
-              "ann": {
-                "Con": {
-                  "name": "Unit",
-                  "args": []
-                }
-              },
-              "body": {
-                "Block": {
-                  "stmts": [
-                    {
-                      "Call": {
-                        "func": {
-                          "Var": {
-                            "value": "foo",
-                            "decl": {
-                              "file_id": {
-                                "package": "std",
-                                "filename": "core.brg"
-                              },
-                              "span": {
-                                "start": {
-                                  "line": 3,
-                                  "col": 0
-                                },
-                                "end": {
-                                  "line": 6,
-                                  "col": 1
-                                }
-                              }
-                            },
-                            "generics_instantiated": [],
-                            "ty": {
-                              "Fun": {
-                                "args": [],
-                                "bounds": [],
-                                "ret": {
-                                  "Con": {
-                                    "name": "Result",
-                                    "args": [
-                                      {
-                                        "Con": {
-                                          "name": "Unit",
-                                          "args": []
-                                        }
-                                      },
-                                      {
-                                        "Con": {
-                                          "name": "error",
-                                          "args": []
-                                        }
-                                      }
-                                    ]
-                                  }
-                                },
-                                "id": -1
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 13,
-                                "col": 2
-                              },
-                              "end": {
-                                "line": 13,
-                                "col": 5
-                              }
-                            }
-                          }
-                        },
-                        "args": [],
-                        "ty": {
-                          "Con": {
-                            "name": "Result",
-                            "args": [
-                              {
-                                "Con": {
-                                  "name": "Unit",
-                                  "args": []
-                                }
-                              },
-                              {
-                                "Con": {
-                                  "name": "error",
-                                  "args": []
-                                }
-                              }
-                            ]
-                          }
-                        },
-                        "span": {
-                          "start": {
-                            "line": 13,
-                            "col": 2
-                          },
-                          "end": {
-                            "line": 13,
-                            "col": 7
-                          }
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Con": {
+                    "id": "RefMut",
+                    "args": [
+                      {
+                        "Con": {
+                          "id": "File",
+                          "args": []
                         }
                       }
+                    ]
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [
+            {
+              "Con": {
+                "id": "RefMut",
+                "args": [
+                  {
+                    "Con": {
+                      "id": "File",
+                      "args": []
                     }
-                  ],
+                  }
+                ]
+              }
+            }
+          ],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 8,
+          "col": 0
+        },
+        "end": {
+          "line": 10,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "borgo_main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Call": {
+                  "func": {
+                    "Var": {
+                      "value": "foo",
+                      "decl": {
+                        "start": {
+                          "line": 3,
+                          "col": 0
+                        },
+                        "end": {
+                          "line": 6,
+                          "col": 1
+                        },
+                        "file": 99
+                      },
+                      "generics_instantiated": [],
+                      "ty": {
+                        "Fun": {
+                          "args": [],
+                          "bounds": [],
+                          "ret": {
+                            "Con": {
+                              "id": "Result",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "id": "Unit",
+                                    "args": []
+                                  }
+                                },
+                                {
+                                  "Con": {
+                                    "id": "error",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 13,
+                          "col": 2
+                        },
+                        "end": {
+                          "line": 13,
+                          "col": 5
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "args": [],
                   "ty": {
                     "Con": {
-                      "name": "Result",
+                      "id": "Result",
                       "args": [
                         {
                           "Con": {
-                            "name": "Unit",
+                            "id": "Unit",
                             "args": []
                           }
                         },
                         {
                           "Con": {
-                            "name": "error",
+                            "id": "error",
                             "args": []
                           }
                         }
@@ -966,67 +924,90 @@ No errors.
                   },
                   "span": {
                     "start": {
-                      "line": 12,
-                      "col": 16
+                      "line": 13,
+                      "col": 2
                     },
                     "end": {
-                      "line": 14,
-                      "col": 1
-                    }
-                  }
-                }
-              },
-              "bounded_ty": {
-                "generics": [],
-                "ty": {
-                  "Fun": {
-                    "args": [],
-                    "bounds": [],
-                    "ret": {
-                      "Con": {
-                        "name": "Unit",
-                        "args": []
-                      }
+                      "line": 13,
+                      "col": 7
                     },
-                    "id": -1
+                    "file": 99
                   }
                 }
               }
-            },
-            "kind": "TopLevel",
+            ],
             "ty": {
-              "Fun": {
-                "args": [],
-                "bounds": [],
-                "ret": {
-                  "Con": {
-                    "name": "Unit",
-                    "args": []
+              "Con": {
+                "id": "Result",
+                "args": [
+                  {
+                    "Con": {
+                      "id": "Unit",
+                      "args": []
+                    }
+                  },
+                  {
+                    "Con": {
+                      "id": "error",
+                      "args": []
+                    }
                   }
-                },
-                "id": -1
+                ]
               }
             },
             "span": {
               "start": {
                 "line": 12,
-                "col": 0
+                "col": 16
               },
               "end": {
                 "line": 14,
                 "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
               }
             }
           }
         }
-      ],
-      "source": "use os;\n\nfn foo() -> Result<()> {\n  let f = os.Open(\"file\")?;\n  Ok(bar(f))\n}\n\nfn bar(f: &mut os::File) {\n\n}\n\nfn borgo_main() {\n  foo();\n}"
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 12,
+          "col": 0
+        },
+        "end": {
+          "line": 14,
+          "col": 1
+        },
+        "file": 99
+      }
     }
-  ],
-  "errors": [
-    [
-      "test.brg",
-      []
-    ]
-  ]
-}
+  }
+]

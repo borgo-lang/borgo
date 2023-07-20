@@ -15,7 +15,7 @@ No errors.
     },
     "ty": {
       "Con": {
-        "name": "rune",
+        "id": "rune",
         "args": []
       }
     },
@@ -27,7 +27,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 3
-      }
+      },
+      "file": 99
     }
   }
 }

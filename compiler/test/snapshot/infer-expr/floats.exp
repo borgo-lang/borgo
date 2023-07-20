@@ -15,7 +15,7 @@ No errors.
     },
     "ty": {
       "Con": {
-        "name": "float64",
+        "id": "float64",
         "args": []
       }
     },
@@ -27,7 +27,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 4
-      }
+      },
+      "file": 99
     }
   }
 }

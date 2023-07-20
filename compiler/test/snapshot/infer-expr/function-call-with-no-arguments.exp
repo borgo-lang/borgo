@@ -17,20 +17,15 @@ No errors.
             "Var": {
               "value": "hello",
               "decl": {
-                "file_id": {
-                  "package": "std",
-                  "filename": "builtin.brg"
+                "start": {
+                  "line": 19,
+                  "col": 0
                 },
-                "span": {
-                  "start": {
-                    "line": 0,
-                    "col": 0
-                  },
-                  "end": {
-                    "line": 0,
-                    "col": 0
-                  }
-                }
+                "end": {
+                  "line": 19,
+                  "col": 28
+                },
+                "file": -1
               },
               "generics_instantiated": [],
               "ty": {
@@ -39,11 +34,10 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "string",
+                      "id": "string",
                       "args": []
                     }
-                  },
-                  "id": -1
+                  }
                 }
               },
               "span": {
@@ -54,14 +48,15 @@ No errors.
                 "end": {
                   "line": 1,
                   "col": 7
-                }
+                },
+                "file": 99
               }
             }
           },
           "args": [],
           "ty": {
             "Con": {
-              "name": "string",
+              "id": "string",
               "args": []
             }
           },
@@ -73,14 +68,15 @@ No errors.
             "end": {
               "line": 1,
               "col": 9
-            }
+            },
+            "file": 99
           }
         }
       }
     ],
     "ty": {
       "Con": {
-        "name": "string",
+        "id": "string",
         "args": []
       }
     },
@@ -92,7 +88,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 11
-      }
+      },
+      "file": 99
     }
   }
 }

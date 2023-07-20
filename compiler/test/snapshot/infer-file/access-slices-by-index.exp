@@ -11,308 +11,295 @@ fn () -> string
 ---
 No errors.
 ---
-{
-  "files": [
-    {
-      "name": "test.brg",
-      "decls": [
-        {
-          "Closure": {
-            "fun": {
-              "name": "borgo_main",
-              "generics": [],
-              "bounds": [],
-              "args": [],
-              "ret": {
-                "Con": {
-                  "name": "string",
-                  "args": []
-                }
-              },
-              "ann": {
-                "Con": {
-                  "name": "string",
-                  "args": []
-                }
-              },
-              "body": {
-                "Block": {
-                  "stmts": [
-                    {
-                      "Let": {
-                        "binding": {
-                          "pat": {
-                            "Type": {
-                              "ident": "xs",
-                              "is_mut": false,
-                              "ann": "Unknown",
-                              "span": {
-                                "start": {
-                                  "line": 2,
-                                  "col": 8
-                                },
-                                "end": {
-                                  "line": 2,
-                                  "col": 10
-                                }
-                              }
-                            }
-                          },
-                          "ann": "Unknown",
-                          "ty": {
-                            "Con": {
-                              "name": "Slice",
-                              "args": [
-                                {
-                                  "Con": {
-                                    "name": "string",
-                                    "args": []
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        "value": {
-                          "Literal": {
-                            "lit": {
-                              "Slice": [
-                                {
-                                  "Literal": {
-                                    "lit": {
-                                      "String": [
-                                        "a",
-                                        null
-                                      ]
-                                    },
-                                    "ty": {
-                                      "Con": {
-                                        "name": "string",
-                                        "args": []
-                                      }
-                                    },
-                                    "span": {
-                                      "start": {
-                                        "line": 2,
-                                        "col": 14
-                                      },
-                                      "end": {
-                                        "line": 2,
-                                        "col": 17
-                                      }
-                                    }
-                                  }
-                                }
-                              ]
-                            },
-                            "ty": {
-                              "Con": {
-                                "name": "Slice",
-                                "args": [
-                                  {
-                                    "Con": {
-                                      "name": "string",
-                                      "args": []
-                                    }
-                                  }
-                                ]
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 2,
-                                "col": 13
-                              },
-                              "end": {
-                                "line": 2,
-                                "col": 18
-                              }
-                            }
-                          }
-                        },
-                        "ty": {
-                          "Con": {
-                            "name": "Slice",
-                            "args": [
-                              {
-                                "Con": {
-                                  "name": "string",
-                                  "args": []
-                                }
-                              }
-                            ]
-                          }
-                        },
+[
+  {
+    "Closure": {
+      "fun": {
+        "name": "borgo_main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "string",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "string",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Let": {
+                  "binding": {
+                    "pat": {
+                      "Type": {
+                        "ident": "xs",
+                        "is_mut": false,
+                        "ann": "Unknown",
                         "span": {
                           "start": {
                             "line": 2,
-                            "col": 4
+                            "col": 8
                           },
                           "end": {
                             "line": 2,
-                            "col": 19
-                          }
+                            "col": 10
+                          },
+                          "file": 99
                         }
                       }
                     },
-                    {
-                      "Index": {
-                        "expr": {
-                          "Var": {
-                            "value": "xs",
-                            "decl": {
-                              "file_id": {
-                                "package": "user",
-                                "filename": "test.brg"
+                    "ann": "Unknown",
+                    "ty": {
+                      "Con": {
+                        "id": "Slice",
+                        "args": [
+                          {
+                            "Con": {
+                              "id": "string",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "value": {
+                    "Literal": {
+                      "lit": {
+                        "Slice": [
+                          {
+                            "Literal": {
+                              "lit": {
+                                "String": [
+                                  "a",
+                                  null
+                                ]
+                              },
+                              "ty": {
+                                "Con": {
+                                  "id": "string",
+                                  "args": []
+                                }
                               },
                               "span": {
                                 "start": {
                                   "line": 2,
-                                  "col": 8
+                                  "col": 14
                                 },
                                 "end": {
                                   "line": 2,
-                                  "col": 10
-                                }
-                              }
-                            },
-                            "generics_instantiated": [],
-                            "ty": {
-                              "Con": {
-                                "name": "Slice",
-                                "args": [
-                                  {
-                                    "Con": {
-                                      "name": "string",
-                                      "args": []
-                                    }
-                                  }
-                                ]
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 3,
-                                "col": 4
-                              },
-                              "end": {
-                                "line": 3,
-                                "col": 6
+                                  "col": 17
+                                },
+                                "file": 99
                               }
                             }
                           }
-                        },
-                        "index": {
-                          "Literal": {
-                            "lit": {
-                              "Int": 0
-                            },
-                            "ty": {
+                        ]
+                      },
+                      "ty": {
+                        "Con": {
+                          "id": "Slice",
+                          "args": [
+                            {
                               "Con": {
-                                "name": "int",
+                                "id": "string",
                                 "args": []
                               }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 3,
-                                "col": 7
-                              },
-                              "end": {
-                                "line": 3,
-                                "col": 8
-                              }
                             }
-                          }
-                        },
-                        "ty": {
-                          "Con": {
-                            "name": "string",
-                            "args": []
-                          }
-                        },
-                        "span": {
-                          "start": {
-                            "line": 3,
-                            "col": 4
-                          },
-                          "end": {
-                            "line": 3,
-                            "col": 9
-                          }
+                          ]
                         }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 2,
+                          "col": 13
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 18
+                        },
+                        "file": 99
                       }
                     }
-                  ],
+                  },
                   "ty": {
                     "Con": {
-                      "name": "string",
+                      "id": "Slice",
+                      "args": [
+                        {
+                          "Con": {
+                            "id": "string",
+                            "args": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "col": 4
+                    },
+                    "end": {
+                      "line": 2,
+                      "col": 19
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              {
+                "Index": {
+                  "expr": {
+                    "Var": {
+                      "value": "xs",
+                      "decl": {
+                        "start": {
+                          "line": 2,
+                          "col": 8
+                        },
+                        "end": {
+                          "line": 2,
+                          "col": 10
+                        },
+                        "file": 99
+                      },
+                      "generics_instantiated": [],
+                      "ty": {
+                        "Con": {
+                          "id": "Slice",
+                          "args": [
+                            {
+                              "Con": {
+                                "id": "string",
+                                "args": []
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 3,
+                          "col": 4
+                        },
+                        "end": {
+                          "line": 3,
+                          "col": 6
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "index": {
+                    "Literal": {
+                      "lit": {
+                        "Int": 0
+                      },
+                      "ty": {
+                        "Con": {
+                          "id": "int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 3,
+                          "col": 7
+                        },
+                        "end": {
+                          "line": 3,
+                          "col": 8
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "string",
                       "args": []
                     }
                   },
                   "span": {
                     "start": {
-                      "line": 1,
-                      "col": 26
+                      "line": 3,
+                      "col": 4
                     },
                     "end": {
-                      "line": 4,
-                      "col": 1
-                    }
-                  }
-                }
-              },
-              "bounded_ty": {
-                "generics": [],
-                "ty": {
-                  "Fun": {
-                    "args": [],
-                    "bounds": [],
-                    "ret": {
-                      "Con": {
-                        "name": "string",
-                        "args": []
-                      }
+                      "line": 3,
+                      "col": 9
                     },
-                    "id": -1
+                    "file": 99
                   }
                 }
               }
-            },
-            "kind": "TopLevel",
+            ],
             "ty": {
-              "Fun": {
-                "args": [],
-                "bounds": [],
-                "ret": {
-                  "Con": {
-                    "name": "string",
-                    "args": []
-                  }
-                },
-                "id": -1
+              "Con": {
+                "id": "string",
+                "args": []
               }
             },
             "span": {
               "start": {
                 "line": 1,
-                "col": 0
+                "col": 26
               },
               "end": {
                 "line": 4,
                 "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "string",
+                  "args": []
+                }
               }
             }
           }
         }
-      ],
-      "source": "fn borgo_main() -> string {\n    let xs = [\"a\"];\n    xs[0]\n}"
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "string",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 0
+        },
+        "end": {
+          "line": 4,
+          "col": 1
+        },
+        "file": 99
+      }
     }
-  ],
-  "errors": [
-    [
-      "test.brg",
-      []
-    ]
-  ]
-}
+  }
+]

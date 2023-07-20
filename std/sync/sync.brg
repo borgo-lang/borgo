@@ -1,0 +1,25 @@
+
+struct Mutex {}
+struct WaitGroup {}
+
+impl Mutex {
+    fn Lock(&mut self) {
+        EXT
+    }
+
+    fn Unlock(&mut self) {
+        EXT
+    }
+}
+
+impl WaitGroup {
+    fn Add(&mut self, delta: int) {
+        EXT
+    }
+    fn Done(&mut self) {
+        EXT
+    }
+    fn Wait(&mut self) {
+        EXT
+    }
+}

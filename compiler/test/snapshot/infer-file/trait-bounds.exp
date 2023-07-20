@@ -26,207 +26,67 @@ fn () -> int
 ---
 No errors.
 ---
-{
-  "files": [
-    {
-      "name": "test.brg",
-      "decls": [
-        {
-          "Closure": {
-            "fun": {
-              "name": "borgo_main",
-              "generics": [],
-              "bounds": [],
-              "args": [],
-              "ret": {
-                "Con": {
-                  "name": "int",
-                  "args": []
-                }
-              },
-              "ann": {
-                "Con": {
-                  "name": "int",
-                  "args": []
-                }
-              },
-              "body": {
-                "Block": {
-                  "stmts": [
-                    {
-                      "Trait": {
-                        "name": "Foo",
-                        "supertraits": [],
-                        "items": [
-                          {
-                            "Closure": {
-                              "fun": {
-                                "name": "bar",
-                                "generics": [],
-                                "bounds": [],
-                                "args": [
-                                  {
-                                    "pat": {
-                                      "Type": {
-                                        "ident": "x",
-                                        "is_mut": false,
-                                        "ann": "Unknown",
-                                        "span": {
-                                          "start": {
-                                            "line": 3,
-                                            "col": 11
-                                          },
-                                          "end": {
-                                            "line": 3,
-                                            "col": 12
-                                          }
-                                        }
-                                      }
-                                    },
-                                    "ann": {
-                                      "Con": {
-                                        "name": "string",
-                                        "args": []
-                                      }
-                                    },
-                                    "ty": {
-                                      "Con": {
-                                        "name": "string",
-                                        "args": []
-                                      }
-                                    }
-                                  }
-                                ],
-                                "ret": {
-                                  "Con": {
-                                    "name": "int",
-                                    "args": []
-                                  }
-                                },
-                                "ann": {
-                                  "Con": {
-                                    "name": "int",
-                                    "args": []
-                                  }
-                                },
-                                "body": "Noop",
-                                "bounded_ty": {
-                                  "generics": [],
-                                  "ty": {
-                                    "Fun": {
-                                      "args": [
-                                        {
-                                          "Con": {
-                                            "name": "string",
-                                            "args": []
-                                          }
-                                        }
-                                      ],
-                                      "bounds": [],
-                                      "ret": {
-                                        "Con": {
-                                          "name": "int",
-                                          "args": []
-                                        }
-                                      },
-                                      "id": -1
-                                    }
-                                  }
-                                }
-                              },
-                              "kind": "Inline",
-                              "ty": {
-                                "Fun": {
-                                  "args": [
-                                    {
-                                      "Con": {
-                                        "name": "string",
-                                        "args": []
-                                      }
-                                    }
-                                  ],
-                                  "bounds": [],
-                                  "ret": {
-                                    "Con": {
-                                      "name": "int",
-                                      "args": []
-                                    }
-                                  },
-                                  "id": -1
-                                }
-                              },
-                              "span": {
-                                "start": {
-                                  "line": 3,
-                                  "col": 4
-                                },
-                                "end": {
-                                  "line": 3,
-                                  "col": 29
-                                }
-                              }
-                            }
-                          }
-                        ],
-                        "types": [],
-                        "span": {
-                          "start": {
-                            "line": 2,
-                            "col": 2
-                          },
-                          "end": {
-                            "line": 4,
-                            "col": 3
-                          }
-                        }
-                      }
-                    },
+[
+  {
+    "Closure": {
+      "fun": {
+        "name": "borgo_main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "int",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "int",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Trait": {
+                  "name": "Foo",
+                  "supertraits": [],
+                  "items": [
                     {
                       "Closure": {
                         "fun": {
-                          "name": "check",
-                          "generics": [
-                            "T"
-                          ],
-                          "bounds": [
-                            [
-                              "T",
-                              {
-                                "Con": {
-                                  "name": "Foo",
-                                  "args": []
-                                }
-                              }
-                            ]
-                          ],
+                          "name": "bar",
+                          "generics": [],
                           "args": [
                             {
                               "pat": {
                                 "Type": {
-                                  "ident": "f",
+                                  "ident": "x",
                                   "is_mut": false,
                                   "ann": "Unknown",
                                   "span": {
                                     "start": {
-                                      "line": 6,
-                                      "col": 19
+                                      "line": 3,
+                                      "col": 11
                                     },
                                     "end": {
-                                      "line": 6,
-                                      "col": 20
-                                    }
+                                      "line": 3,
+                                      "col": 12
+                                    },
+                                    "file": 99
                                   }
                                 }
                               },
                               "ann": {
                                 "Con": {
-                                  "name": "T",
+                                  "name": "string",
                                   "args": []
                                 }
                               },
                               "ty": {
                                 "Con": {
-                                  "name": "T",
+                                  "id": "string",
                                   "args": []
                                 }
                               }
@@ -234,7 +94,516 @@ No errors.
                           ],
                           "ret": {
                             "Con": {
+                              "id": "int",
+                              "args": []
+                            }
+                          },
+                          "ann": {
+                            "Con": {
                               "name": "int",
+                              "args": []
+                            }
+                          },
+                          "body": "Noop",
+                          "bounded_ty": {
+                            "generics": [],
+                            "ty": {
+                              "Fun": {
+                                "args": [
+                                  {
+                                    "Con": {
+                                      "id": "string",
+                                      "args": []
+                                    }
+                                  }
+                                ],
+                                "bounds": [],
+                                "ret": {
+                                  "Con": {
+                                    "id": "int",
+                                    "args": []
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "kind": "Inline",
+                        "ty": {
+                          "Fun": {
+                            "args": [
+                              {
+                                "Con": {
+                                  "id": "string",
+                                  "args": []
+                                }
+                              }
+                            ],
+                            "bounds": [],
+                            "ret": {
+                              "Con": {
+                                "id": "int",
+                                "args": []
+                              }
+                            }
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 3,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 3,
+                            "col": 29
+                          },
+                          "file": 99
+                        }
+                      }
+                    }
+                  ],
+                  "types": [],
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 3
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              {
+                "Closure": {
+                  "fun": {
+                    "name": "check",
+                    "generics": [
+                      {
+                        "name": "T",
+                        "bounds": [
+                          {
+                            "Con": {
+                              "name": "Foo",
+                              "args": []
+                            }
+                          }
+                        ],
+                        "span": {
+                          "start": {
+                            "line": 6,
+                            "col": 11
+                          },
+                          "end": {
+                            "line": 6,
+                            "col": 17
+                          },
+                          "file": 99
+                        }
+                      }
+                    ],
+                    "args": [
+                      {
+                        "pat": {
+                          "Type": {
+                            "ident": "f",
+                            "is_mut": false,
+                            "ann": "Unknown",
+                            "span": {
+                              "start": {
+                                "line": 6,
+                                "col": 19
+                              },
+                              "end": {
+                                "line": 6,
+                                "col": 20
+                              },
+                              "file": 99
+                            }
+                          }
+                        },
+                        "ann": {
+                          "Con": {
+                            "name": "T",
+                            "args": []
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "id": "T",
+                            "args": []
+                          }
+                        }
+                      }
+                    ],
+                    "ret": {
+                      "Con": {
+                        "id": "int",
+                        "args": []
+                      }
+                    },
+                    "ann": {
+                      "Con": {
+                        "name": "int",
+                        "args": []
+                      }
+                    },
+                    "body": {
+                      "Block": {
+                        "stmts": [
+                          {
+                            "Call": {
+                              "func": {
+                                "FieldAccess": {
+                                  "expr": {
+                                    "Var": {
+                                      "value": "f",
+                                      "decl": {
+                                        "start": {
+                                          "line": 6,
+                                          "col": 19
+                                        },
+                                        "end": {
+                                          "line": 6,
+                                          "col": 20
+                                        },
+                                        "file": 99
+                                      },
+                                      "generics_instantiated": [],
+                                      "ty": {
+                                        "Con": {
+                                          "id": "T",
+                                          "args": []
+                                        }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 7,
+                                          "col": 4
+                                        },
+                                        "end": {
+                                          "line": 7,
+                                          "col": 5
+                                        },
+                                        "file": 99
+                                      }
+                                    }
+                                  },
+                                  "field": "bar",
+                                  "ty": {
+                                    "Fun": {
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "id": "string",
+                                            "args": []
+                                          }
+                                        }
+                                      ],
+                                      "bounds": [],
+                                      "ret": {
+                                        "Con": {
+                                          "id": "int",
+                                          "args": []
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 7,
+                                      "col": 6
+                                    },
+                                    "end": {
+                                      "line": 7,
+                                      "col": 9
+                                    },
+                                    "file": 99
+                                  }
+                                }
+                              },
+                              "args": [
+                                {
+                                  "Literal": {
+                                    "lit": {
+                                      "String": [
+                                        "yo",
+                                        null
+                                      ]
+                                    },
+                                    "ty": {
+                                      "Con": {
+                                        "id": "string",
+                                        "args": []
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 7,
+                                        "col": 10
+                                      },
+                                      "end": {
+                                        "line": 7,
+                                        "col": 14
+                                      },
+                                      "file": 99
+                                    }
+                                  }
+                                }
+                              ],
+                              "ty": {
+                                "Con": {
+                                  "id": "int",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 7,
+                                  "col": 6
+                                },
+                                "end": {
+                                  "line": 7,
+                                  "col": 9
+                                },
+                                "file": 99
+                              }
+                            }
+                          }
+                        ],
+                        "ty": {
+                          "Con": {
+                            "id": "int",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 6,
+                            "col": 32
+                          },
+                          "end": {
+                            "line": 8,
+                            "col": 3
+                          },
+                          "file": 99
+                        }
+                      }
+                    },
+                    "bounded_ty": {
+                      "generics": [
+                        "T"
+                      ],
+                      "ty": {
+                        "Fun": {
+                          "args": [
+                            {
+                              "Con": {
+                                "id": "T",
+                                "args": []
+                              }
+                            }
+                          ],
+                          "bounds": [
+                            {
+                              "generic": {
+                                "Con": {
+                                  "id": "T",
+                                  "args": []
+                                }
+                              },
+                              "ty": {
+                                "Con": {
+                                  "id": "Foo",
+                                  "args": []
+                                }
+                              }
+                            }
+                          ],
+                          "ret": {
+                            "Con": {
+                              "id": "int",
+                              "args": []
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "kind": "Inline",
+                  "ty": {
+                    "Fun": {
+                      "args": [
+                        {
+                          "Var": 99
+                        }
+                      ],
+                      "bounds": [
+                        {
+                          "generic": {
+                            "Var": 99
+                          },
+                          "ty": {
+                            "Con": {
+                              "id": "Foo",
+                              "args": []
+                            }
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "Con": {
+                          "id": "int",
+                          "args": []
+                        }
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 6,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 8,
+                      "col": 3
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              {
+                "StructDef": {
+                  "def": {
+                    "name": "Baz",
+                    "generics": [],
+                    "fields": [
+                      {
+                        "name": "x",
+                        "ann": {
+                          "Con": {
+                            "name": "int",
+                            "args": []
+                          }
+                        },
+                        "ty": {
+                          "generics": [],
+                          "ty": {
+                            "Con": {
+                              "id": "int",
+                              "args": []
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 10,
+                      "col": 23
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              {
+                "ImplBlock": {
+                  "ann": {
+                    "Con": {
+                      "name": "Baz",
+                      "args": []
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "Baz",
+                      "args": []
+                    }
+                  },
+                  "items": [
+                    {
+                      "Closure": {
+                        "fun": {
+                          "name": "bar",
+                          "generics": [],
+                          "args": [
+                            {
+                              "pat": {
+                                "Type": {
+                                  "ident": "self",
+                                  "is_mut": false,
+                                  "ann": {
+                                    "Con": {
+                                      "name": "Baz",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 12,
+                                      "col": 2
+                                    },
+                                    "end": {
+                                      "line": 16,
+                                      "col": 3
+                                    },
+                                    "file": 99
+                                  }
+                                }
+                              },
+                              "ann": {
+                                "Con": {
+                                  "name": "Baz",
+                                  "args": []
+                                }
+                              },
+                              "ty": {
+                                "Con": {
+                                  "id": "Baz",
+                                  "args": []
+                                }
+                              }
+                            },
+                            {
+                              "pat": {
+                                "Wild": {
+                                  "span": {
+                                    "start": {
+                                      "line": 13,
+                                      "col": 17
+                                    },
+                                    "end": {
+                                      "line": 13,
+                                      "col": 18
+                                    },
+                                    "file": 99
+                                  }
+                                }
+                              },
+                              "ann": {
+                                "Con": {
+                                  "name": "string",
+                                  "args": []
+                                }
+                              },
+                              "ty": {
+                                "Con": {
+                                  "id": "string",
+                                  "args": []
+                                }
+                              }
+                            }
+                          ],
+                          "ret": {
+                            "Con": {
+                              "id": "int",
                               "args": []
                             }
                           },
@@ -248,300 +617,11 @@ No errors.
                             "Block": {
                               "stmts": [
                                 {
-                                  "Call": {
-                                    "func": {
-                                      "FieldAccess": {
-                                        "expr": {
-                                          "Var": {
-                                            "value": "f",
-                                            "decl": {
-                                              "file_id": {
-                                                "package": "user",
-                                                "filename": "test.brg"
-                                              },
-                                              "span": {
-                                                "start": {
-                                                  "line": 6,
-                                                  "col": 19
-                                                },
-                                                "end": {
-                                                  "line": 6,
-                                                  "col": 20
-                                                }
-                                              }
-                                            },
-                                            "generics_instantiated": [],
-                                            "ty": {
-                                              "Con": {
-                                                "name": "T",
-                                                "args": []
-                                              }
-                                            },
-                                            "span": {
-                                              "start": {
-                                                "line": 7,
-                                                "col": 4
-                                              },
-                                              "end": {
-                                                "line": 7,
-                                                "col": 5
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "field": "bar",
-                                        "ty": {
-                                          "Fun": {
-                                            "args": [
-                                              {
-                                                "Con": {
-                                                  "name": "string",
-                                                  "args": []
-                                                }
-                                              }
-                                            ],
-                                            "bounds": [],
-                                            "ret": {
-                                              "Con": {
-                                                "name": "int",
-                                                "args": []
-                                              }
-                                            },
-                                            "id": -1
-                                          }
-                                        },
-                                        "span": {
-                                          "start": {
-                                            "line": 7,
-                                            "col": 6
-                                          },
-                                          "end": {
-                                            "line": 7,
-                                            "col": 9
-                                          }
-                                        }
-                                      }
-                                    },
-                                    "args": [
-                                      {
-                                        "Literal": {
-                                          "lit": {
-                                            "String": [
-                                              "yo",
-                                              null
-                                            ]
-                                          },
-                                          "ty": {
-                                            "Con": {
-                                              "name": "string",
-                                              "args": []
-                                            }
-                                          },
-                                          "span": {
-                                            "start": {
-                                              "line": 7,
-                                              "col": 10
-                                            },
-                                            "end": {
-                                              "line": 7,
-                                              "col": 14
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ],
-                                    "ty": {
-                                      "Con": {
-                                        "name": "int",
-                                        "args": []
-                                      }
-                                    },
-                                    "span": {
-                                      "start": {
-                                        "line": 7,
-                                        "col": 6
-                                      },
-                                      "end": {
-                                        "line": 7,
-                                        "col": 9
-                                      }
-                                    }
-                                  }
-                                }
-                              ],
-                              "ty": {
-                                "Con": {
-                                  "name": "int",
-                                  "args": []
-                                }
-                              },
-                              "span": {
-                                "start": {
-                                  "line": 6,
-                                  "col": 32
-                                },
-                                "end": {
-                                  "line": 8,
-                                  "col": 3
-                                }
-                              }
-                            }
-                          },
-                          "bounded_ty": {
-                            "generics": [
-                              "T"
-                            ],
-                            "ty": {
-                              "Fun": {
-                                "args": [
-                                  {
-                                    "Con": {
-                                      "name": "T",
-                                      "args": []
-                                    }
-                                  }
-                                ],
-                                "bounds": [
-                                  {
-                                    "generic": {
-                                      "Con": {
-                                        "name": "T",
-                                        "args": []
-                                      }
-                                    },
-                                    "ty": {
-                                      "Con": {
-                                        "name": "Foo",
-                                        "args": []
-                                      }
-                                    }
-                                  }
-                                ],
-                                "ret": {
-                                  "Con": {
-                                    "name": "int",
-                                    "args": []
-                                  }
-                                },
-                                "id": -1
-                              }
-                            }
-                          }
-                        },
-                        "kind": "Inline",
-                        "ty": {
-                          "Fun": {
-                            "args": [
-                              {
-                                "Var": 99
-                              }
-                            ],
-                            "bounds": [
-                              {
-                                "generic": {
-                                  "Var": 99
-                                },
-                                "ty": {
-                                  "Con": {
-                                    "name": "Foo",
-                                    "args": []
-                                  }
-                                }
-                              }
-                            ],
-                            "ret": {
-                              "Con": {
-                                "name": "int",
-                                "args": []
-                              }
-                            },
-                            "id": -1
-                          }
-                        },
-                        "span": {
-                          "start": {
-                            "line": 6,
-                            "col": 2
-                          },
-                          "end": {
-                            "line": 8,
-                            "col": 3
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "StructDef": {
-                        "def": {
-                          "name": "Baz",
-                          "generics": [],
-                          "fields": [
-                            {
-                              "name": "x",
-                              "ann": {
-                                "Con": {
-                                  "name": "int",
-                                  "args": []
-                                }
-                              },
-                              "ty": {
-                                "generics": [],
-                                "ty": {
-                                  "Con": {
-                                    "name": "int",
-                                    "args": []
-                                  }
-                                }
-                              }
-                            }
-                          ]
-                        },
-                        "span": {
-                          "start": {
-                            "line": 10,
-                            "col": 2
-                          },
-                          "end": {
-                            "line": 10,
-                            "col": 23
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "ImplBlock": {
-                        "ann": {
-                          "Con": {
-                            "name": "Baz",
-                            "args": []
-                          }
-                        },
-                        "ty": {
-                          "Con": {
-                            "name": "Baz",
-                            "args": []
-                          }
-                        },
-                        "items": [
-                          {
-                            "Closure": {
-                              "fun": {
-                                "name": "bar",
-                                "generics": [],
-                                "bounds": [],
-                                "args": [
-                                  {
-                                    "pat": {
-                                      "Type": {
-                                        "ident": "self",
-                                        "is_mut": false,
-                                        "ann": {
-                                          "Con": {
-                                            "name": "Baz",
-                                            "args": []
-                                          }
-                                        },
-                                        "span": {
+                                  "FieldAccess": {
+                                    "expr": {
+                                      "Var": {
+                                        "value": "self",
+                                        "decl": {
                                           "start": {
                                             "line": 12,
                                             "col": 2
@@ -549,444 +629,356 @@ No errors.
                                           "end": {
                                             "line": 16,
                                             "col": 3
+                                          },
+                                          "file": 99
+                                        },
+                                        "generics_instantiated": [],
+                                        "ty": {
+                                          "Con": {
+                                            "id": "Baz",
+                                            "args": []
                                           }
-                                        }
-                                      }
-                                    },
-                                    "ann": {
-                                      "Con": {
-                                        "name": "Baz",
-                                        "args": []
-                                      }
-                                    },
-                                    "ty": {
-                                      "Con": {
-                                        "name": "Baz",
-                                        "args": []
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "pat": {
-                                      "Wild": {
+                                        },
                                         "span": {
                                           "start": {
-                                            "line": 13,
-                                            "col": 17
+                                            "line": 14,
+                                            "col": 6
                                           },
                                           "end": {
-                                            "line": 13,
-                                            "col": 18
-                                          }
+                                            "line": 14,
+                                            "col": 10
+                                          },
+                                          "file": 99
                                         }
                                       }
                                     },
-                                    "ann": {
-                                      "Con": {
-                                        "name": "string",
-                                        "args": []
-                                      }
-                                    },
+                                    "field": "x",
                                     "ty": {
                                       "Con": {
-                                        "name": "string",
-                                        "args": []
-                                      }
-                                    }
-                                  }
-                                ],
-                                "ret": {
-                                  "Con": {
-                                    "name": "int",
-                                    "args": []
-                                  }
-                                },
-                                "ann": {
-                                  "Con": {
-                                    "name": "int",
-                                    "args": []
-                                  }
-                                },
-                                "body": {
-                                  "Block": {
-                                    "stmts": [
-                                      {
-                                        "FieldAccess": {
-                                          "expr": {
-                                            "Var": {
-                                              "value": "self",
-                                              "decl": {
-                                                "file_id": {
-                                                  "package": "user",
-                                                  "filename": "test.brg"
-                                                },
-                                                "span": {
-                                                  "start": {
-                                                    "line": 12,
-                                                    "col": 2
-                                                  },
-                                                  "end": {
-                                                    "line": 16,
-                                                    "col": 3
-                                                  }
-                                                }
-                                              },
-                                              "generics_instantiated": [],
-                                              "ty": {
-                                                "Con": {
-                                                  "name": "Baz",
-                                                  "args": []
-                                                }
-                                              },
-                                              "span": {
-                                                "start": {
-                                                  "line": 14,
-                                                  "col": 6
-                                                },
-                                                "end": {
-                                                  "line": 14,
-                                                  "col": 10
-                                                }
-                                              }
-                                            }
-                                          },
-                                          "field": "x",
-                                          "ty": {
-                                            "Con": {
-                                              "name": "int",
-                                              "args": []
-                                            }
-                                          },
-                                          "span": {
-                                            "start": {
-                                              "line": 14,
-                                              "col": 6
-                                            },
-                                            "end": {
-                                              "line": 14,
-                                              "col": 12
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ],
-                                    "ty": {
-                                      "Con": {
-                                        "name": "int",
+                                        "id": "int",
                                         "args": []
                                       }
                                     },
                                     "span": {
                                       "start": {
-                                        "line": 13,
-                                        "col": 35
+                                        "line": 14,
+                                        "col": 6
                                       },
                                       "end": {
-                                        "line": 15,
-                                        "col": 5
-                                      }
-                                    }
-                                  }
-                                },
-                                "bounded_ty": {
-                                  "generics": [],
-                                  "ty": {
-                                    "Fun": {
-                                      "args": [
-                                        {
-                                          "Con": {
-                                            "name": "Baz",
-                                            "args": []
-                                          }
-                                        },
-                                        {
-                                          "Con": {
-                                            "name": "string",
-                                            "args": []
-                                          }
-                                        }
-                                      ],
-                                      "bounds": [],
-                                      "ret": {
-                                        "Con": {
-                                          "name": "int",
-                                          "args": []
-                                        }
+                                        "line": 14,
+                                        "col": 12
                                       },
-                                      "id": -1
+                                      "file": 99
                                     }
                                   }
                                 }
-                              },
-                              "kind": "TopLevel",
+                              ],
                               "ty": {
-                                "Fun": {
-                                  "args": [
-                                    {
-                                      "Con": {
-                                        "name": "Baz",
-                                        "args": []
-                                      }
-                                    },
-                                    {
-                                      "Con": {
-                                        "name": "string",
-                                        "args": []
-                                      }
-                                    }
-                                  ],
-                                  "bounds": [],
-                                  "ret": {
-                                    "Con": {
-                                      "name": "int",
-                                      "args": []
-                                    }
-                                  },
-                                  "id": -1
+                                "Con": {
+                                  "id": "int",
+                                  "args": []
                                 }
                               },
                               "span": {
                                 "start": {
                                   "line": 13,
-                                  "col": 4
+                                  "col": 35
                                 },
                                 "end": {
                                   "line": 15,
                                   "col": 5
-                                }
+                                },
+                                "file": 99
                               }
                             }
-                          }
-                        ],
-                        "generics": [],
-                        "span": {
-                          "start": {
-                            "line": 12,
-                            "col": 7
                           },
-                          "end": {
-                            "line": 12,
-                            "col": 10
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "Call": {
-                        "func": {
-                          "Var": {
-                            "value": "check",
-                            "decl": {
-                              "file_id": {
-                                "package": "user",
-                                "filename": "test.brg"
-                              },
-                              "span": {
-                                "start": {
-                                  "line": 6,
-                                  "col": 2
-                                },
-                                "end": {
-                                  "line": 8,
-                                  "col": 3
-                                }
-                              }
-                            },
-                            "generics_instantiated": [
-                              {
-                                "Con": {
-                                  "name": "Baz",
-                                  "args": []
-                                }
-                              }
-                            ],
+                          "bounded_ty": {
+                            "generics": [],
                             "ty": {
                               "Fun": {
                                 "args": [
                                   {
                                     "Con": {
-                                      "name": "Baz",
+                                      "id": "Baz",
+                                      "args": []
+                                    }
+                                  },
+                                  {
+                                    "Con": {
+                                      "id": "string",
                                       "args": []
                                     }
                                   }
                                 ],
-                                "bounds": [
-                                  {
-                                    "generic": {
-                                      "Con": {
-                                        "name": "Baz",
-                                        "args": []
-                                      }
-                                    },
-                                    "ty": {
-                                      "Con": {
-                                        "name": "Foo",
-                                        "args": []
-                                      }
-                                    }
-                                  }
-                                ],
+                                "bounds": [],
                                 "ret": {
                                   "Con": {
-                                    "name": "int",
+                                    "id": "int",
                                     "args": []
                                   }
-                                },
-                                "id": -1
-                              }
-                            },
-                            "span": {
-                              "start": {
-                                "line": 18,
-                                "col": 2
-                              },
-                              "end": {
-                                "line": 18,
-                                "col": 7
+                                }
                               }
                             }
                           }
                         },
-                        "args": [
-                          {
-                            "StructCall": {
-                              "name": "Baz",
-                              "fields": [
-                                {
-                                  "name": "x",
-                                  "value": {
-                                    "Literal": {
-                                      "lit": {
-                                        "Int": 1
-                                      },
-                                      "ty": {
-                                        "Con": {
-                                          "name": "int",
-                                          "args": []
-                                        }
-                                      },
-                                      "span": {
-                                        "start": {
-                                          "line": 18,
-                                          "col": 17
-                                        },
-                                        "end": {
-                                          "line": 18,
-                                          "col": 18
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              ],
-                              "rest": null,
-                              "ty": {
+                        "kind": "TopLevel",
+                        "ty": {
+                          "Fun": {
+                            "args": [
+                              {
                                 "Con": {
-                                  "name": "Baz",
+                                  "id": "Baz",
                                   "args": []
                                 }
                               },
-                              "span": {
-                                "start": {
-                                  "line": 18,
-                                  "col": 8
+                              {
+                                "Con": {
+                                  "id": "string",
+                                  "args": []
+                                }
+                              }
+                            ],
+                            "bounds": [],
+                            "ret": {
+                              "Con": {
+                                "id": "int",
+                                "args": []
+                              }
+                            }
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 13,
+                            "col": 4
+                          },
+                          "end": {
+                            "line": 15,
+                            "col": 5
+                          },
+                          "file": 99
+                        }
+                      }
+                    }
+                  ],
+                  "generics": [],
+                  "span": {
+                    "start": {
+                      "line": 12,
+                      "col": 7
+                    },
+                    "end": {
+                      "line": 12,
+                      "col": 10
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              {
+                "Call": {
+                  "func": {
+                    "Var": {
+                      "value": "check",
+                      "decl": {
+                        "start": {
+                          "line": 6,
+                          "col": 2
+                        },
+                        "end": {
+                          "line": 8,
+                          "col": 3
+                        },
+                        "file": 99
+                      },
+                      "generics_instantiated": [
+                        {
+                          "Con": {
+                            "id": "Baz",
+                            "args": []
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Fun": {
+                          "args": [
+                            {
+                              "Con": {
+                                "id": "Baz",
+                                "args": []
+                              }
+                            }
+                          ],
+                          "bounds": [
+                            {
+                              "generic": {
+                                "Con": {
+                                  "id": "Baz",
+                                  "args": []
+                                }
+                              },
+                              "ty": {
+                                "Con": {
+                                  "id": "Foo",
+                                  "args": []
+                                }
+                              }
+                            }
+                          ],
+                          "ret": {
+                            "Con": {
+                              "id": "int",
+                              "args": []
+                            }
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 18,
+                          "col": 2
+                        },
+                        "end": {
+                          "line": 18,
+                          "col": 7
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "args": [
+                    {
+                      "StructCall": {
+                        "name": "Baz",
+                        "fields": [
+                          {
+                            "name": "x",
+                            "value": {
+                              "Literal": {
+                                "lit": {
+                                  "Int": 1
                                 },
-                                "end": {
-                                  "line": 18,
-                                  "col": 20
+                                "ty": {
+                                  "Con": {
+                                    "id": "int",
+                                    "args": []
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 18,
+                                    "col": 17
+                                  },
+                                  "end": {
+                                    "line": 18,
+                                    "col": 18
+                                  },
+                                  "file": 99
                                 }
                               }
                             }
                           }
                         ],
+                        "rest": null,
                         "ty": {
                           "Con": {
-                            "name": "int",
+                            "id": "Baz",
                             "args": []
                           }
                         },
                         "span": {
                           "start": {
                             "line": 18,
-                            "col": 2
+                            "col": 8
                           },
                           "end": {
                             "line": 18,
-                            "col": 21
-                          }
+                            "col": 20
+                          },
+                          "file": 99
                         }
                       }
                     }
                   ],
                   "ty": {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
                   },
                   "span": {
                     "start": {
-                      "line": 1,
-                      "col": 23
+                      "line": 18,
+                      "col": 2
                     },
                     "end": {
-                      "line": 19,
-                      "col": 1
-                    }
-                  }
-                }
-              },
-              "bounded_ty": {
-                "generics": [],
-                "ty": {
-                  "Fun": {
-                    "args": [],
-                    "bounds": [],
-                    "ret": {
-                      "Con": {
-                        "name": "int",
-                        "args": []
-                      }
+                      "line": 18,
+                      "col": 21
                     },
-                    "id": -1
+                    "file": 99
                   }
                 }
               }
-            },
-            "kind": "TopLevel",
+            ],
             "ty": {
-              "Fun": {
-                "args": [],
-                "bounds": [],
-                "ret": {
-                  "Con": {
-                    "name": "int",
-                    "args": []
-                  }
-                },
-                "id": -1
+              "Con": {
+                "id": "int",
+                "args": []
               }
             },
             "span": {
               "start": {
                 "line": 1,
-                "col": 0
+                "col": 23
               },
               "end": {
                 "line": 19,
                 "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
               }
             }
           }
         }
-      ],
-      "source": "fn borgo_main() -> int {\n  trait Foo {\n    fn bar(x: string) -> int;\n  }\n\n  fn check<T: Foo>(f: T) -> int {\n    f.bar(\"yo\")\n  }\n\n  struct Baz { x: int }\n\n  impl Baz {\n    fn bar(self, _: string) -> int {\n      self.x\n    }\n  }\n\n  check(Baz { x: 1 })\n}"
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "int",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 0
+        },
+        "end": {
+          "line": 19,
+          "col": 1
+        },
+        "file": 99
+      }
     }
-  ],
-  "errors": [
-    [
-      "test.brg",
-      []
-    ]
-  ]
-}
+  }
+]

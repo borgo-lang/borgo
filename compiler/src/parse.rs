@@ -1,12 +1,5 @@
-use std::collections::HashMap;
-
-use crate::ast::{
-    Binding, EnumFieldDef, Expr, Function, Operator, Pat, PkgInfo, Result, Span, StructFieldDef,
-    TypeAst, UnOp,
-};
+use crate::ast::{EnumFieldDef, Expr, Operator, Pat, Result, StructFieldDef, TypeAst, UnOp};
 use crate::type_::Type;
-
-use syn::spanned::Spanned;
 
 pub fn type_from_path(path: &syn::Path) -> TypeAst {
     let last_segment = path.segments.iter().last().unwrap();
@@ -90,16 +83,21 @@ pub fn type_from_expr(ty: syn::Type) -> TypeAst {
     }
 }
 
-pub fn parse_generics(generics: &syn::Generics) -> Vec<String> {
+/*
+pub fn parse_generics(generics: &syn::Generics) -> Vec<Generic> {
     generics
         .params
         .iter()
         .map(|generic| match generic {
-            syn::GenericParam::Type(ty) => ty.ident.to_string(),
+            syn::GenericParam::Type(ty) => TypeAst::Con {
+                name: ty.ident.to_string(),
+                args: vec![],
+            },
             _ => panic!("not a generic type"),
         })
         .collect()
 }
+*/
 
 pub enum Fields {
     TupleCons(Vec<EnumFieldDef>),
@@ -149,110 +147,11 @@ pub fn parse_fields(fields: syn::Fields) -> Fields {
     }
 }
 
-pub fn parse_input(input: syn::FnArg, receiver: Option<(TypeAst, Span)>) -> Result<Binding> {
-    match input {
-        syn::FnArg::Typed(arg) => {
-            let pat = Pat::from_pat_expr(*arg.pat)?;
-            let ann = type_from_expr(*arg.ty);
-
-            Ok(Binding {
-                pat,
-                ann,
-                ty: Type::dummy(),
-            })
-            // todo!("{:#?}", arg.pat)
-        }
-
-        syn::FnArg::Receiver(r) => match receiver {
-            Some((ann, span)) => {
-                // TODO asdf this logic should be applied to other args too, not just self
-                let is_mut = r.mutability.is_some();
-
-                let reference = if r.reference.is_some() {
-                    if is_mut {
-                        Some("RefMut")
-                    } else {
-                        Some("Ref")
-                    }
-                } else {
-                    None
-                };
-
-                let ann = match reference {
-                    Some(name) => TypeAst::Con {
-                        name: name.to_string(),
-                        args: vec![ann],
-                    },
-                    None => ann,
-                };
-
-                Ok(Binding {
-                    pat: Pat::Type {
-                        ident: "self".to_string(),
-                        is_mut,
-                        ann: ann.clone(),
-                        span,
-                    },
-                    ann,
-                    ty: Type::dummy(),
-                })
-            }
-            _ => panic!("found receiver but no arg provided"),
-        },
-    }
-}
-
 pub fn parse_output(output: syn::ReturnType, default: TypeAst) -> TypeAst {
     match output {
         syn::ReturnType::Default => default,
         syn::ReturnType::Type(_, ty) => type_from_expr(*ty),
     }
-}
-
-pub fn parse_signature(
-    sig: syn::Signature,
-    receiver: Option<(TypeAst, Span)>,
-) -> Result<(Vec<String>, Vec<Binding>, TypeAst)> {
-    let generics = parse_generics(&sig.generics);
-    let args = sig
-        .inputs
-        .into_iter()
-        .map(|i| parse_input(i, receiver.clone()))
-        .collect::<Result<_>>()?;
-
-    let ret = parse_output(sig.output, TypeAst::unit());
-    Ok((generics, args, ret))
-}
-
-pub fn parse_item_fn(fun: syn::ItemFn) -> Result<Function> {
-    let sig = fun.sig;
-    let (generics, args, ann) = self::parse_signature(sig.clone(), None)?;
-    let bounds = self::parse_bounds(&sig.generics);
-
-    let span = (*fun.block).span();
-    let stmts = fun
-        .block
-        .stmts
-        .into_iter()
-        .map(Expr::from_statement)
-        .collect::<Result<_>>()?;
-
-    let body = Expr::Block {
-        stmts,
-        ty: Type::dummy(),
-        span: Span::make(span),
-    };
-
-    Ok(Function {
-        name: sig.ident.to_string(),
-        generics,
-        bounds,
-        args,
-        ann,
-        ret: Type::dummy(),
-        body: body.into(),
-        bounded_ty: Type::dummy().to_bounded(),
-    })
 }
 
 pub fn parse_ident_from_path(e: syn::ExprPath) -> String {
@@ -294,25 +193,6 @@ pub fn parse_unop(op: syn::UnOp) -> Result<UnOp> {
     }
 }
 
-pub fn parse_bounds(generics: &syn::Generics) -> Vec<(String, TypeAst)> {
-    let mut ret = vec![];
-
-    for x in generics.type_params() {
-        let generic_type = x.ident.to_string();
-
-        for b in x.bounds.iter() {
-            let b = match b {
-                syn::TypeParamBound::Trait(b) => b,
-                syn::TypeParamBound::Lifetime(_) => panic!("we don't need no lifetimes"),
-            };
-
-            ret.push((generic_type.clone(), type_from_path(&b.path)));
-        }
-    }
-
-    ret
-}
-
 pub fn parse_attrs(attrs: &[syn::Attribute]) -> Vec<String> {
     attrs
         .iter()
@@ -330,50 +210,9 @@ pub fn parse_attrs(attrs: &[syn::Attribute]) -> Vec<String> {
 pub fn parse_use(tree: syn::UseTree) -> String {
     match tree {
         syn::UseTree::Name(n) => n.ident.to_string(),
-        syn::UseTree::Path(p) => format!("{}::{}", p.ident.to_string(), parse_use(*p.tree)),
+        syn::UseTree::Path(p) => format!("{}::{}", p.ident, parse_use(*p.tree)),
 
         // syn::UseTree::Rename(_) => todo!(),
         _ => panic!("unsupported UseTree {:?}", tree),
     }
-}
-
-pub fn parse_pkgmod_info(attrs: &[syn::Attribute]) -> std::result::Result<PkgInfo, String> {
-    use std::result::Result;
-
-    if attrs.first().is_none() {
-        return Err("expected attribute #[...] on mod declaration".to_string());
-    }
-
-    let mut source = attrs[0].tokens.to_string();
-    source.remove(0);
-    source.remove(source.len() - 1);
-
-    // parse pkg info like a butcher would
-    let parts = source
-        .split(",")
-        .map(|s| {
-            let pair: Vec<_> = s.split("=").collect();
-            if pair.len() != 2 {
-                return Err("Failed to parse attribute".to_string());
-            }
-
-            Ok((
-                pair[0].trim().to_string(),
-                pair[1].trim().to_string().replace(" ", ""),
-            ))
-        })
-        .collect::<Result<HashMap<_, _>, _>>()?;
-
-    let name = parts
-        .get("name")
-        .ok_or("Attribute `name` not found".to_string())?;
-
-    let path = parts
-        .get("path")
-        .ok_or("Attribute `path` not found".to_string())?;
-
-    Ok(PkgInfo {
-        name: name.to_string(),
-        path: path.to_string(),
-    })
 }

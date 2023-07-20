@@ -33,7 +33,6 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             fun: Function {
                 name: fun.name,
                 generics: fun.generics,
-                bounds: fun.bounds,
                 args: fun
                     .args
                     .iter()
@@ -59,12 +58,12 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
                     // Statements inside a block are discarded, so they may never end up getting
                     // constrained to anything. It's desirable to have a concrete type for all
                     // expressions, so replace with Unit if a type hasn't been inferred yet.
-                    let new_expr = match new_expr.get_type() {
-                        Type::Var(_) => new_expr.replace_type(Type::unit()),
-                        _ => new_expr,
-                    };
+                    
 
-                    new_expr
+                    match new_expr.get_type() {
+                        Type::Var(_) => new_expr.replace_type(instance.type_unit()),
+                        _ => new_expr,
+                    }
                 })
                 .collect(),
             ty: instance.substitute(ty),
@@ -397,26 +396,14 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
-        Expr::Mod {
-            name,
-            items,
-            pkg,
-            span,
-        } => Expr::Mod {
-            name,
-            pkg,
-            items: items
-                .iter()
-                .map(|e| substitute_expr(e.clone(), instance))
-                .collect(),
-            span,
-        },
-
         Expr::Flow { kind, span } => Expr::Flow { kind, span },
         Expr::TypeAlias { def, span } => Expr::TypeAlias { def, span },
         Expr::NewtypeDef { def, span } => Expr::NewtypeDef { def, span },
         Expr::UsePackage { import, span } => Expr::UsePackage { import, span },
-        Expr::Unit { span } => Expr::Unit { span },
+        Expr::Unit { ty, span } => Expr::Unit {
+            ty: instance.substitute(ty),
+            span,
+        },
         Expr::Raw { text } => Expr::Raw { text },
         Expr::Noop => Expr::Noop,
         Expr::Todo => Expr::Todo,
@@ -475,6 +462,9 @@ fn substitute_pat(pat: Pat, instance: &mut infer::Infer) -> Pat {
         },
 
         Pat::Wild { span } => Pat::Wild { span },
-        Pat::Unit { span } => Pat::Unit { span },
+        Pat::Unit { ty, span } => Pat::Unit {
+            ty: instance.substitute(ty),
+            span,
+        },
     }
 }

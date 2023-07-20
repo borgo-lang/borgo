@@ -14,6 +14,12 @@ No errors.
   "Match": {
     "subject": {
       "Unit": {
+        "ty": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
         "span": {
           "start": {
             "line": 1,
@@ -22,7 +28,8 @@ No errors.
           "end": {
             "line": 1,
             "col": 8
-          }
+          },
+          "file": 99
         }
       }
     },
@@ -30,6 +37,12 @@ No errors.
       {
         "pat": {
           "Unit": {
+            "ty": {
+              "Con": {
+                "id": "Unit",
+                "args": []
+              }
+            },
             "span": {
               "start": {
                 "line": 2,
@@ -38,7 +51,8 @@ No errors.
               "end": {
                 "line": 2,
                 "col": 4
-              }
+              },
+              "file": 99
             }
           }
         },
@@ -49,7 +63,7 @@ No errors.
             },
             "ty": {
               "Con": {
-                "name": "int",
+                "id": "int",
                 "args": []
               }
             },
@@ -61,7 +75,8 @@ No errors.
               "end": {
                 "line": 2,
                 "col": 9
-              }
+              },
+              "file": 99
             }
           }
         }
@@ -69,7 +84,7 @@ No errors.
     ],
     "ty": {
       "Con": {
-        "name": "int",
+        "id": "int",
         "args": []
       }
     },
@@ -81,7 +96,8 @@ No errors.
       "end": {
         "line": 3,
         "col": 1
-      }
+      },
+      "file": 99
     }
   }
 }

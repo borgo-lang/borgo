@@ -16,11 +16,10 @@ No errors.
           "fun": {
             "name": "foo",
             "generics": [],
-            "bounds": [],
             "args": [],
             "ret": {
               "Con": {
-                "name": "int",
+                "id": "int",
                 "args": []
               }
             },
@@ -40,7 +39,7 @@ No errors.
                       },
                       "ty": {
                         "Con": {
-                          "name": "int",
+                          "id": "int",
                           "args": []
                         }
                       },
@@ -52,14 +51,15 @@ No errors.
                         "end": {
                           "line": 1,
                           "col": 21
-                        }
+                        },
+                        "file": 99
                       }
                     }
                   }
                 ],
                 "ty": {
                   "Con": {
-                    "name": "int",
+                    "id": "int",
                     "args": []
                   }
                 },
@@ -71,7 +71,8 @@ No errors.
                   "end": {
                     "line": 1,
                     "col": 23
-                  }
+                  },
+                  "file": 99
                 }
               }
             },
@@ -83,11 +84,10 @@ No errors.
                   "bounds": [],
                   "ret": {
                     "Con": {
-                      "name": "int",
+                      "id": "int",
                       "args": []
                     }
-                  },
-                  "id": -1
+                  }
                 }
               }
             }
@@ -99,11 +99,10 @@ No errors.
               "bounds": [],
               "ret": {
                 "Con": {
-                  "name": "int",
+                  "id": "int",
                   "args": []
                 }
-              },
-              "id": -1
+              }
             }
           },
           "span": {
@@ -114,7 +113,8 @@ No errors.
             "end": {
               "line": 1,
               "col": 23
-            }
+            },
+            "file": 99
           }
         }
       }
@@ -125,11 +125,10 @@ No errors.
         "bounds": [],
         "ret": {
           "Con": {
-            "name": "int",
+            "id": "int",
             "args": []
           }
-        },
-        "id": -1
+        }
       }
     },
     "span": {
@@ -140,7 +139,8 @@ No errors.
       "end": {
         "line": 1,
         "col": 25
-      }
+      },
+      "file": 99
     }
   }
 }

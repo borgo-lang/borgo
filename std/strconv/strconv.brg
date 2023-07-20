@@ -1,0 +1,151 @@
+fn AppendBool(dst: [byte], b: bool) -> [byte] {
+    EXT
+}
+
+fn AppendFloat(dst: [byte], f: float64, fmt: byte, prec: int) -> [byte] {
+    EXT
+}
+
+fn AppendInt(dst: [byte], i: int64, base: int) -> [byte] {
+    EXT
+}
+
+fn AppendQuote(dst: [byte], s: string) -> [byte] {
+    EXT
+}
+
+fn AppendQuoteRune(dst: [byte], r: rune) -> [byte] {
+    EXT
+}
+
+fn AppendQuoteRuneToASCII(dst: [byte], r: rune) -> [byte] {
+    EXT
+}
+
+fn AppendQuoteRuneToGraphic(dst: [byte], r: rune) -> [byte] {
+    EXT
+}
+
+fn AppendQuoteToASCII(dst: [byte], s: string) -> [byte] {
+    EXT
+}
+
+fn AppendQuoteToGraphic(dst: [byte], s: string) -> [byte] {
+    EXT
+}
+
+fn AppendUint(dst: [byte], i: uint64, base: int) -> [byte] {
+    EXT
+}
+
+fn Atoi(s: string) -> Result<int> {
+    EXT
+}
+
+fn CanBackquote(s: string) -> bool {
+    EXT
+}
+
+fn FormatBool(b: bool) -> string {
+    EXT
+}
+
+fn FormatComplex(c: complex128, fmt: byte, prec: int) -> string {
+    EXT
+}
+
+fn FormatFloat(f: float64, fmt: byte, prec: int) -> string {
+    EXT
+}
+
+fn FormatInt(i: int64, base: int) -> string {
+    EXT
+}
+
+fn FormatUint(i: uint64, base: int) -> string {
+    EXT
+}
+
+fn IsGraphic(r: rune) -> bool {
+    EXT
+}
+
+fn IsPrint(r: rune) -> bool {
+    EXT
+}
+
+fn Itoa(i: int) -> string {
+    EXT
+}
+
+fn ParseBool(str: string) -> Result<bool> {
+    EXT
+}
+
+fn ParseComplex(s: string, bitSize: int) -> Result<complex128> {
+    EXT
+}
+
+fn ParseFloat(s: string, bitSize: int) -> Result<float64> {
+    EXT
+}
+
+fn ParseInt(s: string, base: int, bitSize: int) -> Result<int64> {
+    EXT
+}
+
+fn ParseUint(s: string, base: int, bitSize: int) -> Result<uint64> {
+    EXT
+}
+
+fn Quote(s: string) -> string {
+    EXT
+}
+
+fn QuoteRune(r: rune) -> string {
+    EXT
+}
+
+fn QuoteRuneToASCII(r: rune) -> string {
+    EXT
+}
+
+fn QuoteRuneToGraphic(r: rune) -> string {
+    EXT
+}
+
+fn QuoteToASCII(s: string) -> string {
+    EXT
+}
+
+fn QuoteToGraphic(s: string) -> string {
+    EXT
+}
+
+fn QuotedPrefix(s: string) -> Result<string> {
+    EXT
+}
+
+fn Unquote(s: string) -> Result<string> {
+    EXT
+}
+
+fn UnquoteChar(s: string, quote: byte) -> (rune, bool, string, error) {
+    EXT
+}
+
+impl NumError {
+    fn Error(&self) -> string {
+        EXT
+    }
+
+    fn Unwrap(&self) -> error {
+        EXT
+    }
+}
+
+struct NumError {
+    Func: string,
+    Num: string,
+    Err: error,
+}

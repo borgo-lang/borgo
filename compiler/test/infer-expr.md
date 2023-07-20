@@ -33,7 +33,7 @@ Block ends with function 2
 > infer("fn (int) -> int")
 
 ```rust
-{ fn foo(foo: int) -> int { foo } }
+{ fn foo(bar: int) -> int { bar } }
 ```
 
 Block ends with function 3
@@ -41,7 +41,7 @@ Block ends with function 3
 > infer("fn (int, bool) -> int")
 
 ```rust
-{ fn foo(foo: int, bar: bool) -> int { foo } }
+{ fn foo(bar: int, baz: bool) -> int { bar } }
 ```
 
 Block ends with function 4
@@ -49,7 +49,7 @@ Block ends with function 4
 > infer("fn <A>(A, bool) -> A")
 
 ```rust
-{ fn foo<T>(foo: T, bar: bool) -> T { foo } }
+{ fn foo<T>(bar: T, baz: bool) -> T { bar } }
 ```
 
 Sanity check: types must exist
@@ -73,7 +73,7 @@ Block ends with generic list
 > infer("fn <A>(A) -> [A]")
 
 ```rust
-{ fn foo<Y>(foo: Y) -> [Y] { [foo, foo] } }
+{ fn foo<Y>(bar: Y) -> [Y] { [bar, bar] } }
 ```
 
 Generic arguments 1
@@ -81,7 +81,7 @@ Generic arguments 1
 > errorContains("Wrong arity")
 
 ```rust
-{ fn foo(foo: Result<string, int, bool>) {} }
+{ fn foo(bar: Result<string, int, bool>) {} }
 ```
 
 Generic arguments 2
@@ -97,7 +97,7 @@ Generic arguments 3
 > errorContains("Wrong arity")
 
 ```rust
-{ fn foo(foo: int<bool>) {} }
+{ fn foo(bar: int<bool>) {} }
 ```
 
 HKTs are not supported.
@@ -105,7 +105,7 @@ HKTs are not supported.
 > errorContains("Wrong arity")
 
 ```rust
-{ fn foo<T>(foo: T<bool>) {} }
+{ fn foo<T>(bar: T<bool>) {} }
 ```
 
 Populate scope with let bindings.
@@ -1479,22 +1479,6 @@ Unknown type in impl with generics
 }
 ```
 
-Can use different generic name than declaration.
-
-> infer("int")
-
-```rust
-{
-  struct Foo<T> {}
-
-  impl<Y> Foo<Y> {
-    fn bar<X>(x: X, y: Y) {}
-  }
-
-  2
-}
-```
-
 Missing methods give the target type.
 
 > errorContains("Foo<int> has no field or method: bar")
@@ -1733,5 +1717,17 @@ Trait bounds
   }
 
   check(Baz { x: 1 })
+}
+```
+
+Result type must have one type param.
+
+> errorContains("Wrong arity")
+
+```rust
+{
+    fn foo() -> Result {
+      Ok(1)
+    }
 }
 ```

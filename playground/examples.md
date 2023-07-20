@@ -1,30 +1,25 @@
 ## Intro
 
-Welcome to the Borgo language tour!
+**Borgo** is a programming language that targets Go.
 
-Borgo is a statically typed programming language that looks like Rust and
-compiles to Go.
+Imagine Go had:
 
-From Rust it _borrows_:
-
-- Sum types with exhaustive pattern matching
-- `Result<T, E>` and `Option<T>` instead of `nil`
-- Type checker with good type inference
+- Rust syntax
+- Union types
+- `Option<T>` instead of `nil`
+- `Result<T>` instead of `T, error`
 - Error handling with `?` operator
 
-And leverages Go for:
+Borgo is still early in development, but should be usable!
 
-- Garbage collector
-- Robust runtime with concurrency built-in
-- Large package ecosystem with mature libraries
+This playground runs the compiler as a wasm binary and then sends the transpiled
+go output to the official Go playground for execution.
 
-You can think of Borgo as Rust without the borrow checker if you like, with
-access to all Go packages.
-
-Ready to dive in? :)
+Check the README for instructions on how to run the compiler locally.
 
 ```rust
 use fmt;
+
 
 fn main() {
   fmt.Println("hi")
@@ -78,8 +73,8 @@ fn main() {
 
 ## Control flow
 
-Like in Go, the only values that can be iterated over are slices, maps and
-channels.
+Like in Go, the only values that can be iterated over are slices, maps, channels
+and strings.
 
 However, loops always iterate over a single value, which is the element in the
 slice (contrary to Go, where using a single iteration variable gives you the
@@ -155,9 +150,9 @@ fn main() {
 }
 ```
 
-## Sum types and pattern matching
+## Union types and pattern matching
 
-Sum types (enums) work pretty much like in Rust.
+Union types work pretty much like in Rust.
 
 Pattern matches must be exhaustive, meaning the compiler will return an error
 when a case is missing (try removing any case statement from the example and see
@@ -177,21 +172,6 @@ For now, variants can only be defined as tuples and not as structs.
 use fmt;
 use strings;
 
-enum Coin {
-    Penny,
-    Nickel,
-    Dime,
-    Quarter,
-}
-
-fn value_in_cents(coin: Coin) -> int {
-    match coin {
-        Coin::Penny => 1,
-        Coin::Nickel => 5,
-        Coin::Dime => 10,
-        Coin::Quarter => 25,
-    }
-}
 
 enum IpAddr {
     V4(uint8, uint8, uint8, uint8),
@@ -220,14 +200,31 @@ fn is_private(ip: IpAddr) -> bool {
   }
 }
 
-fn main() {
-  let cents = value_in_cents(Coin::Nickel);
-  fmt.Println("cents:", cents);
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
 
+fn value_in_cents(coin: Coin) -> int {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
+}
+
+fn main() {
   let home = IpAddr::V4(127, 0, 0, 1);
   let loopback = IpAddr::V6("::1");
   fmt.Println("home ip is private: ", home, is_private(home));
   fmt.Println("loopback: ", loopback);
+
+  let cents = value_in_cents(Coin::Nickel);
+  fmt.Println("cents:", cents);
+
 }
 ```
 
@@ -376,8 +373,8 @@ section.
 
 ```rust
 use fmt;
-use os;
 use io::fs; // TODO there should be no need of importing this
+use os;
 
 fn main() {
     let key = os.LookupEnv("HOME");
@@ -401,34 +398,48 @@ fn main() {
 ## Package definitions
 
 In order to use existing Go packages, Borgo needs to know what types and
-functions they contain.
+functions they contain. This is done in declaration files, which serve a similar
+purpose to what you might see in Typescript with `d.ts` files.
 
-You can declare packages within `mod {}` blocks in source files. Right now the
-stdlib comes with very few bindings to the actual Go stdlib, just a few
-functions here and there for testing purposes.
+Only a small part of the Go stdlib is currently available for use in Borgo --
+check the [std/](https://github.com/borgo-lang/borgo/tree/main/std) folder for
+more information.
 
-The example on the right shows how to write a (partial) declaration for the
-`regex` package, which is currently missing in the Borgo stdlib.
+The example on the right uses the `regexp` package from the Go standard library.
+The relevant bindings are defined in `std/regexp/regexp.brg` (here's a snippet):
+
+```
+struct Regexp { }
+
+fn Compile  (expr: string) -> Result<&Regexp> { EXT }
+
+fn CompilePOSIX  (expr: string) -> Result<&Regexp> { EXT }
+
+fn MustCompile  (str: string) -> &Regexp { EXT }
+
+fn MustCompilePOSIX  (str: string) -> &Regexp { EXT }
+
+fn Match  (pattern: string, b: [byte]) -> Result<bool> { EXT }
+
+// ... other stuff
+```
 
 Writing such declarations by hand is a pain! There's no reason why this process
-couldn't be automated though. It should be possible to parse `.go` files, find
-all public declarations and convert them into equivalent Borgo declarations :)
+couldn't be automated though. The compiler comes with an `importer` tool that
+parses a Go package and generates corresponding bindings to be used in Borgo.
+
+To run the importer on any package in the stdlib, you can use something like the
+following:
+
+```
+just run-importer -folder $(go env GOROOT)/src/regexp > std/regexp/regexp.brg
+```
+
+All packages also need to be listed in
+[std/modules.json](https://github.com/borgo-lang/borgo/tree/main/std/modules.json)
+for now.
 
 ```rust
-#[package(path = regexp, name = regexp)]
-mod regexp {
-
-  // private type
-  type Regexp = ();
-
-  fn Compile(expr: string) -> Result<&mut Regexp, error> { EXT }
-  fn MustCompile(expr: string) -> &mut Regexp { EXT }
-
-  impl Regexp {
-    fn MatchString(&self, s: string) -> bool { EXT }
-  }
-}
-
 use fmt;
 use regexp;
 
@@ -444,8 +455,8 @@ fn main() {
 
 **NOTE** Right now this is more wishful thinking than anything :D I plan to
 implement an extra pass in the compiler pipeline that can check if references
-are handed out correctly, but right now you can pass around references of any
-type and not get an error.
+are handed out correctly, but **right now you can pass around references of any
+type and not get an error**.
 
 Borgo dosn't have a borrow checker: all memory is managed by the Go runtime.
 That's one of the main benefits of compiling to Go after all!

@@ -1,0 +1,73 @@
+type int = EXT;
+type bool = EXT;
+type string = EXT;
+type rune = EXT;
+type float64 = EXT;
+type any = EXT;
+
+type Unit = EXT;
+type Slice<T> = EXT;
+type never = EXT;
+type Ref<T> = EXT;
+type RefMut<T> = EXT;
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+fn hello() -> string { EXT }
+
+fn sum(a: int, b: int) -> int {
+    EXT
+}
+fn list_push<T>(xs: [T], x: T) -> [T] {
+    EXT
+}
+
+fn list_map<T, Y>(xs: [T], f: fn(x: T) -> Y) -> [Y] {
+    EXT
+}
+
+fn list_head<T>(xs: [T]) -> T {
+    EXT
+}
+
+fn inc(x: int) -> int {
+    EXT
+}
+fn int_to_string(x: int) -> string {
+    EXT
+}
+fn fst<T, Y>(x: (T, Y)) -> T {
+    EXT
+}
+
+fn str_concat(x: string, y: string) -> string {
+    EXT
+}
+fn print(x: string) {
+    EXT
+}
+
+
+struct Tuple2<T, Y> {
+    first: T,
+    second: Y,
+}
+
+struct Tuple3<T, Y, Z> {
+    first: T,
+    second: Y,
+    third: Z,
+}
+
+enum ErrFoo {
+    A,
+    B,
+}
+
+enum ErrBar {
+    X,
+    Y,
+}

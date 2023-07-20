@@ -1,7 +1,7 @@
 Generic arguments 1
 
 SOURCE:
-{ fn foo(foo: Result<string, int, bool>) {} }
+{ fn foo(bar: Result<string, int, bool>) {} }
 
 OUTPUT:
 Wrong arity
@@ -11,5 +11,5 @@ Expected:
 Got:
     (string, int, bool)
 
-1|  { fn foo(foo: Result<string, int, bool>) {} }
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1|  { fn foo(bar: Result<string, int, bool>) {} }
+             ^^^
