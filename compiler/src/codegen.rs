@@ -2144,12 +2144,19 @@ func {name} {generic_params} ({params}) {ret} {{
         imports
     }
 
-    pub fn add_pkg_imports(&mut self, args: &[Type]) {
-        for a in args {
-            let m = a.get_symbol().module.clone();
+    pub fn add_pkg_imports(&mut self, types: &[Type]) {
+        for ty in types {
+            match ty {
+                Type::Con { id, args } => {
+                    let m = id.module.clone();
+                    if !m.is_std() && !m.is_empty() {
+                        self.ensure_imported.insert(m);
+                    }
 
-            if !m.is_std() && !m.is_empty() {
-                self.ensure_imported.insert(m);
+                    self.add_pkg_imports(args);
+                }
+
+                _ => unreachable!(),
             }
         }
     }

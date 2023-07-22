@@ -1153,3 +1153,15 @@ fn main() {
   fmt.Printf("a%sb", x);
 }
 ```
+
+Referenced packages are imported
+
+```rust
+use fmt;
+use os;
+
+fn main() {
+  let dir = os.ReadDir(".").unwrap();
+  fmt.Printf("%v", dir[0]);
+}
+```

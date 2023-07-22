@@ -1,0 +1,35 @@
+Referenced packages are imported
+
+SOURCE:
+use fmt;
+use os;
+
+fn main() {
+  let dir = os.ReadDir(".").unwrap();
+  fmt.Printf("%v", dir[0]);
+}
+
+OUTPUT:
+&{. borgo 0 <nil>}
+---
+package main
+
+import (
+	"fmt"
+	"io/fs"
+	"os"
+)
+
+func main() {
+	var3_result := func() Result[[]fs.DirEntry, error] {
+		var1_check, var2_err := os.ReadDir(".")
+		if var2_err != nil {
+			return make_Result_Err[[]fs.DirEntry, error](var2_err)
+		}
+		return make_Result_Ok[[]fs.DirEntry, error](var1_check)
+	}()
+
+	dir := var3_result.unwrap()
+
+	fmt.Printf("%v", dir[0])
+}
