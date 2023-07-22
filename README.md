@@ -36,3 +36,29 @@ cargo run -- build
 # needs `go mod init`
 go run .
 ```
+
+### Running tests
+
+Type inference
+
+```bash
+just test-runner infer
+```
+
+Type inference with modules and stdlib loaded
+
+```bash
+just test-runner infer-file
+```
+
+All compiler passes + codegen + `go run .`
+
+```bash
+just test-runner emit
+```
+
+Run examples shown in online playground
+
+```bash
+just run-examples
+```
