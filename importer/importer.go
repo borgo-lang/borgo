@@ -24,6 +24,11 @@ func SKIP(what any) Type {
 
 var RESERVED_WORDS = map[string]bool{
 	"match": true,
+	"where": true,
+	"use":   true,
+	"len":   true,
+	"as":    true,
+	"fn":    true,
 }
 
 type Type interface {
@@ -680,6 +685,10 @@ func main() {
 						pkg := p.parseTypeExpr(ty.X)
 						pkg = pkg.(TyCon).AddSelector(ty.Sel.Name)
 						p.AddTypeAlias(spec.Name.Name, pkg, bounds)
+
+					case *ast.StarExpr:
+						inner := p.parseTypeExpr(ty.X)
+						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Ref", args: []Type{inner}}, bounds)
 
 					default:
 						fmt.Println(pkg.Name, t.Name)
