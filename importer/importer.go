@@ -62,6 +62,11 @@ func (t TyCon) String() string {
 	return t.name + "<" + joinTypes(t.args) + ">"
 }
 
+func (t TyCon) AddSelector(field string) TyCon {
+	name := t.name + "::" + field
+	return TyCon{name: name, args: t.args}
+}
+
 type TyFun struct {
 	bounds []Bound
 	args   []FuncArg
@@ -670,6 +675,11 @@ func main() {
 						key := p.parseTypeExpr(ty.Key)
 						val := p.parseTypeExpr(ty.Value)
 						p.AddTypeAlias(spec.Name.Name, TyCon{name: "Map", args: []Type{key, val}}, bounds)
+
+					case *ast.SelectorExpr:
+						pkg := p.parseTypeExpr(ty.X)
+						pkg = pkg.(TyCon).AddSelector(ty.Sel.Name)
+						p.AddTypeAlias(spec.Name.Name, pkg, bounds)
 
 					default:
 						fmt.Println(pkg.Name, t.Name)
