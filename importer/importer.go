@@ -457,6 +457,10 @@ func toReturnType(types []Type) string {
 		return TyCon{name: "Result", args: []Type{types[0]}}.String()
 	}
 
+	if len(types) == 2 && reflect.DeepEqual(types[1], mono("bool")) {
+		return TyCon{name: "Option", args: []Type{types[0]}}.String()
+	}
+
 	switch len(types) {
 	case 0:
 		return ""
