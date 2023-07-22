@@ -660,29 +660,49 @@ use io;
 use os;
 
 fn copy_file(src: string, dst: string) -> Result<(), error> {
-  let stat = os.Stat(src)?;
+    let stat = os.Stat(src)?;
 
-  if !stat.Mode().IsRegular() {
-    return Err(fmt.Errorf("%s is not a regular file", src));
-  }
+    if !stat.Mode().IsRegular() {
+        return Err(fmt.Errorf("%s is not a regular file", src));
+    }
 
-  let source = os.Open(src)?;
-  defer!(source.Close());
+    let source = os.Open(src)?;
+    defer!(source.Close());
 
-  let destination = os.Create(dst)?;
-  defer!(destination.Close());
+    let destination = os.Create(dst)?;
+    defer!(destination.Close());
 
-  // ignore number of bytes copied
-  let _ = io.Copy(destination, source)?;
+    // ignore number of bytes copied
+    let _ = io.Copy(destination, source)?;
 
-  Ok(())
+    Ok(())
+}
+
+fn copy_all_files(folder: string) -> Result<int, error> {
+    let dirs = os.ReadDir(folder)?;
+
+    let mut n = 0;
+
+    for f in dirs {
+        if !f.IsDir() {
+            let original = f.Name();
+            let new_name = fmt.Sprintf("%s-copy", original);
+
+            fmt.Println("copying", original, "to", new_name);
+
+            copy_file(original, new_name)?;
+            n = n + 1;
+        }
+    }
+
+    Ok(n)
 }
 
 fn main() {
-  match copy_file("go.mod", "asdf") {
-    Ok(_) => fmt.Println("file copied"),
-    Err(e) => fmt.Println("error copying:", e),
-  }
+    match copy_all_files(".") {
+        Ok(n) => fmt.Println(n, "files copied"),
+        Err(err) => fmt.Println("Got error:", err),
+    }
 }
 ```
 

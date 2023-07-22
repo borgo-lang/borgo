@@ -6,6 +6,9 @@ fn Printf(format: string, a: VarArgs<any>) -> Result<int> {
 fn Fprintf(w: io::Writer, format: string, a: VarArgs<any>) -> Result<int> {
     EXT
 }
+fn Sprintf(format: string, a: VarArgs<any>) -> string {
+    EXT
+}
 fn Errorf(format: string, a: VarArgs<any>) -> error {
     EXT
 }
