@@ -3,9 +3,7 @@ use io::fs;
 
 const Stdin: File = File {};
 
-// TODO remove this when type aliases across packages work properly
-// type FileInfo = fs::FileInfo;
-struct FileInfo {}
+type FileInfo = fs::FileInfo;
 
 struct File {}
 
@@ -33,8 +31,6 @@ fn Open(name: string) -> Result<&mut File> {
 fn ReadFile(path: string) -> Result<[byte]> {
     EXT
 }
-// TODO change this
-// fn Stat(name: string) -> Result<FileInfo> {
-fn Stat(name: string) -> Result<fs::FileInfo> {
+fn Stat(name: string) -> Result<FileInfo> {
     EXT
 }
