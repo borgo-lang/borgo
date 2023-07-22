@@ -373,7 +373,6 @@ section.
 
 ```rust
 use fmt;
-use io::fs; // TODO there should be no need of importing this
 use os;
 
 fn main() {

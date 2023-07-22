@@ -1,4 +1,4 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::{
     ast::{
@@ -233,6 +233,9 @@ pub struct Codegen {
 
     // The module being emitted (this is only here to skip emitting traits in std)
     current_module: ModuleId,
+
+    // Ensure these packages are imported
+    ensure_imported: HashSet<ModuleId>,
 }
 
 impl Codegen {
@@ -244,6 +247,7 @@ impl Codegen {
             scope: Scope::new(),
             current_fn_ret_ty: None,
             current_module: ModuleId::empty(),
+            ensure_imported: Default::default(),
         }
     }
 
@@ -278,6 +282,15 @@ impl Codegen {
                     let value = self.emit_expr(EmitMode::top_level(), expr);
                     source.emit(value.to_statement())
                 });
+
+                // Extend imports to whatever extra packages were collected during codegen.
+                // This is useful if there's an indirect dependency on a package.
+                // For example:
+                //  - package os: fn Open() -> Option<fs::File>
+                //  when calling os::Open() we need to instantiate the generic for Option,
+                //  so package "fs" also needs to be in scope.
+                let imports = self.extend_imports(&imports, &self.ensure_imported.clone());
+                self.ensure_imported = Default::default();
 
                 EmittedFile {
                     name: file.go_filename(),
@@ -747,8 +760,13 @@ if {new_is_matching} != 1 {{
         // The return type is either Result<T, E> or Option<T>
         let ret = func.get_type().get_function_ret().unwrap();
 
-        // Instantiate return type
-        let instantiated = self.render_generics_instantiated(&ret.get_args().unwrap());
+        let args = ret.get_args().unwrap();
+
+        // Instantiate generics on return type
+        let instantiated = self.render_generics_instantiated(&args);
+
+        // Ensure all referenced packages are imported
+        self.add_pkg_imports(&args);
 
         // Handle Result<T, E>
         if ret.is_result() {
@@ -1815,8 +1833,6 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
                     .get_module(&ModuleId::from_str(&import.name))
                     .unwrap();
 
-                // let module = self.instance.gs.get_module(&import.name).unwrap();
-
                 let name = if m.import.name != m.import.path {
                     m.import.prefix()
                 } else {
@@ -2106,6 +2122,36 @@ func {name} {generic_params} ({params}) {ret} {{
         }
 
         ret
+    }
+
+    fn extend_imports(
+        &mut self,
+        imports: &HashMap<String, String>,
+        ensure_imported: &HashSet<ModuleId>,
+    ) -> HashMap<String, String> {
+        // imports: path => name
+        let mut imports = imports.clone();
+
+        for i in ensure_imported {
+            let m = self.instance.gs.get_module(i).unwrap();
+            if !imports.contains_key(&m.import.path) {
+                // TODO asdf this should account for package imported under a different name,
+                // when that is supported
+                imports.insert(m.import.path, "".to_string());
+            }
+        }
+
+        imports
+    }
+
+    pub fn add_pkg_imports(&mut self, args: &[Type]) {
+        for a in args {
+            let m = a.get_symbol().module.clone();
+
+            if !m.is_std() && !m.is_empty() {
+                self.ensure_imported.insert(m);
+            }
+        }
     }
 }
 

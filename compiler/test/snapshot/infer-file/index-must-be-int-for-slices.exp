@@ -9,9 +9,9 @@ fn borgo_main() {
 OUTPUT:
 Type mismatch
 Expected:
-    bool
-Got:
     int
+Got:
+    bool
 
 3|      xs[false]
         ^^^^^^^^^
