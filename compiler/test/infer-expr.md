@@ -1731,3 +1731,15 @@ Result type must have one type param.
     }
 }
 ```
+
+Statements can't be returned
+
+> errorContains("Type mismatch")
+
+```rust
+{
+    fn foo() -> Result<(), string> {
+        for i in [] {}
+    }
+}
+```

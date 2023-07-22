@@ -1241,6 +1241,9 @@ has no field or method:
             }
 
             Expr::Loop { kind, body, span } => {
+                // All loops must unify with Unit
+                self.add_constraint(expected, &self.type_unit(), &span);
+
                 match kind {
                     Loop::NoCondition => {
                         let body_ty = Type::discard();

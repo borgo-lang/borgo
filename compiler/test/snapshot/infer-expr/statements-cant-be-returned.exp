@@ -1,0 +1,18 @@
+Statements can't be returned
+
+SOURCE:
+{
+    fn foo() -> Result<(), string> {
+        for i in [] {}
+    }
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Result<(), string>
+Got:
+    ()
+
+3|          for i in [] {}
+            ^^^^^^^^^^^^^^
