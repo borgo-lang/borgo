@@ -1,17 +1,121 @@
 use io;
 
-fn Printf(format: string, a: VarArgs<any>) -> Result<int> {
+fn Append(b: [byte], a: VarArgs<any>) -> [byte] {
     EXT
 }
-fn Fprintf(w: io::Writer, format: string, a: VarArgs<any>) -> Result<int> {
+
+fn Appendf(b: [byte], format: string, a: VarArgs<any>) -> [byte] {
     EXT
 }
-fn Sprintf(format: string, a: VarArgs<any>) -> string {
+
+fn Appendln(b: [byte], a: VarArgs<any>) -> [byte] {
     EXT
 }
+
 fn Errorf(format: string, a: VarArgs<any>) -> error {
     EXT
 }
-fn Println(a: VarArgs<any>) {
+
+fn Fprint(w: io::Writer, a: VarArgs<any>) -> Result<int> {
     EXT
+}
+
+fn Fprintf(w: io::Writer, format: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Fprintln(w: io::Writer, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Fscan(r: io::Reader, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Fscanf(r: io::Reader, format: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Fscanln(r: io::Reader, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Print(a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Printf(format: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Println(a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Scan(a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Scanf(format: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Scanln(a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Sprint(a: VarArgs<any>) -> string {
+    EXT
+}
+
+fn Sprintf(format: string, a: VarArgs<any>) -> string {
+    EXT
+}
+
+fn Sprintln(a: VarArgs<any>) -> string {
+    EXT
+}
+
+fn Sscan(str: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Sscanf(str: string, format: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+fn Sscanln(str: string, a: VarArgs<any>) -> Result<int> {
+    EXT
+}
+
+trait Formatter {
+    fn Format(f: State, verb: rune) -> ();
+}
+
+trait GoStringer {
+    fn GoString() -> string;
+}
+
+trait ScanState {
+    fn ReadRune() -> (rune, int, error);
+    fn UnreadRune() -> error;
+    fn SkipSpace() -> ();
+    fn Token(skipSpace: bool, f: fn(param0: rune) -> bool) -> Result<[byte]>;
+    fn Width() -> Option<int>;
+    fn Read(buf: [byte]) -> Result<int>;
+}
+
+trait Scanner {
+    fn Scan(state: ScanState, verb: rune) -> error;
+}
+
+trait State {
+    fn Write(b: [byte]) -> Result<int>;
+    fn Width() -> Option<int>;
+    fn Precision() -> Option<int>;
+    fn Flag(c: int) -> bool;
+}
+
+trait Stringer {
+    fn String() -> string;
 }
