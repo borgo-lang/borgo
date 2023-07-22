@@ -265,7 +265,8 @@ impl Type {
             Type::Var(v) => match vars.get(v) {
                 Some(ty) => ty.clone(),
                 None => {
-                    unreachable!("replacing vars with types, got unexpected variable");
+                    Type::Var(*v)
+                    // unreachable!("replacing vars with types, got unexpected variable");
                 }
             },
         }
