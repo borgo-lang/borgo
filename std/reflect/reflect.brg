@@ -1,4 +1,523 @@
+// use unsafe; TODO unsafe is reserved :/
 
-fn DeepEqual<T, Y>(a: T, b: Y) -> bool {
+fn VisibleFields(t: Type) -> [StructField] {
     EXT
+}
+
+fn ArrayOf(length: int, elem: Type) -> Type {
+    EXT
+}
+
+fn ChanOf(dir: ChanDir, t: Type) -> Type {
+    EXT
+}
+
+fn FuncOf(in_: [Type], out: [Type], variadic: bool) -> Type {
+    EXT
+}
+
+fn MapOf(key: Type, elem: Type) -> Type {
+    EXT
+}
+
+fn PointerTo(t: Type) -> Type {
+    EXT
+}
+
+fn PtrTo(t: Type) -> Type {
+    EXT
+}
+
+fn SliceOf(t: Type) -> Type {
+    EXT
+}
+
+fn StructOf(fields: [StructField]) -> Type {
+    EXT
+}
+
+fn TypeOf(i: any) -> Type {
+    EXT
+}
+
+fn Append(s: Value, x: VarArgs<Value>) -> Value {
+    EXT
+}
+
+fn AppendSlice(s: Value, t: Value) -> Value {
+    EXT
+}
+
+fn Indirect(v: Value) -> Value {
+    EXT
+}
+
+fn MakeChan(typ: Type, buffer: int) -> Value {
+    EXT
+}
+
+fn MakeFunc(typ: Type, fn_: fn(args: [Value]) -> [Value]) -> Value {
+    EXT
+}
+
+fn MakeMap(typ: Type) -> Value {
+    EXT
+}
+
+fn MakeMapWithSize(typ: Type, n: int) -> Value {
+    EXT
+}
+
+fn MakeSlice(typ: Type, len_: int, cap: int) -> Value {
+    EXT
+}
+
+fn New(typ: Type) -> Value {
+    EXT
+}
+
+// fn NewAt  (typ: Type, p: unsafe::Pointer) -> Value { EXT }
+
+fn Select(cases: [SelectCase]) -> (int, Value, bool) {
+    EXT
+}
+
+fn ValueOf(i: any) -> Value {
+    EXT
+}
+
+fn Zero(typ: Type) -> Value {
+    EXT
+}
+
+fn Copy(dst: Value, src: Value) -> int {
+    EXT
+}
+
+fn DeepEqual(x: any, y: any) -> bool {
+    EXT
+}
+
+fn Swapper(slice: any) -> fn(i: int, j: int) -> () {
+    EXT
+}
+
+impl ChanDir {
+    fn String(self) -> string {
+        EXT
+    }
+}
+
+impl Kind {
+    fn String(self) -> string {
+        EXT
+    }
+}
+
+impl MapIter {
+    fn Key(&self) -> Value {
+        EXT
+    }
+
+    fn Next(&self) -> bool {
+        EXT
+    }
+
+    fn Reset(&self, v: Value) -> () {
+        EXT
+    }
+
+    fn Value(&self) -> Value {
+        EXT
+    }
+}
+
+impl Method {
+    fn IsExported(self) -> bool {
+        EXT
+    }
+}
+
+impl StructField {
+    fn IsExported(self) -> bool {
+        EXT
+    }
+}
+
+impl StructTag {
+    fn Get(self, key: string) -> string {
+        EXT
+    }
+
+    fn Lookup(self, key: string) -> Option<string> {
+        EXT
+    }
+}
+
+impl Value {
+    fn Addr(self) -> Value {
+        EXT
+    }
+
+    fn Bool(self) -> bool {
+        EXT
+    }
+
+    fn Bytes(self) -> [byte] {
+        EXT
+    }
+
+    fn Call(self, in_: [Value]) -> [Value] {
+        EXT
+    }
+
+    fn CallSlice(self, in_: [Value]) -> [Value] {
+        EXT
+    }
+
+    fn CanAddr(self) -> bool {
+        EXT
+    }
+
+    fn CanComplex(self) -> bool {
+        EXT
+    }
+
+    fn CanConvert(self, t: Type) -> bool {
+        EXT
+    }
+
+    fn CanFloat(self) -> bool {
+        EXT
+    }
+
+    fn CanInt(self) -> bool {
+        EXT
+    }
+
+    fn CanInterface(self) -> bool {
+        EXT
+    }
+
+    fn CanSet(self) -> bool {
+        EXT
+    }
+
+    fn CanUint(self) -> bool {
+        EXT
+    }
+
+    fn Cap(self) -> int {
+        EXT
+    }
+
+    fn Close(self) -> () {
+        EXT
+    }
+
+    fn Complex(self) -> complex128 {
+        EXT
+    }
+
+    fn Convert(self, t: Type) -> Value {
+        EXT
+    }
+
+    fn Elem(self) -> Value {
+        EXT
+    }
+
+    fn Field(self, i: int) -> Value {
+        EXT
+    }
+
+    fn FieldByIndex(self, index: [int]) -> Value {
+        EXT
+    }
+
+    fn FieldByIndexErr(self, index: [int]) -> Result<Value> {
+        EXT
+    }
+
+    fn FieldByName(self, name: string) -> Value {
+        EXT
+    }
+
+    fn FieldByNameFunc(self, match_: fn(param0: string) -> bool) -> Value {
+        EXT
+    }
+
+    fn Float(self) -> float64 {
+        EXT
+    }
+
+    fn Index(self, i: int) -> Value {
+        EXT
+    }
+
+    fn Int(self) -> int64 {
+        EXT
+    }
+
+    fn Interface(self) -> any {
+        EXT
+    }
+
+    fn InterfaceData(self) -> [uintptr] {
+        EXT
+    }
+
+    fn IsNil(self) -> bool {
+        EXT
+    }
+
+    fn IsValid(self) -> bool {
+        EXT
+    }
+
+    fn IsZero(self) -> bool {
+        EXT
+    }
+
+    fn Kind(self) -> Kind {
+        EXT
+    }
+
+    fn Len(self) -> int {
+        EXT
+    }
+
+    fn MapIndex(self, key: Value) -> Value {
+        EXT
+    }
+
+    fn MapKeys(self) -> [Value] {
+        EXT
+    }
+
+    fn MapRange(self) -> &MapIter {
+        EXT
+    }
+
+    fn Method(self, i: int) -> Value {
+        EXT
+    }
+
+    fn MethodByName(self, name: string) -> Value {
+        EXT
+    }
+
+    fn NumField(self) -> int {
+        EXT
+    }
+
+    fn NumMethod(self) -> int {
+        EXT
+    }
+
+    fn OverflowComplex(self, x: complex128) -> bool {
+        EXT
+    }
+
+    fn OverflowFloat(self, x: float64) -> bool {
+        EXT
+    }
+
+    fn OverflowInt(self, x: int64) -> bool {
+        EXT
+    }
+
+    fn OverflowUint(self, x: uint64) -> bool {
+        EXT
+    }
+
+    fn Pointer(self) -> uintptr {
+        EXT
+    }
+
+    fn Recv(self) -> Option<Value> {
+        EXT
+    }
+
+    fn Send(self, x: Value) -> () {
+        EXT
+    }
+
+    fn Set(self, x: Value) -> () {
+        EXT
+    }
+
+    fn SetBool(self, x: bool) -> () {
+        EXT
+    }
+
+    fn SetBytes(self, x: [byte]) -> () {
+        EXT
+    }
+
+    fn SetCap(self, n: int) -> () {
+        EXT
+    }
+
+    fn SetComplex(self, x: complex128) -> () {
+        EXT
+    }
+
+    fn SetFloat(self, x: float64) -> () {
+        EXT
+    }
+
+    fn SetInt(self, x: int64) -> () {
+        EXT
+    }
+
+    fn SetIterKey(self, iter: &MapIter) -> () {
+        EXT
+    }
+
+    fn SetIterValue(self, iter: &MapIter) -> () {
+        EXT
+    }
+
+    fn SetLen(self, n: int) -> () {
+        EXT
+    }
+
+    fn SetMapIndex(self, key: Value, elem: Value) -> () {
+        EXT
+    }
+
+    // fn SetPointer  (self, x: unsafe::Pointer) -> () { EXT }
+
+    fn SetString(self, x: string) -> () {
+        EXT
+    }
+
+    fn SetUint(self, x: uint64) -> () {
+        EXT
+    }
+
+    fn Slice(self, i: int, j: int) -> Value {
+        EXT
+    }
+
+    fn Slice3(self, i: int, j: int, k: int) -> Value {
+        EXT
+    }
+
+    fn String(self) -> string {
+        EXT
+    }
+
+    fn TryRecv(self) -> Option<Value> {
+        EXT
+    }
+
+    fn TrySend(self, x: Value) -> bool {
+        EXT
+    }
+
+    fn Type(self) -> Type {
+        EXT
+    }
+
+    fn Uint(self) -> uint64 {
+        EXT
+    }
+
+    fn UnsafeAddr(self) -> uintptr {
+        EXT
+    }
+
+    // fn UnsafePointer  (self, ) -> unsafe::Pointer { EXT }
+}
+
+impl ValueError {
+    fn Error(&self) -> string {
+        EXT
+    }
+}
+
+struct ChanDir(int);
+
+struct Kind(uint);
+
+struct SelectDir(int);
+
+struct StructTag(string);
+
+struct MapIter {}
+
+struct Method {
+    Name: string,
+    PkgPath: string,
+    Type: Type,
+    Func: Value,
+    Index: int,
+}
+
+struct SelectCase {
+    Dir: SelectDir,
+    Chan: Value,
+    Send: Value,
+}
+
+struct SliceHeader {
+    Data: uintptr,
+    Len: int,
+    Cap: int,
+}
+
+struct StringHeader {
+    Data: uintptr,
+    Len: int,
+}
+
+struct StructField {
+    Name: string,
+    PkgPath: string,
+    Type: Type,
+    Tag: StructTag,
+    Offset: uintptr,
+    Index: [int],
+    Anonymous: bool,
+}
+
+trait Type {
+    fn Align() -> int;
+    fn FieldAlign() -> int;
+    fn Method(param0: int) -> Method;
+    fn MethodByName(param0: string) -> Option<Method>;
+    fn NumMethod() -> int;
+    fn Name() -> string;
+    fn PkgPath() -> string;
+    fn Size() -> uintptr;
+    fn String() -> string;
+    fn Kind() -> Kind;
+    fn Implements(u: Type) -> bool;
+    fn AssignableTo(u: Type) -> bool;
+    fn ConvertibleTo(u: Type) -> bool;
+    fn Comparable() -> bool;
+    fn Bits() -> int;
+    fn ChanDir() -> ChanDir;
+    fn IsVariadic() -> bool;
+    fn Elem() -> Type;
+    fn Field(i: int) -> StructField;
+    fn FieldByIndex(index: [int]) -> StructField;
+    fn FieldByName(name: string) -> Option<StructField>;
+    fn FieldByNameFunc(match_: fn(param0: string) -> bool) -> Option<StructField>;
+    fn In(i: int) -> Type;
+    fn Key() -> Type;
+    fn Len() -> int;
+    fn NumField() -> int;
+    fn NumIn() -> int;
+    fn NumOut() -> int;
+    fn Out(i: int) -> Type;
+}
+
+struct Value {}
+
+struct ValueError {
+    Method: string,
+    Kind: Kind,
 }

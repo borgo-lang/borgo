@@ -1,4 +1,15 @@
+fn As(err: error, target: any) -> bool {
+    EXT
+}
+
+fn Is(err: error, target: error) -> bool {
+    EXT
+}
 
 fn New(text: string) -> error {
+    EXT
+}
+
+fn Unwrap(err: error) -> error {
     EXT
 }

@@ -1,0 +1,13 @@
+// These are imported manually...
+
+const E: float64 = EXT;
+const Pi: float64 = EXT;
+const Phi: float64 = EXT;
+const Sqrt2: float64 = EXT;
+const SqrtE: float64 = EXT;
+const SqrtPi: float64 = EXT;
+const SqrtPhi: float64 = EXT;
+const Ln2: float64 = EXT;
+const Log2E: float64 = EXT;
+const Ln10: float64 = EXT;
+const Log10E: float64 = EXT;

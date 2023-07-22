@@ -40,6 +40,68 @@ fn ScanWords(data: [byte], atEOF: bool) -> (int, [byte], error) {
     EXT
 }
 
+impl Reader {
+    fn Buffered(&self) -> int {
+        EXT
+    }
+
+    fn Discard(&self, n: int) -> Result<int> {
+        EXT
+    }
+
+    fn Peek(&self, n: int) -> Result<[byte]> {
+        EXT
+    }
+
+    fn Read(&self, p: [byte]) -> Result<int> {
+        EXT
+    }
+
+    fn ReadByte(&self) -> Result<byte> {
+        EXT
+    }
+
+    fn ReadBytes(&self, delim: byte) -> Result<[byte]> {
+        EXT
+    }
+
+    fn ReadLine(&self) -> ([byte], bool, error) {
+        EXT
+    }
+
+    fn ReadRune(&self) -> (rune, int, error) {
+        EXT
+    }
+
+    fn ReadSlice(&self, delim: byte) -> Result<[byte]> {
+        EXT
+    }
+
+    fn ReadString(&self, delim: byte) -> Result<string> {
+        EXT
+    }
+
+    fn Reset(&self, r: io::Reader) -> () {
+        EXT
+    }
+
+    fn Size(&self) -> int {
+        EXT
+    }
+
+    fn UnreadByte(&self) -> error {
+        EXT
+    }
+
+    fn UnreadRune(&self) -> error {
+        EXT
+    }
+
+    fn WriteTo(&self, w: io::Writer) -> Result<int64> {
+        EXT
+    }
+}
+
 impl Scanner {
     fn Buffer(&self, buf: [byte], max: int) -> () {
         EXT
@@ -112,73 +174,11 @@ impl Writer {
     }
 }
 
-impl Reader {
-    fn Buffered(&self) -> int {
-        EXT
-    }
-
-    fn Discard(&self, n: int) -> Result<int> {
-        EXT
-    }
-
-    fn Peek(&self, n: int) -> Result<[byte]> {
-        EXT
-    }
-
-    fn Read(&self, p: [byte]) -> Result<int> {
-        EXT
-    }
-
-    fn ReadByte(&self) -> Result<byte> {
-        EXT
-    }
-
-    fn ReadBytes(&self, delim: byte) -> Result<[byte]> {
-        EXT
-    }
-
-    fn ReadLine(&self) -> ([byte], bool, error) {
-        EXT
-    }
-
-    fn ReadRune(&self) -> (rune, int, error) {
-        EXT
-    }
-
-    fn ReadSlice(&self, delim: byte) -> Result<[byte]> {
-        EXT
-    }
-
-    fn ReadString(&self, delim: byte) -> Result<string> {
-        EXT
-    }
-
-    fn Reset(&self, r: io::Reader) -> () {
-        EXT
-    }
-
-    fn Size(&self) -> int {
-        EXT
-    }
-
-    fn UnreadByte(&self) -> error {
-        EXT
-    }
-
-    fn UnreadRune(&self) -> error {
-        EXT
-    }
-
-    fn WriteTo(&self, w: io::Writer) -> Result<int64> {
-        EXT
-    }
-}
-
 type SplitFunc = fn(data: [byte], atEOF: bool) -> (int, [byte], error);
 
 struct ReadWriter {
-    // : &Reader,
-    // : &Writer
+    // skipping embedded field &Reader,
+    // skipping embedded field &Writer
 }
 
 struct Reader {}

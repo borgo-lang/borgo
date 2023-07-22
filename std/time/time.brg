@@ -83,12 +83,6 @@ fn Tick(d: Duration) -> Receiver<Time> {
     EXT
 }
 
-impl ParseError {
-    fn Error(&self) -> string {
-        EXT
-    }
-}
-
 impl Ticker {
     fn Reset(&self, d: Duration) -> () {
         EXT
@@ -343,6 +337,12 @@ impl Location {
 
 impl Month {
     fn String(self) -> string {
+        EXT
+    }
+}
+
+impl ParseError {
+    fn Error(&self) -> string {
         EXT
     }
 }

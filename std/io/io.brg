@@ -54,6 +54,20 @@ fn WriteString(w: Writer, s: string) -> Result<int> {
     EXT
 }
 
+impl PipeWriter {
+    fn Close(&self) -> error {
+        EXT
+    }
+
+    fn CloseWithError(&self, err: error) -> error {
+        EXT
+    }
+
+    fn Write(&self, data: [byte]) -> Result<int> {
+        EXT
+    }
+}
+
 impl SectionReader {
     fn Read(&self, p: [byte]) -> Result<int> {
         EXT
@@ -88,20 +102,6 @@ impl PipeReader {
     }
 
     fn Read(&self, data: [byte]) -> Result<int> {
-        EXT
-    }
-}
-
-impl PipeWriter {
-    fn Close(&self) -> error {
-        EXT
-    }
-
-    fn CloseWithError(&self, err: error) -> error {
-        EXT
-    }
-
-    fn Write(&self, data: [byte]) -> Result<int> {
         EXT
     }
 }

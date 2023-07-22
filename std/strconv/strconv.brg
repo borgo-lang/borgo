@@ -2,7 +2,7 @@ fn AppendBool(dst: [byte], b: bool) -> [byte] {
     EXT
 }
 
-fn AppendFloat(dst: [byte], f: float64, fmt: byte, prec: int) -> [byte] {
+fn AppendFloat(dst: [byte], f: float64, fmt: byte, prec: int, bitSize: int) -> [byte] {
     EXT
 }
 
@@ -50,11 +50,11 @@ fn FormatBool(b: bool) -> string {
     EXT
 }
 
-fn FormatComplex(c: complex128, fmt: byte, prec: int) -> string {
+fn FormatComplex(c: complex128, fmt: byte, prec: int, bitSize: int) -> string {
     EXT
 }
 
-fn FormatFloat(f: float64, fmt: byte, prec: int) -> string {
+fn FormatFloat(f: float64, fmt: byte, prec: int, bitSize: int) -> string {
     EXT
 }
 

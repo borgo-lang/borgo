@@ -33,7 +33,7 @@ fn Count(s: string, substr: string) -> int {
     EXT
 }
 
-fn Cut(s: string, sep: string) -> (string, bool) {
+fn Cut(s: string, sep: string) -> Option<string> {
     EXT
 }
 
@@ -197,16 +197,6 @@ fn TrimSuffix(s: string, suffix: string) -> string {
     EXT
 }
 
-impl Replacer {
-    fn Replace(&self, s: string) -> string {
-        EXT
-    }
-
-    fn WriteString(&self, w: io::Writer, s: string) -> Result<int> {
-        EXT
-    }
-}
-
 impl Builder {
     fn Cap(&self) -> int {
         EXT
@@ -287,6 +277,16 @@ impl Reader {
     }
 
     fn WriteTo(&self, w: io::Writer) -> Result<int64> {
+        EXT
+    }
+}
+
+impl Replacer {
+    fn Replace(&self, s: string) -> string {
+        EXT
+    }
+
+    fn WriteString(&self, w: io::Writer, s: string) -> Result<int> {
         EXT
     }
 }

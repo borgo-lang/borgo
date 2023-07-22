@@ -62,7 +62,7 @@ fn Seed(seed: int64) -> () {
     EXT
 }
 
-fn Shuffle(n: int, swap: fn(i: int) -> ()) -> () {
+fn Shuffle(n: int, swap: fn(i: int, j: int) -> ()) -> () {
     EXT
 }
 
@@ -127,7 +127,7 @@ impl Rand {
         EXT
     }
 
-    fn Shuffle(&self, n: int, swap: fn(i: int) -> ()) -> () {
+    fn Shuffle(&self, n: int, swap: fn(i: int, j: int) -> ()) -> () {
         EXT
     }
 

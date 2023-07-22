@@ -1,36 +1,456 @@
-
+use io;
+use time;
+// use syscall; TODO too slow
 use io::fs;
 
-const Stdin: File = File {};
-
-type FileInfo = fs::FileInfo;
-
-struct File {}
-
-impl File {
-    fn Close(&mut self) -> error {
-        EXT
-    }
-    fn Write(&mut self, b: [byte]) -> Result<int> {
-        EXT
-    }
-    fn Read(&self, b: [byte]) -> Result<int> {
-        EXT
-    }
-}
-
-fn Create(name: string) -> Result<&mut File> {
+fn ReadDir(name: string) -> Result<[DirEntry]> {
     EXT
 }
+
+fn Create(name: string) -> Result<&File> {
+    EXT
+}
+
+fn CreateTemp(dir: string, pattern: string) -> Result<&File> {
+    EXT
+}
+
+fn NewFile(fd: uintptr, name: string) -> &File {
+    EXT
+}
+
+fn Open(name: string) -> Result<&File> {
+    EXT
+}
+
+fn OpenFile(name: string, flag: int, perm: FileMode) -> Result<&File> {
+    EXT
+}
+
+fn Lstat(name: string) -> Result<FileInfo> {
+    EXT
+}
+
+fn Stat(name: string) -> Result<FileInfo> {
+    EXT
+}
+
+fn FindProcess(pid: int) -> Result<&Process> {
+    EXT
+}
+
+fn StartProcess(name: string, argv: [string], attr: &ProcAttr) -> Result<&Process> {
+    EXT
+}
+
+fn Chdir(dir: string) -> error {
+    EXT
+}
+
+fn Chmod(name: string, mode: FileMode) -> error {
+    EXT
+}
+
+fn Chown(name: string, uid: int, gid: int) -> error {
+    EXT
+}
+
+fn Chtimes(name: string, atime: time::Time, mtime: time::Time) -> error {
+    EXT
+}
+
+fn Clearenv() -> () {
+    EXT
+}
+
+fn DirFS(dir: string) -> fs::FS {
+    EXT
+}
+
+fn Environ() -> [string] {
+    EXT
+}
+
+fn Executable() -> Result<string> {
+    EXT
+}
+
+fn Exit(code: int) -> () {
+    EXT
+}
+
+fn Expand(s: string, mapping: fn(param0: string) -> string) -> string {
+    EXT
+}
+
+fn ExpandEnv(s: string) -> string {
+    EXT
+}
+
+fn Getegid() -> int {
+    EXT
+}
+
+fn Getenv(key: string) -> string {
+    EXT
+}
+
+fn Geteuid() -> int {
+    EXT
+}
+
+fn Getgid() -> int {
+    EXT
+}
+
+fn Getgroups() -> Result<[int]> {
+    EXT
+}
+
+fn Getpagesize() -> int {
+    EXT
+}
+
+fn Getpid() -> int {
+    EXT
+}
+
+fn Getppid() -> int {
+    EXT
+}
+
+fn Getuid() -> int {
+    EXT
+}
+
+fn Getwd() -> Result<string> {
+    EXT
+}
+
+fn Hostname() -> Result<string> {
+    EXT
+}
+
+fn IsExist(err: error) -> bool {
+    EXT
+}
+
+fn IsNotExist(err: error) -> bool {
+    EXT
+}
+
+fn IsPathSeparator(c: uint8) -> bool {
+    EXT
+}
+
+fn IsPermission(err: error) -> bool {
+    EXT
+}
+
+fn IsTimeout(err: error) -> bool {
+    EXT
+}
+
+fn Lchown(name: string, uid: int, gid: int) -> error {
+    EXT
+}
+
+fn Link(oldname: string, newname: string) -> error {
+    EXT
+}
+
 fn LookupEnv(key: string) -> Option<string> {
     EXT
 }
-fn Open(name: string) -> Result<&mut File> {
+
+fn Mkdir(name: string, perm: FileMode) -> error {
     EXT
 }
-fn ReadFile(path: string) -> Result<[byte]> {
+
+fn MkdirAll(path: string, perm: FileMode) -> error {
     EXT
 }
-fn Stat(name: string) -> Result<FileInfo> {
+
+fn MkdirTemp(dir: string, pattern: string) -> Result<string> {
     EXT
+}
+
+fn NewSyscallError(syscall: string, err: error) -> error {
+    EXT
+}
+
+fn Pipe() -> (&File, &File, error) {
+    EXT
+}
+
+fn ReadFile(name: string) -> Result<[byte]> {
+    EXT
+}
+
+fn Readlink(name: string) -> Result<string> {
+    EXT
+}
+
+fn Remove(name: string) -> error {
+    EXT
+}
+
+fn RemoveAll(path: string) -> error {
+    EXT
+}
+
+fn Rename(oldpath: string, newpath: string) -> error {
+    EXT
+}
+
+fn SameFile(fi1: FileInfo, fi2: FileInfo) -> bool {
+    EXT
+}
+
+fn Setenv(key: string, value: string) -> error {
+    EXT
+}
+
+fn Symlink(oldname: string, newname: string) -> error {
+    EXT
+}
+
+fn TempDir() -> string {
+    EXT
+}
+
+fn Truncate(name: string, size: int64) -> error {
+    EXT
+}
+
+fn Unsetenv(key: string) -> error {
+    EXT
+}
+
+fn UserCacheDir() -> Result<string> {
+    EXT
+}
+
+fn UserConfigDir() -> Result<string> {
+    EXT
+}
+
+fn UserHomeDir() -> Result<string> {
+    EXT
+}
+
+fn WriteFile(name: string, data: [byte], perm: FileMode) -> error {
+    EXT
+}
+
+impl Process {
+    fn Kill(&self) -> error {
+        EXT
+    }
+
+    fn Release(&self) -> error {
+        EXT
+    }
+
+    fn Signal(&self, sig: Signal) -> error {
+        EXT
+    }
+
+    fn Wait(&self) -> Result<&ProcessState> {
+        EXT
+    }
+}
+
+impl ProcessState {
+    fn ExitCode(&self) -> int {
+        EXT
+    }
+
+    fn Exited(&self) -> bool {
+        EXT
+    }
+
+    fn Pid(&self) -> int {
+        EXT
+    }
+
+    fn String(&self) -> string {
+        EXT
+    }
+
+    fn Success(&self) -> bool {
+        EXT
+    }
+
+    fn Sys(&self) -> any {
+        EXT
+    }
+
+    fn SysUsage(&self) -> any {
+        EXT
+    }
+
+    fn SystemTime(&self) -> time::Duration {
+        EXT
+    }
+
+    fn UserTime(&self) -> time::Duration {
+        EXT
+    }
+}
+
+impl SyscallError {
+    fn Error(&self) -> string {
+        EXT
+    }
+
+    fn Timeout(&self) -> bool {
+        EXT
+    }
+
+    fn Unwrap(&self) -> error {
+        EXT
+    }
+}
+
+impl File {
+    fn Chdir(&self) -> error {
+        EXT
+    }
+
+    fn Chmod(&self, mode: FileMode) -> error {
+        EXT
+    }
+
+    fn Chown(&self, uid: int, gid: int) -> error {
+        EXT
+    }
+
+    fn Close(&self) -> error {
+        EXT
+    }
+
+    fn Fd(&self) -> uintptr {
+        EXT
+    }
+
+    fn Name(&self) -> string {
+        EXT
+    }
+
+    fn Read(&self, b: [byte]) -> Result<int> {
+        EXT
+    }
+
+    fn ReadAt(&self, b: [byte], off: int64) -> Result<int> {
+        EXT
+    }
+
+    fn ReadDir(&self, n: int) -> Result<[DirEntry]> {
+        EXT
+    }
+
+    fn ReadFrom(&self, r: io::Reader) -> Result<int64> {
+        EXT
+    }
+
+    fn Readdir(&self, n: int) -> Result<[FileInfo]> {
+        EXT
+    }
+
+    fn Readdirnames(&self, n: int) -> Result<[string]> {
+        EXT
+    }
+
+    fn Seek(&self, offset: int64, whence: int) -> Result<int64> {
+        EXT
+    }
+
+    fn SetDeadline(&self, t: time::Time) -> error {
+        EXT
+    }
+
+    fn SetReadDeadline(&self, t: time::Time) -> error {
+        EXT
+    }
+
+    fn SetWriteDeadline(&self, t: time::Time) -> error {
+        EXT
+    }
+
+    fn Stat(&self) -> Result<FileInfo> {
+        EXT
+    }
+
+    fn Sync(&self) -> error {
+        EXT
+    }
+
+    // fn SyscallConn  (&self, ) -> Result<syscall::RawConn> { EXT }
+
+    fn Truncate(&self, size: int64) -> error {
+        EXT
+    }
+
+    fn Write(&self, b: [byte]) -> Result<int> {
+        EXT
+    }
+
+    fn WriteAt(&self, b: [byte], off: int64) -> Result<int> {
+        EXT
+    }
+
+    fn WriteString(&self, s: string) -> Result<int> {
+        EXT
+    }
+}
+
+impl LinkError {
+    fn Error(&self) -> string {
+        EXT
+    }
+
+    fn Unwrap(&self) -> error {
+        EXT
+    }
+}
+
+type DirEntry = fs::DirEntry;
+
+type FileInfo = fs::FileInfo;
+
+type FileMode = fs::FileMode;
+
+type PathError = fs::PathError;
+
+struct File {}
+
+struct LinkError {
+    Op: string,
+    Old: string,
+    New: string,
+    Err: error,
+}
+
+struct ProcAttr {
+    Dir: string,
+    Env: [string],
+    Files: [&File],
+    // Sys: &syscall::SysProcAttr
+}
+
+struct Process {
+    Pid: int,
+}
+
+struct ProcessState {}
+
+trait Signal {
+    fn String() -> string;
+    fn Signal() -> ();
+}
+
+struct SyscallError {
+    Syscall: string,
+    Err: error,
 }

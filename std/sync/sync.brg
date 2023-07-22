@@ -1,25 +1,140 @@
+fn NewCond(l: Locker) -> &Cond {
+    EXT
+}
 
-struct Mutex {}
-struct WaitGroup {}
-
-impl Mutex {
-    fn Lock(&mut self) {
+impl Pool {
+    fn Get(&self) -> any {
         EXT
     }
 
-    fn Unlock(&mut self) {
+    fn Put(&self, x: any) -> () {
+        EXT
+    }
+}
+
+impl RWMutex {
+    fn Lock(&self) -> () {
+        EXT
+    }
+
+    fn RLock(&self) -> () {
+        EXT
+    }
+
+    fn RLocker(&self) -> Locker {
+        EXT
+    }
+
+    fn RUnlock(&self) -> () {
+        EXT
+    }
+
+    fn TryLock(&self) -> bool {
+        EXT
+    }
+
+    fn TryRLock(&self) -> bool {
+        EXT
+    }
+
+    fn Unlock(&self) -> () {
         EXT
     }
 }
 
 impl WaitGroup {
-    fn Add(&mut self, delta: int) {
+    fn Add(&self, delta: int) -> () {
         EXT
     }
-    fn Done(&mut self) {
+
+    fn Done(&self) -> () {
         EXT
     }
-    fn Wait(&mut self) {
+
+    fn Wait(&self) -> () {
         EXT
     }
 }
+
+impl Cond {
+    fn Broadcast(&self) -> () {
+        EXT
+    }
+
+    fn Signal(&self) -> () {
+        EXT
+    }
+
+    fn Wait(&self) -> () {
+        EXT
+    }
+}
+
+impl Map {
+    fn Delete(&self, key: any) -> () {
+        EXT
+    }
+
+    fn Load(&self, key: any) -> Option<any> {
+        EXT
+    }
+
+    fn LoadAndDelete(&self, key: any) -> Option<any> {
+        EXT
+    }
+
+    fn LoadOrStore(&self, key: any, value: any) -> Option<any> {
+        EXT
+    }
+
+    fn Range(&self, f: fn(key: any, value: any) -> bool) -> () {
+        EXT
+    }
+
+    fn Store(&self, key: any, value: any) -> () {
+        EXT
+    }
+}
+
+impl Mutex {
+    fn Lock(&self) -> () {
+        EXT
+    }
+
+    fn TryLock(&self) -> bool {
+        EXT
+    }
+
+    fn Unlock(&self) -> () {
+        EXT
+    }
+}
+
+impl Once {
+    fn Do(&self, f: fn() -> ()) -> () {
+        EXT
+    }
+}
+
+struct Cond {
+    L: Locker,
+}
+
+trait Locker {
+    fn Lock() -> ();
+    fn Unlock() -> ();
+}
+
+struct Map {}
+
+struct Mutex {}
+
+struct Once {}
+
+struct Pool {
+    New: fn() -> any,
+}
+
+struct RWMutex {}
+
+struct WaitGroup {}

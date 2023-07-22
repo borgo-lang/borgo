@@ -1,4 +1,3 @@
-
 use io;
 
 fn Printf(format: string, a: VarArgs<any>) -> Result<int> {

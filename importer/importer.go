@@ -28,6 +28,7 @@ var RESERVED_WORDS = map[string]bool{
 	"use":   true,
 	"len":   true,
 	"as":    true,
+	"in":    true,
 	"fn":    true,
 }
 
@@ -208,6 +209,10 @@ func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind
 
 	s := Struct{Name: name, Bounds: bounds, Fields: fields, Kind: kind}
 	p.Types = append(p.Types, s)
+}
+
+func (p *Package) AddVariable(name string, ty Type) {
+	p.Vars = append(p.Vars, Variable{name, ty})
 }
 
 func (p *Package) GroupMethodsByGenerics() map[string][]Method {
@@ -506,6 +511,12 @@ func structFieldsToString(list []StructField) string {
 	fields := []string{}
 
 	for _, f := range list {
+		// Embedded structs are currently tricky, skip this field for now
+		if len(f.Name) == 0 {
+			fields = append(fields, "// skipping embedded field "+f.Type.String())
+			continue
+		}
+
 		fields = append(fields, f.Name+": "+f.Type.String())
 	}
 
@@ -711,14 +722,21 @@ func main() {
 		}
 
 		// Consts
-		// TODO no consts?
-		for _, c := range doc.Consts {
-			for _, name := range c.Names {
-				_ = name
-				// fmt.Println(name)
-				// p.addVar(name, c.Decl.Specs)
+		// TODO consts are untyped so it's difficult to import them..
+		/*
+			for _, c := range doc.Consts {
+				for _, name := range c.Names {
+					for _, decl := range c.Decl.Specs {
+						if spec, ok := decl.(*ast.ValueSpec); ok {
+							if spec.Type != nil {
+								ty := p.parseTypeExpr(spec.Type)
+								p.AddVariable(name, ty)
+							}
+						}
+					}
+				}
 			}
-		}
+		*/
 
 		fmt.Println(p)
 	}

@@ -1,4 +1,3 @@
-
 struct Request {}
 
 trait ResponseWriter {

@@ -117,7 +117,7 @@ impl Regexp {
         EXT
     }
 
-    fn LiteralPrefix(&self) -> (string, bool) {
+    fn LiteralPrefix(&self) -> Option<string> {
         EXT
     }
 
