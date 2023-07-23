@@ -264,6 +264,11 @@ impl<T> Sender<T> {
     }
 }
 
+enum ChannelOp<T> {
+    Recv(Receiver<T>, Option<T>),
+    Send(Sender<T>, T),
+}
+
 impl<T> Receiver<T> {
     fn recv(&self) -> T {
         rawgo!("return <- self")

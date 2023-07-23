@@ -558,7 +558,7 @@ pub enum Expr {
     },
     Select {
         arms: Vec<Arm>,
-        ty: Type,
+        ty: Type, // TODO remove this
         span: Span,
     },
     Defer {

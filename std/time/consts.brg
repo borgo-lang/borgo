@@ -1,0 +1,10 @@
+
+// These are imported manually...
+
+const Nanosecond: Duration = EXT;
+const Microsecond: Duration = EXT;
+const Millisecond: Duration = EXT;
+const Second: Duration = EXT;
+const Minute: Duration = EXT;
+const Hour: Duration = EXT;
+

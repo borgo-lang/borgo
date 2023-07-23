@@ -761,7 +761,7 @@ function call. If you're passing in a lambda, make sure you wrap it in extra
 parens before invoking it, or the parser would fail to recognize it as a
 function call.
 
-Channels and `select {}` statements are discussed in the next section.
+Channels and `select {}` statements are discussed next.
 
 ```rust
 use sync;
@@ -842,6 +842,31 @@ fn main() {
     let msg2 = receiver.recv();
 
     fmt.Println(msg + msg2);
+}
+```
+
+## Select statements
+
+The current implementation of `select{}` is a bit awkward. When the parser will
+be extended and improved, this will hopefully get better as well.
+
+To create a `select {}`, do a pattern match on a special value `select!()`.
+Inside this pattern match, you can match on values of the `ChannelOp` type,
+defined like so:
+
+```
+enum ChannelOp<T> {
+    Recv(Receiver<T>, Option<T>),
+    Send(Sender<T>, T),
+}
+```
+
+Not great, but works for now :)
+
+```rust-skip
+use fmt;
+
+fn main() {
 }
 ```
 

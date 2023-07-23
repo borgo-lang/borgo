@@ -1470,20 +1470,19 @@ has no field or method:
                     );
                 }
 
-                let ty = self.fresh_ty_var();
-                let new_expr = self.infer_expr(*expr, &ty);
-                self.add_constraint(expected, &self.type_unit(), &span);
+                let new_expr = self.infer_expr(*expr, &Type::discard());
+
+                let ret = self.type_unit();
+                self.add_constraint(expected, &ret, &span);
 
                 Expr::Spawn {
                     expr: new_expr.into(),
-                    ty: expected.clone(),
+                    ty: ret,
                     span,
                 }
             }
 
             Expr::Select { arms, ty: _, span } => {
-                let ret = self.type_unit();
-
                 // Each arm is inferred separately
                 // Arm pat must be of type ChannelOp
                 // Return type is unit
@@ -1499,8 +1498,8 @@ has no field or method:
                         // each arm.pat should unify with ChannelOp
                         let new_pat = self.infer_pat(a.pat, channel_op);
 
-                        // each arm.expr should unify with ret
-                        let new_expr = self.infer_expr(a.expr, &ret);
+                        // the resulting type from arm.expr can be discarded
+                        let new_expr = self.infer_expr(a.expr, &Type::discard());
 
                         // EXIT SCOPE
                         self.exit_scope();
@@ -1512,6 +1511,7 @@ has no field or method:
                     })
                     .collect();
 
+                let ret = self.type_unit();
                 self.add_constraint(expected, &ret, &span);
 
                 Expr::Select {

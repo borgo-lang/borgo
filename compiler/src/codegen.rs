@@ -1471,13 +1471,17 @@ if {is_matching} != 2 {{
 
         arms.iter().for_each(|a| {
             match &a.pat {
-                Pat::Pat { ident, elems, .. } => {
+                Pat::Pat {
+                    ident, elems, ty, ..
+                } => {
                     // We're looking for ChannelOp::Recv|Send or _
+
+                    let ty = self.instance.substitute(ty.clone());
 
                     if ident == "ChannelOp::Send" {
                         out.emit(self.emit_select_send(&elems[0], &elems[1]));
                     } else if ident == "ChannelOp::Recv" {
-                        out.emit(self.emit_select_recv(&elems[0], &elems[1]));
+                        out.emit(self.emit_select_recv(&elems[0], &elems[1], &ty));
                     } else {
                         unreachable!()
                     }
@@ -1509,17 +1513,17 @@ if {is_matching} != 2 {{
             _ => unreachable!(),
         };
 
-        format!("case {chan}.(chan any)<- {value}:")
+        format!("case {chan}<- {value}:")
     }
 
-    fn emit_select_recv(&mut self, chan: &Pat, binding: &Pat) -> String {
-        let mut var_binding = "".to_string();
+    fn emit_select_recv(&mut self, chan: &Pat, binding: &Pat, ty: &Type) -> String {
         let chan = match chan {
             Pat::Type { ident, .. } => self.scope.get_binding(ident).unwrap(),
             _ => unreachable!(),
         };
 
-        let binding = match binding {
+        let mut var_binding = "".to_string();
+        let result = match binding {
             Pat::Type { ident, .. } => {
                 let b = ident.to_string();
                 var_binding = format!("var {b} any");
@@ -1533,10 +1537,17 @@ if {is_matching} != 2 {{
         let value = self.fresh_var() + "_value";
         let more = self.fresh_var() + "_more";
 
+        dbg!(&ty);
+        let instantiated = self.render_generics_instantiated(&[ty.clone()]);
+
         format!(
-            "case {value}, {more} := <-{chan}.(chan any):
+            "case {value}, {more} := <-{chan}:
 {var_binding}
-if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_Option_None }}"
+if {more} {{
+    {result} = make_Option_Some[{instantiated}]({value})
+}} else {{
+    {result} = make_Option_None[{instantiated}]
+}}"
         )
     }
 
