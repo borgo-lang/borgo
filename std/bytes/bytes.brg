@@ -1,0 +1,336 @@
+use io;
+// use unicode; // TODO re-enable
+
+fn NewBuffer(buf: [byte]) -> &Buffer {
+    EXT
+}
+
+fn NewBufferString(s: string) -> &Buffer {
+    EXT
+}
+
+fn NewReader(b: [byte]) -> &Reader {
+    EXT
+}
+
+fn Compare(a: [byte], b: [byte]) -> int {
+    EXT
+}
+
+fn Contains(b: [byte], subslice: [byte]) -> bool {
+    EXT
+}
+
+fn ContainsAny(b: [byte], chars: string) -> bool {
+    EXT
+}
+
+fn ContainsRune(b: [byte], r: rune) -> bool {
+    EXT
+}
+
+fn Count(s: [byte], sep: [byte]) -> int {
+    EXT
+}
+
+fn Cut(s: [byte], sep: [byte]) -> Option<[byte]> {
+    EXT
+}
+
+fn Equal(a: [byte], b: [byte]) -> bool {
+    EXT
+}
+
+fn EqualFold(s: [byte], t: [byte]) -> bool {
+    EXT
+}
+
+fn Fields(s: [byte]) -> [[byte]] {
+    EXT
+}
+
+fn FieldsFunc(s: [byte], f: fn(param0: rune) -> bool) -> [[byte]] {
+    EXT
+}
+
+fn HasPrefix(s: [byte], prefix: [byte]) -> bool {
+    EXT
+}
+
+fn HasSuffix(s: [byte], suffix: [byte]) -> bool {
+    EXT
+}
+
+fn Index(s: [byte], sep: [byte]) -> int {
+    EXT
+}
+
+fn IndexAny(s: [byte], chars: string) -> int {
+    EXT
+}
+
+fn IndexByte(b: [byte], c: byte) -> int {
+    EXT
+}
+
+fn IndexFunc(s: [byte], f: fn(r: rune) -> bool) -> int {
+    EXT
+}
+
+fn IndexRune(s: [byte], r: rune) -> int {
+    EXT
+}
+
+fn Join(s: [[byte]], sep: [byte]) -> [byte] {
+    EXT
+}
+
+fn LastIndex(s: [byte], sep: [byte]) -> int {
+    EXT
+}
+
+fn LastIndexAny(s: [byte], chars: string) -> int {
+    EXT
+}
+
+fn LastIndexByte(s: [byte], c: byte) -> int {
+    EXT
+}
+
+fn LastIndexFunc(s: [byte], f: fn(r: rune) -> bool) -> int {
+    EXT
+}
+
+fn Map(mapping: fn(r: rune) -> rune, s: [byte]) -> [byte] {
+    EXT
+}
+
+fn Repeat(b: [byte], count: int) -> [byte] {
+    EXT
+}
+
+fn Replace(s: [byte], old: [byte], new: [byte], n: int) -> [byte] {
+    EXT
+}
+
+fn ReplaceAll(s: [byte], old: [byte], new: [byte]) -> [byte] {
+    EXT
+}
+
+fn Runes(s: [byte]) -> [rune] {
+    EXT
+}
+
+fn Split(s: [byte], sep: [byte]) -> [[byte]] {
+    EXT
+}
+
+fn SplitAfter(s: [byte], sep: [byte]) -> [[byte]] {
+    EXT
+}
+
+fn SplitAfterN(s: [byte], sep: [byte], n: int) -> [[byte]] {
+    EXT
+}
+
+fn SplitN(s: [byte], sep: [byte], n: int) -> [[byte]] {
+    EXT
+}
+
+fn Title(s: [byte]) -> [byte] {
+    EXT
+}
+
+fn ToLower(s: [byte]) -> [byte] {
+    EXT
+}
+
+// fn ToLowerSpecial  (c: unicode::SpecialCase, s: [byte]) -> [byte] { EXT }
+
+fn ToTitle(s: [byte]) -> [byte] {
+    EXT
+}
+
+// fn ToTitleSpecial  (c: unicode::SpecialCase, s: [byte]) -> [byte] { EXT }
+
+fn ToUpper(s: [byte]) -> [byte] {
+    EXT
+}
+
+// fn ToUpperSpecial  (c: unicode::SpecialCase, s: [byte]) -> [byte] { EXT }
+
+fn ToValidUTF8(s: [byte], replacement: [byte]) -> [byte] {
+    EXT
+}
+
+fn Trim(s: [byte], cutset: string) -> [byte] {
+    EXT
+}
+
+fn TrimFunc(s: [byte], f: fn(r: rune) -> bool) -> [byte] {
+    EXT
+}
+
+fn TrimLeft(s: [byte], cutset: string) -> [byte] {
+    EXT
+}
+
+fn TrimLeftFunc(s: [byte], f: fn(r: rune) -> bool) -> [byte] {
+    EXT
+}
+
+fn TrimPrefix(s: [byte], prefix: [byte]) -> [byte] {
+    EXT
+}
+
+fn TrimRight(s: [byte], cutset: string) -> [byte] {
+    EXT
+}
+
+fn TrimRightFunc(s: [byte], f: fn(r: rune) -> bool) -> [byte] {
+    EXT
+}
+
+fn TrimSpace(s: [byte]) -> [byte] {
+    EXT
+}
+
+fn TrimSuffix(s: [byte], suffix: [byte]) -> [byte] {
+    EXT
+}
+
+impl Buffer {
+    fn Bytes(&self) -> [byte] {
+        EXT
+    }
+
+    fn Cap(&self) -> int {
+        EXT
+    }
+
+    fn Grow(&self, n: int) -> () {
+        EXT
+    }
+
+    fn Len(&self) -> int {
+        EXT
+    }
+
+    fn Next(&self, n: int) -> [byte] {
+        EXT
+    }
+
+    fn Read(&self, p: [byte]) -> Result<int> {
+        EXT
+    }
+
+    fn ReadByte(&self) -> Result<byte> {
+        EXT
+    }
+
+    fn ReadBytes(&self, delim: byte) -> Result<[byte]> {
+        EXT
+    }
+
+    fn ReadFrom(&self, r: io::Reader) -> Result<int64> {
+        EXT
+    }
+
+    fn ReadRune(&self) -> (rune, int, error) {
+        EXT
+    }
+
+    fn ReadString(&self, delim: byte) -> Result<string> {
+        EXT
+    }
+
+    fn Reset(&self) -> () {
+        EXT
+    }
+
+    fn String(&self) -> string {
+        EXT
+    }
+
+    fn Truncate(&self, n: int) -> () {
+        EXT
+    }
+
+    fn UnreadByte(&self) -> error {
+        EXT
+    }
+
+    fn UnreadRune(&self) -> error {
+        EXT
+    }
+
+    fn Write(&self, p: [byte]) -> Result<int> {
+        EXT
+    }
+
+    fn WriteByte(&self, c: byte) -> error {
+        EXT
+    }
+
+    fn WriteRune(&self, r: rune) -> Result<int> {
+        EXT
+    }
+
+    fn WriteString(&self, s: string) -> Result<int> {
+        EXT
+    }
+
+    fn WriteTo(&self, w: io::Writer) -> Result<int64> {
+        EXT
+    }
+}
+
+impl Reader {
+    fn Len(&self) -> int {
+        EXT
+    }
+
+    fn Read(&self, b: [byte]) -> Result<int> {
+        EXT
+    }
+
+    fn ReadAt(&self, b: [byte], off: int64) -> Result<int> {
+        EXT
+    }
+
+    fn ReadByte(&self) -> Result<byte> {
+        EXT
+    }
+
+    fn ReadRune(&self) -> (rune, int, error) {
+        EXT
+    }
+
+    fn Reset(&self, b: [byte]) -> () {
+        EXT
+    }
+
+    fn Seek(&self, offset: int64, whence: int) -> Result<int64> {
+        EXT
+    }
+
+    fn Size(&self) -> int64 {
+        EXT
+    }
+
+    fn UnreadByte(&self) -> error {
+        EXT
+    }
+
+    fn UnreadRune(&self) -> error {
+        EXT
+    }
+
+    fn WriteTo(&self, w: io::Writer) -> Result<int64> {
+        EXT
+    }
+}
+
+struct Buffer {}
+
+struct Reader {}

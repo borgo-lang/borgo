@@ -28,6 +28,10 @@
     "name": "strings"
   },
   {
+    "path": "bytes",
+    "name": "bytes"
+  },
+  {
     "path": "regexp",
     "name": "regexp"
   },
