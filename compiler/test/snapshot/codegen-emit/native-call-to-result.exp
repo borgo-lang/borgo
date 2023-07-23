@@ -74,7 +74,7 @@ func main() {
 		_ = var4_subject
 
 		if var5_matches == 2 {
-			Debug_unreachable[struct{}]()
+			Debug_unreachable[Result[int, error]]()
 		}
 	}
 }

@@ -29,7 +29,7 @@ func main() {
 	defer fmt.Println("defer 1")
 
 	fmt.Println("second")
-	defer (func() {
-		fmt.Println("defer 2")
+	defer (func() (int, error) {
+		return fmt.Println("defer 2")
 	})()
 }
