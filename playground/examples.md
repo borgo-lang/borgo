@@ -235,6 +235,9 @@ Defining and instantiating structs is similar to Rust.
 Fields in structs can be modified only if the variable is declared as mutable
 (`let mut` keyword).
 
+Contrary to Go, all struct fields must be initialized. See the section on `nil`
+and zero values for more information.
+
 ```rust
 use fmt;
 
@@ -704,6 +707,86 @@ fn main() {
         Err(err) => fmt.Println("Got error:", err),
     }
 }
+```
+
+## Zero values and nil
+
+TODO zero_value, you can't create `nil`.
+
+```rust-skip
+use sync;
+use fmt;
+
+fn main() {
+     // TODO
+}
+```
+
+## Concurrency (goroutines)
+
+Borgo aims to support all concurrency primitives available in Go.
+
+You can use `spawn!()` to start a goroutine. The parameter needs to be a
+function call. If you're passing in a lambda, make sure you wrap it in extra
+parens before invoking it, or the parser would fail to recognize it as a
+function call.
+
+Channels and `select {}` statements are discussed in the next section.
+
+```rust
+use sync;
+use fmt;
+
+struct Counter {
+    count: int,
+    mu: sync::Mutex,
+}
+
+impl Counter {
+    fn New() -> Counter {
+        Counter { count: 0, mu: zero_value() }
+    }
+
+    fn Inc(&mut self) {
+       self.mu.Lock(); 
+       self.count = self.count + 1;
+       self.mu.Unlock(); 
+    }
+}
+
+fn main() {
+	let desired = 1000;
+	let counter = Counter::New();
+
+    let wg: sync::WaitGroup = zero_value();
+	wg.Add(desired);
+
+    let mut i = 0;
+
+    while (i < desired) {
+
+        // equivalent to:   go func() { ... }()
+		spawn!((|| {
+			counter.Inc();
+			wg.Done();
+		})());
+
+        i = i + 1;
+	}
+
+	wg.Wait();
+
+    fmt.Println("Counter value:", counter.count);
+}
+```
+
+## Channels
+
+Use `Channel::new()` to create a new channel. This gives you back a pair of
+`(Sender<T>, Receiver<T>)` which are roughly equivalent to send-only and
+receive-only channels in Go.
+
+```rust-skip
 ```
 
 ## Testing
