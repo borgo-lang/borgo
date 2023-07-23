@@ -352,15 +352,6 @@ impl Type {
         None
     }
 
-    // temporary hacky function to gather together all numeric types.
-    // conversions between the specific types are left as an exercises to the go compiler.
-    pub fn is_numeric(&self) -> bool {
-        match self {
-            Type::Con { id, .. } => NUMERIC_TYPES.contains(&id.name.as_str()),
-            _ => false,
-        }
-    }
-
     pub fn is_string(&self) -> bool {
         match self {
             Type::Con { id, .. } => id.name == "string",
@@ -486,22 +477,3 @@ impl Serialize for Symbol {
         serializer.serialize_str(&self.name)
     }
 }
-
-const NUMERIC_TYPES: &[&str] = &[
-    "byte",
-    "complex128",
-    "complex64",
-    "float32",
-    "float64",
-    "int",
-    "int16",
-    "int32",
-    "int64",
-    "int8",
-    "rune",
-    "uint",
-    "uint16",
-    "uint32",
-    "uint64",
-    "uint8",
-];

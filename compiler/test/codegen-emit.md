@@ -1187,29 +1187,14 @@ fn main() {
 }
 ```
 
-Select statement
+Math with newtypes
 
-```rust-skip
+```rust
 use fmt;
+use time;
 
 fn main() {
-    let (tx1, rx1) = Channel::new();
-    let (tx2, rx2) = Channel::new();
-
-    spawn!((|| {
-        tx1.send("a");
-    })());
-
-    spawn!((|| {
-        if false {
-            tx2.send("b");
-        }
-        ()
-    })());
-
-    match select!() {
-        ChannelOp::Recv(rx1, a) => fmt.Println(a),
-        ChannelOp::Recv(rx2, b) => fmt.Println(b),
-    }
+    time.Sleep(0 * time.Second);
+    fmt.Println(2 * time.Second);
 }
 ```

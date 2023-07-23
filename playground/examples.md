@@ -847,26 +847,39 @@ fn main() {
 
 ## Select statements
 
-The current implementation of `select{}` is a bit awkward. When the parser will
-be extended and improved, this will hopefully get better as well.
+There's no first class support for `select {}` statements, although you can
+still use them with a bit of a hacky workaround.
 
-To create a `select {}`, do a pattern match on a special value `select!()`.
-Inside this pattern match, you can match on values of the `ChannelOp` type,
-defined like so:
+Borgo allows you to embed _raw_ Go code by calling the `rawgo!()` function,
+passing in a string of valid Go code. This isn't type checked or analyzed in any
+way, but it can be used as a last resort escape hatch when the compiler
+implementation falls short (like for `select {}`).
 
-```
-enum ChannelOp<T> {
-    Recv(Receiver<T>, Option<T>),
-    Send(Sender<T>, T),
-}
-```
-
-Not great, but works for now :)
-
-```rust-skip
+```rust
 use fmt;
+use time;
 
 fn main() {
+    let (tx1, rx1) = Channel::new();
+    let (tx2, rx2) = Channel::new();
+
+    spawn!((|| {
+        tx1.send("a");
+    })());
+
+    spawn!((|| {
+        time.Sleep(2 * time.Second);
+        tx2.send("b");
+    })());
+
+    rawgo!("
+        select {
+            case a := <-rx1:
+                fmt.Println(\"got\", a)
+            case b := <-rx2:
+                fmt.Println(\"got\", b)
+        }
+    ");
 }
 ```
 

@@ -1,0 +1,27 @@
+Math with newtypes
+
+SOURCE:
+use fmt;
+use time;
+
+fn main() {
+    time.Sleep(0 * time.Second);
+    fmt.Println(2 * time.Second);
+}
+
+OUTPUT:
+2s
+
+---
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	time.Sleep(0 * time.Second)
+
+	fmt.Println(2 * time.Second)
+}

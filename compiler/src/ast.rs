@@ -262,6 +262,25 @@ pub struct StructDefinition {
     pub generics: Vec<Generic>,
     pub fields: Vec<StructFieldDef>,
 }
+impl StructDefinition {
+    pub fn to_newtype_def(&self) -> NewtypeDefinition {
+        let fields = self
+            .fields
+            .iter()
+            .map(|f| EnumFieldDef {
+                name: f.name.to_string(),
+                ann: f.ann.clone(),
+                ty: f.ty.ty.clone(),
+            })
+            .collect();
+
+        NewtypeDefinition {
+            name: self.name.to_string(),
+            generics: self.generics.to_vec(),
+            fields,
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StructFieldDef {

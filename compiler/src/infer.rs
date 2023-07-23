@@ -1837,7 +1837,7 @@ has no field or method:
 
         // Don't bother matching exact numeric types.
         // Let the Go compiler do the heavy lifting here, mostly as we don't support type sets.
-        if t1.is_numeric() && t2.is_numeric() {
+        if self.is_numeric(t1) && self.is_numeric(t2) {
             return Ok(());
         }
 
@@ -1988,9 +1988,32 @@ has no field or method:
     }
 
     fn check_numeric(&mut self, ty: &Type, span: &Span) {
-        let ty = self.substitute(ty.clone());
-        if !ty.is_numeric() {
+        if !self.is_numeric(&ty) {
             self.generic_error("Expected numeric type".to_string(), span.clone());
+        }
+    }
+
+    // temporary hacky function to gather together all numeric types.
+    // conversions between the specific types are left as an exercises to the go compiler.
+    pub fn is_numeric(&mut self, ty: &Type) -> bool {
+        let ty = self.substitute(ty.clone());
+
+        match ty {
+            Type::Con { id: sym, .. } => {
+                if NUMERIC_TYPES.contains(&sym.name.as_str()) {
+                    return true;
+                }
+
+                let m = self.gs.get_module(&sym.module).unwrap();
+
+                // If it's a newtype, check the underlying type
+                if let Some(def) = m.newtypes.get(&sym) {
+                    return self.is_numeric(&def.fields[0].ty);
+                }
+
+                false
+            }
+            _ => false,
         }
     }
 
@@ -2457,6 +2480,11 @@ has no field or method:
             .insert(sym.clone(), ty_bounded.clone());
 
         self.gs.module().values.insert(sym.clone(), ty_bounded);
+
+        self.gs
+            .module()
+            .newtypes
+            .insert(sym.clone(), new_def.to_newtype_def());
 
         self.gs.module().structs.insert(sym.clone(), new_def);
 
@@ -3110,5 +3138,24 @@ enum CheckInterfaceResult {
     NotAnInterface,
     Error(String),
 }
+
+const NUMERIC_TYPES: &[&str] = &[
+    "byte",
+    "complex128",
+    "complex64",
+    "float32",
+    "float64",
+    "int",
+    "int16",
+    "int32",
+    "int64",
+    "int8",
+    "rune",
+    "uint",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uint8",
+];
 
 const RESERVED_WORDS: &[&str] = &["default", "len", "append", "cap"];
