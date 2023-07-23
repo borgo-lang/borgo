@@ -813,11 +813,37 @@ fn main() {
 
 ## Channels
 
-Use `Channel::new()` to create a new channel. This gives you back a pair of
-`(Sender<T>, Receiver<T>)` which are roughly equivalent to send-only and
-receive-only channels in Go.
+Borgo doesn't provide any extra syntax to send/receive from channels.
 
-```rust-skip
+You use `Channel::new()` to create a `Sender<T>` and `Receiver<T>`.These are
+roughly equivalent to send-only and receive-only channels in Go and will compile
+to raw channels in the final Go output.
+
+With a `Sender<T>` you can call `send(value: T)` to send a value. With a
+`Receiver<T>` you can call `recv() -> T` to receive a value.
+
+This design is somewhat inspired by the `sync::mspc::channel` module in the Rust
+standard library.
+
+```rust
+use fmt;
+
+fn main() {
+    let (sender, receiver) = Channel::new();
+
+    spawn!((|| {
+        sender.send(1)
+    })());
+
+    spawn!((|| {
+        sender.send(2)
+    })());
+
+    let msg = receiver.recv();
+    let msg2 = receiver.recv();
+
+    fmt.Println(msg + msg2);
+}
 ```
 
 ## Testing
