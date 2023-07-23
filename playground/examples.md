@@ -684,11 +684,9 @@ fn copy_file(src: string, dst: string) -> Result<(), error> {
 }
 
 fn copy_all_files(folder: string) -> Result<int, error> {
-    let files = os.ReadDir(folder)?;
-
     let mut n = 0;
 
-    for f in files {
+    for f in os.ReadDir(folder)? {
         if !f.IsDir() {
             let original = f.Name();
             let new_name = fmt.Sprintf("%s-copy", original);
