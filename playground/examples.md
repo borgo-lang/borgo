@@ -1,6 +1,6 @@
 ## Intro
 
-**Borgo** is a programming language that targets Go.
+**Borgo** is a statically typed programming language that compiles to Go.
 
 Imagine Go had:
 
@@ -514,7 +514,8 @@ fn main() {
 To define methods on types, you can use `impl {}` blocks.
 
 Methods need a `self` receiver, like in Rust. If the receiver is `&mut self` or
-`&self` then the generated method will be a pointer receiver `(self *T)`.
+`&self` then the generated method will be a pointer receiver `(self *T)` in the
+final Go output.
 
 It's also possible to declare static methods: they will compile to normal
 functions namespaced with the type name (ie. `Person_new()`).
@@ -683,11 +684,11 @@ fn copy_file(src: string, dst: string) -> Result<(), error> {
 }
 
 fn copy_all_files(folder: string) -> Result<int, error> {
-    let dirs = os.ReadDir(folder)?;
+    let files = os.ReadDir(folder)?;
 
     let mut n = 0;
 
-    for f in dirs {
+    for f in files {
         if !f.IsDir() {
             let original = f.Name();
             let new_name = fmt.Sprintf("%s-copy", original);
