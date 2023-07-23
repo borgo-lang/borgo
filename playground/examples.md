@@ -34,7 +34,8 @@ Collections like slices and maps can be used without specifying the type of the
 values.
 
 For example, a slice of int elements would be declared as `[]int{1,2,3}` in Go,
-whereas Borgo doesn't need type information, so you can just write `[1, 2, 3]`.
+whereas Borgo relies on type inference to determine the type, so you can just
+write `[1, 2, 3]`.
 
 Functions like `append()` and `len()` are available as methods.
 
@@ -711,14 +712,44 @@ fn main() {
 
 ## Zero values and nil
 
-TODO zero_value, you can't create `nil`.
+In Borgo, you can't create `nil` values.
 
-```rust-skip
+The concept of `null` references (or `nil` in this case) is being referred to as
+"The billion dollar mistake" and modern languages are moving away from it with
+types like `Option<T>`. Borgo tries to do the same.
+
+You can still end up with null pointers if you're calling into existing Go code,
+which is unfortunate. That should be solvable by writing better bindings, so
+that functions that could return a null pointer, will instead return an
+`Option<&T>`, forcing you to handle all cases.
+
+In Go, it's common to see types not needing to be initialized, as their _zero
+value_ is ready to be used (ie. `sync.Mutex` or `sync.WaitGroup`). Borgo goes in
+the opposite direction, requiring that all values are explicitely initialized.
+
+You can use the built-in function `zero_value()` whenever you need the _zero
+value_ of a type. While you won't need to provide a type annotation in all cases
+(as the type can be inferred), it's probably clearer to annotate variables that
+are initialized with `zero_value()`.
+
+As mentioned in a previous section, this also applies to struct fields, which
+always need to be initialized.
+
+```rust
 use sync;
+use bytes;
 use fmt;
 
 fn main() {
-     // TODO
+     // in Go:
+     // var wg sync.WaitGroup
+     let wg: sync::WaitGroup = zero_value();
+
+     // in Go:
+     // var b bytes.Buffer
+     let b: bytes::Buffer = zero_value();
+
+     fmt.Println("variables are initialized:", wg, b);
 }
 ```
 
