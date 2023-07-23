@@ -1579,7 +1579,11 @@ if {more} {{ {binding} = make_Option_Some({value}) }} else {{ {binding} = make_O
     fn emit_wrapped_try(&mut self, ctx: &Ctx, func: &Expr, args: &[Expr]) -> EmitResult {
         let mut out = emitter();
 
-        let new_ctx = self.generate_or_reuse(ctx, &func.get_type(), &mut out);
+        // get the T out of Option<T> or Result<T>
+        let ret = func.get_type().get_return_inner_arg();
+        self.add_pkg_imports(&[ret.clone()]);
+
+        let new_ctx = self.generate_or_reuse(ctx, &ret, &mut out);
         let check = new_ctx.to_var().unwrap_or_else(|| "_".to_string());
 
         let err = self.fresh_var() + "_err";

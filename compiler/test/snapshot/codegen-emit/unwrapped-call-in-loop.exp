@@ -1,0 +1,59 @@
+Unwrapped call in loop
+
+SOURCE:
+use fmt;
+use os;
+
+fn foo() -> Result<()> {
+    for f in os.ReadDir(".")? {
+        if f.Name() == "go.mod" {
+            fmt.Println("ok");
+        }
+    }
+
+    Ok(())
+}
+
+fn main() {
+    foo().unwrap();
+}
+
+OUTPUT:
+ok
+
+---
+package main
+
+import (
+	"fmt"
+	"io/fs"
+	"os"
+)
+
+func foo() (struct{}, error) {
+	var var1 []fs.DirEntry
+
+	var1, var2_err := os.ReadDir(".")
+	if var2_err != nil {
+		return *new(struct{}), var2_err
+	}
+
+	for _, f := range var1 {
+		if f.Name() == "go.mod" {
+			fmt.Println("ok")
+		}
+	}
+
+	return struct{}{}, nil
+}
+
+func main() {
+	var3_result := func() Result[struct{}, error] {
+		var1_check, var2_err := foo()
+		if var2_err != nil {
+			return make_Result_Err[struct{}, error](var2_err)
+		}
+		return make_Result_Ok[struct{}, error](var1_check)
+	}()
+	var3_result.unwrap()
+}

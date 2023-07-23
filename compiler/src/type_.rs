@@ -395,6 +395,22 @@ impl Type {
             _ => panic!("called swap_arg on {:#?}", self),
         }
     }
+
+    // Given a function type, take the T out of Option<T> or Result<T>
+    pub fn get_return_inner_arg(&self) -> Type {
+        match self {
+            Type::Fun { ret, .. } => {
+                if ret.is_option() || ret.is_result() {
+                    return ret.get_args().unwrap()[0].clone();
+                }
+
+                panic!("expected Option<T> or Result<T>")
+            }
+            _ => (),
+        }
+
+        panic!("called get_return_inner_arg() with wrong type {}", self)
+    }
 }
 
 fn stringify_bounds(g: &str, bounds: &[Bound]) -> String {

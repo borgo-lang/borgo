@@ -1165,3 +1165,24 @@ fn main() {
   fmt.Printf("%v", dir[0]);
 }
 ```
+
+Unwrapped call in loop
+
+```rust
+use fmt;
+use os;
+
+fn foo() -> Result<()> {
+    for f in os.ReadDir(".")? {
+        if f.Name() == "go.mod" {
+            fmt.Println("ok");
+        }
+    }
+
+    Ok(())
+}
+
+fn main() {
+    foo().unwrap();
+}
+```
