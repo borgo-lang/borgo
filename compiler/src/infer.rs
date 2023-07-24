@@ -24,6 +24,9 @@ pub struct Infer {
     // accumulate all errors encountered during inference
     pub errors: Vec<Error>,
 
+    // all the modules processed during inference
+    processed_modules: HashSet<ModuleId>,
+
     fs: Box<dyn crate::fs::FileSystem>,
 }
 
@@ -37,6 +40,7 @@ impl Infer {
             substitutions: Default::default(),
             current_fn_ret_ty: None,
             errors: Default::default(),
+            processed_modules: Default::default(),
             fs,
         }
     }
@@ -2897,6 +2901,15 @@ has no field or method:
     }
 
     pub fn module_from_folder(&mut self, import: ModuleImport) {
+        // If the module has already been processed, then skip
+        if self.processed_modules.contains(&import.to_id()) {
+            return;
+        }
+
+        // Set this module as processed
+        self.processed_modules.insert(import.to_id());
+
+        // Save previous module so we can restore it later
         let prev_mod = self.gs.new_module(&import);
 
         // First ingest all the files

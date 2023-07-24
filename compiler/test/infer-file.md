@@ -531,7 +531,20 @@ Type aliases to non existing types
 
 > errorContains("Type not found: Bar")
 
-```rust-skip
-// TODO this is still broken
+```rust
 type Foo = Bar;
+```
+
+Interfaces as arguments
+
+> infer("fn () -> fn () -> int")
+
+```rust
+use bufio;
+use os;
+
+fn borgo_main() -> fn () -> int {
+    let reader = bufio.NewReader(os.Stdin);
+    reader.ReadString
+}
 ```

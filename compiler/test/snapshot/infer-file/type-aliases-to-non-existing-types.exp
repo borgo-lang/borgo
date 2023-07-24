@@ -1,0 +1,10 @@
+Type aliases to non existing types
+
+SOURCE:
+type Foo = Bar;
+
+OUTPUT:
+Type not found: Bar
+
+1|  type Foo = Bar;
+    ^^^^^^^^^^^^^^^
