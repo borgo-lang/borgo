@@ -1061,10 +1061,10 @@ fn main() {
 Package structs
 
 ```rust
-use net::http;
+use os;
 
 fn main() {
-  let _ = http::Request{};
+  let _ = os::Process { Pid: 99 };
 }
 ```
 

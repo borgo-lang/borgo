@@ -1,10 +1,10 @@
 Package structs
 
 SOURCE:
-use net::http;
+use os;
 
 fn main() {
-  let _ = http::Request{};
+  let _ = os::Process { Pid: 99 };
 }
 
 OUTPUT:
@@ -13,9 +13,9 @@ OUTPUT:
 package main
 
 import (
-	http "net/http"
+	"os"
 )
 
 func main() {
-	_ = http.Request{}
+	_ = os.Process{Pid: 99}
 }
