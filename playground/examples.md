@@ -882,10 +882,3 @@ fn main() {
     ");
 }
 ```
-
-## Testing
-
-TODO
-
-```rust-skip
-```

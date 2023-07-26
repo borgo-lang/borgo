@@ -1,4 +1,3 @@
 const ErrInvalid: error = EXT;
 const SkipDir: error = EXT;
 const ModeDir: FileMode = EXT;
-

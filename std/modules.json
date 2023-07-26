@@ -72,6 +72,10 @@
     "name": "bufio"
   },
   {
+    "path": "testing",
+    "name": "testing"
+  },
+  {
     "path": "net/http",
     "name": "net::http"
   }
