@@ -1,21 +1,38 @@
 # The Borgo Programming Language
 
-Borgo is a programming language that targets Go.
+Borgo is a high-level, garbage collected language for application development.
 
-Imagine Go had:
+It transpiles to Go and aims to be fully compatible with existing Go packages.
 
-- Rust syntax
-- Union types
-- `Option<T>` instead of `nil`
-- `Result<T>` instead of `T, error`
+> Borgo syntax _currently_ looks like Rust.
+>
+> That's only to speed up development and skip writing a parser for a custom
+> syntax. Borgo has no lifetimes nor borrow checker – it just _borrows_ Rust
+> syntax for convenience.
+
+**Features:**
+
+- Union types and pattern matching
 - Error handling with `?` operator
+- `null` safe, use `Option` and `Result`
+- Compatible with Go packages
+  - functions that return `T,bool` become `Option<T>`
+  - functions that return `T,error` become `Result<T, error>`
 
-The language is described in full in the
-**[interactive tour](https://borgo-lang.github.io/)**.
+## Tutorial
 
-### Example
+Check out the **[online playground](https://borgo-lang.github.io/)** for a tour
+of the language.
+
+## Example
 
 Guessing game example from the Rust book, implemented in Borgo.
+
+Things to note:
+
+- import packages from Go stdlib
+- `strconv.Atoi` returns an `Option<int>`
+- `Reader.ReadString` returns a `Result<string, error>` (which can be unwrapped)
 
 ```rust
 use bufio;
@@ -57,16 +74,16 @@ fn main() {
 }
 ```
 
-### Running locally
+## Running locally
 
 Borgo is written in Rust, so you'll need `cargo`.
 
 If you want to set up a new project quickly, use the `init-project` script.
 
 ```bash
-just init-project some-folder
-cd some-folder
-./borgo build && go run .
+$ just init-project some-folder
+$ cd some-folder
+$ ./borgo build && go run .
 ```
 
 Or run the compiler from anywhere in the repo.
@@ -74,35 +91,9 @@ Or run the compiler from anywhere in the repo.
 ```bash
 # build all *.brg files
 # needs std/ to be in cwd
-cargo run -- build
+$ cargo run -- build
 
 # run as usual
 # needs `go mod init`
-go run .
-```
-
-### Running tests
-
-Type inference
-
-```bash
-just test-runner infer
-```
-
-Type inference with modules and stdlib loaded
-
-```bash
-just test-runner infer-file
-```
-
-All compiler passes + codegen + `go run .`
-
-```bash
-just test-runner emit
-```
-
-Run examples shown in online playground
-
-```bash
-just run-examples
+$ go run .
 ```

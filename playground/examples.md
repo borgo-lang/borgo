@@ -1,16 +1,25 @@
 ## Intro
 
-**Borgo** is a statically typed programming language that compiles to Go.
+Borgo is a high-level, garbage collected language for application development.
+It transpiles to Go and aims to be fully compatible with existing Go packages.
 
-Imagine Go had:
+---
 
-- Rust syntax
-- Union types
-- `Option<T>` instead of `nil`
-- `Result<T>` instead of `T, error`
+Borgo syntax **currently looks like Rust**.\
+That's only to speed up development and skip writing a parser for a custom
+syntax. Borgo has no lifetimes nor borrow checker – it just _borrows_ Rust
+syntax for convenience.
+
+---
+
+**Features:**
+
+- Union types and pattern matching
 - Error handling with `?` operator
-
-Borgo is still early in development, but should be usable!
+- `null` safe, use `Option` and `Result`
+- Compatible with Go packages
+- Functions that return `T,bool` become `Option<T>`
+- Functions that return `T,error` become `Result<T, error>`
 
 This playground runs the compiler as a wasm binary and then sends the transpiled
 go output to the official Go playground for execution.
@@ -20,9 +29,32 @@ Check the README for instructions on how to run the compiler locally.
 ```rust
 use fmt;
 
+enum NetworkState<T> {
+    Loading,
+    Failed(int),
+    Success(T),
+}
+
+struct Response {
+    title: string,
+    duration: int,
+}
 
 fn main() {
-  fmt.Println("hi")
+    let res = Response {
+        title: "Hello world",
+        duration: 0,
+    };
+
+    let state = NetworkState::Success(res);
+
+    let msg = match state {
+        NetworkState::Loading => "still loading",
+        NetworkState::Failed(code) => fmt.Sprintf("Got error code: %d", code),
+        NetworkState::Success(res) => res.title,
+    };
+
+    fmt.Println(msg);
 }
 ```
 
