@@ -27,6 +27,7 @@ var RESERVED_WORDS = map[string]bool{
 	"where": true,
 	"use":   true,
 	"len":   true,
+	"ref":   true,
 	"as":    true,
 	"in":    true,
 	"fn":    true,
