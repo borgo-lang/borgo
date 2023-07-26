@@ -1454,7 +1454,7 @@ impl Ast {
                     .supertraits
                     .into_iter()
                     .map(|s| match s {
-                        syn::TypeParamBound::Trait(s) => s.path.get_ident().unwrap().to_string(),
+                        syn::TypeParamBound::Trait(s) => Pat::parse_path(s.path),
                         syn::TypeParamBound::Lifetime(_) => panic!("don't be ridicolous"),
                     })
                     .collect();
