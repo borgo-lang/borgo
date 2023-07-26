@@ -1950,15 +1950,19 @@ has no field or method:
                 Ok(())
             }
 
-            // Matching functions with constructors is always an error
-            (Type::Fun { .. }, Type::Con { .. }) => Err("Type mismatch".to_string()),
-            (Type::Con { .. }, Type::Fun { .. }) => Err("Type mismatch".to_string()),
-            /*
-            _ => {
-                self.dump();
-                todo!("{:?}, {:?}", t1, t2)
-            }
-            */
+            // Matching functions with constructors is always an error, unless the type is any
+            (Type::Fun { .. }, Type::Con { .. }) | (Type::Con { .. }, Type::Fun { .. }) => {
+                if t1 == &self.type_any() || t2 == &self.type_any() {
+                    return Ok(());
+                }
+
+                Err("Type mismatch".to_string())
+            } /*
+              _ => {
+                  self.dump();
+                  todo!("{:?}, {:?}", t1, t2)
+              }
+              */
         }
     }
 
