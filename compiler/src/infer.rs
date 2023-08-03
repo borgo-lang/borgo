@@ -2895,7 +2895,7 @@ has no field or method:
         self.gs.module().files.insert(id, file);
     }
 
-    pub fn module_from_folder(&mut self, import: ModuleImport) {
+    pub fn module_from_folder(&mut self, import: ModuleImport, mode: DeclareMode) {
         // If the module has already been processed, then skip
         if self.processed_modules.contains(&import.to_id()) {
             return;
@@ -2916,7 +2916,11 @@ has no field or method:
         // Then declare and infer module
         let m = ModuleId::from_str(&import.name);
         self.declare_module(&m);
-        self.infer_module(&m);
+
+        // Only perform inference for user and std, for now
+        if matches!(mode, DeclareMode::Full) {
+            self.infer_module(&m);
+        }
 
         // Restore previous module
         self.gs.set_module(prev_mod);
@@ -2942,7 +2946,14 @@ has no field or method:
             let import = self.gs.import_for(&i.name);
 
             match import {
-                Some(import) => self.module_from_folder(import),
+                Some(import) => {
+                    // At the moment, all modules consist of just declarations,
+                    // so performing inference would only add extra time to the build
+                    let mode = DeclareMode::SkipInference;
+
+                    // Process the module
+                    self.module_from_folder(import, mode)
+                }
                 None => {
                     self.generic_error(format!("Module not found {name}", name = i.name), i.span);
                 }
@@ -3025,7 +3036,7 @@ has no field or method:
 
     pub fn init_std(&mut self) {
         let import = self.gs.import_for("std").unwrap();
-        self.module_from_folder(import);
+        self.module_from_folder(import, DeclareMode::Full);
     }
 
     fn process_imports(&mut self, imports: &[PkgImport]) {
@@ -3145,6 +3156,11 @@ enum CheckInterfaceResult {
     Ok,
     NotAnInterface,
     Error(String),
+}
+
+pub enum DeclareMode {
+    Full,
+    SkipInference,
 }
 
 const NUMERIC_TYPES: &[&str] = &[

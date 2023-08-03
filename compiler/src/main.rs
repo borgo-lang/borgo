@@ -26,7 +26,7 @@ fn build_project() {
         name: m.id.0.to_string(),
     };
 
-    instance.module_from_folder(import);
+    instance.module_from_folder(import, infer::DeclareMode::Full);
 
     if let Some(err) = instance.first_error() {
         eprintln!("{}", err);
