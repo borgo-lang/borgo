@@ -109,6 +109,26 @@ impl GlobalState {
     pub fn import_for(&self, name: &str) -> Option<ModuleImport> {
         self.module_list.lookup(name)
     }
+
+    pub fn get_type(&self, sym: &Symbol) -> Option<BoundedType> {
+        let m = self.modules.get(&sym.module)?;
+        m.types.get(sym).cloned()
+    }
+
+    pub fn get_interface(&self, sym: &Symbol) -> Option<Interface> {
+        let m = self.modules.get(&sym.module)?;
+        m.interfaces.get(sym).cloned()
+    }
+
+    pub fn get_methods(&self, sym: &Symbol) -> Option<HashMap<String, BoundedType>> {
+        let m = self.modules.get(&sym.module)?;
+        m.methods.get(sym).cloned()
+    }
+
+    pub fn get_newtype(&self, sym: &Symbol) -> Option<NewtypeDefinition> {
+        let m = self.modules.get(&sym.module)?;
+        m.newtypes.get(sym).cloned()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

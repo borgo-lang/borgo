@@ -2012,10 +2012,10 @@ has no field or method:
                     return true;
                 }
 
-                let m = self.gs.get_module(&sym.module).unwrap();
+                let def = self.gs.get_newtype(&sym);
 
                 // If it's a newtype, check the underlying type
-                if let Some(def) = m.newtypes.get(&sym) {
+                if let Some(def) = def {
                     return self.is_numeric(&def.fields[0].ty);
                 }
 
@@ -2577,7 +2577,7 @@ has no field or method:
 
     pub fn get_type(&mut self, name: &str) -> Option<BoundedType> {
         let sym = self.resolve(name)?;
-        self.gs.get_module(&sym.module)?.types.get(&sym).cloned()
+        self.gs.get_type(&sym)
     }
 
     pub fn add_value(&mut self, name: &str, ty: BoundedType, span: &Span) {
@@ -2608,10 +2608,8 @@ has no field or method:
     }
 
     fn get_type_methods(&self, sym: &Symbol) -> HashMap<String, BoundedType> {
-        let m = self.gs.get_module(&sym.module).unwrap();
-
         // If it's an interface, return all methods
-        if let Some(interface) = m.interfaces.get(sym).cloned() {
+        if let Some(interface) = self.gs.get_interface(&sym) {
             let mut ret = HashMap::new();
 
             for (name, ty) in interface.methods {
@@ -2631,7 +2629,7 @@ has no field or method:
         }
 
         // Otherwise get all the methods defined on the type
-        m.methods.get(sym).cloned().unwrap_or_default()
+        self.gs.get_methods(&sym).unwrap_or_default()
     }
 
     pub fn add_assumption(&mut self, sym: &Symbol, bound: &Type) {
@@ -2675,9 +2673,8 @@ has no field or method:
 
     fn get_struct_by_name(&mut self, name: &str) -> Option<(StructDefinition, BoundedType)> {
         let sym = self.resolve(name)?;
-        let m = self.gs.get_module(&sym.module)?;
-        let def = m.structs.get(&sym)?;
-        let ty = m.types.get(&sym)?;
+        let def = self.gs.get_struct(&sym)?;
+        let ty = self.gs.get_type(&sym)?;
 
         Some((def.clone(), ty.clone()))
     }
@@ -2843,13 +2840,7 @@ has no field or method:
     }
 
     fn check_interface_impl(&mut self, id1: &Symbol, id2: &Symbol) -> CheckInterfaceResult {
-        let interface = self
-            .gs
-            .get_module(&id1.module)
-            .unwrap()
-            .interfaces
-            .get(id1)
-            .cloned();
+        let interface = self.gs.get_interface(&id1);
 
         if interface.is_none() {
             return CheckInterfaceResult::NotAnInterface;
