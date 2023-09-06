@@ -2,9 +2,9 @@ Loops with no condition
 
 SOURCE:
 fn main() {
-  loop {
-    break
-  }
+    loop {
+        break
+    }
 }
 
 OUTPUT:
@@ -46,11 +46,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 3,
-                                "col": 5
+                                "col": 9
                               },
                               "end": {
                                 "line": 3,
-                                "col": 10
+                                "col": 14
                               },
                               "file": 99
                             }
@@ -63,11 +63,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 2,
-                          "col": 8
+                          "col": 10
                         },
                         "end": {
                           "line": 4,
-                          "col": 3
+                          "col": 5
                         },
                         "file": 99
                       }
@@ -76,11 +76,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 2,
-                      "col": 3
+                      "col": 5
                     },
                     "end": {
                       "line": 4,
-                      "col": 3
+                      "col": 5
                     },
                     "file": 99
                   }

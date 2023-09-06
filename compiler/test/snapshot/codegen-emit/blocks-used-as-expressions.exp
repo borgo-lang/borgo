@@ -4,12 +4,12 @@ SOURCE:
 use math
 
 fn main() {
-  let block_result = {
-    let a = math.Pi
-    let b = 2.01
-    a + b
-  }
-  assert_eq(block_result > 4.0, true)
+    let block_result = {
+        let a = math.Pi
+        let b = 2.01
+        a + b
+    }
+    assert_eq(block_result > 4.0, true)
 }
 
 OUTPUT:

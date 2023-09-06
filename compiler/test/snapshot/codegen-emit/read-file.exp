@@ -5,13 +5,13 @@ use os
 use fmt
 
 fn read() -> Result<()> {
-  let f = os.ReadFile("go.mod")?
-  fmt.Println(string(f))
-  Ok(())
+    let f = os.ReadFile("go.mod")?
+    fmt.Println(string(f))
+    Ok(())
 }
 
 fn main() {
-  read().unwrap()
+    read().unwrap()
 }
 
 OUTPUT:

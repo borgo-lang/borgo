@@ -2,14 +2,14 @@ Enumeration in loops expect a tuple.
 
 SOURCE:
 fn main() {
-  let m = Map.new()
-  for e in m {
-      e.0
-  }
+    let m = Map.new()
+    for e in m {
+        e.0
+    }
 }
 
 OUTPUT:
 Use tuple literals "(k, v)" in loops.
 
-3|    for e in m {
-      ^--
+3|      for e in m {
+        ^--

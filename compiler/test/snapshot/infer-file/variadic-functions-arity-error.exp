@@ -2,8 +2,8 @@ Variadic functions arity error
 
 SOURCE:
 fn main() {
-  fn foo(a: int, b: VarArgs<string>) {}
-  foo()
+    fn foo(a: int, b: VarArgs<string>) {}
+    foo()
 }
 
 OUTPUT:
@@ -14,5 +14,5 @@ Expected:
 Got:
     ()
 
-3|    foo()
-         ^
+3|      foo()
+           ^

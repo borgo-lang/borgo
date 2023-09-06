@@ -6,7 +6,7 @@ fn compute(f: fn(a: int, b: int) -> int) -> int {
 }
 
 fn main() {
-  assert_eq(compute(|a, b| a + b), 7)
+    assert_eq(compute(|a, b| a + b), 7)
 }
 
 OUTPUT:

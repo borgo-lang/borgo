@@ -2,19 +2,19 @@ Interfaces
 
 SOURCE:
 interface Foo {
-  fn foo() -> int
+    fn foo() -> int
 }
 
 struct Bar { x: int }
 
 impl (b: Bar) {
-  fn foo() -> int {
-    b.x
-  }
+    fn foo() -> int {
+        b.x
+    }
 }
 
 fn baz(f: Foo) -> int {
-  f.foo() + 4
+    f.foo() + 4
 }
 
 interface Composite {
@@ -26,7 +26,7 @@ fn check_composite(c: Composite) {
 }
 
 fn main() {
-  assert_eq(baz(&Bar { x: 6 }), 10)
+    assert_eq(baz(&Bar { x: 6 }), 10)
 }
 
 OUTPUT:

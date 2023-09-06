@@ -2,29 +2,29 @@ Mutating vars
 
 SOURCE:
 fn foo(a: int) -> int {
-  loop {
-    if a > 5 { break }
-    a = a + 1
-  }
+    loop {
+        if a > 5 { break }
+        a = a + 1
+    }
 
-  a
+    a
 }
 
 fn main() {
-  let mut x = 1
-  x = x + 3
-  assert_eq(x, 4)
+    let mut x = 1
+    x = x + 3
+    assert_eq(x, 4)
 
-  {
-    let x = 5
-    assert_eq(x, 5)
-  }
+    {
+        let x = 5
+        assert_eq(x, 5)
+    }
 
-  assert_eq(foo(0), 6)
+    assert_eq(foo(0), 6)
 
-  // TODO this doesn't type check :/
-  // x = x + 6
-  // x.assert_eq(10)
+    // TODO this doesn't type check :/
+    // x = x + 6
+    // x.assert_eq(10)
 }
 
 OUTPUT:

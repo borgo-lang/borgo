@@ -4,14 +4,14 @@ SOURCE:
 struct Foo { a: int }
 
 impl (f: Foo) {
-  fn bar(x: int) -> int {
-    f.a + x
-  }
+    fn bar(x: int) -> int {
+        f.a + x
+    }
 }
 
 fn main() {
-  let f = Foo { a: 1 }
-  assert_eq(f.bar(5), 6)
+    let f = Foo { a: 1 }
+    assert_eq(f.bar(5), 6)
 }
 
 OUTPUT:

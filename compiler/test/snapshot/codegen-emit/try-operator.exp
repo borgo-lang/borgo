@@ -6,29 +6,29 @@ use errors
 fn foo(b: bool) -> Result<int> { bar("a") }
 
 fn bar(s: string) -> Result<int> {
-  Err(errors.New("boom"))
+    Err(errors.New("boom"))
 }
 
 fn baz() -> Result<int> {
-  let _ = foo(false)?
+    let _ = foo(false)?
 
-  @unreachable()
-  Ok(1)
+    @unreachable()
+    Ok(1)
 }
 
 fn as_value() -> Result<int> {
-  let a = baz()
-  a
+    let a = baz()
+    a
 }
 
 fn as_param(r: Result<int>) -> bool {
-   r.IsOk()
+    r.IsOk()
 }
 
 fn main() {
-  assert_eq(baz(), Err(errors.New("boom")))
-  assert_eq(as_value().IsOk(), false)
-  assert_eq(as_param(Ok(1)), true)
+    assert_eq(baz(), Err(errors.New("boom")))
+    assert_eq(as_value().IsOk(), false)
+    assert_eq(as_param(Ok(1)), true)
 }
 
 OUTPUT:

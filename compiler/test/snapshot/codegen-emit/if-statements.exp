@@ -2,8 +2,8 @@ If statements
 
 SOURCE:
 fn main() {
-  let x = if true { 6 } else { 0 }
-  assert_eq(x, 6)
+    let x = if true { 6 } else { 0 }
+    assert_eq(x, 6)
 }
 
 OUTPUT:

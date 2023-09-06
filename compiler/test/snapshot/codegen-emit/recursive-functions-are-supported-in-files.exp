@@ -4,15 +4,15 @@ SOURCE:
 file: main.brg
 
 fn foo(n: int) -> int {
-  if n != 5 {
-    return foo(n + 1)
-  }
+    if n != 5 {
+        return foo(n + 1)
+    }
 
-  n
+    n
 }
 
 fn main() {
-  assert_eq(foo(1), 5)
+    assert_eq(foo(1), 5)
 }
 
 OUTPUT:

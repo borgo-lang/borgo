@@ -5,60 +5,60 @@ use sync
 use fmt
 
 fn main() {
-  let (sender, receiver) = Channel.new()
+    let (sender, receiver) = Channel.new()
 
-  fn foo(x: int) {
-    sender.send(x)
-  }
-
-  spawn (|| { sender.send(5) })()
-
-  let val = receiver.recv()
-  assert_eq(val, 5)
-
-  spawn foo(10)
-
-  let val = receiver.recv()
-  assert_eq(val, 10)
-
-  {
-    let desired = 5
-
-    let wg: sync.WaitGroup = zero_value()
-    wg.Add(desired)
-
-    let (done_tx, done_rx) = Channel.new()
-
-    // receiver goroutine
-    spawn (|| {
-      let mut count = 0
-
-      for n in receiver {
-        count = count + n
-      }
-
-      assert_eq(count, 10)
-      fmt.Printf("count: %v", count)
-
-      done_tx.send(())
-    })()
-
-    let mut i = 0
-
-    // start `desired` goroutines
-    while (i < desired) {
-      spawn (|i| {
-        sender.send(i)
-        wg.Done()
-      })(i)
-
-      i = i + 1
+    fn foo(x: int) {
+        sender.send(x)
     }
 
-    wg.Wait()
-    sender.close() // close(sender)
-    done_rx.recv() // <-done
-  }
+    spawn (|| { sender.send(5) })()
+
+    let val = receiver.recv()
+    assert_eq(val, 5)
+
+    spawn foo(10)
+
+    let val = receiver.recv()
+    assert_eq(val, 10)
+
+    {
+        let desired = 5
+
+        let wg: sync.WaitGroup = zero_value()
+        wg.Add(desired)
+
+        let (done_tx, done_rx) = Channel.new()
+
+        // receiver goroutine
+        spawn (|| {
+            let mut count = 0
+
+            for n in receiver {
+                count = count + n
+            }
+
+            assert_eq(count, 10)
+            fmt.Printf("count: %v", count)
+
+            done_tx.send(())
+        })()
+
+        let mut i = 0
+
+        // start `desired` goroutines
+        while (i < desired) {
+            spawn (|i| {
+                sender.send(i)
+                wg.Done()
+            })(i)
+
+          i = i + 1
+        }
+
+        wg.Wait()
+        sender.close() // close(sender)
+        done_rx.recv() // <-done
+    }
 }
 
 OUTPUT:

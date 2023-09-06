@@ -5,10 +5,10 @@ use os
 use fmt
 
 fn main() {
-  match os.ReadFile("go.mod") {
-    Ok(s) => fmt.Println(string(s))
-    Err(_) => @unreachable()
-  }
+    match os.ReadFile("go.mod") {
+        Ok(s) => fmt.Println(string(s))
+        Err(_) => @unreachable()
+    }
 }
 
 OUTPUT:

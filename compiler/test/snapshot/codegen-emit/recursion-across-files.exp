@@ -3,20 +3,20 @@ Recursion across files
 SOURCE:
 file: a.brg
 fn a(n: int) -> int {
-  if n == 100 {
-    return n
-  }
+    if n == 100 {
+        return n
+    }
 
-  b(n + 10)
+    b(n + 10)
 }
 
 file: b.brg
 fn b(n: int) -> int {
-  if n == 200 {
-    return n
-  }
+    if n == 200 {
+        return n
+    }
 
-  a(n + 20)
+    a(n + 20)
 }
 
 file: main.brg

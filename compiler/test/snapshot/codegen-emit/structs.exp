@@ -2,14 +2,14 @@ Structs
 
 SOURCE:
 struct Bar<T> {
-  name: string,
-  age: int,
-  v: T,
+    name: string,
+    age: int,
+    v: T,
 }
 
 fn main() {
-  let x = Bar { name: "yo", age: 99, v: false }
-  inspect(x)
+    let x = Bar { name: "yo", age: 99, v: false }
+    inspect(x)
 }
 
 OUTPUT:

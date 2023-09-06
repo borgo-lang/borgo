@@ -12,7 +12,7 @@ fn main() {
     assert_eq(res, 1)
 
     let res = match () {
-      () => 2
+        () => 2
     }
 
     assert_eq(res, 2)

@@ -2,11 +2,11 @@ Destructure function params
 
 SOURCE:
 fn foo((_, b): (int, string)) -> string {
-  b
+    b
 }
 
 fn main() {
-  assert_eq(foo((1, "yo")), "yo")
+    assert_eq(foo((1, "yo")), "yo")
 }
 
 OUTPUT:

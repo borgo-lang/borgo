@@ -2,21 +2,19 @@ If expression with an expected type must have an else block
 
 SOURCE:
 fn main() {
-  if true {
-    let x = "hello"
-    1
-  }
+    if true {
+        let x = "hello"
+        1
+    }
 
-  let a = if false {
-    let y = "yo"
-    2
-  }
-
-  ()
+    let a = if false {
+        let y = "yo"
+        2
+    }
 }
 
 OUTPUT:
 If expression must have an else branch
 
-7|    let a = if false {
-              ^--
+7|      let a = if false {
+                ^--

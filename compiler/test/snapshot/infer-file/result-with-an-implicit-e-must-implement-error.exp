@@ -4,7 +4,7 @@ SOURCE:
 struct Foo {}
 
 fn foo() -> Result<()> {
-  Err(Foo {})
+    Err(Foo {})
 }
 
 OUTPUT:
@@ -14,5 +14,5 @@ Expected:
 Got:
     Result<(), Foo>
 
-4|    Err(Foo {})
-         ^^^^^^^
+4|      Err(Foo {})
+           ^^^^^^^

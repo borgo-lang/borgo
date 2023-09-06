@@ -4,7 +4,7 @@ SOURCE:
 file: foo.brg
 
 fn check() -> bool {
-  foo == 2
+    foo == 2
 }
 
 file: main.brg

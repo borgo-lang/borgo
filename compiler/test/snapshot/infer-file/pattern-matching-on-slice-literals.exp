@@ -2,14 +2,14 @@ Pattern matching on slice literals.
 
 SOURCE:
 fn main() {
-  match [1] {
-    [1,2] => false,
-    _ => true,
-  }
+    match [1] {
+        [1,2] => false,
+        _ => true,
+    }
 }
 
 OUTPUT:
 Can't pattern match on slice literals
 
-3|      [1,2] => false,
-        ^^^^
+3|          [1,2] => false,
+            ^^^^

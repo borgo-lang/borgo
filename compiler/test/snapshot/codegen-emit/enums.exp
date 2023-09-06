@@ -2,13 +2,13 @@ Enums
 
 SOURCE:
 enum Foo {
-  Bar(int, bool),
-  Baz,
+    Bar(int, bool),
+    Baz,
 }
 
 fn main() {
-  inspect(Foo.Bar(2, false))
-  inspect(Foo.Baz)
+    inspect(Foo.Bar(2, false))
+    inspect(Foo.Baz)
 }
 
 OUTPUT:

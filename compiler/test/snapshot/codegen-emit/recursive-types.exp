@@ -2,35 +2,35 @@ Recursive types
 
 SOURCE:
 enum Expr {
-  Add(*Expr, *Expr),
-  Number(int),
+    Add(*Expr, *Expr),
+    Number(int),
 }
 
 impl (e: Expr) {
-  fn sum() -> int {
-    match e {
-      Add(a, b) => a.sum() + b.sum()
-      Number(n) => n
+    fn sum() -> int {
+        match e {
+            Add(a, b) => a.sum() + b.sum()
+            Number(n) => n
+        }
     }
-  }
 }
 
 struct Foo {
-  n: string,
-  f: *Option<Foo>,
+    n: string,
+    f: *Option<Foo>,
 }
 
 fn main() {
-  let one = Expr.Number(1)
-  let two = Expr.Number(2)
-  let e = Expr.Add(&one, &two)
-  assert_eq(e.sum(), 3)
+    let one = Expr.Number(1)
+    let two = Expr.Number(2)
+    let e = Expr.Add(&one, &two)
+    assert_eq(e.sum(), 3)
 
-  let f1 = None
-  let nope = Foo { n: "a", f: &f1 }
-  let f2 = Some(nope)
-  let yep = Foo { n: "b", f: &f2 }
-  assert_eq(yep.n, "b")
+    let f1 = None
+    let nope = Foo { n: "a", f: &f1 }
+    let f2 = Some(nope)
+    let yep = Foo { n: "b", f: &f2 }
+    assert_eq(yep.n, "b")
 }
 
 OUTPUT:

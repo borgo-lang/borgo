@@ -8,19 +8,19 @@ use sync
 struct Counter { m: sync.Mutex, count: int }
 
 impl (c: *Counter) {
-  fn ServeHTTP(w: http.ResponseWriter, r: *http.Request) {
-    c.m.Lock()
-    c.count = c.count + 1
-    fmt.Fprintf(w, "<h1>count %d</h1>", c.count)
-    c.m.Unlock()
-  }
+    fn ServeHTTP(w: http.ResponseWriter, r: *http.Request) {
+        c.m.Lock()
+        c.count = c.count + 1
+        fmt.Fprintf(w, "<h1>count %d</h1>", c.count)
+        c.m.Unlock()
+    }
 }
 
 fn main() {
-  let c = Counter { m: zero_value(), count: 0 }
-  http.Handle("/", &c)
-  // http.ListenAndServe(":3333", zero_value())
-  fmt.Println("ok")
+    let c = Counter { m: zero_value(), count: 0 }
+    http.Handle("/", &c)
+    // http.ListenAndServe(":3333", zero_value())
+    fmt.Println("ok")
 }
 
 OUTPUT:

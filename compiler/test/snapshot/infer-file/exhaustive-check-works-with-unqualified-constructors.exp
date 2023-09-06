@@ -4,14 +4,14 @@ SOURCE:
 enum Foo { A, B, Baz }
 
 fn main() -> int {
-  match Foo.B {
-    A => 1,
-    Foo.Baz => 2,
-  }
+    match Foo.B {
+        A => 1,
+        Foo.Baz => 2,
+    }
 }
 
 OUTPUT:
 Pattern match is not exhaustive, missing case: "Foo.B"
 
-4|    match Foo.B {
-      ^--
+4|      match Foo.B {
+        ^--

@@ -2,15 +2,15 @@ Early returns in blocks.
 
 SOURCE:
 fn foo() -> int {
-  {
-    return 5
-  }
+    {
+        return 5
+    }
 
-  999
+    999
 }
 
 fn main() {
-  assert_eq(foo(), 5)
+    assert_eq(foo(), 5)
 }
 
 OUTPUT:

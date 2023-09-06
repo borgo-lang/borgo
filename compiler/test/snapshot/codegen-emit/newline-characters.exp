@@ -4,12 +4,12 @@ SOURCE:
 use fmt
 
 fn main() {
-  let x = '\n'
-  fmt.Printf("a%sb\n", x)
+    let x = '\n'
+    fmt.Printf("a%sb\n", x)
 
-  let y = \\a string
-    \\ with " quotes and \ backslashes
-  fmt.Println(y)
+    let y = \\a string
+        \\ with " quotes and \ backslashes
+    fmt.Println(y)
 }
 
 OUTPUT:

@@ -4,28 +4,28 @@ SOURCE:
 file: main.brg
 
 fn abs(n: int) -> int {
-  if n < 0 { return -n }
-  n
+    if n < 0 { return -n }
+    n
 }
 
 fn even(n: int) -> bool {
-  if n == 0 {
-    return true
-  }
+    if n == 0 {
+        return true
+    }
 
-  odd(abs(n) - 1)
+    odd(abs(n) - 1)
 }
 
 fn odd(n: int) -> bool {
-  if n == 0 {
-    return false
-  }
+    if n == 0 {
+        return false
+    }
 
-  even(abs(n) - 1)
+    even(abs(n) - 1)
 }
 
 fn main() {
-  assert_eq(even(10), true)
+    assert_eq(even(10), true)
 }
 
 OUTPUT:

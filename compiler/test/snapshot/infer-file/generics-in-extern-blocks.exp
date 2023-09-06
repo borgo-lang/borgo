@@ -4,8 +4,8 @@ SOURCE:
 use reflect
 
 fn main() {
-  let a = reflect.DeepEqual(1, false)
-  let b = reflect.DeepEqual(1, 1)
+    let a = reflect.DeepEqual(1, false)
+    let b = reflect.DeepEqual(1, 1)
 }
 
 OUTPUT:
@@ -75,11 +75,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 4,
-                            "col": 7
+                            "col": 9
                           },
                           "end": {
                             "line": 4,
-                            "col": 8
+                            "col": 10
                           },
                           "file": 99
                         }
@@ -121,11 +121,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 4,
-                                  "col": 11
+                                  "col": 13
                                 },
                                 "end": {
                                   "line": 4,
-                                  "col": 18
+                                  "col": 20
                                 },
                                 "file": 99
                               }
@@ -160,11 +160,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 4,
-                              "col": 19
+                              "col": 21
                             },
                             "end": {
                               "line": 4,
-                              "col": 28
+                              "col": 30
                             },
                             "file": 99
                           }
@@ -185,11 +185,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 4,
-                                "col": 29
+                                "col": 31
                               },
                               "end": {
                                 "line": 4,
-                                "col": 30
+                                "col": 32
                               },
                               "file": 99
                             }
@@ -209,11 +209,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 4,
-                                "col": 32
+                                "col": 34
                               },
                               "end": {
                                 "line": 4,
-                                "col": 37
+                                "col": 39
                               },
                               "file": 99
                             }
@@ -229,11 +229,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 4,
-                          "col": 28
+                          "col": 30
                         },
                         "end": {
                           "line": 4,
-                          "col": 37
+                          "col": 39
                         },
                         "file": 99
                       }
@@ -249,11 +249,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 4,
-                      "col": 3
+                      "col": 5
                     },
                     "end": {
                       "line": 4,
-                      "col": 37
+                      "col": 39
                     },
                     "file": 99
                   }
@@ -270,11 +270,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 5,
-                            "col": 7
+                            "col": 9
                           },
                           "end": {
                             "line": 5,
-                            "col": 8
+                            "col": 10
                           },
                           "file": 99
                         }
@@ -316,11 +316,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 5,
-                                  "col": 11
+                                  "col": 13
                                 },
                                 "end": {
                                   "line": 5,
-                                  "col": 18
+                                  "col": 20
                                 },
                                 "file": 99
                               }
@@ -355,11 +355,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 5,
-                              "col": 19
+                              "col": 21
                             },
                             "end": {
                               "line": 5,
-                              "col": 28
+                              "col": 30
                             },
                             "file": 99
                           }
@@ -380,11 +380,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 5,
-                                "col": 29
+                                "col": 31
                               },
                               "end": {
                                 "line": 5,
-                                "col": 30
+                                "col": 32
                               },
                               "file": 99
                             }
@@ -404,11 +404,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 5,
-                                "col": 32
+                                "col": 34
                               },
                               "end": {
                                 "line": 5,
-                                "col": 33
+                                "col": 35
                               },
                               "file": 99
                             }
@@ -424,11 +424,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 5,
-                          "col": 28
+                          "col": 30
                         },
                         "end": {
                           "line": 5,
-                          "col": 33
+                          "col": 35
                         },
                         "file": 99
                       }
@@ -444,11 +444,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 5,
-                      "col": 3
+                      "col": 5
                     },
                     "end": {
                       "line": 5,
-                      "col": 33
+                      "col": 35
                     },
                     "file": 99
                   }

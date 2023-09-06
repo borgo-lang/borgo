@@ -4,11 +4,11 @@ SOURCE:
 use fmt
 
 fn main() {
-  fmt.Println("first")
-  defer fmt.Println("defer 1")
+    fmt.Println("first")
+    defer fmt.Println("defer 1")
 
-  fmt.Println("second")
-  defer (|| { fmt.Println("defer 2") })()
+    fmt.Println("second")
+    defer (|| { fmt.Println("defer 2") })()
 }
 
 OUTPUT:

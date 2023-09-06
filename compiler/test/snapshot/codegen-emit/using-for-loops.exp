@@ -28,15 +28,15 @@ fn main() {
         let mut check = ""
 
         for c in str {
-          check = check + string(c)
+            check = check + string(c)
         }
 
         assert_eq(str, check)
         let mut check = ""
 
         for (index, c) in str.enumerate() {
-          inspect(index)
-          check = check + string(c)
+            inspect(index)
+            check = check + string(c)
         }
 
         assert_eq(str, check)

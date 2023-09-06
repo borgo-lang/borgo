@@ -10,7 +10,7 @@ Standalone expressions
 use fmt
 
 fn main() {
-  fmt.Printf("hello %v", 4)
+    fmt.Printf("hello %v", 4)
 }
 ```
 
@@ -22,12 +22,12 @@ fn bar(x: int) -> int { x }
 fn baz() {}
 
 fn main() {
-  let val = foo(match 1 {
-    1 => true
-    _ => false
-  }, bar(5))
+    let val = foo(match 1 {
+        1 => true
+        _ => false
+    }, bar(5))
 
-  assert_eq(val, true)
+    assert_eq(val, true)
 }
 ```
 
@@ -35,8 +35,8 @@ Let bindings
 
 ```rust
 fn main() {
-  let a = 5 + 5
-  assert_eq(a, 10)
+    let a = 5 + 5
+    assert_eq(a, 10)
 }
 ```
 
@@ -44,8 +44,8 @@ If statements
 
 ```rust
 fn main() {
-  let x = if true { 6 } else { 0 }
-  assert_eq(x, 6)
+    let x = if true { 6 } else { 0 }
+    assert_eq(x, 6)
 }
 ```
 
@@ -53,13 +53,13 @@ Enums
 
 ```rust
 enum Foo {
-  Bar(int, bool),
-  Baz,
+    Bar(int, bool),
+    Baz,
 }
 
 fn main() {
-  inspect(Foo.Bar(2, false))
-  inspect(Foo.Baz)
+    inspect(Foo.Bar(2, false))
+    inspect(Foo.Baz)
 }
 ```
 
@@ -67,14 +67,14 @@ Structs
 
 ```rust
 struct Bar<T> {
-  name: string,
-  age: int,
-  v: T,
+    name: string,
+    age: int,
+    v: T,
 }
 
 fn main() {
-  let x = Bar { name: "yo", age: 99, v: false }
-  inspect(x)
+    let x = Bar { name: "yo", age: 99, v: false }
+    inspect(x)
 }
 ```
 
@@ -82,18 +82,18 @@ Return statement
 
 ```rust
 fn foo() -> int {
-  let x = match 1 {
-    1 => return 12
-    _ => 5
-  }
+    let x = match 1 {
+        1 => return 12
+        _ => 5
+    }
 
-  if true {
-    let _ = x + 40
-  } else {
-    return 9
-  }
+    if true {
+        let _ = x + 40
+    } else {
+        return 9
+    }
 
-  return 4
+    return 4
 }
 
 fn bar() {
@@ -103,7 +103,7 @@ fn bar() {
 }
 
 fn main() {
-  assert_eq(foo(), 12)
+    assert_eq(foo(), 12)
 }
 ```
 
@@ -111,17 +111,17 @@ Struct access
 
 ```rust
 struct Foo {
-  a: int,
-  b: string,
-  c: bool,
+    a: int,
+    b: string,
+    c: bool,
 }
 
 fn main() {
-  let x = Foo { a: 1, b: "hi", c: true }
-  assert_eq(x.a, 1)
-  let y = Foo { a: 5, c: false, ..x }
-  assert_eq(y.a, 5)
-  assert_eq(x.a, 1)
+    let x = Foo { a: 1, b: "hi", c: true }
+    assert_eq(x.a, 1)
+    let y = Foo { a: 5, c: false, ..x }
+    assert_eq(y.a, 5)
+    assert_eq(x.a, 1)
 }
 ```
 
@@ -133,29 +133,29 @@ use errors
 fn foo(b: bool) -> Result<int> { bar("a") }
 
 fn bar(s: string) -> Result<int> {
-  Err(errors.New("boom"))
+    Err(errors.New("boom"))
 }
 
 fn baz() -> Result<int> {
-  let _ = foo(false)?
+    let _ = foo(false)?
 
-  @unreachable()
-  Ok(1)
+    @unreachable()
+    Ok(1)
 }
 
 fn as_value() -> Result<int> {
-  let a = baz()
-  a
+    let a = baz()
+    a
 }
 
 fn as_param(r: Result<int>) -> bool {
-   r.IsOk()
+    r.IsOk()
 }
 
 fn main() {
-  assert_eq(baz(), Err(errors.New("boom")))
-  assert_eq(as_value().IsOk(), false)
-  assert_eq(as_param(Ok(1)), true)
+    assert_eq(baz(), Err(errors.New("boom")))
+    assert_eq(as_value().IsOk(), false)
+    assert_eq(as_param(Ok(1)), true)
 }
 ```
 
@@ -163,11 +163,11 @@ Destructure function params
 
 ```rust
 fn foo((_, b): (int, string)) -> string {
-  b
+    b
 }
 
 fn main() {
-  assert_eq(foo((1, "yo")), "yo")
+    assert_eq(foo((1, "yo")), "yo")
 }
 ```
 
@@ -175,17 +175,17 @@ Lists
 
 ```rust
 fn main() {
-  let mut x = [1, 2, 5 + 5]
+    let mut x = [1, 2, 5 + 5]
 
-  inspect(x)
-  assert_eq(x.len(), 3)
-  assert_eq(x[1], 2)
+    inspect(x)
+    assert_eq(x.len(), 3)
+    assert_eq(x[1], 2)
 
-  x[1] = 8
-  assert_eq(x[1], 8)
+    x[1] = 8
+    assert_eq(x[1], 8)
 
-  x = x.append(9)
-  assert_eq(x[3], 9)
+    x = x.append(9)
+    assert_eq(x[3], 9)
 }
 ```
 
@@ -195,14 +195,14 @@ Impl blocks
 struct Foo { a: int }
 
 impl (f: Foo) {
-  fn bar(x: int) -> int {
-    f.a + x
-  }
+    fn bar(x: int) -> int {
+        f.a + x
+    }
 }
 
 fn main() {
-  let f = Foo { a: 1 }
-  assert_eq(f.bar(5), 6)
+    let f = Foo { a: 1 }
+    assert_eq(f.bar(5), 6)
 }
 ```
 
@@ -210,18 +210,18 @@ Rebind variables
 
 ```rust
 fn main() {
-  let x = 1
-  assert_eq(x, 1)
+    let x = 1
+    assert_eq(x, 1)
 
-  let x = 1 + 1
-  assert_eq(x, 2)
+    let x = 1 + 1
+    assert_eq(x, 2)
 
-  {
-    let x = x + 5
-    assert_eq(x, 7)
-  }
+    {
+        let x = x + 5
+        assert_eq(x, 7)
+    }
 
-  assert_eq(x, 2)
+    assert_eq(x, 2)
 }
 ```
 
@@ -232,60 +232,60 @@ use sync
 use fmt
 
 fn main() {
-  let (sender, receiver) = Channel.new()
+    let (sender, receiver) = Channel.new()
 
-  fn foo(x: int) {
-    sender.send(x)
-  }
-
-  spawn (|| { sender.send(5) })()
-
-  let val = receiver.recv()
-  assert_eq(val, 5)
-
-  spawn foo(10)
-
-  let val = receiver.recv()
-  assert_eq(val, 10)
-
-  {
-    let desired = 5
-
-    let wg: sync.WaitGroup = zero_value()
-    wg.Add(desired)
-
-    let (done_tx, done_rx) = Channel.new()
-
-    // receiver goroutine
-    spawn (|| {
-      let mut count = 0
-
-      for n in receiver {
-        count = count + n
-      }
-
-      assert_eq(count, 10)
-      fmt.Printf("count: %v", count)
-
-      done_tx.send(())
-    })()
-
-    let mut i = 0
-
-    // start `desired` goroutines
-    while (i < desired) {
-      spawn (|i| {
-        sender.send(i)
-        wg.Done()
-      })(i)
-
-      i = i + 1
+    fn foo(x: int) {
+        sender.send(x)
     }
 
-    wg.Wait()
-    sender.close() // close(sender)
-    done_rx.recv() // <-done
-  }
+    spawn (|| { sender.send(5) })()
+
+    let val = receiver.recv()
+    assert_eq(val, 5)
+
+    spawn foo(10)
+
+    let val = receiver.recv()
+    assert_eq(val, 10)
+
+    {
+        let desired = 5
+
+        let wg: sync.WaitGroup = zero_value()
+        wg.Add(desired)
+
+        let (done_tx, done_rx) = Channel.new()
+
+        // receiver goroutine
+        spawn (|| {
+            let mut count = 0
+
+            for n in receiver {
+                count = count + n
+            }
+
+            assert_eq(count, 10)
+            fmt.Printf("count: %v", count)
+
+            done_tx.send(())
+        })()
+
+        let mut i = 0
+
+        // start `desired` goroutines
+        while (i < desired) {
+            spawn (|i| {
+                sender.send(i)
+                wg.Done()
+            })(i)
+
+          i = i + 1
+        }
+
+        wg.Wait()
+        sender.close() // close(sender)
+        done_rx.recv() // <-done
+    }
 }
 ```
 
@@ -293,8 +293,8 @@ Math with floats
 
 ```rust
 fn main() {
-  let x = 5.3 * 1.2
-  assert_eq(true, x > 6.35 && x <= 6.36)
+    let x = 5.3 * 1.2
+    assert_eq(true, x > 6.35 && x <= 6.36)
 }
 ```
 
@@ -302,15 +302,15 @@ Early returns in blocks.
 
 ```rust
 fn foo() -> int {
-  {
-    return 5
-  }
+    {
+        return 5
+    }
 
-  999
+    999
 }
 
 fn main() {
-  assert_eq(foo(), 5)
+    assert_eq(foo(), 5)
 }
 ```
 
@@ -320,15 +320,15 @@ Recursive functions are supported in files.
 file: main.brg
 
 fn foo(n: int) -> int {
-  if n != 5 {
-    return foo(n + 1)
-  }
+    if n != 5 {
+        return foo(n + 1)
+    }
 
-  n
+    n
 }
 
 fn main() {
-  assert_eq(foo(1), 5)
+    assert_eq(foo(1), 5)
 }
 ```
 
@@ -338,28 +338,28 @@ Mutually recursive functions
 file: main.brg
 
 fn abs(n: int) -> int {
-  if n < 0 { return -n }
-  n
+    if n < 0 { return -n }
+    n
 }
 
 fn even(n: int) -> bool {
-  if n == 0 {
-    return true
-  }
+    if n == 0 {
+        return true
+    }
 
-  odd(abs(n) - 1)
+    odd(abs(n) - 1)
 }
 
 fn odd(n: int) -> bool {
-  if n == 0 {
-    return false
-  }
+    if n == 0 {
+        return false
+    }
 
-  even(abs(n) - 1)
+    even(abs(n) - 1)
 }
 
 fn main() {
-  assert_eq(even(10), true)
+    assert_eq(even(10), true)
 }
 ```
 
@@ -368,26 +368,26 @@ Multiple files
 ```rust
 file: foo.brg
 enum Foo {
-  X(Bar),
+    X(Bar),
 }
 
 file: bar.brg
 enum Bar {
-  A(int),
+    A(int),
 }
 
 fn with_foo(f: Foo, m: int) -> int {
-  match f {
-    Foo.X(b) => match b {
-      Bar.A(n) => n + m
+    match f {
+        Foo.X(b) => match b {
+            Bar.A(n) => n + m
+        }
     }
-  }
 }
 
 file: main.brg
 fn main() {
-  let bar = Bar.A(2)
-  assert_eq(with_foo(Foo.X(bar), 3), 5)
+    let bar = Bar.A(2)
+    assert_eq(with_foo(Foo.X(bar), 3), 5)
 }
 ```
 
@@ -396,20 +396,20 @@ Recursion across files
 ```rust
 file: a.brg
 fn a(n: int) -> int {
-  if n == 100 {
-    return n
-  }
+    if n == 100 {
+        return n
+    }
 
-  b(n + 10)
+    b(n + 10)
 }
 
 file: b.brg
 fn b(n: int) -> int {
-  if n == 200 {
-    return n
-  }
+    if n == 200 {
+        return n
+    }
 
-  a(n + 20)
+    a(n + 20)
 }
 
 file: main.brg
@@ -449,7 +449,7 @@ Const expressions are visible from other files
 file: foo.brg
 
 fn check() -> bool {
-  foo == 2
+    foo == 2
 }
 
 file: main.brg
@@ -462,7 +462,7 @@ Paren expressions
 
 ```rust
 fn main() {
-  assert_eq((1 + 4), 5)
+    assert_eq((1 + 4), 5)
 }
 ```
 
@@ -470,35 +470,35 @@ Recursive types
 
 ```rust
 enum Expr {
-  Add(*Expr, *Expr),
-  Number(int),
+    Add(*Expr, *Expr),
+    Number(int),
 }
 
 impl (e: Expr) {
-  fn sum() -> int {
-    match e {
-      Add(a, b) => a.sum() + b.sum()
-      Number(n) => n
+    fn sum() -> int {
+        match e {
+            Add(a, b) => a.sum() + b.sum()
+            Number(n) => n
+        }
     }
-  }
 }
 
 struct Foo {
-  n: string,
-  f: *Option<Foo>,
+    n: string,
+    f: *Option<Foo>,
 }
 
 fn main() {
-  let one = Expr.Number(1)
-  let two = Expr.Number(2)
-  let e = Expr.Add(&one, &two)
-  assert_eq(e.sum(), 3)
+    let one = Expr.Number(1)
+    let two = Expr.Number(2)
+    let e = Expr.Add(&one, &two)
+    assert_eq(e.sum(), 3)
 
-  let f1 = None
-  let nope = Foo { n: "a", f: &f1 }
-  let f2 = Some(nope)
-  let yep = Foo { n: "b", f: &f2 }
-  assert_eq(yep.n, "b")
+    let f1 = None
+    let nope = Foo { n: "a", f: &f1 }
+    let f2 = Some(nope)
+    let yep = Foo { n: "b", f: &f2 }
+    assert_eq(yep.n, "b")
 }
 ```
 
@@ -506,21 +506,21 @@ Recursive functions should work even when not declared at the top-level.
 
 ```rust
 fn main() {
-  fn foo(n: int, acc: int) -> int {
-    if n == 0 {
-      return acc
+    fn foo(n: int, acc: int) -> int {
+        if n == 0 {
+            return acc
+        }
+
+        let new_acc = if n % 2 == 0 {
+            acc + n
+        } else {
+            acc
+        }
+
+        foo(n - 1, new_acc)
     }
 
-    let new_acc = if n % 2 == 0 {
-      acc + n
-    } else {
-      acc
-    }
-
-    foo(n - 1, new_acc)
-  }
-
-  assert_eq(foo(10, 0), 30)
+    assert_eq(foo(10, 0), 30)
 }
 ```
 
@@ -528,11 +528,11 @@ Exhaustiveness checking on bools
 
 ```rust
 fn main() {
-  let x = match false {
-    true => @unreachable()
-    false => 2
-  }
-  assert_eq(x, 2)
+    let x = match false {
+        true => @unreachable()
+        false => 2
+    }
+    assert_eq(x, 2)
 }
 ```
 
@@ -540,13 +540,13 @@ Primitive types are casted in struct call
 
 ```rust
 struct Foo {
-  bar: int,
+    bar: int,
 }
 
 fn main() {
-  let x = 1
-  let y = Foo { bar: x }
-  assert_eq(y.bar, 1)
+    let x = 1
+    let y = Foo { bar: x }
+    assert_eq(y.bar, 1)
 }
 ```
 
@@ -564,7 +564,7 @@ fn main() {
     assert_eq(res, 1)
 
     let res = match () {
-      () => 2
+        () => 2
     }
 
     assert_eq(res, 2)
@@ -591,16 +591,16 @@ Let binding same name as function param
 
 ```rust
 fn foo(xs: [int]) -> int {
-  // TODO asdf make sure params are put in scope so they can be rebound
-  // let xs = xs.len()
-  // xs + 10
+    // TODO asdf make sure params are put in scope so they can be rebound
+    // let xs = xs.len()
+    // xs + 10
 
-  let xxxs = xs.len()
-  xxxs + 10
+    let xxxs = xs.len()
+    xxxs + 10
 }
 
 fn main() {
-  assert_eq(foo([1,2,3]), 13)
+    assert_eq(foo([1,2,3]), 13)
 }
 ```
 
@@ -608,23 +608,23 @@ Maps in structs
 
 ```rust
 struct Foo {
-  bar: Map<string, int>
+    bar: Map<string, int>
 }
 
 fn main() {
-  let mut bar = Map.new()
-  let foo = Foo { bar }
-  assert_eq(foo.bar.len(), 0)
+    let mut bar = Map.new()
+    let foo = Foo { bar }
+    assert_eq(foo.bar.len(), 0)
 
-  bar.insert("yo", 1)
-  assert_eq(foo.bar.len(), 1)
+    bar.insert("yo", 1)
+    assert_eq(foo.bar.len(), 1)
 
-  assert_eq(bar.get("yo"), Some(1))
-  assert_eq(bar.get("nope"), None)
-  assert_eq(bar["yo"], 1)
+    assert_eq(bar.get("yo"), Some(1))
+    assert_eq(bar.get("nope"), None)
+    assert_eq(bar["yo"], 1)
 
-  bar["yo"] = 3
-  assert_eq(bar["yo"], 3)
+    bar["yo"] = 3
+    assert_eq(bar["yo"], 3)
 }
 ```
 
@@ -632,12 +632,12 @@ Functions in structs
 
 ```rust
 struct Foo {
-  bar: fn (a: int) -> int,
+    bar: fn (a: int) -> int,
 }
 
 fn main() {
-  let foo = Foo { bar: |x: int| x + 2 }
-  assert_eq(foo.bar(1), 3)
+    let foo = Foo { bar: |x: int| x + 2 }
+    assert_eq(foo.bar(1), 3)
 }
 ```
 
@@ -647,8 +647,8 @@ Records have stable field order.
 struct Foo { x: int, y: string }
 
 fn main() {
-  inspect((1, "a", true))
-  inspect(Foo { x: 1, y: "b" })
+    inspect((1, "a", true))
+    inspect(Foo { x: 1, y: "b" })
 }
 ```
 
@@ -682,15 +682,15 @@ fn main() {
         let mut check = ""
 
         for c in str {
-          check = check + string(c)
+            check = check + string(c)
         }
 
         assert_eq(str, check)
         let mut check = ""
 
         for (index, c) in str.enumerate() {
-          inspect(index)
-          check = check + string(c)
+            inspect(index)
+            check = check + string(c)
         }
 
         assert_eq(str, check)
@@ -733,33 +733,33 @@ Control flow in loops
 
 ```rust
 fn main() {
-  let mut n = 0
-  let mut check = false
+    let mut n = 0
+    let mut check = false
 
-  loop {
-    if n <= 5 {
-      n = n + 1
-      assert_eq(check, false)
-      continue
+    loop {
+        if n <= 5 {
+            n = n + 1
+            assert_eq(check, false)
+            continue
+        }
+
+        check = true
+        break
     }
 
-    check = true
-    break
-  }
+    assert_eq(check, true)
+    assert_eq(n, 6)
 
-  assert_eq(check, true)
-  assert_eq(n, 6)
+    n = 0
 
-  n = 0
-
-  for x in [1,2,3] {
-    if x == 2 {
-      continue
+    for x in [1,2,3] {
+        if x == 2 {
+            continue
+        }
+        n = n + 1
     }
-    n = n + 1
-  }
 
-  assert_eq(n, 2)
+    assert_eq(n, 2)
 }
 ```
 
@@ -767,29 +767,29 @@ Mutating vars
 
 ```rust
 fn foo(a: int) -> int {
-  loop {
-    if a > 5 { break }
-    a = a + 1
-  }
+    loop {
+        if a > 5 { break }
+        a = a + 1
+    }
 
-  a
+    a
 }
 
 fn main() {
-  let mut x = 1
-  x = x + 3
-  assert_eq(x, 4)
+    let mut x = 1
+    x = x + 3
+    assert_eq(x, 4)
 
-  {
-    let x = 5
-    assert_eq(x, 5)
-  }
+    {
+        let x = 5
+        assert_eq(x, 5)
+    }
 
-  assert_eq(foo(0), 6)
+    assert_eq(foo(0), 6)
 
-  // TODO this doesn't type check :/
-  // x = x + 6
-  // x.assert_eq(10)
+    // TODO this doesn't type check :/
+    // x = x + 6
+    // x.assert_eq(10)
 }
 ```
 
@@ -797,28 +797,28 @@ Nested if and match maintain context.
 
 ```rust
 fn foo() -> int {
-  if 1 > 2 {
-    1
-  } else if 2 > 3  {
-    2
-  } else {
-    3
-  }
+    if 1 > 2 {
+        1
+    } else if 2 > 3  {
+        2
+    } else {
+        3
+    }
 }
 
 fn bar() -> int {
-  match 1 {
-    1 => match 2 {
-      3 => 4
-      _ => 5
+    match 1 {
+        1 => match 2 {
+            3 => 4
+            _ => 5
+        }
+        _ => 9
     }
-    _ => 9
-  }
 }
 
 fn main() {
-  assert_eq(foo(), 3)
-  assert_eq(bar(), 5)
+    assert_eq(foo(), 3)
+    assert_eq(bar(), 5)
 }
 ```
 
@@ -830,7 +830,7 @@ fn compute(f: fn(a: int, b: int) -> int) -> int {
 }
 
 fn main() {
-  assert_eq(compute(|a, b| a + b), 7)
+    assert_eq(compute(|a, b| a + b), 7)
 }
 ```
 
@@ -841,13 +841,13 @@ use os
 use fmt
 
 fn read() -> Result<()> {
-  let f = os.ReadFile("go.mod")?
-  fmt.Println(string(f))
-  Ok(())
+    let f = os.ReadFile("go.mod")?
+    fmt.Println(string(f))
+    Ok(())
 }
 
 fn main() {
-  read().unwrap()
+    read().unwrap()
 }
 ```
 
@@ -858,10 +858,10 @@ use os
 use fmt
 
 fn main() {
-  match os.ReadFile("go.mod") {
-    Ok(s) => fmt.Println(string(s))
-    Err(_) => @unreachable()
-  }
+    match os.ReadFile("go.mod") {
+        Ok(s) => fmt.Println(string(s))
+        Err(_) => @unreachable()
+    }
 }
 ```
 
@@ -871,11 +871,11 @@ Compile references
 use fmt
 
 struct Foo {
-  x: int,
+    x: int,
 }
 
 fn bar(f: *Foo) -> int {
-  f.x + 2
+    f.x + 2
 }
 
 fn baz(i: *int) {
@@ -883,11 +883,11 @@ fn baz(i: *int) {
 }
 
 fn main() {
-  fmt.Printf("%v", bar(&Foo { x: 1 }))
+    fmt.Printf("%v", bar(&Foo { x: 1 }))
 
-  let mut n = 1
-  baz(&n)
-  assert_eq(n, 99)
+    let mut n = 1
+    baz(&n)
+    assert_eq(n, 99)
 }
 ```
 
@@ -897,23 +897,23 @@ References in structs
 use fmt
 
 struct Foo {
-  x: int,
+    x: int,
 }
 
 struct Bar {
-  f: *Foo,
+    f: *Foo,
 }
 
 fn update(b: *Bar) {
-  b.f.x = 99
+    b.f.x = 99
 }
 
 fn main() {
-  let f = Foo { x: 1 }
-  let mut b = Bar { f: &f }
-  update(&b)
-  assert_eq(b.f.x, 99)
-  fmt.Printf("%+v", b.f)
+    let f = Foo { x: 1 }
+    let mut b = Bar { f: &f }
+    update(&b)
+    assert_eq(b.f.x, 99)
+    fmt.Printf("%+v", b.f)
 }
 ```
 
@@ -921,19 +921,19 @@ References in methods
 
 ```rust
 struct Foo {
-  x: int,
+    x: int,
 }
 
 impl (f: *Foo) {
-  fn update(x: int) {
-    f.x = x
-  }
+    fn update(x: int) {
+        f.x = x
+    }
 }
 
 fn main() {
-  let f = Foo { x: 1 }
-  f.update(5)
-  assert_eq(f.x, 5)
+    let f = Foo { x: 1 }
+    f.update(5)
+    assert_eq(f.x, 5)
 }
 ```
 
@@ -941,19 +941,19 @@ Interfaces
 
 ```rust
 interface Foo {
-  fn foo() -> int
+    fn foo() -> int
 }
 
 struct Bar { x: int }
 
 impl (b: Bar) {
-  fn foo() -> int {
-    b.x
-  }
+    fn foo() -> int {
+        b.x
+    }
 }
 
 fn baz(f: Foo) -> int {
-  f.foo() + 4
+    f.foo() + 4
 }
 
 interface Composite {
@@ -965,7 +965,7 @@ fn check_composite(c: Composite) {
 }
 
 fn main() {
-  assert_eq(baz(&Bar { x: 6 }), 10)
+    assert_eq(baz(&Bar { x: 6 }), 10)
 }
 ```
 
@@ -977,9 +977,9 @@ use fmt
 struct Foo {}
 
 impl (f: Foo) {
-  fn Write(bytes: [byte]) -> Result<int> {
-    Ok(3)
-  }
+    fn Write(bytes: [byte]) -> Result<int> {
+        Ok(3)
+    }
 }
 
 fn main() {
@@ -998,19 +998,19 @@ use sync
 struct Counter { m: sync.Mutex, count: int }
 
 impl (c: *Counter) {
-  fn ServeHTTP(w: http.ResponseWriter, r: *http.Request) {
-    c.m.Lock()
-    c.count = c.count + 1
-    fmt.Fprintf(w, "<h1>count %d</h1>", c.count)
-    c.m.Unlock()
-  }
+    fn ServeHTTP(w: http.ResponseWriter, r: *http.Request) {
+        c.m.Lock()
+        c.count = c.count + 1
+        fmt.Fprintf(w, "<h1>count %d</h1>", c.count)
+        c.m.Unlock()
+    }
 }
 
 fn main() {
-  let c = Counter { m: zero_value(), count: 0 }
-  http.Handle("/", &c)
-  // http.ListenAndServe(":3333", zero_value())
-  fmt.Println("ok")
+    let c = Counter { m: zero_value(), count: 0 }
+    http.Handle("/", &c)
+    // http.ListenAndServe(":3333", zero_value())
+    fmt.Println("ok")
 }
 ```
 
@@ -1023,27 +1023,27 @@ fn foo<T: comparable>(x: T, y: T) -> bool {
 }
 
 interface Foo {
-  fn check() -> int
+    fn check() -> int
 }
 
 struct Bar {}
 impl (b: Bar) {
-  fn check() -> int { 3 }
+    fn check() -> int { 3 }
 }
 
 // Check that multiple constraints are correctly emitted
 fn bar<T: comparable + Foo>(x: T, y: T) -> int {
-  if x == y {
-    x.check()
-  } else {
-    -1
-  }
+    if x == y {
+        x.check()
+    } else {
+        -1
+    }
 }
 
 fn main() {
-  assert_eq(foo(1.0, 2.0), false)
-  assert_eq(foo(1, 1), true)
-  assert_eq(bar(Bar{}, Bar{}), 3)
+    assert_eq(foo(1.0, 2.0), false)
+    assert_eq(foo(1, 1), true)
+    assert_eq(bar(Bar{}, Bar{}), 3)
 }
 ```
 
@@ -1055,8 +1055,8 @@ use fmt
 fn foo(a: bool, x: VarArgs<int>) {}
 
 fn main() {
-  fmt.Printf("yep %s, %d", "hi", 3)
-  foo(false, 1, 2)
+    fmt.Printf("yep %s, %d", "hi", 3)
+    foo(false, 1, 2)
 }
 ```
 
@@ -1066,7 +1066,7 @@ Package structs
 use os
 
 fn main() {
-  let _ = os.Process { Pid: 99 }
+    let _ = os.Process { Pid: 99 }
 }
 ```
 
@@ -1076,17 +1076,17 @@ Options
 use os
 
 fn foo() -> Option<int> {
-  Some(3)
+    Some(3)
 }
 
 fn main() {
-  let x = foo()
-  assert_eq(x.IsSome(), true)
+    let x = foo()
+    assert_eq(x.IsSome(), true)
 
-  match os.LookupEnv("HOME") {
-    Some(_) => ()
-    None => @unreachable()
-  }
+    match os.LookupEnv("HOME") {
+        Some(_) => ()
+        None => @unreachable()
+    }
 }
 ```
 
@@ -1094,25 +1094,25 @@ Errors as custom types
 
 ```rust
 fn foo() -> Result<(), FooErr> {
-  Ok(())
+    Ok(())
 }
 
 struct FooErr {}
 
 impl (f: FooErr) {
-  fn Error() -> string { "b" }
+    fn Error() -> string { "b" }
 }
 
 fn bar() -> Result<(), error> {
-  let x = foo()?
-  Ok(x)
+    let x = foo()?
+    Ok(x)
 }
 
 fn main() {
-  let x = foo()
-  let y = bar()
-  assert_eq(x, Ok(()))
-  assert_eq(y, Ok(()))
+    let x = foo()
+    let y = bar()
+    assert_eq(x, Ok(()))
+    assert_eq(y, Ok(()))
 }
 ```
 
@@ -1122,12 +1122,12 @@ Blocks used as expressions
 use math
 
 fn main() {
-  let block_result = {
-    let a = math.Pi
-    let b = 2.01
-    a + b
-  }
-  assert_eq(block_result > 4.0, true)
+    let block_result = {
+        let a = math.Pi
+        let b = 2.01
+        a + b
+    }
+    assert_eq(block_result > 4.0, true)
 }
 ```
 
@@ -1137,11 +1137,11 @@ Defer statements
 use fmt
 
 fn main() {
-  fmt.Println("first")
-  defer fmt.Println("defer 1")
+    fmt.Println("first")
+    defer fmt.Println("defer 1")
 
-  fmt.Println("second")
-  defer (|| { fmt.Println("defer 2") })()
+    fmt.Println("second")
+    defer (|| { fmt.Println("defer 2") })()
 }
 ```
 
@@ -1151,12 +1151,12 @@ Newline characters
 use fmt
 
 fn main() {
-  let x = '\n'
-  fmt.Printf("a%sb\n", x)
+    let x = '\n'
+    fmt.Printf("a%sb\n", x)
 
-  let y = \\a string
-    \\ with " quotes and \ backslashes
-  fmt.Println(y)
+    let y = \\a string
+        \\ with " quotes and \ backslashes
+    fmt.Println(y)
 }
 ```
 
@@ -1167,8 +1167,8 @@ use fmt
 use os
 
 fn main() {
-  let dir = os.ReadDir(".").unwrap()
-  fmt.Printf("%v", dir[0])
+    let dir = os.ReadDir(".").unwrap()
+    fmt.Printf("%v", dir[0])
 }
 ```
 

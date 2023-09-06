@@ -20,18 +20,18 @@ Methods are resolved in nested function.
 struct Foo { a: int }
 
 impl (f: Foo) {
-  fn method() -> int {
-    f.a + 5
-  }
+    fn method() -> int {
+        f.a + 5
+    }
 }
 
 fn foo() -> int {
-  fn bar() -> int {
-    let x = Foo { a: 1 }
-    x.method()
-  }
+    fn bar() -> int {
+        let x = Foo { a: 1 }
+        x.method()
+    }
 
-  bar()
+    bar()
 }
 ```
 
@@ -57,11 +57,11 @@ Exhaustive check
 enum Color { Blue, Red, Green }
 
 fn main() -> int {
-  let x = Color.Red
-  match x {
-    Color.Red => 1,
-    Color.Green => 2,
-  }
+    let x = Color.Red
+    match x {
+        Color.Red => 1,
+        Color.Green => 2,
+    }
 }
 ```
 
@@ -73,10 +73,10 @@ Exhaustive check works with unqualified constructors.
 enum Foo { A, B, Baz }
 
 fn main() -> int {
-  match Foo.B {
-    A => 1,
-    Foo.Baz => 2,
-  }
+    match Foo.B {
+        A => 1,
+        Foo.Baz => 2,
+    }
 }
 ```
 
@@ -104,14 +104,13 @@ Catch exhaustiveness errors.
 > errorContains("constructor Green not found")
 
 ```rust
-fn main() {
-  enum Color { Red, Blue }
+enum Color { Red, Blue }
 
-  match Color.Red {
-    Red => 1,
-    Green => 2,
-  }
-  ()
+fn main() {
+    match Color.Red {
+        Red => 1,
+        Green => 2,
+    }
 }
 ```
 
@@ -121,9 +120,9 @@ Bools missing arm
 
 ```rust
 fn main() {
-  match false {
-    false => (),
-  }
+    match false {
+        false => (),
+    }
 }
 ```
 
@@ -133,7 +132,7 @@ Prevent usage of reserved words
 
 ```rust
 fn foo(default: int) -> int {
-  default
+    default
 }
 ```
 
@@ -143,8 +142,8 @@ Inference of numeric operators
 
 ```rust
 fn main() -> int {
-  false > true
-  1
+    false > true
+    1
 }
 ```
 
@@ -154,10 +153,10 @@ Pattern matching on slice literals.
 
 ```rust
 fn main() {
-  match [1] {
-    [1,2] => false,
-    _ => true,
-  }
+    match [1] {
+        [1,2] => false,
+        _ => true,
+    }
 }
 ```
 
@@ -167,14 +166,14 @@ For loops.
 
 ```rust
 fn main() {
-  for x in ["a"] {
-    @ensure x, string
-  }
+    for x in ["a"] {
+        @ensure x, string
+    }
 
-  for (index, value) in ["a"].enumerate() {
-    @ensure index, int
-    @ensure value, string
-  }
+    for (index, value) in ["a"].enumerate() {
+        @ensure index, int
+        @ensure value, string
+    }
 }
 ```
 
@@ -184,8 +183,8 @@ Expr in loops must be rangeable.
 
 ```rust
 fn main() {
-  for x in 1 {
-  }
+    for x in 1 {
+    }
 }
 ```
 
@@ -195,9 +194,9 @@ Loops with no condition
 
 ```rust
 fn main() {
-  loop {
-    break
-  }
+    loop {
+        break
+    }
 }
 ```
 
@@ -207,17 +206,15 @@ If expression with an expected type must have an else block
 
 ```rust
 fn main() {
-  if true {
-    let x = "hello"
-    1
-  }
+    if true {
+        let x = "hello"
+        1
+    }
 
-  let a = if false {
-    let y = "yo"
-    2
-  }
-
-  ()
+    let a = if false {
+        let y = "yo"
+        2
+    }
 }
 ```
 
@@ -231,19 +228,19 @@ enum Foo {
 }
 
 impl (f: Foo) {
-  fn method(s: string, b: int) -> int {
-    match f {
-      Bar(a) => a + b,
+    fn method(s: string, b: int) -> int {
+        match f {
+          Bar(a) => a + b,
+        }
     }
-  }
 }
 
 fn main() -> int {
-  let f = Foo.Bar(1)
-  @ensure f.method("a", 2), int
+    let f = Foo.Bar(1)
+    @ensure f.method("a", 2), int
 
-  let m = f.method
-  m("a", 2)
+    let m = f.method
+    m("a", 2)
 }
 ```
 
@@ -255,8 +252,8 @@ Generics in extern blocks
 use reflect
 
 fn main() {
-  let a = reflect.DeepEqual(1, false)
-  let b = reflect.DeepEqual(1, 1)
+    let a = reflect.DeepEqual(1, false)
+    let b = reflect.DeepEqual(1, 1)
 }
 ```
 
@@ -266,10 +263,10 @@ While loops.
 
 ```rust
 fn main() {
-  let x = 1
-  while x < 10 {
-    @ensure x, int
-  }
+    let x = 1
+    while x < 10 {
+        @ensure x, int
+    }
 }
 ```
 
@@ -279,10 +276,10 @@ Enumeration in loops expect a tuple.
 
 ```rust
 fn main() {
-  let m = Map.new()
-  for e in m {
-      e.0
-  }
+    let m = Map.new()
+    for e in m {
+        e.0
+    }
 }
 ```
 
@@ -338,15 +335,13 @@ Parse traits
 
 ```rust
 fn main() {
-  interface Foo {
-    fn bar(x: string) -> int
-  }
+    interface Foo {
+        fn bar(x: string) -> int
+    }
 
-  fn check(f: Foo) -> int {
-    f.bar("yo")
-  }
-
-  ()
+    fn check(f: Foo) -> int {
+        f.bar("yo")
+    }
 }
 ```
 
@@ -364,15 +359,15 @@ impl (b: Baz) {
 }
 
 fn main() -> int {
-  interface Foo {
-    fn bar(x: string) -> int
-  }
+    interface Foo {
+        fn bar(x: string) -> int
+    }
 
-  fn check(f: Foo) -> int {
-    f.bar("yo")
-  }
+    fn check(f: Foo) -> int {
+        f.bar("yo")
+    }
 
-  check(Baz { x: 1 })
+    check(Baz { x: 1 })
 }
 ```
 
@@ -385,20 +380,20 @@ struct Baz { x: int }
 
 impl (b: Baz) {
     fn bar(_: string) -> int {
-      b.x
+        b.x
     }
 }
 
 fn main() -> int {
-  interface Foo {
-    fn bar(x: string) -> int
-  }
+    interface Foo {
+        fn bar(x: string) -> int
+    }
 
-  fn check<T: Foo>(f: T) -> int {
-    f.bar("yo")
-  }
+    fn check<T: Foo>(f: T) -> int {
+        f.bar("yo")
+    }
 
-  check(Baz { x: 1 })
+    check(Baz { x: 1 })
 }
 ```
 
@@ -408,9 +403,9 @@ Trait bounds checked at call site
 
 ```rust
 fn main() {
-  interface Foo { fn foo() -> int }
-  fn check<T: Foo>(f: T) {}
-  check(1)
+    interface Foo { fn foo() -> int }
+    fn check<T: Foo>(f: T) {}
+    check(1)
 }
 ```
 
@@ -420,11 +415,11 @@ Variadic functions
 
 ```rust
 fn main() {
-  fn foo(a: int, b: VarArgs<string>) {}
+    fn foo(a: int, b: VarArgs<string>) {}
 
-  foo(1)
-  foo(1, "a")
-  foo(1, "a", "b", "c")
+    foo(1)
+    foo(1, "a")
+    foo(1, "a", "b", "c")
 }
 ```
 
@@ -434,8 +429,8 @@ Variadic functions arity error
 
 ```rust
 fn main() {
-  fn foo(a: int, b: VarArgs<string>) {}
-  foo()
+    fn foo(a: int, b: VarArgs<string>) {}
+    foo()
 }
 ```
 
@@ -447,16 +442,14 @@ References are maintained after try call
 use os
 
 fn foo() -> Result<()> {
-  let f = os.Open("file")?
-  Ok(bar(f))
+    let f = os.Open("file")?
+    Ok(bar(f))
 }
 
-fn bar(f: *os.File) {
-
-}
+fn bar(f: *os.File) {}
 
 fn main() {
-  foo()
+    foo()
 }
 ```
 
@@ -468,7 +461,7 @@ Result with an implicit E must implement error
 struct Foo {}
 
 fn foo() -> Result<()> {
-  Err(Foo {})
+    Err(Foo {})
 }
 ```
 
@@ -572,20 +565,20 @@ Impl blocks with generic types
 > infer("fn () -> ()")
 
 ```rust
-    enum Foo<T, Y> { Bar(T), Baz(Y) }
-    
-    fn make_bar<T, Y>(x: T) -> Foo<T, Y> { Foo.Bar(x) }
+enum Foo<T, Y> { Bar(T), Baz(Y) }
 
-    impl<T, Y> (f: Foo<T, Y>) {
-        fn do_stuff(y: Y) -> Y {
-            @ensure f, Foo<T, Y>
+fn make_bar<T, Y>(x: T) -> Foo<T, Y> { Foo.Bar(x) }
 
-            match f {
-                Foo.Bar(x) => y,
-                Foo.Baz(yy) => yy,
-            }
+impl<T, Y> (f: Foo<T, Y>) {
+    fn do_stuff(y: Y) -> Y {
+        @ensure f, Foo<T, Y>
+
+        match f {
+            Foo.Bar(x) => y,
+            Foo.Baz(yy) => yy,
         }
     }
+}
 
 fn main() {
     let foo: Foo<int, bool> = make_bar(1)
@@ -615,21 +608,21 @@ Generics in impl method
 > infer("fn () -> ()")
 
 ```rust
-  struct Foo<T> { bar: T }
+struct Foo<T> { bar: T }
 
-  impl<T> (f: Foo<T>) {
+impl<T> (f: Foo<T>) {
     fn map(transform: fn (x: T) -> string) -> string {
-      transform(f.bar)
+        transform(f.bar)
     }
 
     fn other() -> string {
-      f.map(|x| "asdf")
+        f.map(|x| "asdf")
     }
-  }
+}
 
 fn main() {
-  let foo = Foo { bar: 12 }
-  foo.other()
+    let foo = Foo { bar: 12 }
+    foo.other()
 }
 ```
 
@@ -638,14 +631,14 @@ Prevent generics from getting instantiated to non existing types
 > errorContains("Type not found: K")
 
 ```rust
-    enum Foo<T, Y> { Bar(T), Baz(Y) }
+enum Foo<T, Y> { Bar(T), Baz(Y) }
 
-    impl<T, Y> (f: Foo<T, Y>) {
-        fn do_stuff(y: Y) -> Y {
-            @ensure f, Foo<T, K>
-            y
-        }
+impl<T, Y> (f: Foo<T, Y>) {
+    fn do_stuff(y: Y) -> Y {
+        @ensure f, Foo<T, K>
+        y
     }
+}
 ```
 
 Unknown type in impl with generics
@@ -662,19 +655,19 @@ Type errors in method chains
 > errorContains(".foo")
 
 ```rust
-  struct Foo {}
-  struct Bar {}
-  struct Baz {}
+struct Foo {}
+struct Bar {}
+struct Baz {}
 
-  impl (f: Foo) { fn foo() -> int { 1 } }
-  impl (b: Bar) { fn bar() -> Baz { Baz{} } }
-  impl (b: Baz) { fn baz() -> Bar { Bar{} } }
+impl (f: Foo) { fn foo() -> int { 1 } }
+impl (b: Bar) { fn bar() -> Baz { Baz{} } }
+impl (b: Baz) { fn baz() -> Bar { Bar{} } }
 
 fn main() {
-  Bar{}
-  .bar()
-  .baz()
-  .foo()
+    Bar{}
+    .bar()
+    .baz()
+    .foo()
 }
 ```
 
@@ -683,17 +676,17 @@ Mutable reference as method receiver
 > infer("fn () -> ()")
 
 ```rust
-  struct Foo { x: int }
+struct Foo { x: int }
 
-  impl (f: *Foo) {
+impl (f: *Foo) {
     fn bar() {
-      f.x = 5
+        f.x = 5
     }
-  }
+}
 
 fn main() {
-  let mut f = Foo { x: 3 }
-  f.bar()
+    let mut f = Foo { x: 3 }
+    f.bar()
 }
 ```
 

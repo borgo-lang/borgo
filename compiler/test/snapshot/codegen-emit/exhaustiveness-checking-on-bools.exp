@@ -2,11 +2,11 @@ Exhaustiveness checking on bools
 
 SOURCE:
 fn main() {
-  let x = match false {
-    true => @unreachable()
-    false => 2
-  }
-  assert_eq(x, 2)
+    let x = match false {
+        true => @unreachable()
+        false => 2
+    }
+    assert_eq(x, 2)
 }
 
 OUTPUT:

@@ -2,25 +2,25 @@ Errors as custom types
 
 SOURCE:
 fn foo() -> Result<(), FooErr> {
-  Ok(())
+    Ok(())
 }
 
 struct FooErr {}
 
 impl (f: FooErr) {
-  fn Error() -> string { "b" }
+    fn Error() -> string { "b" }
 }
 
 fn bar() -> Result<(), error> {
-  let x = foo()?
-  Ok(x)
+    let x = foo()?
+    Ok(x)
 }
 
 fn main() {
-  let x = foo()
-  let y = bar()
-  assert_eq(x, Ok(()))
-  assert_eq(y, Ok(()))
+    let x = foo()
+    let y = bar()
+    assert_eq(x, Ok(()))
+    assert_eq(y, Ok(()))
 }
 
 OUTPUT:

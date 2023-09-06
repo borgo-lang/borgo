@@ -2,7 +2,7 @@ Prevent usage of reserved words
 
 SOURCE:
 fn foo(default: int) -> int {
-  default
+    default
 }
 
 OUTPUT:

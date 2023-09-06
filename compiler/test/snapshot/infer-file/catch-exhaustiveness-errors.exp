@@ -1,18 +1,17 @@
 Catch exhaustiveness errors.
 
 SOURCE:
-fn main() {
-  enum Color { Red, Blue }
+enum Color { Red, Blue }
 
-  match Color.Red {
-    Red => 1,
-    Green => 2,
-  }
-  ()
+fn main() {
+    match Color.Red {
+        Red => 1,
+        Green => 2,
+    }
 }
 
 OUTPUT:
 constructor Green not found
 
-6|      Green => 2,
-        ^^^^^
+6|          Green => 2,
+            ^^^^^

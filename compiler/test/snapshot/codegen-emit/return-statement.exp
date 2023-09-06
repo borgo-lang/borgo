@@ -2,18 +2,18 @@ Return statement
 
 SOURCE:
 fn foo() -> int {
-  let x = match 1 {
-    1 => return 12
-    _ => 5
-  }
+    let x = match 1 {
+        1 => return 12
+        _ => 5
+    }
 
-  if true {
-    let _ = x + 40
-  } else {
-    return 9
-  }
+    if true {
+        let _ = x + 40
+    } else {
+        return 9
+    }
 
-  return 4
+    return 4
 }
 
 fn bar() {
@@ -23,7 +23,7 @@ fn bar() {
 }
 
 fn main() {
-  assert_eq(foo(), 12)
+    assert_eq(foo(), 12)
 }
 
 OUTPUT:

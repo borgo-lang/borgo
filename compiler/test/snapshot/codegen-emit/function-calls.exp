@@ -6,12 +6,12 @@ fn bar(x: int) -> int { x }
 fn baz() {}
 
 fn main() {
-  let val = foo(match 1 {
-    1 => true
-    _ => false
-  }, bar(5))
+    let val = foo(match 1 {
+        1 => true
+        _ => false
+    }, bar(5))
 
-  assert_eq(val, true)
+    assert_eq(val, true)
 }
 
 OUTPUT:

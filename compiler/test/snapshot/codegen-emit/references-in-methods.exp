@@ -2,19 +2,19 @@ References in methods
 
 SOURCE:
 struct Foo {
-  x: int,
+    x: int,
 }
 
 impl (f: *Foo) {
-  fn update(x: int) {
-    f.x = x
-  }
+    fn update(x: int) {
+        f.x = x
+    }
 }
 
 fn main() {
-  let f = Foo { x: 1 }
-  f.update(5)
-  assert_eq(f.x, 5)
+    let f = Foo { x: 1 }
+    f.update(5)
+    assert_eq(f.x, 5)
 }
 
 OUTPUT:

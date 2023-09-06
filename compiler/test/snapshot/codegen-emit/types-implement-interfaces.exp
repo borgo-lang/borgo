@@ -6,9 +6,9 @@ use fmt
 struct Foo {}
 
 impl (f: Foo) {
-  fn Write(bytes: [byte]) -> Result<int> {
-    Ok(3)
-  }
+    fn Write(bytes: [byte]) -> Result<int> {
+        Ok(3)
+    }
 }
 
 fn main() {

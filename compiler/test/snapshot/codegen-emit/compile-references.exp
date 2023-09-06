@@ -4,11 +4,11 @@ SOURCE:
 use fmt
 
 struct Foo {
-  x: int,
+    x: int,
 }
 
 fn bar(f: *Foo) -> int {
-  f.x + 2
+    f.x + 2
 }
 
 fn baz(i: *int) {
@@ -16,11 +16,11 @@ fn baz(i: *int) {
 }
 
 fn main() {
-  fmt.Printf("%v", bar(&Foo { x: 1 }))
+    fmt.Printf("%v", bar(&Foo { x: 1 }))
 
-  let mut n = 1
-  baz(&n)
-  assert_eq(n, 99)
+    let mut n = 1
+    baz(&n)
+    assert_eq(n, 99)
 }
 
 OUTPUT:
