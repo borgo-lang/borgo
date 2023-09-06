@@ -15,6 +15,14 @@ const SEEN_EXPECTATIONS = new Set();
 const mode = Deno.args[0] || "all";
 const runAll = mode === "all" && import.meta.main;
 
+if (runAll || mode === "parse") {
+  await runTestFile("parse-expr", async (block, snapshotFolder) => {
+    const out = await callParser(block);
+    const exp = runExpectations(out, block);
+    await writeExpectation(snapshotFolder, exp, block);
+  });
+}
+
 if (runAll || mode === "infer") {
   await runTestFile("infer-expr", async (block, snapshotFolder) => {
     const out = await callCompiler({ InferExpr: block.code });
@@ -41,14 +49,6 @@ if (runAll || mode === "emit") {
     await writeExpectation(snapshotFolder, exp, block);
 
     return output;
-  });
-}
-
-if (runAll || mode === "parse") {
-  await runTestFile("parse-expr", async (block, snapshotFolder) => {
-    const out = await callParser(block);
-    const exp = runExpectations(out, block);
-    await writeExpectation(snapshotFolder, exp, block);
   });
 }
 
