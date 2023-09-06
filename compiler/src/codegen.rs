@@ -375,7 +375,7 @@ impl Codegen {
             Expr::CheckType { .. } => EmitResult::empty(),
             Expr::Paren { expr, .. } => self.emit_paren(expr),
             Expr::Spawn { expr, .. } => self.emit_spawn(expr),
-            Expr::Select { arms, .. } => self.emit_select(arms),
+            Expr::Select { arms: _, .. } => todo!(),
             Expr::Defer { expr, .. } => self.emit_defer(expr),
             Expr::Reference { expr, .. } => self.emit_reference(expr),
             Expr::Index { expr, index, .. } => self.emit_index(expr, index),
@@ -1485,93 +1485,6 @@ if {is_matching} != 2 {{
 
         out.emit(format!("go {call}"));
         out.no_value()
-    }
-
-    fn emit_select(&mut self, arms: &[Arm]) -> EmitResult {
-        let mut out = emitter();
-
-        out.emit("select {".to_string());
-
-        arms.iter().for_each(|a| {
-            match &a.pat {
-                Pat::Pat {
-                    ident, elems, ty, ..
-                } => {
-                    // We're looking for ChannelOp::Recv|Send or _
-
-                    let ty = self.instance.substitute(ty.clone());
-
-                    if ident == "ChannelOp::Send" {
-                        out.emit(self.emit_select_send(&elems[0], &elems[1]));
-                    } else if ident == "ChannelOp::Recv" {
-                        out.emit(self.emit_select_recv(&elems[0], &elems[1], &ty));
-                    } else {
-                        unreachable!()
-                    }
-                }
-
-                Pat::Wild { .. } => {
-                    out.emit("case default:".to_string());
-                }
-
-                _ => unreachable!(),
-            }
-
-            let result = self.emit_expr(Ctx::Discard.to_mode(), &ensure_wrapped_in_block(&a.expr));
-            out.emit(result.to_statement());
-        });
-
-        out.emit("}".to_string());
-        out.no_value()
-    }
-
-    fn emit_select_send(&mut self, chan: &Pat, value: &Pat) -> String {
-        let chan = match chan {
-            Pat::Type { ident, .. } => self.scope.get_binding(ident).unwrap(),
-            _ => unreachable!(),
-        };
-
-        let value = match value {
-            Pat::Type { ident, .. } => self.scope.get_binding(ident).unwrap(),
-            _ => unreachable!(),
-        };
-
-        format!("case {chan}<- {value}:")
-    }
-
-    fn emit_select_recv(&mut self, chan: &Pat, binding: &Pat, ty: &Type) -> String {
-        let chan = match chan {
-            Pat::Type { ident, .. } => self.scope.get_binding(ident).unwrap(),
-            _ => unreachable!(),
-        };
-
-        let mut var_binding = "".to_string();
-        let result = match binding {
-            Pat::Type { ident, .. } => {
-                let b = ident.to_string();
-                var_binding = format!("var {b} any");
-                self.scope.add_binding(b.clone(), b.clone());
-                b
-            }
-            Pat::Wild { .. } => "_".to_string(),
-            _ => unreachable!(),
-        };
-
-        let value = self.fresh_var() + "_value";
-        let more = self.fresh_var() + "_more";
-
-        dbg!(&ty);
-        let instantiated = self.render_generics_instantiated(&[ty.clone()]);
-
-        format!(
-            "case {value}, {more} := <-{chan}:
-{var_binding}
-if {more} {{
-    {result} = make_Option_Some[{instantiated}]({value})
-}} else {{
-    {result} = make_Option_None[{instantiated}]
-}}"
-        )
     }
 
     fn emit_defer(&mut self, expr: &Expr) -> EmitResult {

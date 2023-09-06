@@ -264,11 +264,6 @@ impl<T> (ch: Sender<T>) {
     }
 }
 
-enum ChannelOp<T> {
-    Recv(Receiver<T>, Option<T>),
-    Send(Sender<T>, T),
-}
-
 impl<T> (ch: Receiver<T>) {
     fn recv() -> T {
         @rawgo(
