@@ -27,7 +27,7 @@ fn main() {
         _ => false
     }, bar(5))
 
-    assert_eq(val, true)
+    assertEq(val, true)
 }
 ```
 
@@ -36,7 +36,7 @@ Let bindings
 ```rust
 fn main() {
     let a = 5 + 5
-    assert_eq(a, 10)
+    assertEq(a, 10)
 }
 ```
 
@@ -45,7 +45,7 @@ If statements
 ```rust
 fn main() {
     let x = if true { 6 } else { 0 }
-    assert_eq(x, 6)
+    assertEq(x, 6)
 }
 ```
 
@@ -103,7 +103,7 @@ fn bar() {
 }
 
 fn main() {
-    assert_eq(foo(), 12)
+    assertEq(foo(), 12)
 }
 ```
 
@@ -118,10 +118,10 @@ struct Foo {
 
 fn main() {
     let x = Foo { a: 1, b: "hi", c: true }
-    assert_eq(x.a, 1)
+    assertEq(x.a, 1)
     let y = Foo { a: 5, c: false, ..x }
-    assert_eq(y.a, 5)
-    assert_eq(x.a, 1)
+    assertEq(y.a, 5)
+    assertEq(x.a, 1)
 }
 ```
 
@@ -153,9 +153,9 @@ fn as_param(r: Result<int>) -> bool {
 }
 
 fn main() {
-    assert_eq(baz(), Err(errors.New("boom")))
-    assert_eq(as_value().IsOk(), false)
-    assert_eq(as_param(Ok(1)), true)
+    assertEq(baz(), Err(errors.New("boom")))
+    assertEq(as_value().IsOk(), false)
+    assertEq(as_param(Ok(1)), true)
 }
 ```
 
@@ -167,7 +167,7 @@ fn foo((_, b): (int, string)) -> string {
 }
 
 fn main() {
-    assert_eq(foo((1, "yo")), "yo")
+    assertEq(foo((1, "yo")), "yo")
 }
 ```
 
@@ -178,14 +178,14 @@ fn main() {
     let mut x = [1, 2, 5 + 5]
 
     inspect(x)
-    assert_eq(x.len(), 3)
-    assert_eq(x[1], 2)
+    assertEq(x.Len(), 3)
+    assertEq(x[1], 2)
 
     x[1] = 8
-    assert_eq(x[1], 8)
+    assertEq(x[1], 8)
 
-    x = x.append(9)
-    assert_eq(x[3], 9)
+    x = x.Append(9)
+    assertEq(x[3], 9)
 }
 ```
 
@@ -202,7 +202,7 @@ impl (f: Foo) {
 
 fn main() {
     let f = Foo { a: 1 }
-    assert_eq(f.bar(5), 6)
+    assertEq(f.bar(5), 6)
 }
 ```
 
@@ -211,17 +211,17 @@ Rebind variables
 ```rust
 fn main() {
     let x = 1
-    assert_eq(x, 1)
+    assertEq(x, 1)
 
     let x = 1 + 1
-    assert_eq(x, 2)
+    assertEq(x, 2)
 
     {
         let x = x + 5
-        assert_eq(x, 7)
+        assertEq(x, 7)
     }
 
-    assert_eq(x, 2)
+    assertEq(x, 2)
 }
 ```
 
@@ -235,23 +235,23 @@ fn main() {
     let (sender, receiver) = Channel.new()
 
     fn foo(x: int) {
-        sender.send(x)
+        sender.Send(x)
     }
 
-    spawn (|| { sender.send(5) })()
+    spawn (|| { sender.Send(5) })()
 
-    let val = receiver.recv()
-    assert_eq(val, 5)
+    let val = receiver.Recv()
+    assertEq(val, 5)
 
     spawn foo(10)
 
-    let val = receiver.recv()
-    assert_eq(val, 10)
+    let val = receiver.Recv()
+    assertEq(val, 10)
 
     {
         let desired = 5
 
-        let wg: sync.WaitGroup = zero_value()
+        let wg: sync.WaitGroup = zeroValue()
         wg.Add(desired)
 
         let (done_tx, done_rx) = Channel.new()
@@ -264,10 +264,10 @@ fn main() {
                 count = count + n
             }
 
-            assert_eq(count, 10)
+            assertEq(count, 10)
             fmt.Printf("count: %v", count)
 
-            done_tx.send(())
+            done_tx.Send(())
         })()
 
         let mut i = 0
@@ -275,7 +275,7 @@ fn main() {
         // start `desired` goroutines
         while (i < desired) {
             spawn (|i| {
-                sender.send(i)
+                sender.Send(i)
                 wg.Done()
             })(i)
 
@@ -283,8 +283,8 @@ fn main() {
         }
 
         wg.Wait()
-        sender.close() // close(sender)
-        done_rx.recv() // <-done
+        sender.Close() // close(sender)
+        done_rx.Recv() // <-done
     }
 }
 ```
@@ -294,7 +294,7 @@ Math with floats
 ```rust
 fn main() {
     let x = 5.3 * 1.2
-    assert_eq(true, x > 6.35 && x <= 6.36)
+    assertEq(true, x > 6.35 && x <= 6.36)
 }
 ```
 
@@ -310,7 +310,7 @@ fn foo() -> int {
 }
 
 fn main() {
-    assert_eq(foo(), 5)
+    assertEq(foo(), 5)
 }
 ```
 
@@ -328,7 +328,7 @@ fn foo(n: int) -> int {
 }
 
 fn main() {
-    assert_eq(foo(1), 5)
+    assertEq(foo(1), 5)
 }
 ```
 
@@ -359,7 +359,7 @@ fn odd(n: int) -> bool {
 }
 
 fn main() {
-    assert_eq(even(10), true)
+    assertEq(even(10), true)
 }
 ```
 
@@ -387,7 +387,7 @@ fn with_foo(f: Foo, m: int) -> int {
 file: main.brg
 fn main() {
     let bar = Bar.A(2)
-    assert_eq(with_foo(Foo.X(bar), 3), 5)
+    assertEq(with_foo(Foo.X(bar), 3), 5)
 }
 ```
 
@@ -413,7 +413,7 @@ fn b(n: int) -> int {
 }
 
 file: main.brg
-fn main() { assert_eq(a(40), 100) }
+fn main() { assertEq(a(40), 100) }
 ```
 
 Match on structs
@@ -429,7 +429,7 @@ fn main() {
         Foo { a: _ } => false
     }
 
-    assert_eq(res, true)
+    assertEq(res, true)
 }
 ```
 
@@ -440,7 +440,7 @@ file: main.brg
 
 const a: int = 1
 
-fn main() { assert_eq(a + 5, 6) }
+fn main() { assertEq(a + 5, 6) }
 ```
 
 Const expressions are visible from other files
@@ -455,14 +455,14 @@ fn check() -> bool {
 file: main.brg
 
 const foo: int = 1 + 1
-fn main() { assert_eq(check(), true) }
+fn main() { assertEq(check(), true) }
 ```
 
 Paren expressions
 
 ```rust
 fn main() {
-    assert_eq((1 + 4), 5)
+    assertEq((1 + 4), 5)
 }
 ```
 
@@ -492,13 +492,13 @@ fn main() {
     let one = Expr.Number(1)
     let two = Expr.Number(2)
     let e = Expr.Add(&one, &two)
-    assert_eq(e.sum(), 3)
+    assertEq(e.sum(), 3)
 
     let f1 = None
     let nope = Foo { n: "a", f: &f1 }
     let f2 = Some(nope)
     let yep = Foo { n: "b", f: &f2 }
-    assert_eq(yep.n, "b")
+    assertEq(yep.n, "b")
 }
 ```
 
@@ -520,7 +520,7 @@ fn main() {
         foo(n - 1, new_acc)
     }
 
-    assert_eq(foo(10, 0), 30)
+    assertEq(foo(10, 0), 30)
 }
 ```
 
@@ -532,7 +532,7 @@ fn main() {
         true => @unreachable()
         false => 2
     }
-    assert_eq(x, 2)
+    assertEq(x, 2)
 }
 ```
 
@@ -546,7 +546,7 @@ struct Foo {
 fn main() {
     let x = 1
     let y = Foo { bar: x }
-    assert_eq(y.bar, 1)
+    assertEq(y.bar, 1)
 }
 ```
 
@@ -561,13 +561,13 @@ fn main() {
         _ => @unreachable()
     }
 
-    assert_eq(res, 1)
+    assertEq(res, 1)
 
     let res = match () {
         () => 2
     }
 
-    assert_eq(res, 2)
+    assertEq(res, 2)
 }
 ```
 
@@ -583,7 +583,7 @@ fn main() {
         _ => @unreachable()
     }
 
-    assert_eq(res, 2)
+    assertEq(res, 2)
 }
 ```
 
@@ -592,15 +592,15 @@ Let binding same name as function param
 ```rust
 fn foo(xs: [int]) -> int {
     // TODO asdf make sure params are put in scope so they can be rebound
-    // let xs = xs.len()
+    // let xs = xs.Len()
     // xs + 10
 
-    let xxxs = xs.len()
+    let xxxs = xs.Len()
     xxxs + 10
 }
 
 fn main() {
-    assert_eq(foo([1,2,3]), 13)
+    assertEq(foo([1,2,3]), 13)
 }
 ```
 
@@ -614,17 +614,17 @@ struct Foo {
 fn main() {
     let mut bar = Map.new()
     let foo = Foo { bar }
-    assert_eq(foo.bar.len(), 0)
+    assertEq(foo.bar.Len(), 0)
 
-    bar.insert("yo", 1)
-    assert_eq(foo.bar.len(), 1)
+    bar.Insert("yo", 1)
+    assertEq(foo.bar.Len(), 1)
 
-    assert_eq(bar.get("yo"), Some(1))
-    assert_eq(bar.get("nope"), None)
-    assert_eq(bar["yo"], 1)
+    assertEq(bar.Get("yo"), Some(1))
+    assertEq(bar.Get("nope"), None)
+    assertEq(bar["yo"], 1)
 
     bar["yo"] = 3
-    assert_eq(bar["yo"], 3)
+    assertEq(bar["yo"], 3)
 }
 ```
 
@@ -637,7 +637,7 @@ struct Foo {
 
 fn main() {
     let foo = Foo { bar: |x: int| x + 2 }
-    assert_eq(foo.bar(1), 3)
+    assertEq(foo.bar(1), 3)
 }
 ```
 
@@ -664,17 +664,17 @@ fn main() {
             sum = sum + x
         }
 
-        assert_eq(sum, 6)
+        assertEq(sum, 6)
     }
 
     {
         let mut sum = 0
 
-        for (i, x) in [1, 2, 3].enumerate() {
+        for (i, x) in [1, 2, 3].Enumerate() {
             sum = sum + i + x
         }
 
-        assert_eq(sum, 9)
+        assertEq(sum, 9)
     }
 
     {
@@ -685,15 +685,15 @@ fn main() {
             check = check + string(c)
         }
 
-        assert_eq(str, check)
+        assertEq(str, check)
         let mut check = ""
 
-        for (index, c) in str.enumerate() {
+        for (index, c) in str.Enumerate() {
             inspect(index)
             check = check + string(c)
         }
 
-        assert_eq(str, check)
+        assertEq(str, check)
     }
 
     let mut n = 20
@@ -720,7 +720,7 @@ fn main() {
     inspect(n)
 
     let m = Map.new()
-    m.insert("a", 1)
+    m.Insert("a", 1)
 
     for (k, v) in m {
         inspect(k)
@@ -739,7 +739,7 @@ fn main() {
     loop {
         if n <= 5 {
             n = n + 1
-            assert_eq(check, false)
+            assertEq(check, false)
             continue
         }
 
@@ -747,8 +747,8 @@ fn main() {
         break
     }
 
-    assert_eq(check, true)
-    assert_eq(n, 6)
+    assertEq(check, true)
+    assertEq(n, 6)
 
     n = 0
 
@@ -759,7 +759,7 @@ fn main() {
         n = n + 1
     }
 
-    assert_eq(n, 2)
+    assertEq(n, 2)
 }
 ```
 
@@ -778,18 +778,18 @@ fn foo(a: int) -> int {
 fn main() {
     let mut x = 1
     x = x + 3
-    assert_eq(x, 4)
+    assertEq(x, 4)
 
     {
         let x = 5
-        assert_eq(x, 5)
+        assertEq(x, 5)
     }
 
-    assert_eq(foo(0), 6)
+    assertEq(foo(0), 6)
 
     // TODO this doesn't type check :/
     // x = x + 6
-    // x.assert_eq(10)
+    // x.assertEq(10)
 }
 ```
 
@@ -817,8 +817,8 @@ fn bar() -> int {
 }
 
 fn main() {
-    assert_eq(foo(), 3)
-    assert_eq(bar(), 5)
+    assertEq(foo(), 3)
+    assertEq(bar(), 5)
 }
 ```
 
@@ -830,7 +830,7 @@ fn compute(f: fn(a: int, b: int) -> int) -> int {
 }
 
 fn main() {
-    assert_eq(compute(|a, b| a + b), 7)
+    assertEq(compute(|a, b| a + b), 7)
 }
 ```
 
@@ -847,7 +847,7 @@ fn read() -> Result<()> {
 }
 
 fn main() {
-    read().unwrap()
+    read().Unwrap()
 }
 ```
 
@@ -887,7 +887,7 @@ fn main() {
 
     let mut n = 1
     baz(&n)
-    assert_eq(n, 99)
+    assertEq(n, 99)
 }
 ```
 
@@ -912,7 +912,7 @@ fn main() {
     let f = Foo { x: 1 }
     let mut b = Bar { f: &f }
     update(&b)
-    assert_eq(b.f.x, 99)
+    assertEq(b.f.x, 99)
     fmt.Printf("%+v", b.f)
 }
 ```
@@ -933,7 +933,7 @@ impl (f: *Foo) {
 fn main() {
     let f = Foo { x: 1 }
     f.update(5)
-    assert_eq(f.x, 5)
+    assertEq(f.x, 5)
 }
 ```
 
@@ -965,7 +965,7 @@ fn check_composite(c: Composite) {
 }
 
 fn main() {
-    assert_eq(baz(&Bar { x: 6 }), 10)
+    assertEq(baz(&Bar { x: 6 }), 10)
 }
 ```
 
@@ -983,8 +983,8 @@ impl (f: Foo) {
 }
 
 fn main() {
-    let n = fmt.Fprintf(&Foo{}, "%d", 1).unwrap()
-    assert_eq(n, 3)
+    let n = fmt.Fprintf(&Foo{}, "%d", 1).Unwrap()
+    assertEq(n, 3)
 }
 ```
 
@@ -1007,9 +1007,9 @@ impl (c: *Counter) {
 }
 
 fn main() {
-    let c = Counter { m: zero_value(), count: 0 }
+    let c = Counter { m: zeroValue(), count: 0 }
     http.Handle("/", &c)
-    // http.ListenAndServe(":3333", zero_value())
+    // http.ListenAndServe(":3333", zeroValue())
     fmt.Println("ok")
 }
 ```
@@ -1041,9 +1041,9 @@ fn bar<T: comparable + Foo>(x: T, y: T) -> int {
 }
 
 fn main() {
-    assert_eq(foo(1.0, 2.0), false)
-    assert_eq(foo(1, 1), true)
-    assert_eq(bar(Bar{}, Bar{}), 3)
+    assertEq(foo(1.0, 2.0), false)
+    assertEq(foo(1, 1), true)
+    assertEq(bar(Bar{}, Bar{}), 3)
 }
 ```
 
@@ -1081,7 +1081,7 @@ fn foo() -> Option<int> {
 
 fn main() {
     let x = foo()
-    assert_eq(x.IsSome(), true)
+    assertEq(x.IsSome(), true)
 
     match os.LookupEnv("HOME") {
         Some(_) => ()
@@ -1111,8 +1111,8 @@ fn bar() -> Result<(), error> {
 fn main() {
     let x = foo()
     let y = bar()
-    assert_eq(x, Ok(()))
-    assert_eq(y, Ok(()))
+    assertEq(x, Ok(()))
+    assertEq(y, Ok(()))
 }
 ```
 
@@ -1127,7 +1127,7 @@ fn main() {
         let b = 2.01
         a + b
     }
-    assert_eq(block_result > 4.0, true)
+    assertEq(block_result > 4.0, true)
 }
 ```
 
@@ -1167,7 +1167,7 @@ use fmt
 use os
 
 fn main() {
-    let dir = os.ReadDir(".").unwrap()
+    let dir = os.ReadDir(".").Unwrap()
     fmt.Printf("%v", dir[0])
 }
 ```
@@ -1189,7 +1189,7 @@ fn foo() -> Result<()> {
 }
 
 fn main() {
-    foo().unwrap()
+    foo().Unwrap()
 }
 ```
 

@@ -10,17 +10,17 @@ fn main() {
             sum = sum + x
         }
 
-        assert_eq(sum, 6)
+        assertEq(sum, 6)
     }
 
     {
         let mut sum = 0
 
-        for (i, x) in [1, 2, 3].enumerate() {
+        for (i, x) in [1, 2, 3].Enumerate() {
             sum = sum + i + x
         }
 
-        assert_eq(sum, 9)
+        assertEq(sum, 9)
     }
 
     {
@@ -31,15 +31,15 @@ fn main() {
             check = check + string(c)
         }
 
-        assert_eq(str, check)
+        assertEq(str, check)
         let mut check = ""
 
-        for (index, c) in str.enumerate() {
+        for (index, c) in str.Enumerate() {
             inspect(index)
             check = check + string(c)
         }
 
-        assert_eq(str, check)
+        assertEq(str, check)
     }
 
     let mut n = 20
@@ -66,7 +66,7 @@ fn main() {
     inspect(n)
 
     let m = Map.new()
-    m.insert("a", 1)
+    m.Insert("a", 1)
 
     for (k, v) in m {
         inspect(k)
@@ -98,17 +98,17 @@ func main() {
 			sum = sum + x
 		}
 
-		assert_eq[int](sum, 6)
+		assertEq[int](sum, 6)
 	}
 	{
 
 		sum := 0
 
-		for i, x := range Slice_enumerate[int]([]int{1, 2, 3}) {
+		for i, x := range Slice_Enumerate[int]([]int{1, 2, 3}) {
 			sum = sum + i + x
 		}
 
-		assert_eq[int](sum, 9)
+		assertEq[int](sum, 9)
 	}
 	{
 
@@ -120,18 +120,18 @@ func main() {
 			check = check + string(c)
 		}
 
-		assert_eq[string](str, check)
+		assertEq[string](str, check)
 
 		check = ""
 
-		for index, c := range string_enumerate(str) {
+		for index, c := range string_Enumerate(str) {
 
 			inspect[int](index)
 
 			check = check + string(c)
 		}
 
-		assert_eq[string](str, check)
+		assertEq[string](str, check)
 	}
 
 	n := 20
@@ -189,7 +189,7 @@ func main() {
 
 	m := Map_new[string, int]()
 
-	Map_insert[string, int](m, "a", 1)
+	Map_Insert[string, int](m, "a", 1)
 
 	for k, v := range m {
 

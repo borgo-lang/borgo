@@ -19,8 +19,8 @@ fn bar() -> Result<(), error> {
 fn main() {
     let x = foo()
     let y = bar()
-    assert_eq(x, Ok(()))
-    assert_eq(y, Ok(()))
+    assertEq(x, Ok(()))
+    assertEq(y, Ok(()))
 }
 
 OUTPUT:
@@ -61,7 +61,7 @@ func main() {
 
 	y := var3_result
 
-	assert_eq[Result[struct{}, FooErr]](x, make_Result_Ok[struct{}, FooErr](struct{}{}))
+	assertEq[Result[struct{}, FooErr]](x, make_Result_Ok[struct{}, FooErr](struct{}{}))
 
-	assert_eq[Result[struct{}, error]](y, make_Result_Ok[struct{}, error](struct{}{}))
+	assertEq[Result[struct{}, error]](y, make_Result_Ok[struct{}, error](struct{}{}))
 }

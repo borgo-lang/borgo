@@ -5,7 +5,7 @@ use fmt
 use os
 
 fn main() {
-    let dir = os.ReadDir(".").unwrap()
+    let dir = os.ReadDir(".").Unwrap()
     fmt.Printf("%v", dir[0])
 }
 
@@ -29,7 +29,7 @@ func main() {
 		return make_Result_Ok[[]fs.DirEntry, error](var1_check)
 	}()
 
-	dir := var3_result.unwrap()
+	dir := var3_result.Unwrap()
 
 	fmt.Printf("%v", dir[0])
 }

@@ -5,7 +5,7 @@ file: main.brg
 
 const a: int = 1
 
-fn main() { assert_eq(a + 5, 6) }
+fn main() { assertEq(a + 5, 6) }
 
 OUTPUT:
 
@@ -17,5 +17,5 @@ var a = func() int {
 }()
 
 func main() {
-	assert_eq[int](a+5, 6)
+	assertEq[int](a+5, 6)
 }

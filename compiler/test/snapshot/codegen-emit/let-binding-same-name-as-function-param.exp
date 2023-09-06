@@ -3,15 +3,15 @@ Let binding same name as function param
 SOURCE:
 fn foo(xs: [int]) -> int {
     // TODO asdf make sure params are put in scope so they can be rebound
-    // let xs = xs.len()
+    // let xs = xs.Len()
     // xs + 10
 
-    let xxxs = xs.len()
+    let xxxs = xs.Len()
     xxxs + 10
 }
 
 fn main() {
-    assert_eq(foo([1,2,3]), 13)
+    assertEq(foo([1,2,3]), 13)
 }
 
 OUTPUT:
@@ -20,11 +20,11 @@ OUTPUT:
 package main
 
 func foo(xs []int) int {
-	xxxs := Slice_len[int](xs)
+	xxxs := Slice_Len[int](xs)
 
 	return xxxs + 10
 }
 
 func main() {
-	assert_eq[int](foo([]int{1, 2, 3}), 13)
+	assertEq[int](foo([]int{1, 2, 3}), 13)
 }

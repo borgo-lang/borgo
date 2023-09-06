@@ -14,7 +14,7 @@ fn takes_map(m: Map<int, string>) -> string {
 
 fn main() {
     let m: Foo<string> = Map.new()
-    m.insert(1, "a")
+    m.Insert(1, "a")
 
     foo(m)
     takes_map(m)
@@ -1070,7 +1070,7 @@ No errors.
                           }
                         }
                       },
-                      "field": "insert",
+                      "field": "Insert",
                       "ty": {
                         "Fun": {
                           "args": [

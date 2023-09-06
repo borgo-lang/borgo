@@ -5,14 +5,14 @@ fn main() {
     let mut x = [1, 2, 5 + 5]
 
     inspect(x)
-    assert_eq(x.len(), 3)
-    assert_eq(x[1], 2)
+    assertEq(x.Len(), 3)
+    assertEq(x[1], 2)
 
     x[1] = 8
-    assert_eq(x[1], 8)
+    assertEq(x[1], 8)
 
-    x = x.append(9)
-    assert_eq(x[3], 9)
+    x = x.Append(9)
+    assertEq(x[3], 9)
 }
 
 OUTPUT:
@@ -26,15 +26,15 @@ func main() {
 
 	inspect[[]int](x)
 
-	assert_eq[int](Slice_len[int](x), 3)
+	assertEq[int](Slice_Len[int](x), 3)
 
-	assert_eq[int](x[1], 2)
+	assertEq[int](x[1], 2)
 
 	x[1] = 8
 
-	assert_eq[int](x[1], 8)
+	assertEq[int](x[1], 8)
 
-	x = Slice_append[int](x, 9)
+	x = Slice_Append[int](x, 9)
 
-	assert_eq[int](x[3], 9)
+	assertEq[int](x[3], 9)
 }

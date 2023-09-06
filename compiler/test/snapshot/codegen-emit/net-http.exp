@@ -17,9 +17,9 @@ impl (c: *Counter) {
 }
 
 fn main() {
-    let c = Counter { m: zero_value(), count: 0 }
+    let c = Counter { m: zeroValue(), count: 0 }
     http.Handle("/", &c)
-    // http.ListenAndServe(":3333", zero_value())
+    // http.ListenAndServe(":3333", zeroValue())
     fmt.Println("ok")
 }
 
@@ -51,7 +51,7 @@ func (c *Counter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	c := Counter{
-		m:     zero_value[sync.Mutex](),
+		m:     zeroValue[sync.Mutex](),
 		count: 0,
 	}
 

@@ -8,17 +8,17 @@ struct Foo {
 fn main() {
     let mut bar = Map.new()
     let foo = Foo { bar }
-    assert_eq(foo.bar.len(), 0)
+    assertEq(foo.bar.Len(), 0)
 
-    bar.insert("yo", 1)
-    assert_eq(foo.bar.len(), 1)
+    bar.Insert("yo", 1)
+    assertEq(foo.bar.Len(), 1)
 
-    assert_eq(bar.get("yo"), Some(1))
-    assert_eq(bar.get("nope"), None)
-    assert_eq(bar["yo"], 1)
+    assertEq(bar.Get("yo"), Some(1))
+    assertEq(bar.Get("nope"), None)
+    assertEq(bar["yo"], 1)
 
     bar["yo"] = 3
-    assert_eq(bar["yo"], 3)
+    assertEq(bar["yo"], 3)
 }
 
 OUTPUT:
@@ -35,35 +35,35 @@ func main() {
 
 	foo := Foo{bar: bar}
 
-	assert_eq[int](Map_len[string, int](foo.bar), 0)
+	assertEq[int](Map_Len[string, int](foo.bar), 0)
 
-	Map_insert[string, int](bar, "yo", 1)
+	Map_Insert[string, int](bar, "yo", 1)
 
-	assert_eq[int](Map_len[string, int](foo.bar), 1)
+	assertEq[int](Map_Len[string, int](foo.bar), 1)
 
 	var3_result := func() Option[int] {
-		var1_check, var2_err := Map_get[string, int](bar, "yo")
+		var1_check, var2_err := Map_Get[string, int](bar, "yo")
 		if var2_err == false {
 			return make_Option_None[int]()
 		}
 		return make_Option_Some[int](var1_check)
 	}()
 
-	assert_eq[Option[int]](var3_result, make_Option_Some[int](1))
+	assertEq[Option[int]](var3_result, make_Option_Some[int](1))
 
 	var6_result := func() Option[int] {
-		var4_check, var5_err := Map_get[string, int](bar, "nope")
+		var4_check, var5_err := Map_Get[string, int](bar, "nope")
 		if var5_err == false {
 			return make_Option_None[int]()
 		}
 		return make_Option_Some[int](var4_check)
 	}()
 
-	assert_eq[Option[int]](var6_result, make_Option_None[int]())
+	assertEq[Option[int]](var6_result, make_Option_None[int]())
 
-	assert_eq[int](bar["yo"], 1)
+	assertEq[int](bar["yo"], 1)
 
 	bar["yo"] = 3
 
-	assert_eq[int](bar["yo"], 3)
+	assertEq[int](bar["yo"], 3)
 }

@@ -3,7 +3,7 @@ Math with floats
 SOURCE:
 fn main() {
     let x = 5.3 * 1.2
-    assert_eq(true, x > 6.35 && x <= 6.36)
+    assertEq(true, x > 6.35 && x <= 6.36)
 }
 
 OUTPUT:
@@ -14,5 +14,5 @@ package main
 func main() {
 	x := 5.3 * 1.2
 
-	assert_eq[bool](true, x > 6.35 && x <= 6.36)
+	assertEq[bool](true, x > 6.35 && x <= 6.36)
 }

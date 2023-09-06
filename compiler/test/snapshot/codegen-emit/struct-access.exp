@@ -9,10 +9,10 @@ struct Foo {
 
 fn main() {
     let x = Foo { a: 1, b: "hi", c: true }
-    assert_eq(x.a, 1)
+    assertEq(x.a, 1)
     let y = Foo { a: 5, c: false, ..x }
-    assert_eq(y.a, 5)
-    assert_eq(x.a, 1)
+    assertEq(y.a, 5)
+    assertEq(x.a, 1)
 }
 
 OUTPUT:
@@ -33,7 +33,7 @@ func main() {
 		c: true,
 	}
 
-	assert_eq[int](x.a, 1)
+	assertEq[int](x.a, 1)
 
 	y := func(data Foo) Foo {
 		data.a = 5
@@ -41,7 +41,7 @@ func main() {
 		return data
 	}(x)
 
-	assert_eq[int](y.a, 5)
+	assertEq[int](y.a, 5)
 
-	assert_eq[int](x.a, 1)
+	assertEq[int](x.a, 1)
 }

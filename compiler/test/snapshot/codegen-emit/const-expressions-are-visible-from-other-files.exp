@@ -10,7 +10,7 @@ fn check() -> bool {
 file: main.brg
 
 const foo: int = 1 + 1
-fn main() { assert_eq(check(), true) }
+fn main() { assertEq(check(), true) }
 
 OUTPUT:
 
@@ -22,5 +22,5 @@ var foo = func() int {
 }()
 
 func main() {
-	assert_eq[bool](check(), true)
+	assertEq[bool](check(), true)
 }

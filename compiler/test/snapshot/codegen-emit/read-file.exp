@@ -11,7 +11,7 @@ fn read() -> Result<()> {
 }
 
 fn main() {
-    read().unwrap()
+    read().Unwrap()
 }
 
 OUTPUT:
@@ -48,5 +48,5 @@ func main() {
 		}
 		return make_Result_Ok[struct{}, error](var1_check)
 	}()
-	var3_result.unwrap()
+	var3_result.Unwrap()
 }

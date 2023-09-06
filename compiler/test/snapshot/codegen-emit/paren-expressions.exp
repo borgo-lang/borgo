@@ -2,7 +2,7 @@ Paren expressions
 
 SOURCE:
 fn main() {
-    assert_eq((1 + 4), 5)
+    assertEq((1 + 4), 5)
 }
 
 OUTPUT:
@@ -11,5 +11,5 @@ OUTPUT:
 package main
 
 func main() {
-	assert_eq[int]((1 + 4), 5)
+	assertEq[int]((1 + 4), 5)
 }

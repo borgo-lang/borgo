@@ -14,7 +14,7 @@ impl (f: *Foo) {
 fn main() {
     let f = Foo { x: 1 }
     f.update(5)
-    assert_eq(f.x, 5)
+    assertEq(f.x, 5)
 }
 
 OUTPUT:
@@ -35,5 +35,5 @@ func main() {
 
 	f.update(5)
 
-	assert_eq[int](f.x, 5)
+	assertEq[int](f.x, 5)
 }

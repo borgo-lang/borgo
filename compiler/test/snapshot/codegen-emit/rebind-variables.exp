@@ -3,17 +3,17 @@ Rebind variables
 SOURCE:
 fn main() {
     let x = 1
-    assert_eq(x, 1)
+    assertEq(x, 1)
 
     let x = 1 + 1
-    assert_eq(x, 2)
+    assertEq(x, 2)
 
     {
         let x = x + 5
-        assert_eq(x, 7)
+        assertEq(x, 7)
     }
 
-    assert_eq(x, 2)
+    assertEq(x, 2)
 }
 
 OUTPUT:
@@ -24,17 +24,17 @@ package main
 func main() {
 	x := 1
 
-	assert_eq[int](x, 1)
+	assertEq[int](x, 1)
 
 	x = 1 + 1
 
-	assert_eq[int](x, 2)
+	assertEq[int](x, 2)
 	{
 
 		x := x + 5
 
-		assert_eq[int](x, 7)
+		assertEq[int](x, 7)
 	}
 
-	assert_eq[int](x, 2)
+	assertEq[int](x, 2)
 }

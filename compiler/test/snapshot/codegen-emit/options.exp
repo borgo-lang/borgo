@@ -9,7 +9,7 @@ fn foo() -> Option<int> {
 
 fn main() {
     let x = foo()
-    assert_eq(x.IsSome(), true)
+    assertEq(x.IsSome(), true)
 
     match os.LookupEnv("HOME") {
         Some(_) => ()
@@ -41,7 +41,7 @@ func main() {
 
 	x := var3_result
 
-	assert_eq[bool](x.IsSome(), true)
+	assertEq[bool](x.IsSome(), true)
 
 	var6_result := func() Option[string] {
 		var4_check, var5_err := os.LookupEnv("HOME")

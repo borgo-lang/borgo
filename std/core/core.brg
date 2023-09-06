@@ -62,7 +62,7 @@ impl<T, E> (r: Result<T, E>) {
         }
     }
 
-    fn unwrap() -> T {
+    fn Unwrap() -> T {
         @rawgo(
           \\ if r.tag == Result_Err {
           \\   inspect(r.Err)
@@ -90,21 +90,21 @@ impl<T> (o: Option<T>) {
         !o.IsSome()
     }
 
-    fn unwrap_or(def: T) -> T {
+    fn UnwrapOr(def: T) -> T {
         match o {
             Some(x) => x,
             None => def,
         }
     }
 
-    fn unwrap_or_else(f: fn() -> T) -> T {
+    fn UnwrapOrElse(f: fn() -> T) -> T {
         match o {
             Some(x) => x,
             None => f(),
         }
     }
 
-    fn unwrap() -> T {
+    fn Unwrap() -> T {
         @rawgo(
           \\ if o.tag == Option_None {
           \\  panic("Unwrapped None value")
@@ -114,7 +114,7 @@ impl<T> (o: Option<T>) {
     }
 }
 
-fn ToOption<T>(value: T, check: bool) -> Option<T> {
+fn Option.ToOption<T>(value: T, check: bool) -> Option<T> {
     if check {
         Some(value)
     } else {
@@ -140,14 +140,14 @@ struct Tuple4<T, X, Y, Z> {
     fourth: Z,
 }
 
-fn zero_value<T>() -> T {
+fn zeroValue<T>() -> T {
     @rawgo(
       \\ var m T
       \\ return m
     )
 }
 
-fn assert_eq<T>(a: T, b: T) {
+fn assertEq<T>(a: T, b: T) {
     @rawgo(
     \\ if !reflect.DeepEqual(a, b) {
         \\ inspect(a);
@@ -170,7 +170,7 @@ fn Debug_unreachable<T>() -> T {
     )
 }
 
-fn to_result(e: error) -> Result<()> {
+fn Result.fromError(e: error) -> Result<()> {
     @rawgo(
       \\ if e != nil {
       \\   return struct{}{}, e
@@ -180,31 +180,31 @@ fn to_result(e: error) -> Result<()> {
 }
 
 impl<T> (xs: [T]) {
-    fn len() -> int {
+    fn Len() -> int {
         @rawgo(
           \\return len(xs)
         )
     }
 
-    fn enumerate() -> EnumerateSlice<T> {
+    fn Enumerate() -> EnumerateSlice<T> {
         @rawgo(
           \\return xs
         )
     }
 
-    fn set(index: int, item: T) {
+    fn Set(index: int, item: T) {
         @rawgo(
           \\ xs[index] = item
         )
     }
 
-    fn append(item: T) -> [T] {
+    fn Append(item: T) -> [T] {
         @rawgo(
           \\ return append(xs, item)
         )
     }
 
-    fn get(i: int) -> Option<T> {
+    fn Get(i: int) -> Option<T> {
         @rawgo(
           \\ if i < 0 || i >= len(xs) {
           \\   return *new(T), false
@@ -223,19 +223,19 @@ fn Map.new<K: comparable, V>() -> Map<K, V> {
 
 
 impl<K: comparable, V> (m: Map<K, V>) {
-    fn len() -> int {
+    fn Len() -> int {
         @rawgo(
           \\ return len(m)
         )
     }
 
-    fn insert(k: K, v: V) {
+    fn Insert(k: K, v: V) {
         @rawgo(
           \\ m[k] = v
         )
     }
 
-    fn get(k: K) -> Option<V> {
+    fn Get(k: K) -> Option<V> {
         @rawgo(
           \\ v, ok := m[k]
           \\ return v, ok
@@ -251,13 +251,13 @@ fn Channel.new<T>() -> (Sender<T>, Receiver<T>) {
 }
 
 impl<T> (ch: Sender<T>) {
-    fn send(value: T) {
+    fn Send(value: T) {
         @rawgo(
           \\ ch <- value
         )
     }
 
-    fn close() {
+    fn Close() {
         @rawgo(
           \\ close(ch)
         )
@@ -265,7 +265,7 @@ impl<T> (ch: Sender<T>) {
 }
 
 impl<T> (ch: Receiver<T>) {
-    fn recv() -> T {
+    fn Recv() -> T {
         @rawgo(
           \\ return <- ch
         )
@@ -273,7 +273,7 @@ impl<T> (ch: Receiver<T>) {
 }
 
 impl (s: string) {
-    fn enumerate() -> EnumerateSlice<rune> {
+    fn Enumerate() -> EnumerateSlice<rune> {
         @rawgo(
           \\ return []rune(s)
         )

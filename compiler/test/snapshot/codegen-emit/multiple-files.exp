@@ -22,7 +22,7 @@ fn with_foo(f: Foo, m: int) -> int {
 file: main.brg
 fn main() {
     let bar = Bar.A(2)
-    assert_eq(with_foo(Foo.X(bar), 3), 5)
+    assertEq(with_foo(Foo.X(bar), 3), 5)
 }
 
 OUTPUT:
@@ -33,5 +33,5 @@ package main
 func main() {
 	bar := make_Bar_A(2)
 
-	assert_eq[int](with_foo(make_Foo_X(bar), 3), 5)
+	assertEq[int](with_foo(make_Foo_X(bar), 3), 5)
 }

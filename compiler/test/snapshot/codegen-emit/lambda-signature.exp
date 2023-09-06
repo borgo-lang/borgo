@@ -6,7 +6,7 @@ fn compute(f: fn(a: int, b: int) -> int) -> int {
 }
 
 fn main() {
-    assert_eq(compute(|a, b| a + b), 7)
+    assertEq(compute(|a, b| a + b), 7)
 }
 
 OUTPUT:
@@ -19,7 +19,7 @@ func compute(f func(int, int) int) int {
 }
 
 func main() {
-	assert_eq[int](compute(func(a int, b int) int {
+	assertEq[int](compute(func(a int, b int) int {
 		return a + b
 	}), 7)
 }

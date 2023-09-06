@@ -10,7 +10,7 @@ fn foo() -> int {
 }
 
 fn main() {
-    assert_eq(foo(), 5)
+    assertEq(foo(), 5)
 }
 
 OUTPUT:
@@ -25,5 +25,5 @@ func foo() int {
 }
 
 func main() {
-	assert_eq[int](foo(), 5)
+	assertEq[int](foo(), 5)
 }

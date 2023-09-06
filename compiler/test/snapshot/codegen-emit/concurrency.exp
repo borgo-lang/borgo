@@ -8,23 +8,23 @@ fn main() {
     let (sender, receiver) = Channel.new()
 
     fn foo(x: int) {
-        sender.send(x)
+        sender.Send(x)
     }
 
-    spawn (|| { sender.send(5) })()
+    spawn (|| { sender.Send(5) })()
 
-    let val = receiver.recv()
-    assert_eq(val, 5)
+    let val = receiver.Recv()
+    assertEq(val, 5)
 
     spawn foo(10)
 
-    let val = receiver.recv()
-    assert_eq(val, 10)
+    let val = receiver.Recv()
+    assertEq(val, 10)
 
     {
         let desired = 5
 
-        let wg: sync.WaitGroup = zero_value()
+        let wg: sync.WaitGroup = zeroValue()
         wg.Add(desired)
 
         let (done_tx, done_rx) = Channel.new()
@@ -37,10 +37,10 @@ fn main() {
                 count = count + n
             }
 
-            assert_eq(count, 10)
+            assertEq(count, 10)
             fmt.Printf("count: %v", count)
 
-            done_tx.send(())
+            done_tx.Send(())
         })()
 
         let mut i = 0
@@ -48,7 +48,7 @@ fn main() {
         // start `desired` goroutines
         while (i < desired) {
             spawn (|i| {
-                sender.send(i)
+                sender.Send(i)
                 wg.Done()
             })(i)
 
@@ -56,8 +56,8 @@ fn main() {
         }
 
         wg.Wait()
-        sender.close() // close(sender)
-        done_rx.recv() // <-done
+        sender.Close() // close(sender)
+        done_rx.Recv() // <-done
     }
 }
 
@@ -77,25 +77,25 @@ func main() {
 	receiver := var1.second
 	var foo func(int)
 	foo = func(x int) {
-		Sender_send[int](sender, x)
+		Sender_Send[int](sender, x)
 	}
 	go (func() {
-		Sender_send[int](sender, 5)
+		Sender_Send[int](sender, 5)
 	})()
 
-	val := Receiver_recv[int](receiver)
+	val := Receiver_Recv[int](receiver)
 
-	assert_eq[int](val, 5)
+	assertEq[int](val, 5)
 	go foo(10)
 
-	val = Receiver_recv[int](receiver)
+	val = Receiver_Recv[int](receiver)
 
-	assert_eq[int](val, 10)
+	assertEq[int](val, 10)
 	{
 
 		desired := 5
 
-		wg := zero_value[sync.WaitGroup]()
+		wg := zeroValue[sync.WaitGroup]()
 
 		wg.Add(desired)
 
@@ -109,25 +109,25 @@ func main() {
 				count = count + n
 			}
 
-			assert_eq[int](count, 10)
+			assertEq[int](count, 10)
 
 			fmt.Printf("count: %v", count)
 
-			Sender_send[struct{}](done_tx, struct{}{})
+			Sender_Send[struct{}](done_tx, struct{}{})
 		})()
 
 		i := 0
 
 		for i < desired {
 			go (func(i int) {
-				Sender_send[int](sender, i)
+				Sender_Send[int](sender, i)
 				wg.Done()
 			})(i)
 
 			i = i + 1
 		}
 		wg.Wait()
-		Sender_close[int](sender)
-		Receiver_recv[struct{}](done_rx)
+		Sender_Close[int](sender)
+		Receiver_Recv[struct{}](done_rx)
 	}
 }

@@ -12,8 +12,8 @@ impl (f: Foo) {
 }
 
 fn main() {
-    let n = fmt.Fprintf(&Foo{}, "%d", 1).unwrap()
-    assert_eq(n, 3)
+    let n = fmt.Fprintf(&Foo{}, "%d", 1).Unwrap()
+    assertEq(n, 3)
 }
 
 OUTPUT:
@@ -40,7 +40,7 @@ func main() {
 		return make_Result_Ok[int, error](var1_check)
 	}()
 
-	n := var3_result.unwrap()
+	n := var3_result.Unwrap()
 
-	assert_eq[int](n, 3)
+	assertEq[int](n, 3)
 }

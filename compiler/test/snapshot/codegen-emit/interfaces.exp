@@ -26,7 +26,7 @@ fn check_composite(c: Composite) {
 }
 
 fn main() {
-    assert_eq(baz(&Bar { x: 6 }), 10)
+    assertEq(baz(&Bar { x: 6 }), 10)
 }
 
 OUTPUT:
@@ -58,5 +58,5 @@ func check_composite(c Composite) {
 }
 
 func main() {
-	assert_eq[int](baz(&Bar{x: 6}), 10)
+	assertEq[int](baz(&Bar{x: 6}), 10)
 }

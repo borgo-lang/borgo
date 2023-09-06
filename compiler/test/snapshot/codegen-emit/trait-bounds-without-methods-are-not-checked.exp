@@ -25,9 +25,9 @@ fn bar<T: comparable + Foo>(x: T, y: T) -> int {
 }
 
 fn main() {
-    assert_eq(foo(1.0, 2.0), false)
-    assert_eq(foo(1, 1), true)
-    assert_eq(bar(Bar{}, Bar{}), 3)
+    assertEq(foo(1.0, 2.0), false)
+    assertEq(foo(1, 1), true)
+    assertEq(bar(Bar{}, Bar{}), 3)
 }
 
 OUTPUT:
@@ -62,9 +62,9 @@ func bar[T interface {
 }
 
 func main() {
-	assert_eq[bool](foo[float64](1, 2), false)
+	assertEq[bool](foo[float64](1, 2), false)
 
-	assert_eq[bool](foo[int](1, 1), true)
+	assertEq[bool](foo[int](1, 1), true)
 
-	assert_eq[int](bar[Bar](Bar{}, Bar{}), 3)
+	assertEq[int](bar[Bar](Bar{}, Bar{}), 3)
 }

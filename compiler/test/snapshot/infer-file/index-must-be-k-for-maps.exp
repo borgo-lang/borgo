@@ -3,7 +3,7 @@ Index must be K for maps
 SOURCE:
 fn main() {
     let xs = Map.new()
-    xs.insert("a", 1)
+    xs.Insert("a", 1)
     xs[false]
 }
 

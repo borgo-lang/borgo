@@ -3,7 +3,7 @@ Let bindings
 SOURCE:
 fn main() {
     let a = 5 + 5
-    assert_eq(a, 10)
+    assertEq(a, 10)
 }
 
 OUTPUT:
@@ -14,5 +14,5 @@ package main
 func main() {
 	a := 5 + 5
 
-	assert_eq[int](a, 10)
+	assertEq[int](a, 10)
 }

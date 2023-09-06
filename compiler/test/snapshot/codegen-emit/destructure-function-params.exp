@@ -6,7 +6,7 @@ fn foo((_, b): (int, string)) -> string {
 }
 
 fn main() {
-    assert_eq(foo((1, "yo")), "yo")
+    assertEq(foo((1, "yo")), "yo")
 }
 
 OUTPUT:
@@ -21,7 +21,7 @@ func foo(arg_0 Tuple2[int, string]) string {
 }
 
 func main() {
-	assert_eq[string](foo(Tuple2[int, string]{
+	assertEq[string](foo(Tuple2[int, string]{
 		first:  1,
 		second: "yo",
 	}), "yo")

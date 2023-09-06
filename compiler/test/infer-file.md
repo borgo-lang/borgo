@@ -170,7 +170,7 @@ fn main() {
         @ensure x, string
     }
 
-    for (index, value) in ["a"].enumerate() {
+    for (index, value) in ["a"].Enumerate() {
         @ensure index, int
         @ensure value, string
     }
@@ -312,7 +312,7 @@ Access maps by index
 ```rust
 fn main() -> int {
     let xs = Map.new()
-    xs.insert("a", 1)
+    xs.Insert("a", 1)
     xs["a"]
 }
 ```
@@ -324,7 +324,7 @@ Index must be K for maps
 ```rust
 fn main() {
     let xs = Map.new()
-    xs.insert("a", 1)
+    xs.Insert("a", 1)
     xs[false]
 }
 ```
@@ -483,7 +483,7 @@ fn takes_map(m: Map<int, string>) -> string {
 
 fn main() {
     let m: Foo<string> = Map.new()
-    m.insert(1, "a")
+    m.Insert(1, "a")
 
     foo(m)
     takes_map(m)
@@ -721,7 +721,7 @@ Access struct fields from package
 use net.http
 
 fn main() {
-    let code = http.Get("foo").unwrap().StatusCode
+    let code = http.Get("foo").Unwrap().StatusCode
     @ensure code, int
 }
 ```

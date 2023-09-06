@@ -16,7 +16,7 @@ fn main() {
         foo(n - 1, new_acc)
     }
 
-    assert_eq(foo(10, 0), 30)
+    assertEq(foo(10, 0), 30)
 }
 
 OUTPUT:
@@ -41,5 +41,5 @@ func main() {
 		return foo(n-1, new_acc)
 	}
 
-	assert_eq[int](foo(10, 0), 30)
+	assertEq[int](foo(10, 0), 30)
 }

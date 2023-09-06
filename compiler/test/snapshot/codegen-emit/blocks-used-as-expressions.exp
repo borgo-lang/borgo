@@ -9,7 +9,7 @@ fn main() {
         let b = 2.01
         a + b
     }
-    assert_eq(block_result > 4.0, true)
+    assertEq(block_result > 4.0, true)
 }
 
 OUTPUT:
@@ -32,5 +32,5 @@ func main() {
 		block_result = a + b
 	}
 
-	assert_eq[bool](block_result > 4, true)
+	assertEq[bool](block_result > 4, true)
 }

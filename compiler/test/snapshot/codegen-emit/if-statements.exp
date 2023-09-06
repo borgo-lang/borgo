@@ -3,7 +3,7 @@ If statements
 SOURCE:
 fn main() {
     let x = if true { 6 } else { 0 }
-    assert_eq(x, 6)
+    assertEq(x, 6)
 }
 
 OUTPUT:
@@ -20,5 +20,5 @@ func main() {
 		x = 0
 	}
 
-	assert_eq[int](x, 6)
+	assertEq[int](x, 6)
 }

@@ -13,18 +13,18 @@ fn foo(a: int) -> int {
 fn main() {
     let mut x = 1
     x = x + 3
-    assert_eq(x, 4)
+    assertEq(x, 4)
 
     {
         let x = 5
-        assert_eq(x, 5)
+        assertEq(x, 5)
     }
 
-    assert_eq(foo(0), 6)
+    assertEq(foo(0), 6)
 
     // TODO this doesn't type check :/
     // x = x + 6
-    // x.assert_eq(10)
+    // x.assertEq(10)
 }
 
 OUTPUT:
@@ -50,13 +50,13 @@ func main() {
 
 	x = x + 3
 
-	assert_eq[int](x, 4)
+	assertEq[int](x, 4)
 	{
 
 		x := 5
 
-		assert_eq[int](x, 5)
+		assertEq[int](x, 5)
 	}
 
-	assert_eq[int](foo(0), 6)
+	assertEq[int](foo(0), 6)
 }

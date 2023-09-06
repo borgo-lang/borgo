@@ -20,7 +20,7 @@ fn main() {
 
     let mut n = 1
     baz(&n)
-    assert_eq(n, 99)
+    assertEq(n, 99)
 }
 
 OUTPUT:
@@ -51,5 +51,5 @@ func main() {
 
 	baz(&n)
 
-	assert_eq[int](n, 99)
+	assertEq[int](n, 99)
 }

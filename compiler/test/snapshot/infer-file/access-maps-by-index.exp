@@ -3,7 +3,7 @@ Access maps by index
 SOURCE:
 fn main() -> int {
     let xs = Map.new()
-    xs.insert("a", 1)
+    xs.Insert("a", 1)
     xs["a"]
 }
 
@@ -276,7 +276,7 @@ No errors.
                           }
                         }
                       },
-                      "field": "insert",
+                      "field": "Insert",
                       "ty": {
                         "Fun": {
                           "args": [

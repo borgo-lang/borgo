@@ -8,7 +8,7 @@ fn main() {
     loop {
         if n <= 5 {
             n = n + 1
-            assert_eq(check, false)
+            assertEq(check, false)
             continue
         }
 
@@ -16,8 +16,8 @@ fn main() {
         break
     }
 
-    assert_eq(check, true)
-    assert_eq(n, 6)
+    assertEq(check, true)
+    assertEq(n, 6)
 
     n = 0
 
@@ -28,7 +28,7 @@ fn main() {
         n = n + 1
     }
 
-    assert_eq(n, 2)
+    assertEq(n, 2)
 }
 
 OUTPUT:
@@ -48,7 +48,7 @@ func main() {
 
 				n = n + 1
 
-				assert_eq[bool](check, false)
+				assertEq[bool](check, false)
 				continue
 			}
 		}
@@ -57,9 +57,9 @@ func main() {
 		break
 	}
 
-	assert_eq[bool](check, true)
+	assertEq[bool](check, true)
 
-	assert_eq[int](n, 6)
+	assertEq[int](n, 6)
 
 	n = 0
 
@@ -72,5 +72,5 @@ func main() {
 		n = n + 1
 	}
 
-	assert_eq[int](n, 2)
+	assertEq[int](n, 2)
 }

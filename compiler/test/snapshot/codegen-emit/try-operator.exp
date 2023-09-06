@@ -26,9 +26,9 @@ fn as_param(r: Result<int>) -> bool {
 }
 
 fn main() {
-    assert_eq(baz(), Err(errors.New("boom")))
-    assert_eq(as_value().IsOk(), false)
-    assert_eq(as_param(Ok(1)), true)
+    assertEq(baz(), Err(errors.New("boom")))
+    assertEq(as_value().IsOk(), false)
+    assertEq(as_param(Ok(1)), true)
 }
 
 OUTPUT:
@@ -89,7 +89,7 @@ func main() {
 		return make_Result_Ok[int, error](var1_check)
 	}()
 
-	assert_eq[Result[int, error]](var3_result, make_Result_Err[int, error](errors.New("boom")))
+	assertEq[Result[int, error]](var3_result, make_Result_Err[int, error](errors.New("boom")))
 
 	var6_result := func() Result[int, error] {
 		var4_check, var5_err := as_value()
@@ -99,7 +99,7 @@ func main() {
 		return make_Result_Ok[int, error](var4_check)
 	}()
 
-	assert_eq[bool](var6_result.IsOk(), false)
+	assertEq[bool](var6_result.IsOk(), false)
 
-	assert_eq[bool](as_param(make_Result_Ok[int, error](1)), true)
+	assertEq[bool](as_param(make_Result_Ok[int, error](1)), true)
 }

@@ -20,7 +20,7 @@ fn b(n: int) -> int {
 }
 
 file: main.brg
-fn main() { assert_eq(a(40), 100) }
+fn main() { assertEq(a(40), 100) }
 
 OUTPUT:
 
@@ -28,5 +28,5 @@ OUTPUT:
 package main
 
 func main() {
-	assert_eq[int](a(40), 100)
+	assertEq[int](a(40), 100)
 }

@@ -10,7 +10,7 @@ fn main() {
         _ => @unreachable()
     }
 
-    assert_eq(res, 2)
+    assertEq(res, 2)
 }
 
 OUTPUT:
@@ -125,5 +125,5 @@ func main() {
 		}
 	}
 
-	assert_eq[int](res, 2)
+	assertEq[int](res, 2)
 }

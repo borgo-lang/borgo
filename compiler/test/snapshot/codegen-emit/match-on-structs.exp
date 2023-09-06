@@ -11,7 +11,7 @@ fn main() {
         Foo { a: _ } => false
     }
 
-    assert_eq(res, true)
+    assertEq(res, true)
 }
 
 OUTPUT:
@@ -100,5 +100,5 @@ func main() {
 		}
 	}
 
-	assert_eq[bool](res, true)
+	assertEq[bool](res, true)
 }

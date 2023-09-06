@@ -4,7 +4,7 @@ SOURCE:
 use net.http
 
 fn main() {
-    let code = http.Get("foo").unwrap().StatusCode
+    let code = http.Get("foo").Unwrap().StatusCode
     @ensure code, int
 }
 
@@ -255,7 +255,7 @@ No errors.
                                   }
                                 }
                               },
-                              "field": "unwrap",
+                              "field": "Unwrap",
                               "ty": {
                                 "Fun": {
                                   "args": [],

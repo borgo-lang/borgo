@@ -23,7 +23,7 @@ fn bar() {
 }
 
 fn main() {
-    assert_eq(foo(), 12)
+    assertEq(foo(), 12)
 }
 
 OUTPUT:
@@ -81,5 +81,5 @@ func bar() {
 }
 
 func main() {
-	assert_eq[int](foo(), 12)
+	assertEq[int](foo(), 12)
 }

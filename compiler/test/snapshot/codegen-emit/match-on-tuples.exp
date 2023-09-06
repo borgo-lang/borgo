@@ -9,13 +9,13 @@ fn main() {
         _ => @unreachable()
     }
 
-    assert_eq(res, 1)
+    assertEq(res, 1)
 
     let res = match () {
         () => 2
     }
 
-    assert_eq(res, 2)
+    assertEq(res, 2)
 }
 
 OUTPUT:
@@ -127,7 +127,7 @@ func main() {
 		}
 	}
 
-	assert_eq[int](res, 1)
+	assertEq[int](res, 1)
 
 	var13_subject := struct{}{}
 	var14_matches := 0
@@ -145,5 +145,5 @@ func main() {
 		}
 	}
 
-	assert_eq[int](res, 2)
+	assertEq[int](res, 2)
 }

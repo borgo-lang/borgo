@@ -19,7 +19,7 @@ fn main() {
     let f = Foo { x: 1 }
     let mut b = Bar { f: &f }
     update(&b)
-    assert_eq(b.f.x, 99)
+    assertEq(b.f.x, 99)
     fmt.Printf("%+v", b.f)
 }
 
@@ -50,7 +50,7 @@ func main() {
 
 	update(&b)
 
-	assert_eq[int](b.f.x, 99)
+	assertEq[int](b.f.x, 99)
 
 	fmt.Printf("%+v", b.f)
 }

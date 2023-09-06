@@ -6,7 +6,7 @@ fn main() {
         @ensure x, string
     }
 
-    for (index, value) in ["a"].enumerate() {
+    for (index, value) in ["a"].Enumerate() {
         @ensure index, int
         @ensure value, string
     }
@@ -390,7 +390,7 @@ No errors.
                                   }
                                 }
                               },
-                              "field": "enumerate",
+                              "field": "Enumerate",
                               "ty": {
                                 "Fun": {
                                   "args": [],

@@ -70,32 +70,32 @@ whitespace.
 use fmt
 
 fn main() {
-  let n = 1
-  let s = "hello"
-  let b = false
+    let n = 1
+    let s = "hello"
+    let b = false
 
-  fmt.Println("primitives: ", n, s, b)
+    fmt.Println("primitives: ", n, s, b)
 
-  let mut xs = [1,2,3]
-  fmt.Println("slice:", xs)
+    let mut xs = [1,2,3]
+    fmt.Println("slice:", xs)
 
-  xs = xs.append(10)
-  fmt.Println("len after append:", xs.len())
+    xs = xs.Append(10)
+    fmt.Println("len after append:", xs.Len())
 
-  let mut m = Map.new()
-  m.insert(1, "alice")
-  m.insert(2, "bob")
+    let mut m = Map.new()
+    m.Insert(1, "alice")
+    m.Insert(2, "bob")
 
-  fmt.Println("map:", m)
+    fmt.Println("map:", m)
 
-  let pair = ("hey", true)
-  fmt.Println("second element in tuple:", pair.1)
+    let pair = ("hey", true)
+    fmt.Println("second element in tuple:", pair.1)
 
-  let multi = \\a multi line
-    \\  string with unescaped "quotes"
-    \\ that ends here
+    let multi = \\a multi line
+        \\  string with unescaped "quotes"
+        \\ that ends here
 
-  fmt.Println("multiline string:", multi)
+    fmt.Println("multiline string:", multi)
 }
 ```
 
@@ -134,13 +134,13 @@ fn main() {
     }
 
     fmt.Println("Indexed for loop")
-    for (index, letter) in xs.enumerate() {
+    for (index, letter) in xs.Enumerate() {
         fmt.Println(index, letter)
     }
 
     let m = Map.new()
-    m.insert(1, "alice")
-    m.insert(2, "bob")
+    m.Insert(1, "alice")
+    m.Insert(2, "bob")
 
     fmt.Println("For loop over maps")
     for (key, value) in m {
@@ -169,9 +169,9 @@ fn main() {
     fmt.Println(if 5 > 3 { "ok" } else { "nope" })
 
     let block_result = {
-      let a = 1
-      let b = 2
-      a + b
+        let a = 1
+        let b = 2
+        a + b
     }
 
     fmt.Println("block result:", block_result)
@@ -203,22 +203,22 @@ enum IpAddr {
     V6(string),
 }
 
-fn is_private(ip: IpAddr) -> bool {
+fn isPrivate(ip: IpAddr) -> bool {
   match ip {
     IpAddr.V4(a, b, _, _) => {
-      if a == 10 {
-        return true
-      }
+        if a == 10 {
+            return true
+        }
 
-      if a == 172 && b >= 16 && b <= 31 {
-        return true
-      }
+        if a == 172 && b >= 16 && b <= 31 {
+            return true
+        }
 
-      if a == 192 && b == 168 {
-        return true
-      }
+        if a == 192 && b == 168 {
+            return true
+        }
 
-      false
+        false
     }
 
     IpAddr.V6(s) => strings.HasPrefix(s, "fc00::")
@@ -232,7 +232,7 @@ enum Coin {
     Quarter,
 }
 
-fn value_in_cents(coin: Coin) -> int {
+fn valueInCents(coin: Coin) -> int {
     match coin {
         Coin.Penny => 1,
         Coin.Nickel => 5,
@@ -242,13 +242,13 @@ fn value_in_cents(coin: Coin) -> int {
 }
 
 fn main() {
-  let home = IpAddr.V4(127, 0, 0, 1)
-  let loopback = IpAddr.V6("::1")
-  fmt.Println("home ip is private: ", home, is_private(home))
-  fmt.Println("loopback: ", loopback)
+    let home = IpAddr.V4(127, 0, 0, 1)
+    let loopback = IpAddr.V6("::1")
+    fmt.Println("home ip is private: ", home, isPrivate(home))
+    fmt.Println("loopback: ", loopback)
 
-  let cents = value_in_cents(Coin.Nickel)
-  fmt.Println("cents:", cents)
+    let cents = valueInCents(Coin.Nickel)
+    fmt.Println("cents:", cents)
 
 }
 ```
@@ -264,26 +264,26 @@ and zero values for more information.
 use fmt
 
 struct Person {
-  name: string,
-  hobbies: [Hobby],
+    name: string,
+    hobbies: [Hobby],
 }
 
 enum Hobby {
-  SkyDiving,
-  StaringAtWall,
-  Other(string),
+    SkyDiving,
+    StaringAtWall,
+    Other(string),
 }
 
 fn main() {
-  let mut p = Person {
-    name: "bob",
-    hobbies: [Hobby.StaringAtWall, Hobby.Other("sleep")],
-  }
+    let mut p = Person {
+        name: "bob",
+        hobbies: [Hobby.StaringAtWall, Hobby.Other("sleep")],
+    }
 
-  fmt.Println("person:", p)
+    fmt.Println("person:", p)
 
-  p.hobbies = p.hobbies.append(Hobby.SkyDiving)
-  fmt.Println("with more hobbies:", p)
+    p.hobbies = p.hobbies.Append(Hobby.SkyDiving)
+    fmt.Println("with more hobbies:", p)
 }
 ```
 
@@ -309,37 +309,37 @@ the stdlib are welcome!
 use fmt
 
 struct Person {
-  name: string,
-  age: int
+    name: string,
+    age: int
 }
 
 fn validate(name: string, age: int) -> Result<Person, string> {
-  if (age < 18) {
-    return Err("too young")
-  }
+    if (age < 18) {
+        return Err("too young")
+    }
 
-  if (age > 98) {
-    return Err("too old")
-  }
+    if (age > 98) {
+        return Err("too old")
+    }
 
-  Ok(Person { name, age })
+    Ok(Person { name, age })
 }
 
 fn main() {
-  let xs = ["a", "b", "c"]
-  let element = xs.get(2) // Option<string>
+    let xs = ["a", "b", "c"]
+    let element = xs.Get(2) // Option<string>
 
-  match element {
-    Some(s) => fmt.Println("ok, the element was found:", s),
-    None => fmt.Println("element not found"),
-  }
+    match element {
+        Some(s) => fmt.Println("ok, the element was found:", s),
+        None => fmt.Println("element not found"),
+    }
 
-  let result = validate("alice", 33) // Result<Person, string>
+    let result = validate("alice", 33) // Result<Person, string>
 
-  match result {
-    Ok(p) => fmt.Println("got a person:", p),
-    Err(e) => fmt.Println("couldn't validate:", e),
-  }
+    match result {
+        Ok(p) => fmt.Println("got a person:", p),
+        Err(e) => fmt.Println("couldn't validate:", e),
+    }
 }
 ```
 
@@ -457,10 +457,10 @@ use fmt
 use regexp
 
 fn main() {
-  let validID = regexp.MustCompile("^[a-z]+[[0-9]+]$")
+    let validID = regexp.MustCompile("^[a-z]+[[0-9]+]$")
 
-  fmt.Println(validID.MatchString("adam[23]"))
-  fmt.Println(validID.MatchString("eve[7]"))
+    fmt.Println(validID.MatchString("adam[23]"))
+    fmt.Println(validID.MatchString("eve[7]"))
 }
 ```
 
@@ -513,40 +513,38 @@ example.
 use fmt
 
 struct Person {
-  name: string,
-  hours_slept: int,
+    name: string,
+    hours_slept: int,
 }
 
 fn Person.new(name: string) -> Person {
     Person {
-      name,
-      hours_slept: 0,
+        name,
+        hours_slept: 0,
     }
 }
 
 impl (p: *Person) {
-  // Needs mutable reference because modifies structure
-  fn sleep() {
-    p.hours_slept = p.hours_slept + 1 
-  }
+    fn sleep() {
+        p.hours_slept = p.hours_slept + 1 
+    }
 
-  // Ok with read-only reference
-  fn ready_for_work() -> bool {
-    p.hours_slept > 5
-  }
+    fn ready_for_work() -> bool {
+        p.hours_slept > 5
+    }
 
-  fn ready_to_party() -> bool {
-    p.hours_slept > 10
-  }
+    fn ready_to_party() -> bool {
+        p.hours_slept > 10
+    }
 }
 
 fn main() {
-  let mut p = Person.new("alice")
+    let mut p = Person.new("alice")
 
-  p.sleep()
-  p.sleep()
+    p.sleep()
+    p.sleep()
 
-  fmt.Println("is ready:", p.ready_for_work())
+    fmt.Println("is ready:", p.ready_for_work())
 }
 ```
 
@@ -623,6 +621,7 @@ fn main() {
         width: 3,
         height: 4,
     }
+
     let c = circle { radius: 5 }
 
     measure(r)
@@ -709,10 +708,10 @@ In Go, it's common to see types not needing to be initialized, as their _zero
 value_ is ready to be used (ie. `sync.Mutex` or `sync.WaitGroup`). Borgo goes in
 the opposite direction, requiring that all values are explicitely initialized.
 
-You can use the built-in function `zero_value()` whenever you need the _zero
+You can use the built-in function `zeroValue()` whenever you need the _zero
 value_ of a type. While you won't need to provide a type annotation in all cases
 (as the type can be inferred), it's probably clearer to annotate variables that
-are initialized with `zero_value()`.
+are initialized with `zeroValue()`.
 
 As mentioned in a previous section, this also applies to struct fields, which
 always need to be initialized.
@@ -725,11 +724,11 @@ use fmt
 fn main() {
      // in Go:
      // var wg sync.WaitGroup
-     let wg: sync.WaitGroup = zero_value()
+     let wg: sync.WaitGroup = zeroValue()
 
      // in Go:
      // var b bytes.Buffer
-     let b: bytes.Buffer = zero_value()
+     let b: bytes.Buffer = zeroValue()
 
      fmt.Println("variables are initialized:", wg, b)
 }
@@ -754,7 +753,7 @@ struct Counter {
 }
 
 fn Counter.new() -> Counter {
-    Counter { count: 0, mu: zero_value() }
+    Counter { count: 0, mu: zeroValue() }
 }
 
 impl (c: *Counter) {
@@ -769,7 +768,7 @@ fn main() {
 	let desired = 1000
 	let counter = Counter.new()
 
-    let wg: sync.WaitGroup = zero_value()
+    let wg: sync.WaitGroup = zeroValue()
 	wg.Add(desired)
 
     let mut i = 0
@@ -812,15 +811,15 @@ fn main() {
     let (sender, receiver) = Channel.new()
 
     spawn (|| {
-        sender.send(1)
+        sender.Send(1)
     })()
 
     spawn (|| {
-        sender.send(2)
+        sender.Send(2)
     })()
 
-    let msg = receiver.recv()
-    let msg2 = receiver.recv()
+    let msg = receiver.Recv()
+    let msg2 = receiver.Recv()
 
     fmt.Println(msg + msg2)
 }
@@ -843,12 +842,12 @@ fn main() {
     let (tx2, rx2) = Channel.new()
 
     spawn (|| {
-        tx1.send("a")
+        tx1.Send("a")
     })()
 
     spawn (|| {
         time.Sleep(2 * time.Second)
-        tx2.send("b")
+        tx2.Send("b")
     })()
 
     @rawgo (
