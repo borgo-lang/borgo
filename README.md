@@ -19,6 +19,12 @@ Borgo syntax is similar to Rust, with optional semi-colons.
 Check out the **[online playground](https://borgo-lang.github.io/)** for a tour
 of the language.
 
+You can also take a look at test files for working Borgo code:
+
+- [codegen-emit.md](compiler/test/codegen-emit.md)
+- [infer-expr.md](compiler/test/infer-expr.md)
+- [infer-file.md](compiler/test/infer-file.md)
+
 ## Features
 
 **Algebraic data types and pattern matching**
