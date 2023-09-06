@@ -14,6 +14,11 @@ existing Go packages.
 
 Borgo syntax is similar to Rust, with optional semi-colons.
 
+## Tutorial
+
+Check out the **[online playground](https://borgo-lang.github.io/)** for a tour
+of the language.
+
 ## Features
 
 **Algebraic data types and pattern matching**
@@ -91,11 +96,6 @@ fn copyFile(src: string, dst: string) -> Result<(), error> {
     Ok(())
 }
 ```
-
-## Tutorial
-
-Check out the **[online playground](https://borgo-lang.github.io/)** for a tour
-of the language.
 
 ## Guessing game example
 
