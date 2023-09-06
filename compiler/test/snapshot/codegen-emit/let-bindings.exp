@@ -2,8 +2,8 @@ Let bindings
 
 SOURCE:
 fn main() {
-  let a = 5 + 5;
-  assert_eq(a, 10);
+  let a = 5 + 5
+  assert_eq(a, 10)
 }
 
 OUTPUT:

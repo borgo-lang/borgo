@@ -1,0 +1,44 @@
+use io
+use hash
+
+
+fn RegisterHash  (h: Hash, f: fn () -> hash.Hash) -> () { EXT }
+
+impl (self: Hash) {
+
+fn Available  () -> bool { EXT }
+
+fn HashFunc  () -> Hash { EXT }
+
+fn New  () -> hash.Hash { EXT }
+
+fn Size  () -> int { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+struct DecrypterOpts(any)
+
+struct Hash(uint)
+
+struct PrivateKey(any)
+
+struct PublicKey(any)
+
+interface Decrypter {
+
+  fn Public () -> PublicKey
+  fn Decrypt (rand: io.Reader, msg: [byte], opts: DecrypterOpts) -> Result<[byte]>
+}
+
+interface Signer {
+
+  fn Public () -> PublicKey
+  fn Sign (rand: io.Reader, digest: [byte], opts: SignerOpts) -> Result<[byte]>
+}
+
+interface SignerOpts {
+
+  fn HashFunc () -> Hash
+}

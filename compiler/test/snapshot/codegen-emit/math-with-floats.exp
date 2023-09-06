@@ -2,8 +2,8 @@ Math with floats
 
 SOURCE:
 fn main() {
-  let x = 5.3 * 1.2;
-  assert_eq(true, x > 6.35 && x <= 6.36);
+  let x = 5.3 * 1.2
+  assert_eq(true, x > 6.35 && x <= 6.36)
 }
 
 OUTPUT:

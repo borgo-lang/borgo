@@ -3,7 +3,7 @@ Enums with generics should get instantiated.
 SOURCE:
 {
   enum Maybe<T> { Just(T), None }
-  Maybe::Just(1)
+  Maybe.Just(1)
 }
 
 OUTPUT:
@@ -25,11 +25,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 13
+                    "col": 14
                   },
                   "end": {
                     "line": 2,
-                    "col": 14
+                    "col": 15
                   },
                   "file": 99
                 }
@@ -65,7 +65,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -79,11 +79,11 @@ No errors.
         "Call": {
           "func": {
             "Var": {
-              "value": "Maybe::Just",
+              "value": "Maybe.Just",
               "decl": {
                 "start": {
                   "line": 2,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 2,
@@ -128,7 +128,7 @@ No errors.
               "span": {
                 "start": {
                   "line": 3,
-                  "col": 2
+                  "col": 9
                 },
                 "end": {
                   "line": 3,
@@ -180,11 +180,11 @@ No errors.
           "span": {
             "start": {
               "line": 3,
-              "col": 2
+              "col": 13
             },
             "end": {
               "line": 3,
-              "col": 16
+              "col": 15
             },
             "file": 99
           }
@@ -207,7 +207,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 4,

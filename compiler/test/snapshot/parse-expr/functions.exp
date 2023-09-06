@@ -1,0 +1,82 @@
+Functions
+
+SOURCE:
+fn foo<T>(a: T, b: int) -> int {
+    b
+}
+
+OUTPUT:
+Fn_#1,1, Ident("foo", 3)#1,4, LAngle#1,7, Ident("T", 1)#1,8, RAngle#1,9, LParen#1,10, Ident("a", 1)#1,11, Colon#1,12, Ident("T", 1)#1,14, Comma#1,15, Ident("b", 1)#1,17, Colon#1,18, Ident("int", 3)#1,20, RParen#1,23, Arrow#1,25, Ident("int", 3)#1,28, LCurly#1,32, Ident("b", 1)#2,5, Semicolon#2,6, RCurly#3,1, EOF#3,2
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "foo",
+      "generics": [
+        {
+          "name": "T",
+          "bounds": []
+        }
+      ],
+      "args": [
+        {
+          "pat": {
+            "Type": {
+              "ident": "a",
+              "is_mut": false,
+              "ann": "Unknown"
+            }
+          },
+          "ann": {
+            "Con": {
+              "name": "T",
+              "args": []
+            }
+          }
+        },
+        {
+          "pat": {
+            "Type": {
+              "ident": "b",
+              "is_mut": false,
+              "ann": "Unknown"
+            }
+          },
+          "ann": {
+            "Con": {
+              "name": "int",
+              "args": []
+            }
+          }
+        }
+      ],
+      "ret": {
+        "Var": -1
+      },
+      "ann": {
+        "Con": {
+          "name": "int",
+          "args": []
+        }
+      },
+      "body": {
+        "Block": {
+          "stmts": [
+            {
+              "Var": {
+                "value": "b",
+                "generics_instantiated": []
+              }
+            }
+          ]
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "Inline"
+  }
+}

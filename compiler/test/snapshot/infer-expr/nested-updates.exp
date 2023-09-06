@@ -5,8 +5,8 @@ SOURCE:
   struct Foo { a: int, b: string }
   struct Bar { a: int, b: string, f: Foo }
 
-  let x = Foo { a: 1, b: "foo" };
-  let y = Bar { a: 1, b: "bar", f: x };
+  let x = Foo { a: 1, b: "foo" }
+  let y = Bar { a: 1, b: "bar", f: x }
   Bar { a: 2, b: "baz", f: Foo { a: 4, ..x } }
 }
 
@@ -65,7 +65,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -140,7 +140,7 @@ No errors.
           "span": {
             "start": {
               "line": 3,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 3,
@@ -161,11 +161,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 5,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 5,
-                    "col": 7
+                    "col": 8
                   },
                   "file": 99
                 }
@@ -199,11 +199,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 5,
-                          "col": 19
+                          "col": 20
                         },
                         "end": {
                           "line": 5,
-                          "col": 20
+                          "col": 21
                         },
                         "file": 99
                       }
@@ -215,10 +215,7 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": [
-                          "foo",
-                          null
-                        ]
+                        "String": "foo"
                       },
                       "ty": {
                         "Con": {
@@ -229,11 +226,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 5,
-                          "col": 25
+                          "col": 26
                         },
                         "end": {
                           "line": 5,
-                          "col": 30
+                          "col": 31
                         },
                         "file": 99
                       }
@@ -251,7 +248,7 @@ No errors.
               "span": {
                 "start": {
                   "line": 5,
-                  "col": 10
+                  "col": 15
                 },
                 "end": {
                   "line": 5,
@@ -261,6 +258,7 @@ No errors.
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "id": "Foo",
@@ -270,11 +268,11 @@ No errors.
           "span": {
             "start": {
               "line": 5,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 5,
-              "col": 33
+              "col": 32
             },
             "file": 99
           }
@@ -291,11 +289,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 6,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 6,
-                    "col": 7
+                    "col": 8
                   },
                   "file": 99
                 }
@@ -329,11 +327,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 6,
-                          "col": 19
+                          "col": 20
                         },
                         "end": {
                           "line": 6,
-                          "col": 20
+                          "col": 21
                         },
                         "file": 99
                       }
@@ -345,10 +343,7 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": [
-                          "bar",
-                          null
-                        ]
+                        "String": "bar"
                       },
                       "ty": {
                         "Con": {
@@ -359,11 +354,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 6,
-                          "col": 25
+                          "col": 26
                         },
                         "end": {
                           "line": 6,
-                          "col": 30
+                          "col": 31
                         },
                         "file": 99
                       }
@@ -378,11 +373,11 @@ No errors.
                       "decl": {
                         "start": {
                           "line": 5,
-                          "col": 6
+                          "col": 7
                         },
                         "end": {
                           "line": 5,
-                          "col": 7
+                          "col": 8
                         },
                         "file": 99
                       },
@@ -396,11 +391,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 6,
-                          "col": 35
+                          "col": 36
                         },
                         "end": {
                           "line": 6,
-                          "col": 36
+                          "col": 37
                         },
                         "file": 99
                       }
@@ -418,7 +413,7 @@ No errors.
               "span": {
                 "start": {
                   "line": 6,
-                  "col": 10
+                  "col": 15
                 },
                 "end": {
                   "line": 6,
@@ -428,6 +423,7 @@ No errors.
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "id": "Bar",
@@ -437,11 +433,11 @@ No errors.
           "span": {
             "start": {
               "line": 6,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 6,
-              "col": 39
+              "col": 38
             },
             "file": 99
           }
@@ -467,11 +463,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 7,
-                      "col": 11
+                      "col": 12
                     },
                     "end": {
                       "line": 7,
-                      "col": 12
+                      "col": 13
                     },
                     "file": 99
                   }
@@ -483,10 +479,7 @@ No errors.
               "value": {
                 "Literal": {
                   "lit": {
-                    "String": [
-                      "baz",
-                      null
-                    ]
+                    "String": "baz"
                   },
                   "ty": {
                     "Con": {
@@ -497,11 +490,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 7,
-                      "col": 17
+                      "col": 18
                     },
                     "end": {
                       "line": 7,
-                      "col": 22
+                      "col": 23
                     },
                     "file": 99
                   }
@@ -530,11 +523,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 7,
-                              "col": 36
+                              "col": 37
                             },
                             "end": {
                               "line": 7,
-                              "col": 37
+                              "col": 38
                             },
                             "file": 99
                           }
@@ -548,11 +541,11 @@ No errors.
                       "decl": {
                         "start": {
                           "line": 5,
-                          "col": 6
+                          "col": 7
                         },
                         "end": {
                           "line": 5,
-                          "col": 7
+                          "col": 8
                         },
                         "file": 99
                       },
@@ -566,11 +559,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 7,
-                          "col": 41
+                          "col": 42
                         },
                         "end": {
                           "line": 7,
-                          "col": 42
+                          "col": 43
                         },
                         "file": 99
                       }
@@ -585,7 +578,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 7,
-                      "col": 27
+                      "col": 32
                     },
                     "end": {
                       "line": 7,
@@ -607,7 +600,7 @@ No errors.
           "span": {
             "start": {
               "line": 7,
-              "col": 2
+              "col": 7
             },
             "end": {
               "line": 7,
@@ -627,7 +620,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 8,

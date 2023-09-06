@@ -3,8 +3,8 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use crate::{
     ast::{
         Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, File, FileId,
-        Function, FunctionKind, Generic, Literal, Loop, LoopFlow, Operator, Pat, Span,
-        StructDefinition, StructField, UnOp,
+        Function, FunctionKind, Generic, InterfaceSuperTrait, Literal, Loop, LoopFlow, Operator,
+        Pat, Span, StructDefinition, StructField, UnOp,
     },
     global_state::Module,
     infer,
@@ -310,7 +310,7 @@ impl Codegen {
     // Only if/match/block have to care about it
     fn emit_expr(&mut self, mode: EmitMode, expr: &Expr) -> EmitResult {
         match expr {
-            Expr::Closure { fun, kind, .. } => self.emit_closure(fun, kind),
+            Expr::Closure { fun, kind, .. } => self.emit_closure(fun, kind, None),
             Expr::Block { stmts, .. } => self.emit_block(mode, stmts, false),
             Expr::Call { func, args, ty, .. } => {
                 let call_mode = if mode.ctx.is_discard() && !mode.should_return {
@@ -347,7 +347,13 @@ impl Codegen {
             Expr::Unit { .. } => EmitResult::unit(),
             Expr::EnumDef { def, .. } => self.emit_enum(def),
             Expr::StructDef { def, .. } => self.emit_struct(def),
-            Expr::ImplBlock { items, .. } => self.emit_impl(items),
+            Expr::ImplBlock {
+                self_name,
+                ty,
+                items,
+                generics,
+                ..
+            } => self.emit_impl(self_name, ty, generics, items),
             Expr::StructCall {
                 fields, rest, ty, ..
             } => self.emit_struct_call(fields, rest, ty),
@@ -446,7 +452,7 @@ if {is_matching} != 1 && {value} == {subject} {{
                     out.emit(format!("{new_is_matching} := 0"));
                 }
 
-                let (_, con_name) = ident.split_once("::").unwrap();
+                let (_, con_name) = ident.split_once(".").unwrap();
 
                 elems.iter().enumerate().for_each(|(index, p)| {
                     let field = constructor_field_name(con_name, elems.len(), index);
@@ -518,7 +524,13 @@ if {new_is_matching} != 1 {{
         out.render()
     }
 
-    fn emit_closure(&mut self, fun: &Function, kind: &FunctionKind) -> EmitResult {
+    // TODO asdf add Method variant to FunctionKind and remove receiver
+    fn emit_closure(
+        &mut self,
+        fun: &Function,
+        kind: &FunctionKind,
+        receiver: Option<(String, Type)>,
+    ) -> EmitResult {
         let mut out = emitter();
         let mut args_destructure = emitter();
 
@@ -529,7 +541,7 @@ if {new_is_matching} != 1 {{
         let prev_ret_ty = self.current_fn_ret_ty.clone(); // nested functions, save context
         self.current_fn_ret_ty = Some(fun.ret.clone());
 
-        let (fun, receiver_ty) = change_collection_methods(fun);
+        let (fun, receiver) = change_collection_methods(fun, receiver.clone());
 
         let args = fun
             .args
@@ -582,20 +594,22 @@ if {new_is_matching} != 1 {{
             self.return_to_type(&fun.ret)
         };
 
-        let generics = if receiver_ty.is_none() {
+        let generics = if receiver.is_none() {
             generics_to_string(&fun.generics)
         } else {
             "".to_string()
         };
 
-        let receiver = if let Some(ty) = receiver_ty {
-            format!("(self {ty})", ty = self.to_type(&ty))
+        let receiver_fmt = if let Some((self_name, ty)) = receiver {
+            format!("({self_name} {ty})", ty = self.to_type(&ty))
         } else {
             "".to_string()
         };
 
         let binding = match kind {
-            FunctionKind::TopLevel => format!("func {receiver} {name} {generics} ({args}) {ret}"),
+            FunctionKind::TopLevel => {
+                format!("func {receiver_fmt} {name} {generics} ({args}) {ret}")
+            }
 
             FunctionKind::Lambda => format!("func ({args}) {ret}"),
 
@@ -818,20 +832,13 @@ if {new_is_matching} != 1 {{
             Literal::Int(n) => n.to_string(),
             Literal::Float(n) => n.to_string(),
             Literal::Bool(b) => b.to_string(),
-            Literal::String(s, token) => {
-                if token.is_none() {
-                    format!("\"{}\"", s).replace('\n', "\\n")
-                } else {
-                    format!("`{}`", s)
-                }
+            Literal::String(s) => format!("\"{}\"", s).replace('\n', "\\n"),
+            Literal::MultiString(lines) => {
+                let body = lines.join("\n");
+                format!("`{}`", body)
             }
             Literal::Char(s) => {
-                // TODO find a way to escape all other whitespace chars
-                if s == &'\n' {
-                    "'\\n'".to_string()
-                } else {
-                    format!("\'{}\'", s)
-                }
+                format!("\'{}\'", s)
             }
             Literal::Slice(elems) => {
                 let new_elems = elems
@@ -1096,6 +1103,7 @@ if {is_matching} != 2 {{
         // Skip emitting the else branch if it's empty
         let new_else = match els {
             Expr::Block { stmts, .. } if stmts.is_empty() => "".to_string(),
+            Expr::Noop => "".to_string(),
             _ => format!("else {}", wrap_and_assign(els)),
         };
 
@@ -1186,14 +1194,29 @@ if {is_matching} != 2 {{
         out.no_value()
     }
 
-    fn emit_impl(&mut self, items: &[Expr]) -> EmitResult {
+    fn emit_impl(
+        &mut self,
+        self_name: &str,
+        ty: &Type,
+        generics: &[Generic],
+        items: &[Expr],
+    ) -> EmitResult {
         let mut out = emitter();
 
         items.iter().for_each(|e| {
             self.next_var = 0;
             self.scope.reset();
 
-            let value = self.emit_expr(EmitMode::top_level(), e);
+            let mut fun = e.as_function();
+            fun.generics = generics.to_vec();
+
+            // TODO asdf FunctionKind should have extra variant Method
+            // remove is_method param
+            let value = self.emit_closure(
+                &fun,
+                &FunctionKind::TopLevel,
+                Some((self_name.to_string(), ty.clone())),
+            );
             out.emit(value.to_statement())
         });
 
@@ -1569,8 +1592,8 @@ if {more} {{
 
     fn emit_raw(&self, text: &str) -> EmitResult {
         EmitResult {
-            output: text.to_string(),
-            value: None,
+            output: "".to_string(),
+            value: Some(text.to_string()),
         }
     }
 
@@ -1578,7 +1601,7 @@ if {more} {{
         let mut out = emitter();
 
         def.cons.iter().for_each(|con| {
-            let constructor = def.name.clone() + "::" + &con.name;
+            let constructor = def.name.clone() + "." + &con.name;
             let name = to_name(&format!("make_{constructor}"));
             out.emit(self.constructor_make_function(&def, &name, con));
             self.make_functions.insert(constructor, name);
@@ -1628,7 +1651,12 @@ if {more} {{
         return out.emit_value(format!("&{expr}"));
     }
 
-    fn emit_interface(&self, name: &str, items: &[Expr], supertraits: &[String]) -> EmitResult {
+    fn emit_interface(
+        &self,
+        name: &str,
+        items: &[Expr],
+        supertraits: &[InterfaceSuperTrait],
+    ) -> EmitResult {
         let mut out = emitter();
 
         // TODO asdf this is a hack to prevent stuff like comparable or any to get emitted
@@ -1639,7 +1667,7 @@ if {more} {{
         out.emit(format!("type {name} interface {{"));
 
         for s in supertraits {
-            out.emit(s.clone());
+            out.emit(self.to_type(&s.ty));
         }
 
         for f in items {
@@ -1707,7 +1735,7 @@ if {more} {{
             let instantiated =
                 self.render_generics_instantiated(&expr.get_type().get_args().unwrap());
 
-            let fn_name = to_name(&format!("{ty_name}::{field}"));
+            let fn_name = to_name(&format!("{ty_name}.{field}"));
             let call = format!("{fn_name}{instantiated}({new_args})");
 
             return Some(self.emit_wrapped_call(call, func, mode, &mut out));
@@ -2022,12 +2050,12 @@ func {name} {generic_params} ({params}) {ret} {{
                     // TODO resolve to the correct import name, if it's been renamed in "use" stmt
                     let import = m.import.prefix();
 
-                    format!("{}::{}", import, id.name)
+                    format!("{}.{}", import, id.name)
                 } else {
                     id.name.to_string()
                 };
 
-                let name = name.replace("::", ".");
+                // let name = name.replace("::", ".");
 
                 let new_args = args
                     .iter()
@@ -2260,7 +2288,7 @@ fn emitter() -> Emitter {
 }
 
 fn to_name(value: &str) -> String {
-    value.replace("::", "_")
+    value.replace(".", "_")
 }
 
 fn constructor_field_name(con_name: &str, fields_count: usize, index: usize) -> String {
@@ -2302,26 +2330,40 @@ fn generics_to_string(generics: &[Generic]) -> String {
     format!("[{generics}]")
 }
 
-fn change_collection_methods(fun: &Function) -> (Function, Option<Type>) {
-    let method = fun.as_method();
-
-    if method.is_none() {
+fn change_collection_methods(
+    fun: &Function,
+    receiver: Option<(String, Type)>,
+) -> (Function, Option<(String, Type)>) {
+    if receiver.is_none() {
         return (fun.clone(), None);
     }
 
-    let (new_func, receiver) = method.unwrap();
+    let receiver = receiver.unwrap();
 
-    if let Some(ty_name) = is_collection_type(&receiver) {
+    if let Some(ty_name) = is_collection_type(&receiver.1) {
         // Use the old function
         let mut updated = fun.clone();
 
         // Update the function name
-        updated.name = format!("{ty_name}::{name}", name = new_func.name);
+        updated.name = format!("{ty_name}.{name}", name = fun.name);
+
+        let self_binding = Binding {
+            pat: Pat::Type {
+                ident: receiver.0,
+                is_mut: false,
+                ann: crate::ast::TypeAst::Unknown,
+                span: Span::dummy(),
+            },
+            ann: crate::ast::TypeAst::Unknown,
+            ty: receiver.1,
+        };
+
+        updated.args.insert(0, self_binding);
 
         return (updated, None);
     }
 
-    return (new_func, Some(receiver));
+    (fun.clone(), Some(receiver))
 }
 
 fn is_collection_type(ty: &Type) -> Option<String> {

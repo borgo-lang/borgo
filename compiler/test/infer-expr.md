@@ -114,7 +114,7 @@ Populate scope with let bindings.
 
 ```rust
 {
-  let x = 5;
+  let x = 5
   x
 }
 ```
@@ -173,8 +173,8 @@ Slices are polymorphic
 
 ```rust
 {
-  let x = [1,2,3];
-  list_push(x, 4);
+  let x = [1,2,3]
+  list_push(x, 4)
   ["hello"]
 }
 ```
@@ -185,8 +185,8 @@ It's possible to sanity-check the type of a value.
 
 ```rust
 {
-  let x = [1,2,3];
-  x as [int];
+  let x = [1,2,3]
+  @ensure x, [int]
   x
 }
 ```
@@ -197,8 +197,8 @@ And the check should work!
 
 ```rust
 {
-  let x = [1,2,3];
-  x as bool;
+  let x = [1,2,3]
+  @ensure x, bool
   1
 }
 ```
@@ -217,7 +217,7 @@ Functions can take functions.
 
 ```rust
 {
-  let x = [1,2,3];
+  let x = [1,2,3]
   list_map(x, inc)
 }
 ```
@@ -228,7 +228,7 @@ Generics are applied correctly.
 
 ```rust
 {
-  let x = ["hello"];
+  let x = ["hello"]
   list_map(x, inc)
 }
 ```
@@ -239,7 +239,7 @@ Functions can be inlined.
 
 ```rust
 {
-  let x = [1,2,3];
+  let x = [1,2,3]
   list_map(x, |n| sum(n, 5))
 }
 ```
@@ -271,10 +271,10 @@ Generic functions get instantiated at each use site.
 {
   fn constant<T, Y>(a: T, b: Y) -> T { a }
 
-  let x = constant("hello", 5);
-  x as string;
-  let y = sum(constant(1, false), 5);
-  y as int;
+  let x = constant("hello", 5)
+  @ensure x, string
+  let y = sum(constant(1, false), 5)
+  @ensure y, int
   y
 }
 ```
@@ -373,20 +373,20 @@ Match and If are still expressions.
 
 ```rust
 {
-  let x = "foo";
+  let x = "foo"
 
   let a = match x {
     "foo" => 1,
     _ => 99,
-  };
+  }
 
-  let cond = false;
+  let cond = false
 
   let b = if cond {
     0
   } else {
     1
-  };
+  }
 
   sum(a, b)
 }
@@ -413,7 +413,7 @@ Tuples with wrong type annotation.
 > errorContains("mismatch")
 
 ```rust
-("foo", 2) as (bool, int)
+@ensure ("foo", 2), (bool, int)
 ```
 
 Tuples with wrong arity.
@@ -421,7 +421,7 @@ Tuples with wrong arity.
 > errorContains("mismatch")
 
 ```rust
-(1, 2, 3) as (int, int)
+@ensure (1, 2, 3), (int, int)
 ```
 
 Tuples as function arguments.
@@ -470,12 +470,12 @@ Callbacks with generics
 {
   fn another_map<A, B>( f: fn (x: A) -> B, xs: [A] ) -> [B] {
     // mimics implementation
-    let first = list_head(xs);
+    let first = list_head(xs)
     [f(first)]
   }
 
-  let a = another_map(|x| int_to_string(x), [1,2,3]);
-  a as [string];
+  let a = another_map(|x| int_to_string(x), [1,2,3])
+  @ensure a, [string]
 
   another_map(|x| sum(x, 1), [1,2,3])
 }
@@ -488,7 +488,7 @@ Enums should introduce a new type in the environment.
 ```rust
 {
   enum Color { Red }
-  Color::Red
+  Color.Red
 }
 ```
 
@@ -499,7 +499,7 @@ Enums with generics should get instantiated.
 ```rust
 {
   enum Maybe<T> { Just(T), None }
-  Maybe::Just(1)
+  Maybe.Just(1)
 }
 ```
 
@@ -511,12 +511,12 @@ Enum variants get instantiated correctly.
 {
   enum Maybe<T> { Just(T), None }
 
-  Maybe::Just(1) as Maybe<int>;
-  Maybe::Just("foo") as Maybe<string>;
-  Maybe::None as Maybe<bool>;
-  Maybe::Just(Maybe::Just(1)) as Maybe<Maybe<int>>;
+  @ensure Maybe.Just(1), Maybe<int>
+  @ensure Maybe.Just("foo"), Maybe<string>
+  @ensure Maybe.None, Maybe<bool>
+  @ensure Maybe.Just(Maybe.Just(1)), Maybe<Maybe<int>>
 
-  Maybe::None
+  Maybe.None
 }
 ```
 
@@ -528,10 +528,10 @@ Pattern matching works on enums.
 {
   enum Color { Red, Blue(string) }
 
-  let x = Color::Blue("foo");
+  let x = Color.Blue("foo")
   match x {
-    Color::Red => "bar",
-    Color::Blue(c) => str_concat(c, "!"),
+    Color.Red => "bar",
+    Color.Blue(c) => str_concat(c, "!"),
   }
 }
 ```
@@ -544,9 +544,9 @@ Pattern matching constructor arity.
 {
   enum Color { Red, Blue(string) }
 
-  match Color::Blue("foo") {
-    Color::Red => "bar",
-    Color::Blue(c, nope) => c,
+  match Color.Blue("foo") {
+    Color.Red => "bar",
+    Color.Blue(c, nope) => c,
   }
 }
 ```
@@ -559,10 +559,10 @@ Generic enums can be pattern matched.
 {
   enum Maybe<T> { Just(T), None }
 
-  let x = Maybe::Just(1);
+  let x = Maybe.Just(1)
   match x {
-    Maybe::Just(v) => v,
-    Maybe::None => 2,
+    Maybe.Just(v) => v,
+    Maybe.None => 2,
   }
 }
 ```
@@ -576,23 +576,23 @@ Nested pattern matching is supported.
   enum Maybe<T> { Just(T), None }
   enum Color { Red, Blue(string, bool) }
 
-  let c = Color::Blue("foo", false);
-  let x = Maybe::Just(c);
+  let c = Color.Blue("foo", false)
+  let x = Maybe.Just(c)
 
   let n = match x {
-    Maybe::Just(Color::Blue(s, b)) => {
-      s as string;
-      b as bool;
+    Maybe.Just(Color.Blue(s, b)) => {
+      @ensure s, string
+      @ensure b, bool
       1
     },
-    Maybe::None => 2,
-  };
+    Maybe.None => 2,
+  }
 
-  n as int;
+  @ensure n, int
 
   match x {
-    Maybe::Just(x) => x,
-    Maybe::None => Color::Red,
+    Maybe.Just(x) => x,
+    Maybe.None => Color.Red,
   }
 }
 ```
@@ -606,11 +606,11 @@ Enums can be returned from functions.
   enum Maybe<T> { Just(T), None }
 
   fn ok<T>(v: T) -> Maybe<T> {
-    Maybe::Just(v)
+    Maybe.Just(v)
   }
 
-  ok(1) as Maybe<int>;
-  ok("foo") as Maybe<string>;
+  @ensure ok(1), Maybe<int>
+  @ensure ok("foo"), Maybe<string>
 
   ok
 }
@@ -625,18 +625,18 @@ Enums from functions II.
   enum Maybe<T> { Just(T), None }
 
   fn foo(b: int) -> Maybe<int> {
-    Maybe::None
+    Maybe.None
   }
 
-  foo(1) as Maybe<int>;
+  @ensure foo(1), Maybe<int>
 
   fn bar(b: int) -> Maybe<int> {
-    Maybe::Just(b)
+    Maybe.Just(b)
   }
 
-  match foo(2) as Maybe<int> {
-    Maybe::Just(x) => x,
-    Maybe::None => 3,
+  match @ensure foo(2), Maybe<int> {
+    Maybe.Just(x) => x,
+    Maybe.None => 3,
   }
 }
 ```
@@ -650,7 +650,7 @@ Enums from functions (error).
   enum Maybe<T> { Just(T), None }
 
   fn foo(b: int) -> Maybe<string> {
-    Maybe::Just(b)
+    Maybe.Just(b)
   }
 }
 ```
@@ -723,7 +723,7 @@ Accessing struct fields.
 {
   struct Foo { a: int }
 
-  let x = Foo { a: 1 };
+  let x = Foo { a: 1 }
   x.a
 }
 ```
@@ -734,7 +734,7 @@ Error when reassign to wrong type.
 
 ```rust
 {
-  let mut x = 1;
+  let mut x = 1
   x = "foo"
 }
 ```
@@ -747,7 +747,7 @@ Error when updating structs.
 {
   struct Foo { a: int }
 
-  let mut x = Foo { a: 1 };
+  let mut x = Foo { a: 1 }
   x.a = "foo"
 }
 ```
@@ -760,8 +760,8 @@ Structs can be updated
 {
   struct Foo { a: int }
 
-  let mut x = Foo { a: 1 };
-  x.a = 3;
+  let mut x = Foo { a: 1 }
+  x.a = 3
   x
 }
 ```
@@ -774,8 +774,8 @@ Structs need mutability
 {
   struct Foo { a: int }
 
-  let x = Foo { a: 1 };
-  x.a = 5;
+  let x = Foo { a: 1 }
+  x.a = 5
 }
 ```
 
@@ -788,8 +788,8 @@ Nested struct update
   struct Foo { x: int }
   struct Bar { f: Foo }
 
-  let mut b = Bar { f: Foo { x: 1 } };
-  b.f.x = 99;
+  let mut b = Bar { f: Foo { x: 1 } }
+  b.f.x = 99
   b
 }
 ```
@@ -802,7 +802,7 @@ Spreading a struct into another.
 {
   struct Foo { a: int, b: string }
 
-  let x = Foo { a: 1, b: "foo" };
+  let x = Foo { a: 1, b: "foo" }
   Foo { b: "bar", ..x }
 }
 ```
@@ -816,8 +816,8 @@ Error when spreading in different structs.
   struct Foo { a: int, b: string }
   struct Bar { a: int, b: string }
 
-  let x = Foo { a: 1, b: "foo" };
-  let y = Bar { a: 1, b: "bar" };
+  let x = Foo { a: 1, b: "foo" }
+  let y = Bar { a: 1, b: "bar" }
   Foo { b: "bar", ..y }
 }
 ```
@@ -831,8 +831,8 @@ Nested updates.
   struct Foo { a: int, b: string }
   struct Bar { a: int, b: string, f: Foo }
 
-  let x = Foo { a: 1, b: "foo" };
-  let y = Bar { a: 1, b: "bar", f: x };
+  let x = Foo { a: 1, b: "foo" }
+  let y = Bar { a: 1, b: "bar", f: x }
   Bar { a: 2, b: "baz", f: Foo { a: 4, ..x } }
 }
 ```
@@ -843,8 +843,8 @@ Let bindings with annotation.
 
 ```rust
 {
-  let x: [int] = [1,2,3];
-  let y: [bool] = [1,2,3];
+  let x: [int] = [1,2,3]
+  let y: [bool] = [1,2,3]
 }
 ```
 
@@ -855,7 +855,7 @@ Return statements should unify.
 ```rust
 {
   fn foo() -> int {
-    let x = 5;
+    let x = 5
     return x
   }
 }
@@ -914,7 +914,7 @@ A function within a function gets its own return type.
     }
 
 
-    bar() as string;
+    @ensure bar(), string
 
     return 2
   }
@@ -939,10 +939,10 @@ Errors must be of the same type.
 {
   fn foo() -> Result<(), ErrFoo> {
     if true {
-      return Err(ErrFoo::A);
+      return Err(ErrFoo.A)
     }
 
-    Err(ErrBar::X)
+    Err(ErrBar.X)
   }
 }
 ```
@@ -953,11 +953,11 @@ Function calls with different errors don't unify.
 
 ```rust
 {
-  fn foo1() -> Result<int, ErrFoo> { Err(ErrFoo::A) }
-  fn foo2() -> Result<int, ErrFoo> { Err(ErrBar::X) }
+  fn foo1() -> Result<int, ErrFoo> { Err(ErrFoo.A) }
+  fn foo2() -> Result<int, ErrFoo> { Err(ErrBar.X) }
   fn bar() -> Result<int, ErrFoo> {
-    foo1()?;
-    foo2()?;
+    foo1()?
+    foo2()?
     Ok(1)
   }
 }
@@ -979,7 +979,10 @@ Callbacks with errors are automatically wrapped into a Result.
 
 ```rust
 {
-  fn foo(x: int) -> Result<int, ErrFoo> { return Err(ErrFoo::A); Ok(x) }
+  fn foo(x: int) -> Result<int, ErrFoo> {
+      return Err(ErrFoo.A)
+      Ok(x)
+  }
   list_map([1,2,3], foo)
 }
 ```
@@ -990,17 +993,17 @@ Callbacks with different error types can still be passed to the same function.
 
 ```rust
 {
-  fn foo() -> Result<int, ErrFoo> { Err(ErrFoo::A) }
-  fn bar() -> Result<int, ErrBar> { Err(ErrBar::X) }
+  fn foo() -> Result<int, ErrFoo> { Err(ErrFoo.A) }
+  fn bar() -> Result<int, ErrBar> { Err(ErrBar.X) }
 
   fn baz(f: fn () -> Result<int, ErrFoo>, g: fn() -> Result<int, ErrBar>) {
     ()
   }
 
-  foo as fn () -> Result<int, ErrFoo>;
-  bar as fn () -> Result<int, ErrBar>;
+  @ensure foo, fn () -> Result<int, ErrFoo>
+  @ensure bar, fn () -> Result<int, ErrBar>
 
-  baz(foo, bar);
+  baz(foo, bar)
   true
 }
 ```
@@ -1011,13 +1014,13 @@ A function that is already wrapped, doesn't get wrapped again.
 
 ```rust
 {
-  fn foo(x: int) -> Result<string, ErrFoo> { Err(ErrFoo::A) }
+  fn foo(x: int) -> Result<string, ErrFoo> { Err(ErrFoo.A) }
 
   fn bar(f: fn (x: int) -> Result<string, ErrFoo>) {
     ()
   }
 
-  bar(foo);
+  bar(foo)
   true
 }
 ```
@@ -1030,7 +1033,7 @@ The `?` operator can only be used in functions that return a Result.
 {
   fn foo() -> Result<int, ErrFoo> { Ok(1) }
   fn bar() {
-    let x = foo()?;
+    let x = foo()?
     ()
   }
 }
@@ -1042,8 +1045,8 @@ Equality
 
 ```rust
 {
-  let a = 1;
-  let b = 2;
+  let a = 1
+  let b = 2
   a == b
 }
 ```
@@ -1054,9 +1057,9 @@ Can shadow vars in block
 
 ```rust
 {
-  let a = "mutable";
+  let a = "mutable"
   {
-    let a = "block";
+    let a = "block"
   }
   a
 }
@@ -1086,71 +1089,6 @@ boolean operators
 { (1 == 2) && (false || true) }
 ```
 
-Impl blocks
-
-> infer("bool")
-
-```rust
-{
-    enum Color { Red, Blue }
-
-    impl Color {
-        fn is_red(self) -> bool {
-            self == Color::Red
-        }
-    }
-
-    Color::Red.is_red()
-}
-```
-
-Impl blocks with generic types
-
-> infer("bool")
-
-```rust
-{
-    enum Foo<T, Y> { Bar(T), Baz(Y) }
-
-    impl<T, Y> Foo<T, Y> {
-        fn make_bar(x: T) -> Foo<T, Y> { Foo::Bar(x) }
-
-        fn do_stuff(self, y: Y) -> Y {
-            self as Foo<T, Y>;
-
-            match self {
-                Foo::Bar(x) => y,
-                Foo::Baz(yy) => yy,
-            }
-        }
-    }
-
-    let foo: Foo<int, bool> = Foo::make_bar(1);
-    foo.do_stuff(true)
-}
-```
-
-Impl for non-existing types
-
-> errorContains("not found")
-
-```rust
-{
-    impl Unknown { }
-}
-```
-
-Impl with wrong generics
-
-> errorContains("Wrong arity")
-
-```rust
-{
-    enum Foo<T, Y> { Bar }
-    impl<T, Y> Foo<T> { }
-}
-```
-
 Match weirdness
 
 > infer("bool")
@@ -1159,7 +1097,7 @@ Match weirdness
 {
     match false {
         true => print("asdf"),
-    };
+    }
 
     match 1 {
         1 => false,
@@ -1167,7 +1105,7 @@ Match weirdness
 }
 ```
 
-Match Type::Fun with Type::Con
+Match Type.Fun with Type.Con
 
 > errorContains("mismatch")
 
@@ -1219,7 +1157,7 @@ Generic function arguments should not get instantiated
 ```rust
 {
   fn foo<T>(x: T) -> int {
-    x as T;
+    @ensure x, T
     match x {
       1 => 1
     }
@@ -1253,7 +1191,7 @@ Tuple fields
 
 ```rust
 {
-  let a = (1, "a");
+  let a = (1, "a")
   a.0
 }
 ```
@@ -1266,7 +1204,7 @@ Sanity check: can't invent constructors in pattern match
 {
   enum Color { Red, Blue }
 
-  match Color::Red {
+  match Color.Red {
     Red => 1,
     Green => 2,
   }
@@ -1281,49 +1219,8 @@ Struct inference in lambdas
 {
   struct Foo { a: int, b: string }
 
-  let f = Foo { a: 1, b: "a" };
+  let f = Foo { a: 1, b: "a" }
   list_map([f], |x| str_concat(x.b, "!"))
-}
-```
-
-Generics in impl method
-
-> infer("string")
-
-```rust
-{
-  struct Foo<T> { bar: T }
-  impl<T> Foo<T> {
-    fn map(self, f: fn (x: T) -> string) -> string {
-      f(self.bar)
-    }
-
-    fn other(self) -> string {
-      self.map(|x| "asdf")
-    }
-  }
-
-  let foo = Foo { bar: 12 };
-  foo.other()
-}
-```
-
-Prevent generics from getting instantiated to non existing types
-
-> errorContains("Type not found: K")
-
-```rust
-{
-    enum Foo<T, Y> { Bar(T), Baz(Y) }
-
-    impl<T, Y> Foo<T, Y> {
-        fn make_bar(x: T) -> Foo<T, Y> { Foo::Bar(x) }
-
-        fn do_stuff(self, y: Y) -> Y {
-            self as Foo<T, K>;
-            y
-        }
-    }
 }
 ```
 
@@ -1338,9 +1235,9 @@ Generics should get instantiated to the same type in pattern match
     Baz(T),
   }
 
-  match Foo::Bar(12) {
+  match Foo.Bar(12) {
     Bar(x) => {
-      let a = x + 1;
+      let a = x + 1
       int_to_string(a)
     },
 
@@ -1405,7 +1302,7 @@ Struct patterns
 {
   struct Foo { x: int, y: string }
 
-  let f = Foo { x: 1, y: "a" };
+  let f = Foo { x: 1, y: "a" }
   match f {
     Foo { x, y } => x
   }
@@ -1440,7 +1337,7 @@ Tuple patterns in let bindings
 
 ```rust
 {
-  let (x, y) = (1, "a");
+  let (x, y) = (1, "a")
   x
 }
 ```
@@ -1468,17 +1365,6 @@ Parse unit type
 }
 ```
 
-Unknown type in impl with generics
-
-> errorContains("Type not found: T")
-
-```rust
-{
-  struct Foo<T> {}
-  impl Foo<T> {}
-}
-```
-
 Missing methods give the target type.
 
 > errorContains("Foo<int> has no field or method: bar")
@@ -1486,12 +1372,12 @@ Missing methods give the target type.
 ```rust
 {
   struct Foo<T> { x: T }
-  let f = Foo{ x: 34 };
-  f.bar();
+  let f = Foo{ x: 34 }
+  f.bar()
 }
 ```
 
-Pattern matcihng on structs
+Pattern matching on structs
 
 > infer("bool")
 
@@ -1499,7 +1385,7 @@ Pattern matcihng on structs
 {
   struct Foo { x: int, y: string }
 
-  let f = Foo{ x: 34, y: "yo" };
+  let f = Foo{ x: 34, y: "yo" }
   match f {
     Foo { x, y: "bar" } => false,
     Foo { x: 34, y: "bar" } => false,
@@ -1525,9 +1411,9 @@ Tuple fields II
 ```rust
 {
   struct Foo<T> { x: int, y: [T] }
-  let a = Foo { x: 1, y: ["yo"] };
+  let a = Foo { x: 1, y: ["yo"] }
 
-  a.x as int;
+  @ensure a.x, int
   a.y
 }
 ```
@@ -1539,7 +1425,7 @@ Struct patterns on generic structs
 ```rust
 {
   struct Foo<T> { x: int, y: [T] }
-  let a = Foo { x: 1, y: ["yo"] };
+  let a = Foo { x: 1, y: ["yo"] }
 
   match a {
     Foo { x: 1, y } => y,
@@ -1558,27 +1444,6 @@ match () {
 }
 ```
 
-Type errors in method chains
-
-> errorContains(".foo")
-
-```rust
-{
-  struct Foo {}
-  struct Bar {}
-  struct Baz {}
-
-  impl Foo { fn foo(self) -> int { 1 } }
-  impl Bar { fn bar(self) -> Baz { Baz{} } }
-  impl Baz { fn baz(self) -> Bar { Bar{} } }
-
-  Bar{}
-  .bar()
-  .baz()
-  .foo()
-}
-```
-
 No method found error
 
 > errorContains(".bar")
@@ -1586,7 +1451,7 @@ No method found error
 ```rust
 {
   struct Foo {}
-  let f = Foo {};
+  let f = Foo {}
 
   f.bar()
 }
@@ -1598,8 +1463,8 @@ Mutable variables
 
 ```rust
 {
-  let mut x = 0;
-  x = x + 1;
+  let mut x = 0
+  x = x + 1
   x
 }
 ```
@@ -1610,8 +1475,8 @@ Only mutable variables can be mutated
 
 ```rust
 {
-  let y = 0;
-  y = 3;
+  let y = 0
+  y = 3
 }
 ```
 
@@ -1621,8 +1486,8 @@ Functions can take mutable params
 
 ```rust
 {
-  fn foo (mut a: int) -> int {
-    a = a + 1;
+  fn foo (a: int) -> int {
+    a = a + 1
     a
   }
 
@@ -1636,10 +1501,10 @@ If statements skip unification
 
 ```rust
 {
-  let n = 0;
+  let n = 0
 
   if true {
-    n + 1;
+    n + 1
   }
 
   if false {
@@ -1657,30 +1522,11 @@ Reference types
 {
   struct Bar { x: int }
 
-  fn foo(a: &Bar) -> int {
+  fn foo(a: *Bar) -> int {
     a.x
   }
 
   foo(&Bar{ x: 1 })
-}
-```
-
-Mutable reference as method receiver
-
-> infer("()")
-
-```rust
-{
-  struct Foo { x: int }
-
-  impl Foo {
-    fn bar(&mut self) {
-      self.x = 5;
-    }
-  }
-
-  let mut f = Foo { x: 3 };
-  f.bar()
 }
 ```
 
@@ -1691,32 +1537,6 @@ Slice syntax in types
 ```rust
 {
   fn foo(x: [int]) {}
-}
-```
-
-Trait bounds
-
-> infer("int")
-
-```rust
-{
-  trait Foo {
-    fn bar(x: string) -> int;
-  }
-
-  fn check<T: Foo>(f: T) -> int {
-    f.bar("yo")
-  }
-
-  struct Baz { x: int }
-
-  impl Baz {
-    fn bar(self, _: string) -> int {
-      self.x
-    }
-  }
-
-  check(Baz { x: 1 })
 }
 ```
 
@@ -1741,5 +1561,15 @@ Statements can't be returned
     fn foo() -> Result<(), string> {
         for i in [] {}
     }
+}
+```
+
+Explicit return value when function returns Result<()>
+
+> errorContains("Type mismatch")
+
+```rust
+fn foo() -> Result<(), string> {
+    let a = 1
 }
 ```

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::ast::{
-    EnumDefinition, File, FileId, NewtypeDefinition, PkgImport, Span, StructDefinition,
+    EnumDefinition, File, FileId, Generic, NewtypeDefinition, PkgImport, Span, StructDefinition,
     TypeAliasDef,
 };
 use crate::type_::{BoundedType, ModuleId, Symbol, Type};
@@ -134,7 +134,8 @@ impl GlobalState {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Interface {
     pub name: String,
-    pub types: Vec<String>,
+    pub generics: Vec<Generic>,
+    pub supertraits: Vec<Type>,
     pub methods: HashMap<String, Type>,
 }
 
@@ -229,7 +230,7 @@ pub struct ModuleImport {
 
 impl ModuleImport {
     pub fn prefix(&self) -> String {
-        self.name.split("::").last().unwrap().to_string()
+        self.name.split(".").last().unwrap().to_string()
     }
 
     pub fn to_id(&self) -> ModuleId {
@@ -260,4 +261,9 @@ impl ModuleList {
     pub fn lookup(&self, name: &str) -> Option<ModuleImport> {
         self.entries.iter().find(|e| e.name == name).cloned()
     }
+}
+
+pub enum ModuleExport {
+    EnumDef(Symbol),
+    StructDef(Symbol),
 }

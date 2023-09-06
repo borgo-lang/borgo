@@ -1,0 +1,74 @@
+Spawn statements
+
+SOURCE:
+{
+    spawn || { sender.send("hi") }()
+}
+
+OUTPUT:
+LCurly#1,1, Spawn#2,5, Pipe2#2,11, LCurly#2,14, Ident("sender", 6)#2,16, Dot#2,22, Ident("send", 4)#2,23, LParen#2,27, String("hi", 4)#2,28, RParen#2,32, RCurly#2,34, LParen#2,35, RParen#2,36, Semicolon#2,37, RCurly#3,1, EOF#3,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Spawn": {
+          "expr": {
+            "Closure": {
+              "fun": {
+                "name": "__anonymous",
+                "generics": [],
+                "args": [],
+                "ret": {
+                  "Var": -1
+                },
+                "ann": "Unknown",
+                "body": {
+                  "Call": {
+                    "func": {
+                      "Block": {
+                        "stmts": [
+                          {
+                            "Call": {
+                              "func": {
+                                "FieldAccess": {
+                                  "expr": {
+                                    "Var": {
+                                      "value": "sender",
+                                      "generics_instantiated": []
+                                    }
+                                  },
+                                  "field": "send"
+                                }
+                              },
+                              "args": [
+                                {
+                                  "Literal": {
+                                    "lit": {
+                                      "String": "hi"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "args": []
+                  }
+                },
+                "bounded_ty": {
+                  "generics": []
+                }
+              },
+              "kind": "Lambda"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

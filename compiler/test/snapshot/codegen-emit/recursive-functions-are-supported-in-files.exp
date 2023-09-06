@@ -12,7 +12,7 @@ fn foo(n: int) -> int {
 }
 
 fn main() {
-  assert_eq(foo(1), 5);
+  assert_eq(foo(1), 5)
 }
 
 OUTPUT:

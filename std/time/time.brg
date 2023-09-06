@@ -1,374 +1,223 @@
-fn ParseDuration(s: string) -> Result<Duration> {
-    EXT
+fn After  (d: Duration) -> Receiver<Time> { EXT }
+
+fn AfterFunc  (d: Duration, f: fn () -> ()) -> *Timer { EXT }
+
+fn Date  (year: int, month: Month, day: int, hour: int, min: int, sec: int, nsec: int, loc: *Location) -> Time { EXT }
+
+fn FixedZone  (name: string, offset: int) -> *Location { EXT }
+
+fn LoadLocation  (name: string) -> Result<*Location> { EXT }
+
+fn LoadLocationFromTZData  (name: string, data: [byte]) -> Result<*Location> { EXT }
+
+fn NewTicker  (d: Duration) -> *Ticker { EXT }
+
+fn NewTimer  (d: Duration) -> *Timer { EXT }
+
+fn Now  () -> Time { EXT }
+
+fn Parse  (layout: string, value: string) -> Result<Time> { EXT }
+
+fn ParseDuration  (s: string) -> Result<Duration> { EXT }
+
+fn ParseInLocation  (layout: string, value: string, loc: *Location) -> Result<Time> { EXT }
+
+fn Since  (t: Time) -> Duration { EXT }
+
+fn Sleep  (d: Duration) -> () { EXT }
+
+fn Tick  (d: Duration) -> Receiver<Time> { EXT }
+
+fn Unix  (sec: int64, nsec: int64) -> Time { EXT }
+
+fn UnixMicro  (usec: int64) -> Time { EXT }
+
+fn UnixMilli  (msec: int64) -> Time { EXT }
+
+fn Until  (t: Time) -> Duration { EXT }
+
+impl (self: Duration) {
+
+fn Abs  () -> Duration { EXT }
+
+fn Hours  () -> float64 { EXT }
+
+fn Microseconds  () -> int64 { EXT }
+
+fn Milliseconds  () -> int64 { EXT }
+
+fn Minutes  () -> float64 { EXT }
+
+fn Nanoseconds  () -> int64 { EXT }
+
+fn Round  (m: Duration) -> Duration { EXT }
+
+fn Seconds  () -> float64 { EXT }
+
+fn String  () -> string { EXT }
+
+fn Truncate  (m: Duration) -> Duration { EXT }
+
 }
 
-fn Since(t: Time) -> Duration {
-    EXT
+impl (self: Location) {
+
+fn String  () -> string { EXT }
+
 }
 
-fn Until(t: Time) -> Duration {
-    EXT
+impl (self: Month) {
+
+fn String  () -> string { EXT }
+
 }
 
-fn FixedZone(name: string, offset: int) -> &Location {
-    EXT
+impl (self: ParseError) {
+
+fn Error  () -> string { EXT }
+
 }
 
-fn LoadLocation(name: string) -> Result<&Location> {
-    EXT
+impl (self: Ticker) {
+
+fn Reset  (d: Duration) -> () { EXT }
+
+fn Stop  () -> () { EXT }
+
 }
 
-fn LoadLocationFromTZData(name: string, data: [byte]) -> Result<&Location> {
-    EXT
+impl (self: Time) {
+
+fn Add  (d: Duration) -> Time { EXT }
+
+fn AddDate  (years: int, months: int, days: int) -> Time { EXT }
+
+fn After  (u: Time) -> bool { EXT }
+
+fn AppendFormat  (b: [byte], layout: string) -> [byte] { EXT }
+
+fn Before  (u: Time) -> bool { EXT }
+
+fn Clock  () -> int { EXT }
+
+fn Date  () -> (int, Month, int) { EXT }
+
+fn Day  () -> int { EXT }
+
+fn Equal  (u: Time) -> bool { EXT }
+
+fn Format  (layout: string) -> string { EXT }
+
+fn GoString  () -> string { EXT }
+
+fn GobDecode  (data: [byte]) -> error { EXT }
+
+fn GobEncode  () -> Result<[byte]> { EXT }
+
+fn Hour  () -> int { EXT }
+
+fn ISOWeek  () -> int { EXT }
+
+fn In  (loc: *Location) -> Time { EXT }
+
+fn IsDST  () -> bool { EXT }
+
+fn IsZero  () -> bool { EXT }
+
+fn Local  () -> Time { EXT }
+
+fn Location  () -> *Location { EXT }
+
+fn MarshalBinary  () -> Result<[byte]> { EXT }
+
+fn MarshalJSON  () -> Result<[byte]> { EXT }
+
+fn MarshalText  () -> Result<[byte]> { EXT }
+
+fn Minute  () -> int { EXT }
+
+fn Month  () -> Month { EXT }
+
+fn Nanosecond  () -> int { EXT }
+
+fn Round  (d: Duration) -> Time { EXT }
+
+fn Second  () -> int { EXT }
+
+fn String  () -> string { EXT }
+
+fn Sub  (u: Time) -> Duration { EXT }
+
+fn Truncate  (d: Duration) -> Time { EXT }
+
+fn UTC  () -> Time { EXT }
+
+fn Unix  () -> int64 { EXT }
+
+fn UnixMicro  () -> int64 { EXT }
+
+fn UnixMilli  () -> int64 { EXT }
+
+fn UnixNano  () -> int64 { EXT }
+
+fn UnmarshalBinary  (data: [byte]) -> error { EXT }
+
+fn UnmarshalJSON  (data: [byte]) -> error { EXT }
+
+fn UnmarshalText  (data: [byte]) -> error { EXT }
+
+fn Weekday  () -> Weekday { EXT }
+
+fn Year  () -> int { EXT }
+
+fn YearDay  () -> int { EXT }
+
+fn Zone  () -> (string, int) { EXT }
+
+fn ZoneBounds  () -> Time { EXT }
+
 }
 
-fn NewTicker(d: Duration) -> &Ticker {
-    EXT
+impl (self: Timer) {
+
+fn Reset  (d: Duration) -> bool { EXT }
+
+fn Stop  () -> bool { EXT }
+
 }
 
-fn Date(
-    year: int,
-    month: Month,
-    day: int,
-    hour: int,
-    min: int,
-    sec: int,
-    nsec: int,
-    loc: &Location,
-) -> Time {
-    EXT
+impl (self: Weekday) {
+
+fn String  () -> string { EXT }
+
 }
 
-fn Now() -> Time {
-    EXT
+struct Duration(int64)
+
+struct Month(int)
+
+struct Weekday(int)
+
+struct Location{
+
 }
 
-fn Parse(layout: string, value: string) -> Result<Time> {
-    EXT
+struct ParseError{
+  Layout: string,
+  Value: string,
+  LayoutElem: string,
+  ValueElem: string,
+  Message: string
 }
 
-fn ParseInLocation(layout: string, value: string, loc: &Location) -> Result<Time> {
-    EXT
+struct Ticker{
+  C: Receiver<Time>
 }
 
-fn Unix(sec: int64, nsec: int64) -> Time {
-    EXT
+struct Time{
+
 }
 
-fn UnixMicro(usec: int64) -> Time {
-    EXT
-}
-
-fn UnixMilli(msec: int64) -> Time {
-    EXT
-}
-
-fn AfterFunc(d: Duration, f: fn() -> ()) -> &Timer {
-    EXT
-}
-
-fn NewTimer(d: Duration) -> &Timer {
-    EXT
-}
-
-fn After(d: Duration) -> Receiver<Time> {
-    EXT
-}
-
-fn Sleep(d: Duration) -> () {
-    EXT
-}
-
-fn Tick(d: Duration) -> Receiver<Time> {
-    EXT
-}
-
-impl Ticker {
-    fn Reset(&self, d: Duration) -> () {
-        EXT
-    }
-
-    fn Stop(&self) -> () {
-        EXT
-    }
-}
-
-impl Time {
-    fn Add(self, d: Duration) -> Time {
-        EXT
-    }
-
-    fn AddDate(self, years: int, months: int, days: int) -> Time {
-        EXT
-    }
-
-    fn After(self, u: Time) -> bool {
-        EXT
-    }
-
-    fn AppendFormat(self, b: [byte], layout: string) -> [byte] {
-        EXT
-    }
-
-    fn Before(self, u: Time) -> bool {
-        EXT
-    }
-
-    fn Clock(self) -> int {
-        EXT
-    }
-
-    fn Date(self) -> (int, Month, int) {
-        EXT
-    }
-
-    fn Day(self) -> int {
-        EXT
-    }
-
-    fn Equal(self, u: Time) -> bool {
-        EXT
-    }
-
-    fn Format(self, layout: string) -> string {
-        EXT
-    }
-
-    fn GoString(self) -> string {
-        EXT
-    }
-
-    fn GobDecode(&self, data: [byte]) -> error {
-        EXT
-    }
-
-    fn GobEncode(self) -> Result<[byte]> {
-        EXT
-    }
-
-    fn Hour(self) -> int {
-        EXT
-    }
-
-    fn ISOWeek(self) -> int {
-        EXT
-    }
-
-    fn In(self, loc: &Location) -> Time {
-        EXT
-    }
-
-    fn IsDST(self) -> bool {
-        EXT
-    }
-
-    fn IsZero(self) -> bool {
-        EXT
-    }
-
-    fn Local(self) -> Time {
-        EXT
-    }
-
-    fn Location(self) -> &Location {
-        EXT
-    }
-
-    fn MarshalBinary(self) -> Result<[byte]> {
-        EXT
-    }
-
-    fn MarshalJSON(self) -> Result<[byte]> {
-        EXT
-    }
-
-    fn MarshalText(self) -> Result<[byte]> {
-        EXT
-    }
-
-    fn Minute(self) -> int {
-        EXT
-    }
-
-    fn Month(self) -> Month {
-        EXT
-    }
-
-    fn Nanosecond(self) -> int {
-        EXT
-    }
-
-    fn Round(self, d: Duration) -> Time {
-        EXT
-    }
-
-    fn Second(self) -> int {
-        EXT
-    }
-
-    fn String(self) -> string {
-        EXT
-    }
-
-    fn Sub(self, u: Time) -> Duration {
-        EXT
-    }
-
-    fn Truncate(self, d: Duration) -> Time {
-        EXT
-    }
-
-    fn UTC(self) -> Time {
-        EXT
-    }
-
-    fn Unix(self) -> int64 {
-        EXT
-    }
-
-    fn UnixMicro(self) -> int64 {
-        EXT
-    }
-
-    fn UnixMilli(self) -> int64 {
-        EXT
-    }
-
-    fn UnixNano(self) -> int64 {
-        EXT
-    }
-
-    fn UnmarshalBinary(&self, data: [byte]) -> error {
-        EXT
-    }
-
-    fn UnmarshalJSON(&self, data: [byte]) -> error {
-        EXT
-    }
-
-    fn UnmarshalText(&self, data: [byte]) -> error {
-        EXT
-    }
-
-    fn Weekday(self) -> Weekday {
-        EXT
-    }
-
-    fn Year(self) -> int {
-        EXT
-    }
-
-    fn YearDay(self) -> int {
-        EXT
-    }
-
-    fn Zone(self) -> (string, int) {
-        EXT
-    }
-
-    fn ZoneBounds(self) -> Time {
-        EXT
-    }
-}
-
-impl Timer {
-    fn Reset(&self, d: Duration) -> bool {
-        EXT
-    }
-
-    fn Stop(&self) -> bool {
-        EXT
-    }
-}
-
-impl Weekday {
-    fn String(self) -> string {
-        EXT
-    }
-}
-
-impl Duration {
-    fn Abs(self) -> Duration {
-        EXT
-    }
-
-    fn Hours(self) -> float64 {
-        EXT
-    }
-
-    fn Microseconds(self) -> int64 {
-        EXT
-    }
-
-    fn Milliseconds(self) -> int64 {
-        EXT
-    }
-
-    fn Minutes(self) -> float64 {
-        EXT
-    }
-
-    fn Nanoseconds(self) -> int64 {
-        EXT
-    }
-
-    fn Round(self, m: Duration) -> Duration {
-        EXT
-    }
-
-    fn Seconds(self) -> float64 {
-        EXT
-    }
-
-    fn String(self) -> string {
-        EXT
-    }
-
-    fn Truncate(self, m: Duration) -> Duration {
-        EXT
-    }
-}
-
-impl Location {
-    fn String(&self) -> string {
-        EXT
-    }
-}
-
-impl Month {
-    fn String(self) -> string {
-        EXT
-    }
-}
-
-impl ParseError {
-    fn Error(&self) -> string {
-        EXT
-    }
-}
-
-struct Duration(int64);
-
-struct Month(int);
-
-struct Weekday(int);
-
-struct Location {}
-
-struct ParseError {
-    Layout: string,
-    Value: string,
-    LayoutElem: string,
-    ValueElem: string,
-    Message: string,
-}
-
-struct Ticker {
-    C: Receiver<Time>,
-}
-
-struct Time {}
-
-struct Timer {
-    C: Receiver<Time>,
+struct Timer{
+  C: Receiver<Time>
 }

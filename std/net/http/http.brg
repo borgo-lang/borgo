@@ -1,16 +1,448 @@
-struct Request {}
+use io
+use net.url
+use time
+use io.fs
+use net
+use bufio
+use context
+use mime.multipart
+use crypto.tls
+use log
 
-trait ResponseWriter {
-    fn Write(bytes: [byte]) -> Result<int>;
+
+fn AllowQuerySemicolons  (h: Handler) -> Handler { EXT }
+
+fn CanonicalHeaderKey  (s: string) -> string { EXT }
+
+fn DetectContentType  (data: [byte]) -> string { EXT }
+
+fn Error  (w: ResponseWriter, error: string, code: int) -> () { EXT }
+
+fn FS  (fsys: fs.FS) -> FileSystem { EXT }
+
+fn FileServer  (root: FileSystem) -> Handler { EXT }
+
+fn Get  (url: string) -> Result<*Response> { EXT }
+
+fn Handle  (pattern: string, handler: Handler) -> () { EXT }
+
+fn HandleFunc  (pattern: string, handler: fn (param0: ResponseWriter, param1: *Request) -> ()) -> () { EXT }
+
+fn Head  (url: string) -> Result<*Response> { EXT }
+
+fn ListenAndServe  (addr: string, handler: Handler) -> error { EXT }
+
+fn ListenAndServeTLS  (addr: string, certFile: string, keyFile: string, handler: Handler) -> error { EXT }
+
+fn MaxBytesHandler  (h: Handler, n: int64) -> Handler { EXT }
+
+fn MaxBytesReader  (w: ResponseWriter, r: io.ReadCloser, n: int64) -> io.ReadCloser { EXT }
+
+fn NewFileTransport  (fs: FileSystem) -> RoundTripper { EXT }
+
+fn NewRequest  (method: string, url: string, body: io.Reader) -> Result<*Request> { EXT }
+
+fn NewRequestWithContext  (ctx: context.Context, method: string, url: string, body: io.Reader) -> Result<*Request> { EXT }
+
+fn NewServeMux  () -> *ServeMux { EXT }
+
+fn NotFound  (w: ResponseWriter, r: *Request) -> () { EXT }
+
+fn NotFoundHandler  () -> Handler { EXT }
+
+fn ParseHTTPVersion  (vers: string) -> Option<int> { EXT }
+
+fn ParseTime  (text: string) -> Result<time.Time> { EXT }
+
+fn Post  (url: string, contentType: string, body: io.Reader) -> Result<*Response> { EXT }
+
+fn PostForm  (url: string, data: url.Values) -> Result<*Response> { EXT }
+
+fn ProxyFromEnvironment  (req: *Request) -> Result<*url.URL> { EXT }
+
+fn ProxyURL  (fixedURL: *url.URL) -> fn (param0: *Request) -> Result<*url.URL> { EXT }
+
+fn ReadRequest  (b: *bufio.Reader) -> Result<*Request> { EXT }
+
+fn ReadResponse  (r: *bufio.Reader, req: *Request) -> Result<*Response> { EXT }
+
+fn Redirect  (w: ResponseWriter, r: *Request, url: string, code: int) -> () { EXT }
+
+fn RedirectHandler  (url: string, code: int) -> Handler { EXT }
+
+fn Serve  (l: net.Listener, handler: Handler) -> error { EXT }
+
+fn ServeContent  (w: ResponseWriter, req: *Request, name: string, modtime: time.Time, content: io.ReadSeeker) -> () { EXT }
+
+fn ServeFile  (w: ResponseWriter, r: *Request, name: string) -> () { EXT }
+
+fn ServeTLS  (l: net.Listener, handler: Handler, certFile: string, keyFile: string) -> error { EXT }
+
+fn SetCookie  (w: ResponseWriter, cookie: *Cookie) -> () { EXT }
+
+fn StatusText  (code: int) -> string { EXT }
+
+fn StripPrefix  (prefix: string, h: Handler) -> Handler { EXT }
+
+fn TimeoutHandler  (h: Handler, dt: time.Duration, msg: string) -> Handler { EXT }
+
+impl (self: Client) {
+
+fn CloseIdleConnections  () -> () { EXT }
+
+fn Do  (req: *Request) -> Result<*Response> { EXT }
+
+fn Get  (url: string) -> Result<*Response> { EXT }
+
+fn Head  (url: string) -> Result<*Response> { EXT }
+
+fn Post  (url: string, contentType: string, body: io.Reader) -> Result<*Response> { EXT }
+
+fn PostForm  (url: string, data: url.Values) -> Result<*Response> { EXT }
+
 }
 
-trait Handler {
-    fn ServeHTTP(w: ResponseWriter, r: &Request);
+impl (self: ConnState) {
+
+fn String  () -> string { EXT }
+
 }
 
-fn Handle(pattern: string, handler: Handler) {
-    EXT
+impl (self: Cookie) {
+
+fn String  () -> string { EXT }
+
+fn Valid  () -> error { EXT }
+
 }
-fn ListenAndServe(addr: string, handler: Handler) {
-    EXT
+
+impl (self: Dir) {
+
+fn Open  (name: string) -> Result<File> { EXT }
+
+}
+
+impl (self: HandlerFunc) {
+
+fn ServeHTTP  (w: ResponseWriter, r: *Request) -> () { EXT }
+
+}
+
+impl (self: Header) {
+
+fn Add  (key: string, value: string) -> () { EXT }
+
+fn Clone  () -> Header { EXT }
+
+fn Del  (key: string) -> () { EXT }
+
+fn Get  (key: string) -> string { EXT }
+
+fn Set  (key: string, value: string) -> () { EXT }
+
+fn Values  (key: string) -> [string] { EXT }
+
+fn Write  (w: io.Writer) -> error { EXT }
+
+fn WriteSubset  (w: io.Writer, exclude: Map<string, bool>) -> error { EXT }
+
+}
+
+impl (self: MaxBytesError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: ProtocolError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: Request) {
+
+fn AddCookie  (c: *Cookie) -> () { EXT }
+
+fn BasicAuth  () -> Option<string> { EXT }
+
+fn Clone  (ctx: context.Context) -> *Request { EXT }
+
+fn Context  () -> context.Context { EXT }
+
+fn Cookie  (name: string) -> Result<*Cookie> { EXT }
+
+fn Cookies  () -> [*Cookie] { EXT }
+
+fn FormFile  (key: string) -> (multipart.File, *multipart.FileHeader, error) { EXT }
+
+fn FormValue  (key: string) -> string { EXT }
+
+fn MultipartReader  () -> Result<*multipart.Reader> { EXT }
+
+fn ParseForm  () -> error { EXT }
+
+fn ParseMultipartForm  (maxMemory: int64) -> error { EXT }
+
+fn PostFormValue  (key: string) -> string { EXT }
+
+fn ProtoAtLeast  (major: int, minor: int) -> bool { EXT }
+
+fn Referer  () -> string { EXT }
+
+fn SetBasicAuth  (username: string, password: string) -> () { EXT }
+
+fn UserAgent  () -> string { EXT }
+
+fn WithContext  (ctx: context.Context) -> *Request { EXT }
+
+fn Write  (w: io.Writer) -> error { EXT }
+
+fn WriteProxy  (w: io.Writer) -> error { EXT }
+
+}
+
+impl (self: Response) {
+
+fn Cookies  () -> [*Cookie] { EXT }
+
+fn Location  () -> Result<*url.URL> { EXT }
+
+fn ProtoAtLeast  (major: int, minor: int) -> bool { EXT }
+
+fn Write  (w: io.Writer) -> error { EXT }
+
+}
+
+impl (self: ServeMux) {
+
+fn Handle  (pattern: string, handler: Handler) -> () { EXT }
+
+fn HandleFunc  (pattern: string, handler: fn (param0: ResponseWriter, param1: *Request) -> ()) -> () { EXT }
+
+fn Handler  (r: *Request) -> (Handler, string) { EXT }
+
+fn ServeHTTP  (w: ResponseWriter, r: *Request) -> () { EXT }
+
+}
+
+impl (self: Server) {
+
+fn Close  () -> error { EXT }
+
+fn ListenAndServe  () -> error { EXT }
+
+fn ListenAndServeTLS  (certFile: string, keyFile: string) -> error { EXT }
+
+fn RegisterOnShutdown  (f: fn () -> ()) -> () { EXT }
+
+fn Serve  (l: net.Listener) -> error { EXT }
+
+fn ServeTLS  (l: net.Listener, certFile: string, keyFile: string) -> error { EXT }
+
+fn SetKeepAlivesEnabled  (v: bool) -> () { EXT }
+
+fn Shutdown  (ctx: context.Context) -> error { EXT }
+
+}
+
+impl (self: Transport) {
+
+fn CancelRequest  (req: *Request) -> () { EXT }
+
+fn Clone  () -> *Transport { EXT }
+
+fn CloseIdleConnections  () -> () { EXT }
+
+fn RegisterProtocol  (scheme: string, rt: RoundTripper) -> () { EXT }
+
+fn RoundTrip  (req: *Request) -> Result<*Response> { EXT }
+
+}
+
+type HandlerFunc = fn (param0: ResponseWriter, param1: *Request) -> ()
+
+type Header = Map<string, [string]>
+
+struct ConnState(int)
+
+struct Dir(string)
+
+struct SameSite(int)
+
+struct Client{
+  Transport: RoundTripper,
+  CheckRedirect: fn (req: *Request, via: [*Request]) -> error,
+  Jar: CookieJar,
+  Timeout: time.Duration
+}
+
+interface CloseNotifier {
+
+  fn CloseNotify () -> Receiver<bool>
+}
+
+struct Cookie{
+  Name: string,
+  Value: string,
+  Path: string,
+  Domain: string,
+  Expires: time.Time,
+  RawExpires: string,
+  MaxAge: int,
+  Secure: bool,
+  HttpOnly: bool,
+  SameSite: SameSite,
+  Raw: string,
+  Unparsed: [string]
+}
+
+interface CookieJar {
+
+  fn SetCookies (u: *url.URL, cookies: [*Cookie]) -> ()
+  fn Cookies (u: *url.URL) -> [*Cookie]
+}
+
+interface File {
+impl io.Closer
+impl io.Reader
+impl io.Seeker
+  fn Readdir (count: int) -> Result<[fs.FileInfo]>
+  fn Stat () -> Result<fs.FileInfo>
+}
+
+interface FileSystem {
+
+  fn Open (name: string) -> Result<File>
+}
+
+interface Flusher {
+
+  fn Flush () -> ()
+}
+
+interface Handler {
+
+  fn ServeHTTP (param0: ResponseWriter, param1: *Request) -> ()
+}
+
+interface Hijacker {
+
+  fn Hijack () -> (net.Conn, *bufio.ReadWriter, error)
+}
+
+struct MaxBytesError{
+  Limit: int64
+}
+
+struct ProtocolError{
+  ErrorString: string
+}
+
+struct PushOptions{
+  Method: string,
+  Header: Header
+}
+
+interface Pusher {
+
+  fn Push (target: string, opts: *PushOptions) -> error
+}
+
+struct Request{
+  Method: string,
+  URL: *url.URL,
+  Proto: string,
+  ProtoMajor: int,
+  ProtoMinor: int,
+  Header: Header,
+  Body: io.ReadCloser,
+  GetBody: fn () -> Result<io.ReadCloser>,
+  ContentLength: int64,
+  TransferEncoding: [string],
+  Close: bool,
+  Host: string,
+  Form: url.Values,
+  PostForm: url.Values,
+  MultipartForm: *multipart.Form,
+  Trailer: Header,
+  RemoteAddr: string,
+  RequestURI: string,
+  TLS: *tls.ConnectionState,
+  Cancel: Receiver<()>,
+  Response: *Response
+}
+
+struct Response{
+  Status: string,
+  StatusCode: int,
+  Proto: string,
+  ProtoMajor: int,
+  ProtoMinor: int,
+  Header: Header,
+  Body: io.ReadCloser,
+  ContentLength: int64,
+  TransferEncoding: [string],
+  Close: bool,
+  Uncompressed: bool,
+  Trailer: Header,
+  Request: *Request,
+  TLS: *tls.ConnectionState
+}
+
+interface ResponseWriter {
+
+  fn Header () -> Header
+  fn Write (param0: [byte]) -> Result<int>
+  fn WriteHeader (statusCode: int) -> ()
+}
+
+interface RoundTripper {
+
+  fn RoundTrip (param0: *Request) -> Result<*Response>
+}
+
+struct ServeMux{
+
+}
+
+struct Server{
+  Addr: string,
+  Handler: Handler,
+  TLSConfig: *tls.Config,
+  ReadTimeout: time.Duration,
+  ReadHeaderTimeout: time.Duration,
+  WriteTimeout: time.Duration,
+  IdleTimeout: time.Duration,
+  MaxHeaderBytes: int,
+  TLSNextProto: Map<string, fn (param0: *Server, param1: *tls.Conn, param2: Handler) -> ()>,
+  ConnState: fn (param0: net.Conn, param1: ConnState) -> (),
+  ErrorLog: *log.Logger,
+  BaseContext: fn (param0: net.Listener) -> context.Context,
+  ConnContext: fn (ctx: context.Context, c: net.Conn) -> context.Context
+}
+
+struct Transport{
+  Proxy: fn (param0: *Request) -> Result<*url.URL>,
+  DialContext: fn (ctx: context.Context, network: string, addr: string) -> Result<net.Conn>,
+  Dial: fn (network: string, addr: string) -> Result<net.Conn>,
+  DialTLSContext: fn (ctx: context.Context, network: string, addr: string) -> Result<net.Conn>,
+  DialTLS: fn (network: string, addr: string) -> Result<net.Conn>,
+  TLSClientConfig: *tls.Config,
+  TLSHandshakeTimeout: time.Duration,
+  DisableKeepAlives: bool,
+  DisableCompression: bool,
+  MaxIdleConns: int,
+  MaxIdleConnsPerHost: int,
+  MaxConnsPerHost: int,
+  IdleConnTimeout: time.Duration,
+  ResponseHeaderTimeout: time.Duration,
+  ExpectContinueTimeout: time.Duration,
+  TLSNextProto: Map<string, fn (authority: string, c: *tls.Conn) -> RoundTripper>,
+  ProxyConnectHeader: Header,
+  GetProxyConnectHeader: fn (ctx: context.Context, proxyURL: *url.URL, target: string) -> Result<Header>,
+  MaxResponseHeaderBytes: int64,
+  WriteBufferSize: int,
+  ReadBufferSize: int,
+  ForceAttemptHTTP2: bool
 }

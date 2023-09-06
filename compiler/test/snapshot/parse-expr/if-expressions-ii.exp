@@ -1,0 +1,60 @@
+If expressions II
+
+SOURCE:
+if x.a.b {
+    2
+} else {
+    3
+}
+
+OUTPUT:
+If#1,1, Ident("x", 1)#1,4, Dot#1,5, Ident("a", 1)#1,6, Dot#1,7, Ident("b", 1)#1,8, LCurly#1,10, Int("2", 1)#2,5, Semicolon#2,6, RCurly#3,1, Else#3,3, LCurly#3,8, Int("3", 1)#4,5, Semicolon#4,6, RCurly#5,1, EOF#5,2
+---
+No errors.
+---
+{
+  "If": {
+    "cond": {
+      "FieldAccess": {
+        "expr": {
+          "FieldAccess": {
+            "expr": {
+              "Var": {
+                "value": "x",
+                "generics_instantiated": []
+              }
+            },
+            "field": "a"
+          }
+        },
+        "field": "b"
+      }
+    },
+    "then": {
+      "Block": {
+        "stmts": [
+          {
+            "Literal": {
+              "lit": {
+                "Int": 2
+              }
+            }
+          }
+        ]
+      }
+    },
+    "els": {
+      "Block": {
+        "stmts": [
+          {
+            "Literal": {
+              "lit": {
+                "Int": 3
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

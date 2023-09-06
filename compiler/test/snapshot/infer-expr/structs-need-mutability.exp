@@ -4,12 +4,12 @@ SOURCE:
 {
   struct Foo { a: int }
 
-  let x = Foo { a: 1 };
-  x.a = 5;
+  let x = Foo { a: 1 }
+  x.a = 5
 }
 
 OUTPUT:
 Variable x is not declared as mutable. Use `let mut x`.
 
-5|    x.a = 5;
+5|    x.a = 5
       ^^^^^^^

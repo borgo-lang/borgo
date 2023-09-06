@@ -1,0 +1,65 @@
+Lambdas II
+
+SOURCE:
+|x, y| x + y
+
+OUTPUT:
+Pipe#1,1, Ident("x", 1)#1,2, Comma#1,3, Ident("y", 1)#1,5, Pipe#1,6, Ident("x", 1)#1,8, Plus#1,10, Ident("y", 1)#1,12, EOF#1,13
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "__anonymous",
+      "generics": [],
+      "args": [
+        {
+          "pat": {
+            "Type": {
+              "ident": "x",
+              "is_mut": false,
+              "ann": "Unknown"
+            }
+          },
+          "ann": "Unknown"
+        },
+        {
+          "pat": {
+            "Type": {
+              "ident": "y",
+              "is_mut": false,
+              "ann": "Unknown"
+            }
+          },
+          "ann": "Unknown"
+        }
+      ],
+      "ret": {
+        "Var": -1
+      },
+      "ann": "Unknown",
+      "body": {
+        "Binary": {
+          "op": "Add",
+          "left": {
+            "Var": {
+              "value": "x",
+              "generics_instantiated": []
+            }
+          },
+          "right": {
+            "Var": {
+              "value": "y",
+              "generics_instantiated": []
+            }
+          }
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "Lambda"
+  }
+}

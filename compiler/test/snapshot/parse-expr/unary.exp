@@ -1,0 +1,34 @@
+Unary
+
+SOURCE:
+-2 + 3
+
+OUTPUT:
+Minus#1,1, Int("2", 1)#1,2, Plus#1,4, Int("3", 1)#1,6, EOF#1,7
+---
+No errors.
+---
+{
+  "Binary": {
+    "op": "Add",
+    "left": {
+      "Unary": {
+        "op": "Neg",
+        "expr": {
+          "Literal": {
+            "lit": {
+              "Int": 2
+            }
+          }
+        }
+      }
+    },
+    "right": {
+      "Literal": {
+        "lit": {
+          "Int": 3
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+Field selector
+
+SOURCE:
+a.b + 4
+
+OUTPUT:
+Ident("a", 1)#1,1, Dot#1,2, Ident("b", 1)#1,3, Plus#1,5, Int("4", 1)#1,7, EOF#1,8
+---
+No errors.
+---
+{
+  "Binary": {
+    "op": "Add",
+    "left": {
+      "FieldAccess": {
+        "expr": {
+          "Var": {
+            "value": "a",
+            "generics_instantiated": []
+          }
+        },
+        "field": "b"
+      }
+    },
+    "right": {
+      "Literal": {
+        "lit": {
+          "Int": 4
+        }
+      }
+    }
+  }
+}

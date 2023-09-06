@@ -1,0 +1,98 @@
+Lambdas
+
+SOURCE:
+|x: int, y: Foo<T>| {
+    foo(x)
+    y
+}
+
+OUTPUT:
+Pipe#1,1, Ident("x", 1)#1,2, Colon#1,3, Ident("int", 3)#1,5, Comma#1,8, Ident("y", 1)#1,10, Colon#1,11, Ident("Foo", 3)#1,13, LAngle#1,16, Ident("T", 1)#1,17, RAngle#1,18, Pipe#1,19, LCurly#1,21, Ident("foo", 3)#2,5, LParen#2,8, Ident("x", 1)#2,9, RParen#2,10, Semicolon#2,11, Ident("y", 1)#3,5, Semicolon#3,6, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "__anonymous",
+      "generics": [],
+      "args": [
+        {
+          "pat": {
+            "Type": {
+              "ident": "x",
+              "is_mut": false,
+              "ann": "Unknown"
+            }
+          },
+          "ann": {
+            "Con": {
+              "name": "int",
+              "args": []
+            }
+          }
+        },
+        {
+          "pat": {
+            "Type": {
+              "ident": "y",
+              "is_mut": false,
+              "ann": "Unknown"
+            }
+          },
+          "ann": {
+            "Con": {
+              "name": "Foo",
+              "args": [
+                {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "ret": {
+        "Var": -1
+      },
+      "ann": "Unknown",
+      "body": {
+        "Block": {
+          "stmts": [
+            {
+              "Call": {
+                "func": {
+                  "Var": {
+                    "value": "foo",
+                    "generics_instantiated": []
+                  }
+                },
+                "args": [
+                  {
+                    "Var": {
+                      "value": "x",
+                      "generics_instantiated": []
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Var": {
+                "value": "y",
+                "generics_instantiated": []
+              }
+            }
+          ]
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "Lambda"
+  }
+}

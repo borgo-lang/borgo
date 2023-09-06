@@ -2,19 +2,19 @@ References in methods
 
 SOURCE:
 struct Foo {
-  x: int
+  x: int,
 }
 
-impl Foo {
-  fn update(&mut self, x: int) {
-    self.x = x
+impl (f: *Foo) {
+  fn update(x: int) {
+    f.x = x
   }
 }
 
 fn main() {
-  let f = Foo { x: 1 };
-  f.update(5);
-  assert_eq(f.x, 5);
+  let f = Foo { x: 1 }
+  f.update(5)
+  assert_eq(f.x, 5)
 }
 
 OUTPUT:
@@ -26,8 +26,8 @@ type Foo struct {
 	x int
 }
 
-func (self *Foo) update(x int) {
-	self.x = x
+func (f *Foo) update(x int) {
+	f.x = x
 }
 
 func main() {

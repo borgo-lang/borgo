@@ -3,19 +3,19 @@ Match on tuples
 SOURCE:
 fn main() {
     let res = match (1, "foo") {
-        (3, _) => 5,
-        (1, "bar") => 6,
-        (x, "foo") => x,
-        _ => unreachable!(),
-    };
+        (3, _) => 5
+        (1, "bar") => 6
+        (x, "foo") => x
+        _ => @unreachable()
+    }
 
-    assert_eq(res, 1);
+    assert_eq(res, 1)
 
     let res = match () {
-      () => 2,
-    };
+      () => 2
+    }
 
-    assert_eq(res, 2);
+    assert_eq(res, 2)
 }
 
 OUTPUT:

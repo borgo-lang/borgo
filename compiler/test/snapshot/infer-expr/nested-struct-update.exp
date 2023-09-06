@@ -5,8 +5,8 @@ SOURCE:
   struct Foo { x: int }
   struct Bar { f: Foo }
 
-  let mut b = Bar { f: Foo { x: 1 } };
-  b.f.x = 99;
+  let mut b = Bar { f: Foo { x: 1 } }
+  b.f.x = 99
   b
 }
 
@@ -47,7 +47,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -86,7 +86,7 @@ No errors.
           "span": {
             "start": {
               "line": 3,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 3,
@@ -102,16 +102,16 @@ No errors.
             "pat": {
               "Type": {
                 "ident": "b",
-                "is_mut": true,
+                "is_mut": false,
                 "ann": "Unknown",
                 "span": {
                   "start": {
                     "line": 5,
-                    "col": 6
+                    "col": 11
                   },
                   "end": {
                     "line": 5,
-                    "col": 11
+                    "col": 12
                   },
                   "file": 99
                 }
@@ -151,11 +151,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 5,
-                                  "col": 32
+                                  "col": 33
                                 },
                                 "end": {
                                   "line": 5,
-                                  "col": 33
+                                  "col": 34
                                 },
                                 "file": 99
                               }
@@ -173,7 +173,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 5,
-                          "col": 23
+                          "col": 28
                         },
                         "end": {
                           "line": 5,
@@ -195,7 +195,7 @@ No errors.
               "span": {
                 "start": {
                   "line": 5,
-                  "col": 14
+                  "col": 19
                 },
                 "end": {
                   "line": 5,
@@ -205,6 +205,7 @@ No errors.
               }
             }
           },
+          "mutable": true,
           "ty": {
             "Con": {
               "id": "Bar",
@@ -214,11 +215,11 @@ No errors.
           "span": {
             "start": {
               "line": 5,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 5,
-              "col": 38
+              "col": 37
             },
             "file": 99
           }
@@ -236,11 +237,11 @@ No errors.
                       "decl": {
                         "start": {
                           "line": 5,
-                          "col": 6
+                          "col": 11
                         },
                         "end": {
                           "line": 5,
-                          "col": 11
+                          "col": 12
                         },
                         "file": 99
                       },
@@ -254,11 +255,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 6,
-                          "col": 2
+                          "col": 3
                         },
                         "end": {
                           "line": 6,
-                          "col": 3
+                          "col": 4
                         },
                         "file": 99
                       }
@@ -274,11 +275,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 6,
-                      "col": 2
+                      "col": 5
                     },
                     "end": {
                       "line": 6,
-                      "col": 5
+                      "col": 6
                     },
                     "file": 99
                   }
@@ -294,11 +295,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 6,
-                  "col": 2
+                  "col": 7
                 },
                 "end": {
                   "line": 6,
-                  "col": 7
+                  "col": 8
                 },
                 "file": 99
               }
@@ -318,11 +319,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 6,
-                  "col": 10
+                  "col": 11
                 },
                 "end": {
                   "line": 6,
-                  "col": 12
+                  "col": 13
                 },
                 "file": 99
               }
@@ -331,11 +332,11 @@ No errors.
           "span": {
             "start": {
               "line": 6,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 6,
-              "col": 12
+              "col": 13
             },
             "file": 99
           }
@@ -347,11 +348,11 @@ No errors.
           "decl": {
             "start": {
               "line": 5,
-              "col": 6
+              "col": 11
             },
             "end": {
               "line": 5,
-              "col": 11
+              "col": 12
             },
             "file": 99
           },
@@ -365,11 +366,11 @@ No errors.
           "span": {
             "start": {
               "line": 7,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 7,
-              "col": 3
+              "col": 4
             },
             "file": 99
           }
@@ -385,7 +386,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 8,

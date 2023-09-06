@@ -1,0 +1,58 @@
+Function call with args
+
+SOURCE:
+foo.bar(!false, 3 * 4)
+
+OUTPUT:
+Ident("foo", 3)#1,1, Dot#1,4, Ident("bar", 3)#1,5, LParen#1,8, Bang#1,9, Bool#1,10, Comma#1,15, Int("3", 1)#1,17, Star#1,19, Int("4", 1)#1,21, RParen#1,22, EOF#1,23
+---
+No errors.
+---
+{
+  "Call": {
+    "func": {
+      "FieldAccess": {
+        "expr": {
+          "Var": {
+            "value": "foo",
+            "generics_instantiated": []
+          }
+        },
+        "field": "bar"
+      }
+    },
+    "args": [
+      {
+        "Unary": {
+          "op": "Not",
+          "expr": {
+            "Literal": {
+              "lit": {
+                "Bool": false
+              }
+            }
+          }
+        }
+      },
+      {
+        "Binary": {
+          "op": "Mul",
+          "left": {
+            "Literal": {
+              "lit": {
+                "Int": 3
+              }
+            }
+          },
+          "right": {
+            "Literal": {
+              "lit": {
+                "Int": 4
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

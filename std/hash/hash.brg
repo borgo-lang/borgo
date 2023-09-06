@@ -1,0 +1,20 @@
+use io
+
+
+interface Hash {
+impl io.Writer
+  fn Sum (b: [byte]) -> [byte]
+  fn Reset () -> ()
+  fn Size () -> int
+  fn BlockSize () -> int
+}
+
+interface Hash32 {
+impl Hash
+  fn Sum32 () -> uint32
+}
+
+interface Hash64 {
+impl Hash
+  fn Sum64 () -> uint64
+}

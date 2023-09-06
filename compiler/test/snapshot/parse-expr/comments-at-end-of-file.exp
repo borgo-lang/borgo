@@ -1,0 +1,39 @@
+Comments at end of file
+
+SOURCE:
+// comment at beginning
+fn foo() {}
+// comment at end
+
+OUTPUT:
+Comment#1,1, Fn_#2,1, Ident("foo", 3)#2,4, LParen#2,7, RParen#2,8, LCurly#2,10, RCurly#2,11, Semicolon#2,12, Comment#3,1, EOF#3,18
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "foo",
+      "generics": [],
+      "args": [],
+      "ret": {
+        "Var": -1
+      },
+      "ann": {
+        "Con": {
+          "name": "Unit",
+          "args": []
+        }
+      },
+      "body": {
+        "Block": {
+          "stmts": []
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "TopLevel"
+  }
+}

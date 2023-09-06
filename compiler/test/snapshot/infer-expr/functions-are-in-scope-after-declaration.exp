@@ -29,11 +29,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 2,
-                        "col": 9
+                        "col": 10
                       },
                       "end": {
                         "line": 2,
-                        "col": 10
+                        "col": 11
                       },
                       "file": 99
                     }
@@ -76,13 +76,13 @@ No errors.
                           "decl": {
                             "start": {
                               "line": 21,
-                              "col": 0
+                              "col": 1
                             },
                             "end": {
                               "line": 23,
                               "col": 1
                             },
-                            "file": -1
+                            "file": 99
                           },
                           "generics_instantiated": [],
                           "ty": {
@@ -113,11 +113,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 2,
-                              "col": 26
+                              "col": 27
                             },
                             "end": {
                               "line": 2,
-                              "col": 29
+                              "col": 30
                             },
                             "file": 99
                           }
@@ -130,11 +130,11 @@ No errors.
                             "decl": {
                               "start": {
                                 "line": 2,
-                                "col": 9
+                                "col": 10
                               },
                               "end": {
                                 "line": 2,
-                                "col": 10
+                                "col": 11
                               },
                               "file": 99
                             },
@@ -148,11 +148,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 2,
-                                "col": 30
+                                "col": 31
                               },
                               "end": {
                                 "line": 2,
-                                "col": 31
+                                "col": 32
                               },
                               "file": 99
                             }
@@ -172,11 +172,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 2,
-                                "col": 33
+                                "col": 34
                               },
                               "end": {
                                 "line": 2,
-                                "col": 34
+                                "col": 35
                               },
                               "file": 99
                             }
@@ -192,7 +192,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 2,
-                          "col": 26
+                          "col": 30
                         },
                         "end": {
                           "line": 2,
@@ -212,7 +212,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 24
+                    "col": 25
                   },
                   "end": {
                     "line": 2,
@@ -268,7 +268,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -286,7 +286,7 @@ No errors.
               "decl": {
                 "start": {
                   "line": 2,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 2,
@@ -317,11 +317,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 3,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 3,
-                  "col": 5
+                  "col": 6
                 },
                 "file": 99
               }
@@ -342,11 +342,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 3,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 3,
-                    "col": 7
+                    "col": 8
                   },
                   "file": 99
                 }
@@ -362,7 +362,7 @@ No errors.
           "span": {
             "start": {
               "line": 3,
-              "col": 2
+              "col": 6
             },
             "end": {
               "line": 3,
@@ -382,7 +382,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 4,

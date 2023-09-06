@@ -1,0 +1,42 @@
+Type aliases
+
+SOURCE:
+type Foo<T> = Map<T, int>
+
+OUTPUT:
+Type#1,1, Ident("Foo", 3)#1,6, LAngle#1,9, Ident("T", 1)#1,10, RAngle#1,11, Eq#1,13, Ident("Map", 3)#1,15, LAngle#1,18, Ident("T", 1)#1,19, Comma#1,20, Ident("int", 3)#1,22, RAngle#1,25, EOF#1,26
+---
+No errors.
+---
+{
+  "TypeAlias": {
+    "def": {
+      "name": "Foo",
+      "generics": [
+        {
+          "name": "T",
+          "bounds": []
+        }
+      ],
+      "ann": {
+        "Con": {
+          "name": "Map",
+          "args": [
+            {
+              "Con": {
+                "name": "T",
+                "args": []
+              }
+            },
+            {
+              "Con": {
+                "name": "int",
+                "args": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

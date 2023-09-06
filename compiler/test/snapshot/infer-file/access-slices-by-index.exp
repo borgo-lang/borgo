@@ -1,8 +1,8 @@
 Access slices by index
 
 SOURCE:
-fn borgo_main() -> string {
-    let xs = ["a"];
+fn main() -> string {
+    let xs = ["a"]
     xs[0]
 }
 
@@ -15,7 +15,7 @@ No errors.
   {
     "Closure": {
       "fun": {
-        "name": "borgo_main",
+        "name": "main",
         "generics": [],
         "args": [],
         "ret": {
@@ -44,11 +44,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 2,
-                            "col": 8
+                            "col": 9
                           },
                           "end": {
                             "line": 2,
-                            "col": 10
+                            "col": 11
                           },
                           "file": 99
                         }
@@ -76,10 +76,7 @@ No errors.
                           {
                             "Literal": {
                               "lit": {
-                                "String": [
-                                  "a",
-                                  null
-                                ]
+                                "String": "a"
                               },
                               "ty": {
                                 "Con": {
@@ -90,11 +87,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 2,
-                                  "col": 14
+                                  "col": 15
                                 },
                                 "end": {
                                   "line": 2,
-                                  "col": 17
+                                  "col": 18
                                 },
                                 "file": 99
                               }
@@ -118,7 +115,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 2,
-                          "col": 13
+                          "col": 14
                         },
                         "end": {
                           "line": 2,
@@ -128,6 +125,7 @@ No errors.
                       }
                     }
                   },
+                  "mutable": false,
                   "ty": {
                     "Con": {
                       "id": "Slice",
@@ -144,11 +142,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 2,
-                      "col": 4
+                      "col": 5
                     },
                     "end": {
                       "line": 2,
-                      "col": 19
+                      "col": 18
                     },
                     "file": 99
                   }
@@ -162,11 +160,11 @@ No errors.
                       "decl": {
                         "start": {
                           "line": 2,
-                          "col": 8
+                          "col": 9
                         },
                         "end": {
                           "line": 2,
-                          "col": 10
+                          "col": 11
                         },
                         "file": 99
                       },
@@ -187,11 +185,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 3,
-                          "col": 4
+                          "col": 5
                         },
                         "end": {
                           "line": 3,
-                          "col": 6
+                          "col": 7
                         },
                         "file": 99
                       }
@@ -211,11 +209,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 3,
-                          "col": 7
+                          "col": 8
                         },
                         "end": {
                           "line": 3,
-                          "col": 8
+                          "col": 9
                         },
                         "file": 99
                       }
@@ -230,7 +228,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 3,
-                      "col": 4
+                      "col": 7
                     },
                     "end": {
                       "line": 3,
@@ -250,7 +248,7 @@ No errors.
             "span": {
               "start": {
                 "line": 1,
-                "col": 26
+                "col": 21
               },
               "end": {
                 "line": 4,
@@ -292,7 +290,7 @@ No errors.
       "span": {
         "start": {
           "line": 1,
-          "col": 0
+          "col": 1
         },
         "end": {
           "line": 4,

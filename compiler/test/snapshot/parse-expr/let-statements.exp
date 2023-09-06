@@ -1,0 +1,40 @@
+Let statements
+
+SOURCE:
+{
+    let x = 1
+}
+
+OUTPUT:
+LCurly#1,1, Let#2,5, Ident("x", 1)#2,9, Eq#2,11, Int("1", 1)#2,13, Semicolon#2,14, RCurly#3,1, EOF#3,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "is_mut": false,
+                "ann": "Unknown"
+              }
+            },
+            "ann": "Unknown"
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              }
+            }
+          },
+          "mutable": false
+        }
+      }
+    ]
+  }
+}

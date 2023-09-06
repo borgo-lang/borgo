@@ -58,7 +58,6 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
                     // Statements inside a block are discarded, so they may never end up getting
                     // constrained to anything. It's desirable to have a concrete type for all
                     // expressions, so replace with Unit if a type hasn't been inferred yet.
-                    
 
                     match new_expr.get_type() {
                         Type::Var(_) => new_expr.replace_type(instance.type_unit()),
@@ -73,11 +72,13 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
         Expr::Let {
             binding,
             value,
+            mutable,
             ty,
             span,
         } => Expr::Let {
             binding: substitute_binding(&binding, instance),
             value: substitute_expr(*value, instance).into(),
+            mutable,
             ty: instance.substitute(ty),
             span,
         },
@@ -245,12 +246,14 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
         Expr::ImplBlock {
             ann,
             ty,
+            self_name,
             generics,
             items,
             span,
         } => Expr::ImplBlock {
             ann,
             generics,
+            self_name,
             ty: instance.substitute(ty),
             span,
             items: items
@@ -381,17 +384,17 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
 
         Expr::Trait {
             name,
+            generics,
             items,
             supertraits,
-            types,
             span,
         } => Expr::Trait {
             name,
+            generics,
             items: items
                 .iter()
                 .map(|e| substitute_expr(e.clone(), instance))
                 .collect(),
-            types,
             supertraits,
             span,
         },

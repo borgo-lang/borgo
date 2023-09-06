@@ -1,0 +1,124 @@
+use io
+use bufio
+
+
+fn CanonicalMIMEHeaderKey  (s: string) -> string { EXT }
+
+fn Dial  (network: string, addr: string) -> Result<*Conn> { EXT }
+
+fn NewConn  (conn: io.ReadWriteCloser) -> *Conn { EXT }
+
+fn NewReader  (r: *bufio.Reader) -> *Reader { EXT }
+
+fn NewWriter  (w: *bufio.Writer) -> *Writer { EXT }
+
+fn TrimBytes  (b: [byte]) -> [byte] { EXT }
+
+fn TrimString  (s: string) -> string { EXT }
+
+impl (self: Conn) {
+
+fn Close  () -> error { EXT }
+
+fn Cmd  (format: string, args: VarArgs<any>) -> Result<uint> { EXT }
+
+}
+
+impl (self: Error) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: MIMEHeader) {
+
+fn Add  (key: string, value: string) -> () { EXT }
+
+fn Del  (key: string) -> () { EXT }
+
+fn Get  (key: string) -> string { EXT }
+
+fn Set  (key: string, value: string) -> () { EXT }
+
+fn Values  (key: string) -> [string] { EXT }
+
+}
+
+impl (self: Pipeline) {
+
+fn EndRequest  (id: uint) -> () { EXT }
+
+fn EndResponse  (id: uint) -> () { EXT }
+
+fn Next  () -> uint { EXT }
+
+fn StartRequest  (id: uint) -> () { EXT }
+
+fn StartResponse  (id: uint) -> () { EXT }
+
+}
+
+impl (self: ProtocolError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: Reader) {
+
+fn DotReader  () -> io.Reader { EXT }
+
+fn ReadCodeLine  (expectCode: int) -> (int, string, error) { EXT }
+
+fn ReadContinuedLine  () -> Result<string> { EXT }
+
+fn ReadContinuedLineBytes  () -> Result<[byte]> { EXT }
+
+fn ReadDotBytes  () -> Result<[byte]> { EXT }
+
+fn ReadDotLines  () -> Result<[string]> { EXT }
+
+fn ReadLine  () -> Result<string> { EXT }
+
+fn ReadLineBytes  () -> Result<[byte]> { EXT }
+
+fn ReadMIMEHeader  () -> Result<MIMEHeader> { EXT }
+
+fn ReadResponse  (expectCode: int) -> (int, string, error) { EXT }
+
+}
+
+impl (self: Writer) {
+
+fn DotWriter  () -> io.WriteCloser { EXT }
+
+fn PrintfLine  (format: string, args: VarArgs<any>) -> error { EXT }
+
+}
+
+type MIMEHeader = Map<string, [string]>
+
+struct ProtocolError(string)
+
+struct Conn{
+// skipping embedded field Reader,
+// skipping embedded field Writer,
+// skipping embedded field Pipeline
+}
+
+struct Error{
+  Code: int,
+  Msg: string
+}
+
+struct Pipeline{
+
+}
+
+struct Reader{
+  R: *bufio.Reader
+}
+
+struct Writer{
+  W: *bufio.Writer
+}

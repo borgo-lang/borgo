@@ -1,0 +1,481 @@
+Interface check with supertraits
+
+SOURCE:
+use io
+
+fn foo(r: io.Reader) {
+}
+
+fn bar() -> io.ReadCloser {
+    @rawgo ("")
+}
+
+fn main() {
+    foo(bar())
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+[
+  {
+    "UsePackage": {
+      "import": {
+        "name": "io",
+        "span": {
+          "start": {
+            "line": 1,
+            "col": 1
+          },
+          "end": {
+            "line": 1,
+            "col": 7
+          },
+          "file": 99
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 1
+        },
+        "end": {
+          "line": 1,
+          "col": 7
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "foo",
+        "generics": [],
+        "args": [
+          {
+            "pat": {
+              "Type": {
+                "ident": "r",
+                "is_mut": false,
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 8
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 9
+                  },
+                  "file": 99
+                }
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "io.Reader",
+                "args": []
+              }
+            },
+            "ty": {
+              "Con": {
+                "id": "Reader",
+                "args": []
+              }
+            }
+          }
+        ],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [],
+            "ty": {
+              "Con": {
+                "id": "Unit",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 3,
+                "col": 22
+              },
+              "end": {
+                "line": 4,
+                "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Con": {
+                    "id": "Reader",
+                    "args": []
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [
+            {
+              "Con": {
+                "id": "Reader",
+                "args": []
+              }
+            }
+          ],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 3,
+          "col": 1
+        },
+        "end": {
+          "line": 4,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "bar",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "ReadCloser",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "io.ReadCloser",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Raw": {
+                  "text": ""
+                }
+              }
+            ],
+            "ty": {
+              "Var": -333
+            },
+            "span": {
+              "start": {
+                "line": 6,
+                "col": 27
+              },
+              "end": {
+                "line": 8,
+                "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "ReadCloser",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "ReadCloser",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 6,
+          "col": 1
+        },
+        "end": {
+          "line": 8,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Call": {
+                  "func": {
+                    "Var": {
+                      "value": "foo",
+                      "decl": {
+                        "start": {
+                          "line": 3,
+                          "col": 1
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 1
+                        },
+                        "file": 99
+                      },
+                      "generics_instantiated": [],
+                      "ty": {
+                        "Fun": {
+                          "args": [
+                            {
+                              "Con": {
+                                "id": "Reader",
+                                "args": []
+                              }
+                            }
+                          ],
+                          "bounds": [],
+                          "ret": {
+                            "Con": {
+                              "id": "Unit",
+                              "args": []
+                            }
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 11,
+                          "col": 5
+                        },
+                        "end": {
+                          "line": 11,
+                          "col": 8
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "args": [
+                    {
+                      "Call": {
+                        "func": {
+                          "Var": {
+                            "value": "bar",
+                            "decl": {
+                              "start": {
+                                "line": 6,
+                                "col": 1
+                              },
+                              "end": {
+                                "line": 8,
+                                "col": 1
+                              },
+                              "file": 99
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Fun": {
+                                "args": [],
+                                "bounds": [],
+                                "ret": {
+                                  "Con": {
+                                    "id": "ReadCloser",
+                                    "args": []
+                                  }
+                                }
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 11,
+                                "col": 9
+                              },
+                              "end": {
+                                "line": 11,
+                                "col": 12
+                              },
+                              "file": 99
+                            }
+                          }
+                        },
+                        "args": [],
+                        "ty": {
+                          "Con": {
+                            "id": "ReadCloser",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 11,
+                            "col": 12
+                          },
+                          "end": {
+                            "line": 11,
+                            "col": 13
+                          },
+                          "file": 99
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "id": "Unit",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 11,
+                      "col": 8
+                    },
+                    "end": {
+                      "line": 11,
+                      "col": 14
+                    },
+                    "file": 99
+                  }
+                }
+              }
+            ],
+            "ty": {
+              "Con": {
+                "id": "Unit",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 10,
+                "col": 11
+              },
+              "end": {
+                "line": 12,
+                "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 10,
+          "col": 1
+        },
+        "end": {
+          "line": 12,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  }
+]

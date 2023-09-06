@@ -1,7 +1,7 @@
 Expr in loops must be rangeable.
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   for x in 1 {
   }
 }

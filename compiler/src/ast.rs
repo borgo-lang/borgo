@@ -1,19 +1,7 @@
-use crate::parse;
 use crate::type_::{BoundedType, ModuleId, Symbol, Type};
-use proc_macro2::{LineColumn as ProcLine, Span as ProcSpan};
 use serde::{Deserialize, Serialize};
-use syn;
-use syn::spanned::Spanned;
 
 pub type Ident = String;
-
-pub type Result<T> = std::result::Result<T, ParseError>;
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ParseError {
-    pub msg: String,
-    pub span: Span,
-}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Binding {
@@ -48,6 +36,22 @@ impl Function {
         }
 
         None
+    }
+
+    pub fn add_receiver(&self, generics: &[Generic], ty: &Type) -> BoundedType {
+        let mut ret = self.bounded_ty.clone();
+
+        match ret.ty {
+            Type::Fun { ref mut args, .. } => {
+                // prepend receiver
+                args.insert(0, ty.clone());
+            }
+            _ => unreachable!(),
+        }
+
+        // ensure generics are properly set
+        ret.generics = generics.iter().map(|g| g.name.to_string()).collect();
+        ret
     }
 
     pub fn is_external(&self) -> bool {
@@ -98,21 +102,6 @@ pub enum Pat {
 }
 
 impl Pat {
-    fn parse_ident(p: syn::Pat) -> Result<String> {
-        match p {
-            syn::Pat::Ident(i) => Ok(i.ident.to_string()),
-            _ => panic!("was expecting pat ident"),
-        }
-    }
-
-    pub fn parse_path(path: syn::Path) -> String {
-        path.segments
-            .iter()
-            .map(|s| s.ident.to_string())
-            .collect::<Vec<_>>()
-            .join("::")
-    }
-
     pub fn get_span(&self) -> Span {
         match self {
             Pat::Type { span, .. } => span.clone(),
@@ -199,13 +188,6 @@ impl Pat {
             }
         }
     }
-
-    pub fn parse_mutability(pat: &syn::Pat) -> bool {
-        match &pat {
-            syn::Pat::Ident(i) => i.mutability.is_some(),
-            _ => false,
-        }
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -245,7 +227,8 @@ pub struct Constructor {
 
 impl Constructor {
     pub fn to_qualified(&self, enum_name: &str) -> String {
-        format!("{}::{}", enum_name, self.name)
+        // format!("{}::{}", enum_name, self.name)
+        format!("{}.{}", enum_name, self.name)
     }
 }
 
@@ -295,7 +278,6 @@ pub struct TypeAliasDef {
     pub generics: Vec<Generic>,
     pub ann: TypeAst,
     pub ty: BoundedType,
-    pub attrs: Vec<String>,
 }
 
 impl TypeAliasDef {
@@ -344,24 +326,7 @@ pub struct LineColumn {
     pub col: usize,
 }
 
-impl LineColumn {
-    pub fn make(l: ProcLine) -> Self {
-        Self {
-            line: l.line,
-            col: l.column,
-        }
-    }
-}
-
 impl Span {
-    pub fn make(s: ProcSpan, file: &FileId) -> Self {
-        Self {
-            start: LineColumn::make(s.start()),
-            end: LineColumn::make(s.end()),
-            file: file.clone(),
-        }
-    }
-
     pub fn dummy() -> Self {
         let line = LineColumn { line: 0, col: 0 };
 
@@ -420,7 +385,7 @@ pub enum DebugKind {
     Inspect,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum FunctionKind {
     TopLevel, // top level fn ()
     Inline,   // fn () nested in function
@@ -448,6 +413,7 @@ pub enum Expr {
     Let {
         binding: Binding,
         value: Box<Expr>,
+        mutable: bool,
         ty: Type,
         span: Span,
     },
@@ -534,6 +500,7 @@ pub enum Expr {
     },
     ImplBlock {
         ann: TypeAst,
+        self_name: String,
         ty: Type,
         items: Vec<Expr>,
         generics: Vec<Generic>,
@@ -617,9 +584,9 @@ pub enum Expr {
     },
     Trait {
         name: String,
-        supertraits: Vec<String>,
+        generics: Vec<Generic>,
+        supertraits: Vec<InterfaceSuperTrait>,
         items: Vec<Expr>,
-        types: Vec<String>,
         span: Span,
     },
     Index {
@@ -642,8 +609,9 @@ pub enum Literal {
     Int(i64),
     Float(f64),
     Bool(bool),
-    String(String, Option<String> /* token like r"asdf" */),
-    Char(char),
+    String(String),
+    MultiString(Vec<String>),
+    Char(String), // Rust char and Go rune are slightly different, just fallback to a String
     Slice(Vec<Expr>),
 }
 
@@ -710,1132 +678,6 @@ pub struct Ast {
 }
 
 impl Ast {
-    pub fn from_expr(&self, input: syn::Expr) -> Result<Expr> {
-        let root_span = self.make_span(input.span());
-
-        match input {
-            syn::Expr::Lit(lit) => match lit.lit {
-                syn::Lit::Int(i) => {
-                    let n = i.base10_parse().unwrap();
-                    Ok(Expr::Literal {
-                        lit: Literal::Int(n),
-                        ty: Type::dummy(),
-                        span: root_span,
-                    })
-                }
-                syn::Lit::Float(i) => {
-                    let n = i.base10_parse().unwrap();
-                    Ok(Expr::Literal {
-                        lit: Literal::Float(n),
-                        ty: Type::dummy(),
-                        span: root_span,
-                    })
-                }
-                syn::Lit::Bool(b) => Ok(Expr::Literal {
-                    lit: Literal::Bool(b.value),
-                    ty: Type::dummy(),
-                    span: root_span,
-                }),
-                syn::Lit::Str(s) => {
-                    let token = if s.token().to_string().starts_with('r') {
-                        Some("r".to_string())
-                    } else {
-                        None
-                    };
-
-                    Ok(Expr::Literal {
-                        lit: Literal::String(s.value(), token),
-                        ty: Type::dummy(),
-                        span: root_span,
-                    })
-                }
-                syn::Lit::Char(c) => Ok(Expr::Literal {
-                    lit: Literal::Char(c.value()),
-                    ty: Type::dummy(),
-                    span: root_span,
-                }),
-                _ => todo!("uncovered literal {:#?}", lit),
-            },
-
-            syn::Expr::Block(syn::ExprBlock { block, .. }) => {
-                let stmts = block
-                    .stmts
-                    .into_iter()
-                    .map(|e| self.from_statement(e))
-                    .collect::<Result<_>>()?;
-
-                Ok(Expr::Block {
-                    stmts,
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Path(path) => {
-                let value = parse::parse_ident_from_path(path);
-                Ok(Expr::Var {
-                    value,
-                    decl: Span::dummy(),
-                    generics_instantiated: vec![],
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Call(call) => {
-                let func = self.from_expr(*call.func)?;
-                let args = call
-                    .args
-                    .into_iter()
-                    .map(|e| self.from_expr(e))
-                    .collect::<Result<_>>()?;
-
-                Ok(Expr::Call {
-                    func: func.into(),
-                    args,
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Array(arr) => {
-                let elems = arr
-                    .elems
-                    .into_iter()
-                    .map(|e| self.from_expr(e))
-                    .collect::<Result<_>>()?;
-
-                Ok(Expr::Literal {
-                    lit: Literal::Slice(elems),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Cast(c) => {
-                let expr = self.from_expr(*c.expr)?;
-                let ann = parse::type_from_expr(*c.ty);
-
-                Ok(Expr::CheckType {
-                    expr: expr.into(),
-                    ann,
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Closure(c) => {
-                let args = c
-                    .inputs
-                    .into_iter()
-                    .map(|e| self.from_pat(e))
-                    .collect::<Result<_>>()?;
-
-                let body = self.from_expr(*c.body)?;
-                let ann = parse::parse_output(c.output, TypeAst::Unknown);
-
-                let fun = Function {
-                    name: "__anonymous".into(),
-                    generics: vec![],
-                    args,
-                    body: body.into(),
-                    ann,
-                    ret: Type::dummy(),
-                    bounded_ty: Type::dummy().to_bounded(),
-                };
-
-                Ok(Expr::Closure {
-                    fun,
-                    kind: FunctionKind::Lambda,
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::If(i) => {
-                let cond = self.from_expr(*i.cond)?;
-                let then = self.from_block(i.then_branch)?;
-                let els = i
-                    .else_branch
-                    .map(|(_, block)| self.from_expr(*block))
-                    .unwrap_or(Ok(Expr::Block {
-                        stmts: vec![],
-                        ty: Type::dummy(),
-                        span: root_span.clone(),
-                    }))?;
-
-                Ok(Expr::If {
-                    cond: cond.into(),
-                    then: then.into(),
-                    els: els.into(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Match(m) => {
-                let subject = self.from_expr(*m.expr)?;
-                let arms = m
-                    .arms
-                    .into_iter()
-                    .map(|e| self.parse_arm(e))
-                    .collect::<Result<_>>()?;
-
-                Ok(Expr::Match {
-                    subject: subject.into(),
-                    arms,
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Tuple(t) => {
-                if t.elems.is_empty() {
-                    return Ok(Expr::Unit {
-                        ty: Type::dummy(),
-                        span: root_span,
-                    });
-                }
-
-                let elems = t
-                    .elems
-                    .into_iter()
-                    .map(|e| self.from_expr(e))
-                    .collect::<Result<_>>()?;
-
-                Ok(Expr::Tuple {
-                    elems,
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Struct(s) => {
-                let name = Pat::parse_path(s.path);
-                let fields = s
-                    .fields
-                    .into_iter()
-                    .map(|f| {
-                        Ok(StructField {
-                            name: parse::parse_member(f.member)?,
-                            value: self.from_expr(f.expr)?,
-                        })
-                    })
-                    .collect::<Result<_>>()?;
-
-                let rest = s.rest.map(|e| self.from_expr(*e)).transpose()?;
-
-                Ok(Expr::StructCall {
-                    name,
-                    fields,
-                    rest: rest.into(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Field(f) => {
-                let expr = self.from_expr(*f.base)?;
-                let field = parse::parse_member(f.member)?;
-
-                Ok(Expr::FieldAccess {
-                    expr: expr.into(),
-                    field,
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Assign(a) => {
-                let target = self.from_expr(*a.left)?;
-                let value = self.from_expr(*a.right)?;
-
-                Ok(Expr::VarUpdate {
-                    target: target.into(),
-                    value: value.into(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::MethodCall(m) => {
-                let target = self.from_expr(*m.receiver)?;
-                let method = m.method.to_string();
-                let args = m
-                    .args
-                    .into_iter()
-                    .map(|e| self.from_expr(e))
-                    .collect::<Result<_>>()?;
-
-                let span = self.make_span(m.method.span());
-
-                let func = Expr::FieldAccess {
-                    expr: target.into(),
-                    field: method,
-                    ty: Type::dummy(),
-                    span: span.clone(),
-                };
-
-                Ok(Expr::Call {
-                    func: func.into(),
-                    args,
-                    ty: Type::dummy(),
-                    span,
-                })
-
-                /*
-                Ok(Expr::MethodCall {
-                    target: target.into(),
-                    method,
-                    args,
-                    ty: Type::dummy(),
-                    span,
-                })
-                */
-            }
-
-            syn::Expr::Return(r) => {
-                let expr = r
-                    .expr
-                    .map(|e| self.from_expr(*e))
-                    .transpose()?
-                    .unwrap_or(Expr::Noop);
-
-                Ok(Expr::Return {
-                    expr: expr.into(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Macro(m) => {
-                let name = Pat::parse_path(m.mac.path.clone());
-                let expr = m
-                    .mac
-                    .parse_body::<syn::Expr>()
-                    .ok()
-                    .map(|e| self.from_expr(e))
-                    .unwrap_or_else(|| Ok(Expr::Noop))?;
-
-                if name == "todo" {
-                    return Ok(Expr::Debug {
-                        kind: DebugKind::Todo,
-                        expr: expr.into(),
-                        ty: Type::dummy(),
-                        span: root_span,
-                    });
-                }
-
-                if name == "unreachable" {
-                    return Ok(Expr::Debug {
-                        kind: DebugKind::Unreachable,
-                        expr: expr.into(),
-                        ty: Type::dummy(),
-                        span: root_span,
-                    });
-                }
-
-                if name == "spawn" {
-                    return Ok(Expr::Spawn {
-                        expr: expr.into(),
-                        ty: Type::dummy(),
-                        span: root_span,
-                    });
-                }
-
-                if name == "select" {
-                    return Ok(Expr::Select {
-                        arms: vec![], // will be populated in infer
-                        ty: Type::dummy(),
-                        span: root_span,
-                    });
-                }
-
-                if name == "defer" {
-                    return Ok(Expr::Defer {
-                        expr: expr.into(),
-                        ty: Type::dummy(),
-                        span: root_span,
-                    });
-                }
-
-                if name == "rawgo" {
-                    let text = match expr {
-                        Expr::Literal { lit, .. } => match lit {
-                            Literal::String(s, _) => s,
-                            _ => panic!("was expecting string in rawgo block"),
-                        },
-                        _ => panic!("was expecting string in rawgo block"),
-                    };
-                    return Ok(Expr::Raw { text });
-                }
-
-                panic!("Unknown macro {}", name);
-            }
-
-            syn::Expr::Try(t) => {
-                let expr = self.from_expr(*t.expr)?;
-                Ok(Expr::Try {
-                    expr: expr.into(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Binary(b) => {
-                let op = parse::parse_operator(b.op)?;
-                let left = self.from_expr(*b.left)?;
-                let right = self.from_expr(*b.right)?;
-
-                Ok(Expr::Binary {
-                    op,
-                    left: left.into(),
-                    right: right.into(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Paren(p) => {
-                let expr = self.from_expr(*p.expr)?;
-
-                Ok(Expr::Paren {
-                    expr: expr.into(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Unary(u) => {
-                let op = parse::parse_unop(u.op)?;
-                let expr = self.from_expr(*u.expr)?;
-
-                Ok(Expr::Unary {
-                    op,
-                    expr: expr.into(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::ForLoop(f) => {
-                let binding = self.from_pat(f.pat)?;
-                let expr = self.from_expr(*f.expr)?;
-                let body = self.from_block(f.body)?;
-
-                Ok(Expr::Loop {
-                    kind: Loop::WithCondition {
-                        binding,
-                        expr: Box::new(expr),
-                    },
-                    body: Box::new(body),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Loop(l) => {
-                let body = self.from_block(l.body)?;
-
-                Ok(Expr::Loop {
-                    kind: Loop::NoCondition,
-                    body: Box::new(body),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::While(w) => {
-                let expr = self.from_expr(*w.cond)?;
-                let body = self.from_block(w.body)?;
-
-                Ok(Expr::Loop {
-                    kind: Loop::While {
-                        expr: Box::new(expr),
-                    },
-                    body: Box::new(body),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Break(_) => Ok(Expr::Flow {
-                kind: LoopFlow::Break,
-                span: root_span,
-            }),
-
-            syn::Expr::Continue(_) => Ok(Expr::Flow {
-                kind: LoopFlow::Continue,
-                span: root_span,
-            }),
-
-            syn::Expr::Reference(r) => {
-                let expr = self.from_expr(*r.expr)?;
-
-                Ok(Expr::Reference {
-                    expr: expr.into(),
-                    mutable: r.mutability.is_some(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            syn::Expr::Index(i) => {
-                let expr = self.from_expr(*i.expr)?;
-                let index = self.from_expr(*i.index)?;
-
-                Ok(Expr::Index {
-                    expr: expr.into(),
-                    index: index.into(),
-                    ty: Type::dummy(),
-                    span: root_span,
-                })
-            }
-
-            _ => todo!("uncovered expr {:#?}", input),
-        }
-    }
-
-    pub fn from_item(&self, item: syn::Item, kind: FunctionKind) -> Result<Expr> {
-        let span = self.make_span(item.span());
-
-        match item {
-            syn::Item::Fn(fun) => Ok(Expr::Closure {
-                fun: self.parse_item_fn(fun)?,
-                ty: Type::dummy(),
-                kind,
-                span,
-            }),
-
-            syn::Item::Enum(e) => {
-                let generics = self.parse_generics(&e.generics);
-                let cons = e
-                    .variants
-                    .into_iter()
-                    .map(|v| {
-                        let fields = parse::parse_fields(v.fields);
-
-                        let fields = match fields {
-                            parse::Fields::TupleCons(fields) => fields,
-                            _ => panic!("unexpected enum fields"),
-                        };
-
-                        Ok(Constructor {
-                            name: v.ident.to_string(),
-                            // fields: parse::parse_fields(v.fields),
-                            fields,
-                        })
-                    })
-                    .collect::<Result<_>>()?;
-
-                let def = EnumDefinition {
-                    name: e.ident.to_string(),
-                    generics,
-                    cons,
-                };
-
-                Ok(Expr::EnumDef { def, span })
-            }
-
-            syn::Item::Struct(e) => {
-                let generics = self.parse_generics(&e.generics);
-                let fields = parse::parse_fields(e.fields);
-
-                match fields {
-                    parse::Fields::StructFields(fields) => {
-                        let def = StructDefinition {
-                            name: e.ident.to_string(),
-                            generics,
-                            fields,
-                        };
-
-                        Ok(Expr::StructDef { def, span })
-                    }
-
-                    parse::Fields::TupleCons(fields) => {
-                        let def = NewtypeDefinition {
-                            name: e.ident.to_string(),
-                            generics,
-                            fields,
-                        };
-
-                        Ok(Expr::NewtypeDef { def, span })
-                    }
-                }
-            }
-
-            syn::Item::Impl(i) => {
-                let base_ann = parse::type_from_expr(*i.self_ty.clone());
-                let impl_generics = self.parse_generics(&i.generics);
-
-                let items = i
-                    .items
-                    .into_iter()
-                    .map(|item| match item {
-                        syn::ImplItem::Method(fun) => {
-                            let root_span = self.make_span(fun.span());
-
-                            let mut sig = self.parse_signature(
-                                fun.sig.clone(),
-                                Some((base_ann.clone(), span.clone())),
-                            )?;
-
-                            // add generics to signature
-                            for g in impl_generics.iter() {
-                                if !sig.generics.contains(g) {
-                                    sig.generics.push(g.clone());
-                                }
-                            }
-
-                            // TODO all this stuff is the same as parse_item_fn, refactor
-                            let span = fun.block.span();
-                            let stmts = fun
-                                .block
-                                .stmts
-                                .into_iter()
-                                .map(|e| self.from_statement(e))
-                                .collect::<Result<_>>()?;
-
-                            let body = Expr::Block {
-                                stmts,
-                                ty: Type::dummy(),
-                                span: self.make_span(span),
-                            };
-
-                            let name = fun.sig.ident.to_string();
-
-                            let mut new_fun = Function {
-                                name,
-                                generics: sig.generics,
-                                args: sig.args,
-                                ann: sig.ret,
-                                ret: Type::dummy(),
-                                body: body.into(),
-                                bounded_ty: Type::dummy().to_bounded(),
-                            };
-
-                            // If it's a static method, then update the function name to be
-                            // qualified
-                            if new_fun.as_method().is_none() {
-                                new_fun.name = format!(
-                                    "{base}::{name}",
-                                    base = base_ann.get_name().unwrap(),
-                                    name = new_fun.name
-                                );
-                            }
-
-                            Ok(Expr::Closure {
-                                fun: new_fun,
-                                kind: FunctionKind::TopLevel,
-                                ty: Type::dummy(),
-                                span: root_span,
-                            })
-                        }
-                        _ => panic!("can only have methods in impl blocks"),
-                    })
-                    .collect::<Result<_>>()?;
-
-                let span = self.make_span(i.self_ty.span());
-
-                Ok(Expr::ImplBlock {
-                    ann: base_ann,
-                    ty: Type::dummy(),
-                    generics: impl_generics,
-                    items,
-                    span,
-                })
-            }
-
-            syn::Item::Const(c) => {
-                let span = self.make_span(c.span());
-                let expr = self.from_expr(*c.expr)?;
-                let ann = parse::type_from_expr(*c.ty);
-
-                Ok(Expr::Const {
-                    ident: c.ident.to_string(),
-                    expr: expr.into(),
-                    ann,
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Item::Macro(m) => {
-                // TODO this is duplicated with Expr::Macro
-
-                let name = Pat::parse_path(m.mac.path.clone());
-                let expr = m
-                    .mac
-                    .parse_body::<syn::Expr>()
-                    .ok()
-                    .map(|e| self.from_expr(e))
-                    .unwrap_or_else(|| Ok(Expr::Noop))?;
-
-                if name == "rawgo" {
-                    let text = match expr {
-                        Expr::Literal { lit, .. } => match lit {
-                            Literal::String(s, _) => s,
-                            _ => panic!("was expecting string in rawgo block"),
-                        },
-                        _ => panic!("was expecting string in rawgo block"),
-                    };
-                    return Ok(Expr::Raw { text });
-                }
-
-                panic!("Unknown macro {}", name);
-            }
-
-            syn::Item::Type(t) => {
-                let span = self.make_span(t.span());
-                let ann = parse::type_from_expr(*t.ty);
-                let attrs = parse::parse_attrs(&t.attrs);
-                let generics = self.parse_generics(&t.generics);
-
-                let def = TypeAliasDef {
-                    name: t.ident.to_string(),
-                    generics,
-                    ann,
-                    attrs,
-                    ty: BoundedType {
-                        generics: vec![],
-                        ty: Type::dummy(),
-                    },
-                };
-
-                Ok(Expr::TypeAlias { def, span })
-            }
-
-            syn::Item::Use(u) => {
-                let span = self.make_span(u.span());
-                let name = parse::parse_use(u.tree);
-                let import = PkgImport {
-                    name,
-                    span: span.clone(),
-                };
-                Ok(Expr::UsePackage { import, span })
-            }
-
-            syn::Item::Trait(t) => {
-                let mut items: Vec<Expr> = vec![];
-                let mut types: Vec<String> = vec![];
-
-                for i in t.items.iter() {
-                    match i {
-                        syn::TraitItem::Method(fun) => {
-                            let sig = self.parse_signature(fun.sig.clone(), None)?;
-
-                            let fun_name = fun.sig.ident.to_string();
-
-                            let new_func = Function {
-                                name: fun_name,
-                                args: sig.args,
-                                generics: sig.generics,
-                                ret: Type::dummy(),
-                                ann: sig.ret,
-                                body: Expr::Noop.into(),
-                                bounded_ty: Type::dummy().to_bounded(),
-                            };
-
-                            let span = self.make_span(i.span());
-
-                            items.push(Expr::Closure {
-                                fun: new_func,
-                                kind: FunctionKind::Inline,
-                                ty: Type::dummy(),
-                                span,
-                            });
-                        }
-
-                        syn::TraitItem::Type(t) => {
-                            types.push(t.ident.to_string());
-                        }
-
-                        _ => panic!("trait item {:#?}", i),
-                    }
-                }
-
-                let supertraits = t
-                    .supertraits
-                    .into_iter()
-                    .map(|s| match s {
-                        syn::TypeParamBound::Trait(s) => Pat::parse_path(s.path),
-                        syn::TypeParamBound::Lifetime(_) => panic!("don't be ridicolous"),
-                    })
-                    .collect();
-
-                Ok(Expr::Trait {
-                    name: t.ident.to_string(),
-                    supertraits,
-                    items,
-                    types,
-                    span,
-                })
-            }
-
-            _ => panic!("unimplemented from_item {:?}", item),
-        }
-    }
-
-    pub fn from_statement(&self, stmt: syn::Stmt) -> Result<Expr> {
-        match stmt {
-            syn::Stmt::Item(item) => self.from_item(item, FunctionKind::Inline),
-
-            syn::Stmt::Local(syn::Local {
-                ref init, ref pat, ..
-            }) => {
-                let binding = self.from_pat(pat.clone())?;
-                let value = init
-                    .clone()
-                    .map(|(_, e)| self.from_expr(*e))
-                    .unwrap_or_else(|| Ok(Expr::Noop))?;
-
-                Ok(Expr::Let {
-                    binding,
-                    value: Box::new(value),
-                    ty: Type::dummy(),
-                    span: self.make_span(stmt.span()),
-                })
-            }
-
-            syn::Stmt::Expr(e) => self.from_expr(e),
-
-            syn::Stmt::Semi(e, _) => self.from_expr(e),
-        }
-    }
-
-    pub fn from_block(&self, block: syn::Block) -> Result<Expr> {
-        let span = self.make_span(block.span());
-        let stmts = block
-            .stmts
-            .into_iter()
-            .map(|e| self.from_statement(e))
-            .collect::<Result<_>>()?;
-
-        Ok(Expr::Block {
-            stmts,
-            ty: Type::dummy(),
-            span,
-        })
-    }
-
-    pub fn from_file(&self, name: String, source: String, input: syn::File) -> Result<File> {
-        let decls = input
-            .items
-            .into_iter()
-            .map(|e| self.from_item(e, FunctionKind::TopLevel))
-            .collect::<Result<Vec<_>>>()?;
-
-        Ok(File {
-            id: FileId::dummy(),
-            name,
-            source,
-            decls,
-        })
-    }
-
-    pub fn from_file_contents(&self, contents: &str) -> Result<Vec<Expr>> {
-        let file = syn::parse_str::<syn::File>(contents).map_err(|err| ParseError {
-            msg: err.to_string(),
-            span: self.make_span(err.span()),
-        })?;
-
-        file.items
-            .into_iter()
-            .map(|e| self.from_item(e, FunctionKind::TopLevel))
-            .collect::<Result<Vec<_>>>()
-    }
-
-    pub fn from_pat_expr(&self, p: syn::Pat) -> Result<Pat> {
-        // TODO fix this
-        // Add Pat::Ident for new variables
-        // Pat::Path always refers to ctors
-        // Basically like TupleStruct but with no args
-        let span = self.make_span(p.span());
-
-        match p {
-            syn::Pat::Type(ty) => Ok(Pat::Type {
-                ident: Pat::parse_ident(*ty.pat.clone())?,
-                is_mut: Pat::parse_mutability(&ty.pat),
-                ann: parse::type_from_expr(*ty.ty),
-                span,
-            }),
-
-            syn::Pat::Ident(_) => {
-                let ident = Pat::parse_ident(p.clone())?;
-
-                // syn cannot distinguish between Foo (constructor) and foo (binding).
-                // So let's use a dumb heuristic:
-                //   - if the first letter is uppercase it's a ctor
-                //   - otherwise it's a binding
-
-                let first = ident.chars().next().unwrap();
-                if first.is_uppercase() {
-                    return Ok(Pat::Pat {
-                        ident,
-                        elems: vec![],
-                        ty: Type::dummy(),
-                        span,
-                    });
-                }
-
-                Ok(Pat::Type {
-                    ident,
-                    is_mut: Pat::parse_mutability(&p),
-                    ann: TypeAst::Unknown,
-                    span,
-                })
-            }
-
-            syn::Pat::Lit(l) => {
-                let expr = self.from_expr(*l.expr)?;
-                match expr {
-                    Expr::Literal { lit, ty, span } => Ok(Pat::Lit { lit, ty, span }),
-                    _ => panic!("Pat::Lit should parse to a Literal"),
-                }
-            }
-
-            syn::Pat::Path(p) => {
-                let ident = Pat::parse_path(p.path);
-
-                Ok(Pat::Pat {
-                    ident,
-                    elems: vec![],
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Pat::TupleStruct(t) => {
-                let ident = Pat::parse_path(t.path);
-                let elems = t
-                    .pat
-                    .elems
-                    .into_iter()
-                    .map(|e| self.from_pat_expr(e))
-                    .collect::<Result<_>>()?;
-
-                Ok(Pat::Pat {
-                    ident,
-                    elems,
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Pat::Struct(t) => {
-                let ident = Pat::parse_path(t.path);
-                let fields = t
-                    .fields
-                    .into_iter()
-                    .map(|p| {
-                        Ok(StructFieldPat {
-                            name: parse::parse_member(p.member)?,
-                            value: self.from_pat_expr(*p.pat)?,
-                        })
-                    })
-                    .collect::<Result<_>>()?;
-
-                Ok(Pat::Struct {
-                    ident,
-                    fields,
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Pat::Tuple(t) => {
-                if t.elems.is_empty() {
-                    return Ok(Pat::Unit {
-                        ty: Type::dummy(),
-                        span,
-                    });
-                }
-
-                let name = format!("Tuple{}", t.elems.len());
-                let fields = t
-                    .elems
-                    .into_iter()
-                    .enumerate()
-                    .map(|(index, p)| {
-                        Ok(StructFieldPat {
-                            name: Expr::tuple_index_string(index.try_into().unwrap())?,
-                            value: self.from_pat_expr(p)?,
-                        })
-                    })
-                    .collect::<Result<_>>()?;
-
-                Ok(Pat::Struct {
-                    ident: name,
-                    fields,
-                    ty: Type::dummy(),
-                    span,
-                })
-            }
-
-            syn::Pat::Slice(e) => Err(ParseError {
-                msg: "Can't pattern match on slice literals".to_string(),
-                span: self.make_span(e.span()),
-            }),
-
-            syn::Pat::Wild(_) => Ok(Pat::Wild { span }),
-
-            _ => panic!("unexpected pat expression {:#?}", &p),
-        }
-    }
-
-    pub fn from_pat(&self, pat: syn::Pat) -> Result<Binding> {
-        let pat = self.from_pat_expr(pat)?;
-
-        let ann = match pat {
-            Pat::Type { ref ann, .. } => ann.clone(),
-            _ => TypeAst::Unknown,
-        };
-
-        Ok(Binding {
-            pat,
-            ann,
-            ty: Type::dummy(),
-        })
-    }
-
-    fn parse_arm(&self, input: syn::Arm) -> Result<Arm> {
-        let pat = self.from_pat_expr(input.pat)?;
-        let expr = self.from_expr(*input.body)?;
-        Ok(Arm { pat, expr })
-    }
-
-    fn parse_item_fn(&self, fun: syn::ItemFn) -> Result<Function> {
-        let sig = self.parse_signature(fun.sig.clone(), None)?;
-
-        let span = (*fun.block).span();
-        let stmts = fun
-            .block
-            .stmts
-            .into_iter()
-            .map(|e| self.from_statement(e))
-            .collect::<Result<_>>()?;
-
-        let body = Expr::Block {
-            stmts,
-            ty: Type::dummy(),
-            span: self.make_span(span),
-        };
-
-        Ok(Function {
-            name: fun.sig.ident.to_string(),
-            generics: sig.generics,
-            args: sig.args,
-            ann: sig.ret,
-            ret: Type::dummy(),
-            body: body.into(),
-            bounded_ty: Type::dummy().to_bounded(),
-        })
-    }
-
-    pub fn parse_input(
-        &self,
-        input: syn::FnArg,
-        receiver: Option<(TypeAst, Span)>,
-    ) -> Result<Binding> {
-        match input {
-            syn::FnArg::Typed(arg) => {
-                let pat = self.from_pat_expr(*arg.pat)?;
-                let ann = parse::type_from_expr(*arg.ty);
-
-                Ok(Binding {
-                    pat,
-                    ann,
-                    ty: Type::dummy(),
-                })
-                // todo!("{:#?}", arg.pat)
-            }
-
-            syn::FnArg::Receiver(r) => match receiver {
-                Some((ann, span)) => {
-                    // TODO asdf this logic should be applied to other args too, not just self
-                    let is_mut = r.mutability.is_some();
-
-                    let reference = if r.reference.is_some() {
-                        if is_mut {
-                            Some("RefMut")
-                        } else {
-                            Some("Ref")
-                        }
-                    } else {
-                        None
-                    };
-
-                    let ann = match reference {
-                        Some(name) => TypeAst::Con {
-                            name: name.to_string(),
-                            args: vec![ann],
-                        },
-                        None => ann,
-                    };
-
-                    Ok(Binding {
-                        pat: Pat::Type {
-                            ident: "self".to_string(),
-                            is_mut,
-                            ann: ann.clone(),
-                            span,
-                        },
-                        ann,
-                        ty: Type::dummy(),
-                    })
-                }
-                _ => panic!("found receiver but no arg provided"),
-            },
-        }
-    }
-
-    pub fn parse_signature(
-        &self,
-        sig: syn::Signature,
-        receiver: Option<(TypeAst, Span)>,
-    ) -> Result<Signature> {
-        let generics = self.parse_generics(&sig.generics);
-        let args = sig
-            .inputs
-            .into_iter()
-            .map(|i| self.parse_input(i, receiver.clone()))
-            .collect::<Result<_>>()?;
-
-        let ret = parse::parse_output(sig.output, TypeAst::unit());
-        Ok(Signature {
-            generics,
-            args,
-            ret,
-        })
-    }
-
-    pub fn parse_generics(&self, generics: &syn::Generics) -> Vec<Generic> {
-        generics
-            .type_params()
-            .map(|x| {
-                let name = x.ident.to_string();
-
-                let bounds = x
-                    .bounds
-                    .iter()
-                    .map(|b| match b {
-                        syn::TypeParamBound::Trait(b) => parse::type_from_path(&b.path),
-                        syn::TypeParamBound::Lifetime(_) => panic!("we don't need no lifetimes"),
-                    })
-                    .collect();
-
-                let span = self.make_span(x.span());
-                Generic { name, bounds, span }
-            })
-            .collect()
-    }
-
-    pub fn new() -> Self {
-        Ast {
-            current_file: FileId::dummy(),
-        }
-    }
-
-    pub fn make_span(&self, s: ProcSpan) -> Span {
-        Span::make(s, &self.current_file)
-    }
-
     pub fn set_file(&mut self, file: &FileId) {
         self.current_file = file.clone();
     }
@@ -1848,18 +690,13 @@ pub struct Signature {
 }
 
 impl Expr {
-    /// Only used in tests
-    pub fn from_source(source: &str) -> syn::Expr {
-        syn::parse_str::<syn::Expr>(source).unwrap()
-    }
-
-    pub fn tuple_index_string(index: u32) -> Result<String> {
+    pub fn tuple_index_string(index: u32) -> Option<String> {
         match index {
-            0 => Ok("first".to_string()),
-            1 => Ok("second".to_string()),
-            2 => Ok("third".to_string()),
-            3 => Ok("fourth".to_string()),
-            4 => Ok("fifth".to_string()),
+            0 => Some("first".to_string()),
+            1 => Some("second".to_string()),
+            2 => Some("third".to_string()),
+            3 => Some("fourth".to_string()),
+            4 => Some("fifth".to_string()),
             n => panic!("unsupported tuple index {}", n),
         }
     }
@@ -2128,8 +965,8 @@ impl Expr {
         }?;
 
         match variant {
-            "Result::Ok" => Some(Ok(())),
-            "Result::Err" => Some(Err(())),
+            "Result.Ok" => Some(Ok(())),
+            "Result.Err" => Some(Err(())),
             _ => None,
         }
     }
@@ -2141,8 +978,8 @@ impl Expr {
         }?;
 
         match variant {
-            "Option::Some" => Some(Ok(())),
-            "Option::None" => Some(Err(())),
+            "Option.Some" => Some(Ok(())),
+            "Option.None" => Some(Err(())),
             _ => None,
         }
     }
@@ -2177,11 +1014,18 @@ impl TypeAst {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct FileId(pub i32);
 
 impl FileId {
     fn dummy() -> FileId {
         FileId(-1)
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct InterfaceSuperTrait {
+    pub ann: TypeAst,
+    pub span: Span,
+    pub ty: Type,
 }

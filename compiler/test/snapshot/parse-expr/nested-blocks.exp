@@ -1,0 +1,77 @@
+Nested blocks
+
+SOURCE:
+{
+    {}
+    let x = {
+        foo()
+        bar()
+    }
+    x
+}
+
+OUTPUT:
+LCurly#1,1, LCurly#2,5, RCurly#2,6, Semicolon#2,7, Let#3,5, Ident("x", 1)#3,9, Eq#3,11, LCurly#3,13, Ident("foo", 3)#4,9, LParen#4,12, RParen#4,13, Semicolon#4,14, Ident("bar", 3)#5,9, LParen#5,12, RParen#5,13, Semicolon#5,14, RCurly#6,5, Semicolon#6,6, Ident("x", 1)#7,5, Semicolon#7,6, RCurly#8,1, EOF#8,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Block": {
+          "stmts": []
+        }
+      },
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "is_mut": false,
+                "ann": "Unknown"
+              }
+            },
+            "ann": "Unknown"
+          },
+          "value": {
+            "Block": {
+              "stmts": [
+                {
+                  "Call": {
+                    "func": {
+                      "Var": {
+                        "value": "foo",
+                        "generics_instantiated": []
+                      }
+                    },
+                    "args": []
+                  }
+                },
+                {
+                  "Call": {
+                    "func": {
+                      "Var": {
+                        "value": "bar",
+                        "generics_instantiated": []
+                      }
+                    },
+                    "args": []
+                  }
+                }
+              ]
+            }
+          },
+          "mutable": false
+        }
+      },
+      {
+        "Var": {
+          "value": "x",
+          "generics_instantiated": []
+        }
+      }
+    ]
+  }
+}

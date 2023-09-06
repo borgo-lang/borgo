@@ -1,15 +1,15 @@
 Interfaces
 
 SOURCE:
-trait Foo {
-  fn foo() -> int;
+interface Foo {
+  fn foo() -> int
 }
 
 struct Bar { x: int }
 
-impl Bar {
-  fn foo(self) -> int {
-    self.x
+impl (b: Bar) {
+  fn foo() -> int {
+    b.x
   }
 }
 
@@ -17,14 +17,16 @@ fn baz(f: Foo) -> int {
   f.foo() + 4
 }
 
-trait Composite: Foo {}
+interface Composite {
+    impl Foo
+}
 
 fn check_composite(c: Composite) {
-    c.foo();
+    c.foo()
 }
 
 fn main() {
-  assert_eq(baz(&Bar { x: 6 }), 10);
+  assert_eq(baz(&Bar { x: 6 }), 10)
 }
 
 OUTPUT:
@@ -39,8 +41,8 @@ type Bar struct {
 	x int
 }
 
-func (self Bar) foo() int {
-	return self.x
+func (b Bar) foo() int {
+	return b.x
 }
 
 func baz(f Foo) int {

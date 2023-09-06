@@ -71,10 +71,7 @@ No errors.
                           "value": {
                             "Literal": {
                               "lit": {
-                                "String": [
-                                  "foo",
-                                  null
-                                ]
+                                "String": "foo"
                               },
                               "ty": {
                                 "Con": {
@@ -85,11 +82,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 3,
-                                  "col": 5
+                                  "col": 6
                                 },
                                 "end": {
                                   "line": 3,
-                                  "col": 10
+                                  "col": 11
                                 },
                                 "file": 99
                               }
@@ -112,11 +109,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 3,
-                                  "col": 12
+                                  "col": 13
                                 },
                                 "end": {
                                   "line": 3,
-                                  "col": 16
+                                  "col": 17
                                 },
                                 "file": 99
                               }
@@ -147,7 +144,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 3,
-                          "col": 4
+                          "col": 5
                         },
                         "end": {
                           "line": 3,
@@ -180,7 +177,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 29
+                    "col": 30
                   },
                   "end": {
                     "line": 4,
@@ -248,7 +245,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 4,
@@ -287,7 +284,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 5,

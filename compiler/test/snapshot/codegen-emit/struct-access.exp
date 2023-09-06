@@ -8,11 +8,11 @@ struct Foo {
 }
 
 fn main() {
-  let x = Foo { a: 1, b: "hi", c: true };
-  assert_eq(x.a, 1);
-  let y = Foo { a: 5, c: false, ..x };
-  assert_eq(y.a, 5);
-  assert_eq(x.a, 1);
+  let x = Foo { a: 1, b: "hi", c: true }
+  assert_eq(x.a, 1)
+  let y = Foo { a: 5, c: false, ..x }
+  assert_eq(y.a, 5)
+  assert_eq(x.a, 1)
 }
 
 OUTPUT:

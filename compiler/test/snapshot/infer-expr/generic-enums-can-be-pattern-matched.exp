@@ -4,10 +4,10 @@ SOURCE:
 {
   enum Maybe<T> { Just(T), None }
 
-  let x = Maybe::Just(1);
+  let x = Maybe.Just(1)
   match x {
-    Maybe::Just(v) => v,
-    Maybe::None => 2,
+    Maybe.Just(v) => v,
+    Maybe.None => 2,
   }
 }
 
@@ -30,11 +30,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 13
+                    "col": 14
                   },
                   "end": {
                     "line": 2,
-                    "col": 14
+                    "col": 15
                   },
                   "file": 99
                 }
@@ -70,7 +70,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -91,11 +91,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 4,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 4,
-                    "col": 7
+                    "col": 8
                   },
                   "file": 99
                 }
@@ -120,11 +120,11 @@ No errors.
             "Call": {
               "func": {
                 "Var": {
-                  "value": "Maybe::Just",
+                  "value": "Maybe.Just",
                   "decl": {
                     "start": {
                       "line": 2,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 2,
@@ -169,7 +169,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 4,
-                      "col": 10
+                      "col": 17
                     },
                     "end": {
                       "line": 4,
@@ -221,16 +221,17 @@ No errors.
               "span": {
                 "start": {
                   "line": 4,
-                  "col": 10
+                  "col": 21
                 },
                 "end": {
                   "line": 4,
-                  "col": 24
+                  "col": 23
                 },
                 "file": 99
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "id": "Maybe",
@@ -247,11 +248,11 @@ No errors.
           "span": {
             "start": {
               "line": 4,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 4,
-              "col": 25
+              "col": 23
             },
             "file": 99
           }
@@ -265,11 +266,11 @@ No errors.
               "decl": {
                 "start": {
                   "line": 4,
-                  "col": 6
+                  "col": 7
                 },
                 "end": {
                   "line": 4,
-                  "col": 7
+                  "col": 8
                 },
                 "file": 99
               },
@@ -290,11 +291,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 5,
-                  "col": 8
+                  "col": 9
                 },
                 "end": {
                   "line": 5,
-                  "col": 9
+                  "col": 10
                 },
                 "file": 99
               }
@@ -304,7 +305,7 @@ No errors.
             {
               "pat": {
                 "Pat": {
-                  "ident": "Maybe::Just",
+                  "ident": "Maybe.Just",
                   "elems": [
                     {
                       "Type": {
@@ -341,11 +342,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 6,
-                      "col": 4
+                      "col": 5
                     },
                     "end": {
                       "line": 6,
-                      "col": 18
+                      "col": 10
                     },
                     "file": 99
                   }
@@ -389,7 +390,7 @@ No errors.
             {
               "pat": {
                 "Pat": {
-                  "ident": "Maybe::None",
+                  "ident": "Maybe.None",
                   "elems": [],
                   "ty": {
                     "Con": {
@@ -407,11 +408,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 7,
-                      "col": 4
+                      "col": 5
                     },
                     "end": {
                       "line": 7,
-                      "col": 15
+                      "col": 10
                     },
                     "file": 99
                   }
@@ -452,7 +453,7 @@ No errors.
           "span": {
             "start": {
               "line": 5,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 8,
@@ -472,7 +473,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 9,

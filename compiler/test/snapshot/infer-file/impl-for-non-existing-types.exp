@@ -1,0 +1,10 @@
+Impl for non-existing types
+
+SOURCE:
+impl (u: Unknown) { }
+
+OUTPUT:
+Type not found: Unknown
+
+1|  impl (u: Unknown) { }
+    ^^^^^^^^^^^^^^^^^^^^

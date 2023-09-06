@@ -1,0 +1,89 @@
+Match expressions II
+
+SOURCE:
+match Result.Ok(90) {
+    Ok(x) => 45 + x
+    _ => 2
+}
+
+OUTPUT:
+Match#1,1, Ident("Result", 6)#1,7, Dot#1,13, Ident("Ok", 2)#1,14, LParen#1,16, Int("90", 2)#1,17, RParen#1,19, LCurly#1,21, Ident("Ok", 2)#2,5, LParen#2,7, Ident("x", 1)#2,8, RParen#2,9, FatArrow#2,11, Int("45", 2)#2,14, Plus#2,17, Ident("x", 1)#2,19, Semicolon#2,20, Ident("_", 1)#3,5, FatArrow#3,7, Int("2", 1)#3,10, Semicolon#3,11, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "Match": {
+    "subject": {
+      "Call": {
+        "func": {
+          "FieldAccess": {
+            "expr": {
+              "Var": {
+                "value": "Result",
+                "generics_instantiated": []
+              }
+            },
+            "field": "Ok"
+          }
+        },
+        "args": [
+          {
+            "Literal": {
+              "lit": {
+                "Int": 90
+              }
+            }
+          }
+        ]
+      }
+    },
+    "arms": [
+      {
+        "pat": {
+          "Pat": {
+            "ident": "Ok",
+            "elems": [
+              {
+                "Type": {
+                  "ident": "x",
+                  "is_mut": false,
+                  "ann": "Unknown"
+                }
+              }
+            ]
+          }
+        },
+        "expr": {
+          "Binary": {
+            "op": "Add",
+            "left": {
+              "Literal": {
+                "lit": {
+                  "Int": 45
+                }
+              }
+            },
+            "right": {
+              "Var": {
+                "value": "x",
+                "generics_instantiated": []
+              }
+            }
+          }
+        }
+      },
+      {
+        "pat": {
+          "Wild": {}
+        },
+        "expr": {
+          "Literal": {
+            "lit": {
+              "Int": 2
+            }
+          }
+        }
+      }
+    ]
+  }
+}

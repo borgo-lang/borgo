@@ -1,10 +1,10 @@
 Enumeration in loops expect a tuple.
 
 SOURCE:
-fn borgo_main() {
-  let m = Map::new();
+fn main() {
+  let m = Map.new()
   for e in m {
-      e.0;
+      e.0
   }
 }
 

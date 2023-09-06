@@ -5,7 +5,7 @@ SOURCE:
   enum Maybe<T> { Just(T), None }
 
   fn foo(b: int) -> Maybe<string> {
-    Maybe::Just(b)
+    Maybe.Just(b)
   }
 }
 
@@ -16,5 +16,5 @@ Expected:
 Got:
     Maybe<int>
 
-5|      Maybe::Just(b)
-        ^^^^^^^^^^^^^^
+5|      Maybe.Just(b)
+                  ^^

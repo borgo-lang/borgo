@@ -44,7 +44,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -74,11 +74,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 4,
-                      "col": 11
+                      "col": 12
                     },
                     "end": {
                       "line": 4,
-                      "col": 12
+                      "col": 13
                     },
                     "file": 99
                   }
@@ -96,7 +96,7 @@ No errors.
           "span": {
             "start": {
               "line": 4,
-              "col": 2
+              "col": 7
             },
             "end": {
               "line": 4,
@@ -116,7 +116,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 5,

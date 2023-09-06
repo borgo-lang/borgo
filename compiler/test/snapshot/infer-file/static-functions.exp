@@ -1,0 +1,738 @@
+Static functions
+
+SOURCE:
+struct Foo { x: int }
+
+fn Foo.new(x: int) -> Foo {
+    Foo { x }
+}
+
+impl (f: Foo) {
+    fn check() -> int {
+        f.x
+    }
+}
+
+fn main() {
+    let f = Foo.new(1);
+    f.check();
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+[
+  {
+    "StructDef": {
+      "def": {
+        "name": "Foo",
+        "generics": [],
+        "fields": [
+          {
+            "name": "x",
+            "ann": {
+              "Con": {
+                "name": "int",
+                "args": []
+              }
+            },
+            "ty": {
+              "generics": [],
+              "ty": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
+              }
+            }
+          }
+        ]
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 1
+        },
+        "end": {
+          "line": 1,
+          "col": 21
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "Foo.new",
+        "generics": [],
+        "args": [
+          {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "is_mut": false,
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 3,
+                    "col": 12
+                  },
+                  "end": {
+                    "line": 3,
+                    "col": 13
+                  },
+                  "file": 99
+                }
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "int",
+                "args": []
+              }
+            },
+            "ty": {
+              "Con": {
+                "id": "int",
+                "args": []
+              }
+            }
+          }
+        ],
+        "ret": {
+          "Con": {
+            "id": "Foo",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Foo",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "StructCall": {
+                  "name": "Foo",
+                  "fields": [
+                    {
+                      "name": "x",
+                      "value": {
+                        "Var": {
+                          "value": "x",
+                          "decl": {
+                            "start": {
+                              "line": 3,
+                              "col": 12
+                            },
+                            "end": {
+                              "line": 3,
+                              "col": 13
+                            },
+                            "file": 99
+                          },
+                          "generics_instantiated": [],
+                          "ty": {
+                            "Con": {
+                              "id": "int",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 4,
+                              "col": 9
+                            },
+                            "end": {
+                              "line": 4,
+                              "col": 12
+                            },
+                            "file": 99
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "rest": null,
+                  "ty": {
+                    "Con": {
+                      "id": "Foo",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 9
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 13
+                    },
+                    "file": 99
+                  }
+                }
+              }
+            ],
+            "ty": {
+              "Con": {
+                "id": "Foo",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 3,
+                "col": 27
+              },
+              "end": {
+                "line": 5,
+                "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Con": {
+                    "id": "int",
+                    "args": []
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Foo",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [
+            {
+              "Con": {
+                "id": "int",
+                "args": []
+              }
+            }
+          ],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Foo",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 3,
+          "col": 1
+        },
+        "end": {
+          "line": 5,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "ImplBlock": {
+      "ann": {
+        "Con": {
+          "name": "Foo",
+          "args": []
+        }
+      },
+      "self_name": "f",
+      "ty": {
+        "Con": {
+          "id": "Foo",
+          "args": []
+        }
+      },
+      "items": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "check",
+              "generics": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "int",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "FieldAccess": {
+                        "expr": {
+                          "Var": {
+                            "value": "f",
+                            "decl": {
+                              "start": {
+                                "line": 7,
+                                "col": 1
+                              },
+                              "end": {
+                                "line": 11,
+                                "col": 1
+                              },
+                              "file": 99
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Con": {
+                                "id": "Foo",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 9,
+                                "col": 9
+                              },
+                              "end": {
+                                "line": 9,
+                                "col": 10
+                              },
+                              "file": 99
+                            }
+                          }
+                        },
+                        "field": "x",
+                        "ty": {
+                          "Con": {
+                            "id": "int",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 9,
+                            "col": 11
+                          },
+                          "end": {
+                            "line": 9,
+                            "col": 12
+                          },
+                          "file": 99
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 8,
+                      "col": 23
+                    },
+                    "end": {
+                      "line": 10,
+                      "col": 5
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "id": "int",
+                        "args": []
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "id": "int",
+                    "args": []
+                  }
+                }
+              }
+            },
+            "span": {
+              "start": {
+                "line": 8,
+                "col": 5
+              },
+              "end": {
+                "line": 10,
+                "col": 5
+              },
+              "file": 99
+            }
+          }
+        }
+      ],
+      "generics": [],
+      "span": {
+        "start": {
+          "line": 7,
+          "col": 1
+        },
+        "end": {
+          "line": 11,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Let": {
+                  "binding": {
+                    "pat": {
+                      "Type": {
+                        "ident": "f",
+                        "is_mut": false,
+                        "ann": "Unknown",
+                        "span": {
+                          "start": {
+                            "line": 14,
+                            "col": 9
+                          },
+                          "end": {
+                            "line": 14,
+                            "col": 10
+                          },
+                          "file": 99
+                        }
+                      }
+                    },
+                    "ann": "Unknown",
+                    "ty": {
+                      "Con": {
+                        "id": "Foo",
+                        "args": []
+                      }
+                    }
+                  },
+                  "value": {
+                    "Call": {
+                      "func": {
+                        "Var": {
+                          "value": "Foo.new",
+                          "decl": {
+                            "start": {
+                              "line": 3,
+                              "col": 1
+                            },
+                            "end": {
+                              "line": 5,
+                              "col": 1
+                            },
+                            "file": 99
+                          },
+                          "generics_instantiated": [],
+                          "ty": {
+                            "Fun": {
+                              "args": [
+                                {
+                                  "Con": {
+                                    "id": "int",
+                                    "args": []
+                                  }
+                                }
+                              ],
+                              "bounds": [],
+                              "ret": {
+                                "Con": {
+                                  "id": "Foo",
+                                  "args": []
+                                }
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 14,
+                              "col": 17
+                            },
+                            "end": {
+                              "line": 14,
+                              "col": 20
+                            },
+                            "file": 99
+                          }
+                        }
+                      },
+                      "args": [
+                        {
+                          "Literal": {
+                            "lit": {
+                              "Int": 1
+                            },
+                            "ty": {
+                              "Con": {
+                                "id": "int",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 14,
+                                "col": 21
+                              },
+                              "end": {
+                                "line": 14,
+                                "col": 22
+                              },
+                              "file": 99
+                            }
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "id": "Foo",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 14,
+                          "col": 20
+                        },
+                        "end": {
+                          "line": 14,
+                          "col": 22
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "mutable": false,
+                  "ty": {
+                    "Con": {
+                      "id": "Foo",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 14,
+                      "col": 5
+                    },
+                    "end": {
+                      "line": 14,
+                      "col": 22
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              {
+                "Call": {
+                  "func": {
+                    "FieldAccess": {
+                      "expr": {
+                        "Var": {
+                          "value": "f",
+                          "decl": {
+                            "start": {
+                              "line": 14,
+                              "col": 9
+                            },
+                            "end": {
+                              "line": 14,
+                              "col": 10
+                            },
+                            "file": 99
+                          },
+                          "generics_instantiated": [],
+                          "ty": {
+                            "Con": {
+                              "id": "Foo",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 15,
+                              "col": 5
+                            },
+                            "end": {
+                              "line": 15,
+                              "col": 6
+                            },
+                            "file": 99
+                          }
+                        }
+                      },
+                      "field": "check",
+                      "ty": {
+                        "Fun": {
+                          "args": [],
+                          "bounds": [],
+                          "ret": {
+                            "Con": {
+                              "id": "int",
+                              "args": []
+                            }
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 15,
+                          "col": 7
+                        },
+                        "end": {
+                          "line": 15,
+                          "col": 12
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "args": [],
+                  "ty": {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 15,
+                      "col": 12
+                    },
+                    "end": {
+                      "line": 15,
+                      "col": 13
+                    },
+                    "file": 99
+                  }
+                }
+              }
+            ],
+            "ty": {
+              "Con": {
+                "id": "int",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 13,
+                "col": 11
+              },
+              "end": {
+                "line": 16,
+                "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 13,
+          "col": 1
+        },
+        "end": {
+          "line": 16,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  }
+]

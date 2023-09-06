@@ -1,0 +1,67 @@
+Function type annotations
+
+SOURCE:
+{
+    let a: fn (x: int) -> Option<int> = 1
+    // bindings in annotations are always required
+    // ie. this is not allowed
+    // let b: fn (int) = 2
+}
+
+OUTPUT:
+LCurly#1,1, Let#2,5, Ident("a", 1)#2,9, Colon#2,10, Fn_#2,12, LParen#2,15, Ident("x", 1)#2,16, Colon#2,17, Ident("int", 3)#2,19, RParen#2,22, Arrow#2,24, Ident("Option", 6)#2,27, LAngle#2,33, Ident("int", 3)#2,34, RAngle#2,37, Eq#2,39, Int("1", 1)#2,41, Semicolon#2,42, Comment#3,5, Comment#4,5, Comment#5,5, RCurly#6,1, EOF#6,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "a",
+                "is_mut": false,
+                "ann": "Unknown"
+              }
+            },
+            "ann": {
+              "Fun": {
+                "args": [
+                  {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  }
+                ],
+                "ret": {
+                  "Con": {
+                    "name": "Option",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "int",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              }
+            }
+          },
+          "mutable": false
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+Literals.
+
+SOURCE:
+1
+
+OUTPUT:
+Int("1", 1)#1,1, EOF#1,2
+---
+No errors.
+---
+{
+  "Literal": {
+    "lit": {
+      "Int": 1
+    }
+  }
+}

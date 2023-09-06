@@ -1,7 +1,7 @@
 Lambda signature
 
 SOURCE:
-fn compute(f: fn(int, int) -> int) -> int {
+fn compute(f: fn(a: int, b: int) -> int) -> int {
     f(3, 4)
 }
 

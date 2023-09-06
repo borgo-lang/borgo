@@ -1,14 +1,16 @@
 use crate::ast::{
     Arm, Binding, Constructor, EnumDefinition, EnumFieldDef, Expr, File, Function, FunctionKind,
-    Generic, Literal, Loop, NewtypeDefinition, Operator, Pat, PkgImport, Span, StructDefinition,
-    StructField, StructFieldDef, StructFieldPat, TypeAliasDef, TypeAst, UnOp,
+    Generic, InterfaceSuperTrait, Literal, Loop, NewtypeDefinition, Operator, Pat, PkgImport, Span,
+    StructDefinition, StructField, StructFieldDef, StructFieldPat, TypeAliasDef, TypeAst, UnOp,
 };
 use crate::error::{ArityError, Error, UnificationError};
 use crate::exhaustive;
 use crate::global_state::{GlobalState, Interface, Module, ModuleImport, Visibility};
+use crate::parser;
 use crate::substitute;
 use crate::type_::{Bound, BoundedType, ModuleId, Symbol, Type};
 
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet, VecDeque};
 
 pub struct Infer {
@@ -27,6 +29,10 @@ pub struct Infer {
     // all the modules processed during inference
     processed_modules: HashSet<ModuleId>,
 
+    // cache built-in types defined in std
+    // we use a RefCell so that type_*() methods only require &self
+    cache_builtin_types: RefCell<HashMap<String, Type>>,
+
     fs: Box<dyn crate::fs::FileSystem>,
 }
 
@@ -41,6 +47,7 @@ impl Infer {
             current_fn_ret_ty: None,
             errors: Default::default(),
             processed_modules: Default::default(),
+            cache_builtin_types: Default::default(),
             fs,
         }
     }
@@ -155,16 +162,33 @@ impl Infer {
     }
 
     fn resolve(&self, name: &str) -> Option<Symbol> {
-        self.scopes
-            .iter()
-            .find_map(|scope| scope.types.get(name))
-            .cloned()
+        self.scopes[0].types.get(name).cloned()
     }
 
     pub fn builtin_type(&self, name: &str) -> Type {
-        let sym = &self.scopes.front().unwrap().types[name];
+        // Check cache first
+        if let Some(ty) = self.cache_builtin_types.borrow().get(name).cloned() {
+            return ty;
+        }
+
+        // Lookup type and populate cache
         let m = ModuleId("std".to_string());
-        self.gs.modules[&m].types[sym].ty.clone()
+        let sym = &self.scopes[0].types.get(name);
+
+        // If a fatal error occurs when initializing `std`, then we might not find a builtin type.
+        if sym.is_none() {
+            dbg!(&self.errors);
+            panic!("Type {name} not initialized.");
+        }
+
+        let sym = sym.unwrap();
+        let ty = self.gs.modules[&m].types[&sym].ty.clone();
+
+        // Insert type in cache
+        self.cache_builtin_types
+            .borrow_mut()
+            .insert(name.to_string(), ty.clone());
+        ty
     }
 
     pub fn type_slice(&self, typ: Type) -> Type {
@@ -245,11 +269,21 @@ impl Infer {
                     }
                 }
 
-                Literal::String(s, token) => {
+                Literal::String(s) => {
                     self.add_constraint(expected, &self.type_string(), &span);
 
                     Expr::Literal {
-                        lit: Literal::String(s, token),
+                        lit: Literal::String(s),
+                        ty: self.type_string(),
+                        span,
+                    }
+                }
+
+                Literal::MultiString(s) => {
+                    self.add_constraint(expected, &self.type_string(), &span);
+
+                    Expr::Literal {
+                        lit: Literal::MultiString(s),
                         ty: self.type_string(),
                         span,
                     }
@@ -300,9 +334,9 @@ impl Infer {
                 let mut new_stmts: Vec<_> = stmts
                     .iter()
                     .map(|e| {
-                        let is_if_statement = matches!(e, Expr::If { .. });
+                        let is_discard_stmt = matches!(e, Expr::If { .. } | Expr::Let { .. });
 
-                        let var = if is_if_statement {
+                        let var = if is_discard_stmt {
                             Type::discard()
                         } else {
                             self.fresh_ty_var()
@@ -498,6 +532,7 @@ impl Infer {
             Expr::Let {
                 binding,
                 value,
+                mutable,
                 span,
                 ty: _,
             } => {
@@ -510,9 +545,24 @@ impl Infer {
                     ..binding
                 };
 
+                match &new_binding.pat {
+                    Pat::Type { ident, .. } => self.set_mutability(ident, mutable),
+                    _ => {
+                        if mutable {
+                            self.generic_error(
+                                "`mut` keyword not supported here".to_string(),
+                                span.clone(),
+                            );
+                        }
+                    }
+                };
+
+                self.add_constraint(&expected, &self.type_unit(), &span);
+
                 Expr::Let {
                     binding: new_binding,
                     value: new_value.into(),
+                    mutable,
                     ty,
                     span,
                 }
@@ -648,6 +698,7 @@ impl Infer {
 
                 let has_else = match *els {
                     Expr::Block { ref stmts, .. } => !stmts.is_empty(),
+                    Expr::Noop => false,
                     _ => true,
                 };
 
@@ -711,6 +762,8 @@ impl Infer {
                         // each arm.pat should unify with subject
                         let expected = self.substitute(subject_ty.clone());
                         let new_pat = self.infer_pat(a.pat, expected);
+
+                        self.ensure_not_slice_literal(&new_pat);
 
                         // each arm.expr should unify with ret
                         let new_expr = self.infer_expr(a.expr, &ret);
@@ -852,6 +905,16 @@ impl Infer {
                 span,
                 ty: _,
             } => {
+                // resolve types first
+                //   - either a constructor on an enum
+                //   - a static function on a type
+                if let Some(new_expr) =
+                    self.infer_field_access_as_constructor(*expr.clone(), &field, &span)
+                {
+                    return self.infer_expr(new_expr, expected);
+                }
+
+                // it's a struct or pkg
                 let ty = self.fresh_ty_var();
                 let new_expr = self.infer_expr(*expr, &ty);
                 let ty = self.substitute(ty);
@@ -859,10 +922,13 @@ impl Infer {
                 // 1. check if it's a struct
                 //      -> yes, check for field
                 // 2. check if it's a package
-                // 3. otherwise Lookup method
+                // 3. otherwise lookup method
 
-                let def = ty.remove_references().get_name().and_then(|name| {
-                    self.get_struct_by_name(&name)
+                let inner_ty = ty.remove_references();
+
+                let def = inner_ty.get_name().and_then(|name| {
+                    // use symbol instead of name so that non-local structs can be resolved
+                    self.get_struct(&inner_ty.get_symbol())
                         .or_else(|| self.get_package(&name))
                 });
 
@@ -903,7 +969,6 @@ impl Infer {
                     }
                 }
 
-                // TODO asdf this should return Ok | expected Ref<T>, RefMut<T> or something
                 let method = self.get_method(&ty, &field);
 
                 if let Some(method) = method {
@@ -985,6 +1050,7 @@ has no field or method:
                 ann,
                 ty: _,
                 items,
+                self_name,
                 generics,
                 span,
             } => {
@@ -993,6 +1059,16 @@ has no field or method:
                 self.put_generics_in_scope(&generics);
 
                 let existing = self.to_type(&ann, &span);
+
+                // put the name in scope while parsing items
+                self.add_value(
+                    &self_name,
+                    existing.to_bounded_with_generics(generics.clone()),
+                    &span,
+                );
+
+                // self should be mutable
+                self.set_mutability(&self_name, true);
 
                 let new_items = items
                     .into_iter()
@@ -1007,6 +1083,7 @@ has no field or method:
                 Expr::ImplBlock {
                     ann,
                     ty: existing,
+                    self_name,
                     items: new_items,
                     generics,
                     span,
@@ -1015,9 +1092,9 @@ has no field or method:
 
             Expr::Trait {
                 name,
+                generics,
                 items,
                 supertraits,
-                types,
                 span,
             } => {
                 let new_items = items
@@ -1028,11 +1105,23 @@ has no field or method:
                     })
                     .collect();
 
+                let new_supertraits = supertraits
+                    .into_iter()
+                    .map(|s| {
+                        let ty = self.to_type(&s.ann, &s.span);
+                        InterfaceSuperTrait {
+                            ann: s.ann,
+                            span: s.span,
+                            ty,
+                        }
+                    })
+                    .collect();
+
                 Expr::Trait {
                     name,
+                    generics,
                     items: new_items,
-                    supertraits,
-                    types,
+                    supertraits: new_supertraits,
                     span,
                 }
             }
@@ -1635,7 +1724,10 @@ has no field or method:
                 // Add ident to the scope
                 self.add_value(&ident, expected.to_bounded(), &span);
 
-                self.set_mutability(&ident, is_mut);
+                // Tracking mutability is a bit all over the place right now.
+                // Always allow mutation of variables, like in Go.
+                // self.set_mutability(&ident, is_mut);
+                self.set_mutability(&ident, true);
 
                 Pat::Type {
                     ident,
@@ -2167,11 +2259,11 @@ has no field or method:
                 } => self.declare_impl(ann, generics, items, span),
                 Expr::Trait {
                     name,
+                    generics,
                     supertraits,
                     items,
                     span,
-                    types: _,
-                } => self.declare_trait(name, supertraits, items, span),
+                } => self.declare_trait(name, generics, supertraits, items, span),
 
                 Expr::TypeAlias { def, span } => self.declare_type_alias(def, span),
                 Expr::NewtypeDef { def, span } => self.declare_newtype(def, span),
@@ -2307,61 +2399,63 @@ has no field or method:
 
             self.put_generics_in_scope(generics);
 
-            let base_ty = self.to_type(ann, span).get_symbol();
+            let base_ty = self.to_type(ann, span);
 
             let ty = self.fresh_ty_var();
 
             let fun = e.as_function();
             let new_expr = self.infer_expr(self.create_empty_func(&fun, span), &ty);
             let new_func = new_expr.as_function();
-            let method = new_func.as_method();
+            let method_ty = new_func.add_receiver(generics, &base_ty);
 
             self.exit_scope();
 
-            match method {
-                Some((method, _)) => {
-                    // Add method to type
+            // Add method to type
 
-                    let m = self.gs.module();
+            let m = self.gs.module();
+            let methods = m
+                .methods
+                .entry(base_ty.get_symbol())
+                .or_insert(HashMap::new());
 
-                    let methods = m.methods.entry(base_ty).or_insert(HashMap::new());
+            methods.insert(fun.name.clone(), method_ty.clone());
 
-                    methods.insert(method.name, method.bounded_ty);
-                }
+            // Add standalone function
+            // ie. Option.IsSome(...)
+            {
+                let span = new_expr.get_span();
+                let name = format!("{}.{}", base_ty.get_name().unwrap(), fun.name);
+                let sym = self.gs.get_symbol(&name, &span);
 
-                None => {
-                    // Add static function to global scope
-                    let sym = self.gs.get_symbol(&new_func.name, span);
+                self.add_value(&name, method_ty.clone(), &span);
 
-                    self.gs
-                        .module()
-                        .values
-                        .insert(sym.clone(), new_func.bounded_ty.clone());
-
-                    self.gs
-                        .module()
-                        .visibility
-                        .insert(sym, Visibility::TopLevel);
-
-                    self.add_value(&new_func.name, new_func.bounded_ty, span);
-                }
-            };
+                self.gs.module().values.insert(sym, method_ty);
+            }
         });
     }
 
-    fn declare_trait(&mut self, name: &str, supertraits: &[String], items: &[Expr], span: &Span) {
+    fn declare_trait(
+        &mut self,
+        name: &str,
+        generics: &[Generic],
+        supertraits: &[InterfaceSuperTrait],
+        items: &[Expr],
+        span: &Span,
+    ) {
         let mut methods: HashMap<String, Type> = HashMap::new();
+        let mut new_supertraits = vec![];
 
-        // Include all the methods from supertraits
         for s in supertraits {
-            let sym = self.resolve(s).unwrap();
-            let super_methods = self.get_type_methods(&sym);
-
-            for (name, mut method) in super_methods {
-                method.ty.remove_receiver();
-                methods.insert(name, method.ty);
-            }
+            // self.begin_scope();
+            // generics need to be instantiated
+            // self.put_generics_in_scope(generics);
+            let ty = self.to_type(&s.ann, &s.span);
+            new_supertraits.push(ty);
         }
+
+        // Declare interface methods
+        self.begin_scope();
+        self.put_generics_in_scope(generics);
 
         for e in items {
             let fun = e.as_function();
@@ -2372,11 +2466,14 @@ has no field or method:
             methods.insert(fun.name, expr.get_type());
         }
 
+        self.exit_scope();
+
         let sym = self.gs.get_symbol(name, span);
 
         let interface = Interface {
             name: name.to_string(),
-            types: vec![], // TODO remove types altogether?
+            generics: generics.to_owned(),
+            supertraits: new_supertraits,
             methods,
         };
 
@@ -2589,11 +2686,7 @@ has no field or method:
 
     fn get_value(&mut self, name: &str) -> Option<BoundedType> {
         let lookup = self.resolve_name(name);
-
-        self.scopes
-            .iter()
-            .find_map(|scope| scope.values.get(&lookup))
-            .cloned()
+        self.scopes[0].values.get(&lookup).cloned()
     }
 
     fn get_span(&mut self, name: &str) -> Option<Span> {
@@ -2607,13 +2700,22 @@ has no field or method:
         }
     }
 
-    fn get_type_methods(&self, sym: &Symbol) -> HashMap<String, BoundedType> {
+    fn get_type_methods(&mut self, sym: &Symbol) -> HashMap<String, BoundedType> {
         // If it's an interface, return all methods
         if let Some(interface) = self.gs.get_interface(&sym) {
             let mut ret = HashMap::new();
 
             for (name, ty) in interface.methods {
                 ret.insert(name, self.add_any_receiver(ty).to_bounded());
+            }
+
+            // Also include any methods of supertypes
+            for s in interface.supertraits {
+                let methods = self.get_type_methods(&s.get_symbol());
+
+                for (name, ty) in methods {
+                    ret.insert(name, ty);
+                }
             }
 
             return ret;
@@ -2641,10 +2743,7 @@ has no field or method:
     }
 
     fn get_assumptions(&self, sym: &Symbol) -> Option<Vec<Symbol>> {
-        self.scopes
-            .iter()
-            .find_map(|scope| scope.assumptions.get(sym))
-            .cloned()
+        self.scopes[0].assumptions.get(sym).cloned()
     }
 
     // shouldn't take a mut reference, but this whole constructors business is probably wrong
@@ -2671,12 +2770,16 @@ has no field or method:
             .unwrap_or_default()
     }
 
-    fn get_struct_by_name(&mut self, name: &str) -> Option<(StructDefinition, BoundedType)> {
-        let sym = self.resolve(name)?;
+    fn get_struct(&mut self, sym: &Symbol) -> Option<(StructDefinition, BoundedType)> {
         let def = self.gs.get_struct(&sym)?;
         let ty = self.gs.get_type(&sym)?;
 
         Some((def.clone(), ty.clone()))
+    }
+
+    fn get_struct_by_name(&mut self, name: &str) -> Option<(StructDefinition, BoundedType)> {
+        let sym = self.resolve(name)?;
+        self.get_struct(&sym)
     }
 
     pub fn put_generics_in_scope(&mut self, generics: &[Generic]) {
@@ -2776,7 +2879,7 @@ has no field or method:
 
         let to_name = |name: &str| -> String {
             match &prefix {
-                Some(prefix) => format!("{}::{}", prefix, name),
+                Some(prefix) => format!("{}.{}", prefix, name),
                 None => name.to_string(),
             }
         };
@@ -2876,17 +2979,20 @@ has no field or method:
 
     pub fn file_from_source(&mut self, name: &str, source: &str) {
         let id = self.gs.new_file();
+        let res = parser::Parser::lex_and_parse_file(source, id);
 
-        let mut ast = crate::ast::Ast::new();
-        ast.set_file(&id);
+        let decls = match res {
+            Ok(decls) => decls,
 
-        let decls = ast.from_file_contents(source).unwrap_or_else(|e| {
-            self.errors.push(Error::Parse(e));
-            vec![]
-        });
+            Err(err) => {
+                // Push parse errors
+                self.errors.push(Error::Parse(err));
+                vec![]
+            }
+        };
 
         let file = File {
-            id: id.clone(),
+            id,
             name: name.to_string(),
             source: source.to_string(),
             decls,
@@ -3109,13 +3215,94 @@ has no field or method:
         cons_ty: &BoundedType,
         span: &Span,
     ) {
-        let qualified = format!("{}::{}", enum_name, cons_name);
+        // let qualified = format!("{}::{}", enum_name, cons_name);
+        let qualified = format!("{}.{}", enum_name, cons_name);
         self.add_value(&qualified, cons_ty.clone(), span);
         self.add_value(&cons_name, cons_ty.clone(), span);
 
         self.current_scope()
             .constructors
             .insert(cons_name.to_string(), qualified);
+    }
+
+    fn ensure_not_slice_literal(&mut self, pat: &Pat) {
+        if let Pat::Lit { lit, .. } = pat {
+            if let Literal::Slice(_) = lit {
+                self.generic_error(
+                    "Can't pattern match on slice literals".to_string(),
+                    pat.get_span(),
+                )
+            }
+        }
+    }
+
+    fn can_resolve_name(&mut self, first: Qualified) -> bool {
+        // The first chunk of a qualified name can be:
+        // - a package name
+        // - a local enum name
+
+        if let Some(_pkg) = self.current_scope().packages.get(&first.ident) {
+            return true;
+        }
+
+        if let Some(_sym) = self.current_scope().types.get(&first.ident) {
+            return true;
+        }
+
+        false
+    }
+
+    fn infer_field_access_as_constructor(
+        &mut self,
+        expr: Expr,
+        field: &str,
+        span: &Span,
+    ) -> Option<Expr> {
+        let mut qualified = vec![];
+        to_qualified(
+            &Expr::FieldAccess {
+                expr: expr.clone().into(),
+                field: field.to_string(),
+                ty: Type::dummy(),
+                span: Span::dummy(),
+            },
+            &mut qualified,
+        );
+
+        // if this expression can be resolved as a bunch of strings,
+        // then transform the nested FieldAccess( FieldAccess (..) )
+        // tree into a single Expr::Var, then try to resolve that.
+        if qualified.is_empty() {
+            return None;
+        }
+
+        let first = qualified.first().cloned().unwrap();
+
+        // if it's a package, then skip because a struct with all fields is already in scope
+        if self.get_package(&first.ident).is_some() {
+            return None;
+        }
+
+        // check if it's a known type.
+        // Here we only want to resolve actual types ie. Foo.Bar
+        // not access to struct fields ie. p.name
+        if !self.can_resolve_name(first) {
+            return None;
+        }
+
+        let new_var = qualified
+            .into_iter()
+            .map(|q| q.ident)
+            .collect::<Vec<_>>()
+            .join(".");
+
+        Some(Expr::Var {
+            value: new_var,
+            decl: span.clone(),
+            generics_instantiated: Default::default(),
+            ty: Type::dummy(),
+            span: span.clone(),
+        })
     }
 }
 
@@ -3163,6 +3350,46 @@ pub enum DeclareMode {
     SkipInference,
 }
 
+// A chunk of qualified name ie. "foo" in foo.bar
+#[derive(Debug, Clone)]
+struct Qualified {
+    ident: String,
+    #[allow(dead_code)]
+    span: Span,
+}
+
+impl Qualified {
+    fn new(ident: &str, span: &Span) -> Qualified {
+        Qualified {
+            ident: ident.to_string(),
+            span: span.clone(),
+        }
+    }
+}
+
+// return true if the expr can be turned into a qualified path ie. foo.bar.baz
+fn to_qualified(e: &Expr, qualified: &mut Vec<Qualified>) -> bool {
+    match e {
+        Expr::FieldAccess {
+            expr, field, span, ..
+        } => {
+            if !to_qualified(expr, qualified) {
+                return false;
+            }
+
+            qualified.push(Qualified::new(field, span));
+            true
+        }
+
+        Expr::Var { value, span, .. } => {
+            qualified.push(Qualified::new(value, span));
+            true
+        }
+
+        _ => false,
+    }
+}
+
 const NUMERIC_TYPES: &[&str] = &[
     "byte",
     "complex128",
@@ -3182,4 +3409,4 @@ const NUMERIC_TYPES: &[&str] = &[
     "uint8",
 ];
 
-const RESERVED_WORDS: &[&str] = &["default", "len", "append", "cap"];
+const RESERVED_WORDS: &[&str] = &["default", "func"];

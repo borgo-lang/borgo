@@ -1,0 +1,296 @@
+use pkix
+use io
+use time
+use big
+use asn1
+use net
+use net.url
+use crypto
+use pem
+use ecdsa
+use rsa
+
+
+fn CreateCertificate  (rand: io.Reader, template: *Certificate, parent: *Certificate, pub: any, priv: any) -> Result<[byte]> { EXT }
+
+fn CreateCertificateRequest  (rand: io.Reader, template: *CertificateRequest, priv: any) -> Result<[byte]> { EXT }
+
+fn CreateRevocationList  (rand: io.Reader, template: *RevocationList, issuer: *Certificate, priv: crypto.Signer) -> Result<[byte]> { EXT }
+
+fn DecryptPEMBlock  (b: *pem.Block, password: [byte]) -> Result<[byte]> { EXT }
+
+fn EncryptPEMBlock  (rand: io.Reader, blockType: string, data: [byte], password: [byte], alg: PEMCipher) -> Result<*pem.Block> { EXT }
+
+fn IsEncryptedPEMBlock  (b: *pem.Block) -> bool { EXT }
+
+fn MarshalECPrivateKey  (key: *ecdsa.PrivateKey) -> Result<[byte]> { EXT }
+
+fn MarshalPKCS1PrivateKey  (key: *rsa.PrivateKey) -> [byte] { EXT }
+
+fn MarshalPKCS1PublicKey  (key: *rsa.PublicKey) -> [byte] { EXT }
+
+fn MarshalPKCS8PrivateKey  (key: any) -> Result<[byte]> { EXT }
+
+fn MarshalPKIXPublicKey  (pub: any) -> Result<[byte]> { EXT }
+
+fn NewCertPool  () -> *CertPool { EXT }
+
+fn ParseCRL  (crlBytes: [byte]) -> Result<*pkix.CertificateList> { EXT }
+
+fn ParseCertificate  (der: [byte]) -> Result<*Certificate> { EXT }
+
+fn ParseCertificateRequest  (asn1Data: [byte]) -> Result<*CertificateRequest> { EXT }
+
+fn ParseCertificates  (der: [byte]) -> Result<[*Certificate]> { EXT }
+
+fn ParseDERCRL  (derBytes: [byte]) -> Result<*pkix.CertificateList> { EXT }
+
+fn ParseECPrivateKey  (der: [byte]) -> Result<*ecdsa.PrivateKey> { EXT }
+
+fn ParsePKCS1PrivateKey  (der: [byte]) -> Result<*rsa.PrivateKey> { EXT }
+
+fn ParsePKCS1PublicKey  (der: [byte]) -> Result<*rsa.PublicKey> { EXT }
+
+fn ParsePKCS8PrivateKey  (der: [byte]) -> Result<any> { EXT }
+
+fn ParsePKIXPublicKey  (derBytes: [byte]) -> Result<any> { EXT }
+
+fn ParseRevocationList  (der: [byte]) -> Result<*RevocationList> { EXT }
+
+fn SystemCertPool  () -> Result<*CertPool> { EXT }
+
+impl (self: CertPool) {
+
+fn AddCert  (cert: *Certificate) -> () { EXT }
+
+fn AppendCertsFromPEM  (pemCerts: [byte]) -> bool { EXT }
+
+fn Clone  () -> *CertPool { EXT }
+
+fn Equal  (other: *CertPool) -> bool { EXT }
+
+fn Subjects  () -> [[byte]] { EXT }
+
+}
+
+impl (self: Certificate) {
+
+fn CheckCRLSignature  (crl: *pkix.CertificateList) -> error { EXT }
+
+fn CheckSignature  (algo: SignatureAlgorithm, signed: [byte], signature: [byte]) -> error { EXT }
+
+fn CheckSignatureFrom  (parent: *Certificate) -> error { EXT }
+
+fn CreateCRL  (rand: io.Reader, priv: any, revokedCerts: [pkix.RevokedCertificate], now: time.Time, expiry: time.Time) -> Result<[byte]> { EXT }
+
+fn Equal  (other: *Certificate) -> bool { EXT }
+
+fn Verify  (opts: VerifyOptions) -> Result<[[*Certificate]]> { EXT }
+
+fn VerifyHostname  (h: string) -> error { EXT }
+
+}
+
+impl (self: CertificateInvalidError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: CertificateRequest) {
+
+fn CheckSignature  () -> error { EXT }
+
+}
+
+impl (self: ConstraintViolationError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: HostnameError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: InsecureAlgorithmError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: PublicKeyAlgorithm) {
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: RevocationList) {
+
+fn CheckSignatureFrom  (parent: *Certificate) -> error { EXT }
+
+}
+
+impl (self: SignatureAlgorithm) {
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: SystemRootsError) {
+
+fn Error  () -> string { EXT }
+
+fn Unwrap  () -> error { EXT }
+
+}
+
+impl (self: UnhandledCriticalExtension) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: UnknownAuthorityError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+struct ExtKeyUsage(int)
+
+struct InsecureAlgorithmError(SignatureAlgorithm)
+
+struct InvalidReason(int)
+
+struct KeyUsage(int)
+
+struct PEMCipher(int)
+
+struct PublicKeyAlgorithm(int)
+
+struct SignatureAlgorithm(int)
+
+struct CertPool{
+
+}
+
+struct Certificate{
+  Raw: [byte],
+  RawTBSCertificate: [byte],
+  RawSubjectPublicKeyInfo: [byte],
+  RawSubject: [byte],
+  RawIssuer: [byte],
+  Signature: [byte],
+  SignatureAlgorithm: SignatureAlgorithm,
+  PublicKeyAlgorithm: PublicKeyAlgorithm,
+  PublicKey: any,
+  Version: int,
+  SerialNumber: *big.Int,
+  Issuer: pkix.Name,
+  Subject: pkix.Name,
+  NotBefore: time.Time,
+  KeyUsage: KeyUsage,
+  Extensions: [pkix.Extension],
+  ExtraExtensions: [pkix.Extension],
+  UnhandledCriticalExtensions: [asn1.ObjectIdentifier],
+  ExtKeyUsage: [ExtKeyUsage],
+  UnknownExtKeyUsage: [asn1.ObjectIdentifier],
+  BasicConstraintsValid: bool,
+  IsCA: bool,
+  MaxPathLen: int,
+  MaxPathLenZero: bool,
+  SubjectKeyId: [byte],
+  AuthorityKeyId: [byte],
+  OCSPServer: [string],
+  IssuingCertificateURL: [string],
+  DNSNames: [string],
+  EmailAddresses: [string],
+  IPAddresses: [net.IP],
+  URIs: [*url.URL],
+  PermittedDNSDomainsCritical: bool,
+  PermittedDNSDomains: [string],
+  ExcludedDNSDomains: [string],
+  PermittedIPRanges: [*net.IPNet],
+  ExcludedIPRanges: [*net.IPNet],
+  PermittedEmailAddresses: [string],
+  ExcludedEmailAddresses: [string],
+  PermittedURIDomains: [string],
+  ExcludedURIDomains: [string],
+  CRLDistributionPoints: [string],
+  PolicyIdentifiers: [asn1.ObjectIdentifier]
+}
+
+struct CertificateInvalidError{
+  Cert: *Certificate,
+  Reason: InvalidReason,
+  Detail: string
+}
+
+struct CertificateRequest{
+  Raw: [byte],
+  RawTBSCertificateRequest: [byte],
+  RawSubjectPublicKeyInfo: [byte],
+  RawSubject: [byte],
+  Version: int,
+  Signature: [byte],
+  SignatureAlgorithm: SignatureAlgorithm,
+  PublicKeyAlgorithm: PublicKeyAlgorithm,
+  PublicKey: any,
+  Subject: pkix.Name,
+  Attributes: [pkix.AttributeTypeAndValueSET],
+  Extensions: [pkix.Extension],
+  ExtraExtensions: [pkix.Extension],
+  DNSNames: [string],
+  EmailAddresses: [string],
+  IPAddresses: [net.IP],
+  URIs: [*url.URL]
+}
+
+struct ConstraintViolationError{
+
+}
+
+struct HostnameError{
+  Certificate: *Certificate,
+  Host: string
+}
+
+struct RevocationList{
+  Raw: [byte],
+  RawTBSRevocationList: [byte],
+  RawIssuer: [byte],
+  Issuer: pkix.Name,
+  AuthorityKeyId: [byte],
+  Signature: [byte],
+  SignatureAlgorithm: SignatureAlgorithm,
+  RevokedCertificates: [pkix.RevokedCertificate],
+  Number: *big.Int,
+  ThisUpdate: time.Time,
+  NextUpdate: time.Time,
+  Extensions: [pkix.Extension],
+  ExtraExtensions: [pkix.Extension]
+}
+
+struct SystemRootsError{
+  Err: error
+}
+
+struct UnhandledCriticalExtension{
+
+}
+
+struct UnknownAuthorityError{
+  Cert: *Certificate
+}
+
+struct VerifyOptions{
+  DNSName: string,
+  Intermediates: *CertPool,
+  Roots: *CertPool,
+  CurrentTime: time.Time,
+  KeyUsages: [ExtKeyUsage],
+  MaxConstraintComparisions: int
+}

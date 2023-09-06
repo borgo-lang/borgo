@@ -4,7 +4,7 @@ SOURCE:
 {
   fn foo() -> Result<int, ErrFoo> { Ok(1) }
   fn bar() {
-    let x = foo()?;
+    let x = foo()?
     ()
   }
 }
@@ -16,5 +16,5 @@ Expected:
 Got:
     ()
 
-4|      let x = foo()?;
-                ^^^^^^
+4|      let x = foo()?
+                     ^

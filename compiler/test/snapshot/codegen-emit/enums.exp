@@ -7,8 +7,8 @@ enum Foo {
 }
 
 fn main() {
-  inspect(Foo::Bar(2, false));
-  inspect(Foo::Baz);
+  inspect(Foo.Bar(2, false))
+  inspect(Foo.Baz)
 }
 
 OUTPUT:

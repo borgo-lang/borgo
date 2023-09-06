@@ -1,0 +1,469 @@
+Impl blocks
+
+SOURCE:
+enum Color { Red, Blue }
+
+impl (c: Color) {
+    fn is_red() -> bool {
+        c == Color.Red
+    }
+}
+
+fn main() {
+    @ensure Color.is_red(Color.Red), bool
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+[
+  {
+    "EnumDef": {
+      "def": {
+        "name": "Color",
+        "generics": [],
+        "cons": [
+          {
+            "name": "Red",
+            "fields": []
+          },
+          {
+            "name": "Blue",
+            "fields": []
+          }
+        ]
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 1
+        },
+        "end": {
+          "line": 1,
+          "col": 24
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "ImplBlock": {
+      "ann": {
+        "Con": {
+          "name": "Color",
+          "args": []
+        }
+      },
+      "self_name": "c",
+      "ty": {
+        "Con": {
+          "id": "Color",
+          "args": []
+        }
+      },
+      "items": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "is_red",
+              "generics": [],
+              "args": [],
+              "ret": {
+                "Con": {
+                  "id": "bool",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "bool",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "Binary": {
+                        "op": "Eq",
+                        "left": {
+                          "Var": {
+                            "value": "c",
+                            "decl": {
+                              "start": {
+                                "line": 3,
+                                "col": 1
+                              },
+                              "end": {
+                                "line": 7,
+                                "col": 1
+                              },
+                              "file": 99
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Con": {
+                                "id": "Color",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 9
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 10
+                              },
+                              "file": 99
+                            }
+                          }
+                        },
+                        "right": {
+                          "Var": {
+                            "value": "Color.Red",
+                            "decl": {
+                              "start": {
+                                "line": 1,
+                                "col": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "col": 24
+                              },
+                              "file": 99
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Con": {
+                                "id": "Color",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 20
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 23
+                              },
+                              "file": 99
+                            }
+                          }
+                        },
+                        "ty": {
+                          "Con": {
+                            "id": "bool",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 5,
+                            "col": 9
+                          },
+                          "end": {
+                            "line": 5,
+                            "col": 23
+                          },
+                          "file": 99
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "id": "bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 25
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 5
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "id": "bool",
+                        "args": []
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "id": "bool",
+                    "args": []
+                  }
+                }
+              }
+            },
+            "span": {
+              "start": {
+                "line": 4,
+                "col": 5
+              },
+              "end": {
+                "line": 6,
+                "col": 5
+              },
+              "file": 99
+            }
+          }
+        }
+      ],
+      "generics": [],
+      "span": {
+        "start": {
+          "line": 3,
+          "col": 1
+        },
+        "end": {
+          "line": 7,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "CheckType": {
+                  "expr": {
+                    "Call": {
+                      "func": {
+                        "Var": {
+                          "value": "Color.is_red",
+                          "decl": {
+                            "start": {
+                              "line": 3,
+                              "col": 1
+                            },
+                            "end": {
+                              "line": 7,
+                              "col": 1
+                            },
+                            "file": 99
+                          },
+                          "generics_instantiated": [],
+                          "ty": {
+                            "Fun": {
+                              "args": [
+                                {
+                                  "Con": {
+                                    "id": "Color",
+                                    "args": []
+                                  }
+                                }
+                              ],
+                              "bounds": [],
+                              "ret": {
+                                "Con": {
+                                  "id": "bool",
+                                  "args": []
+                                }
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 10,
+                              "col": 19
+                            },
+                            "end": {
+                              "line": 10,
+                              "col": 25
+                            },
+                            "file": 99
+                          }
+                        }
+                      },
+                      "args": [
+                        {
+                          "Var": {
+                            "value": "Color.Red",
+                            "decl": {
+                              "start": {
+                                "line": 1,
+                                "col": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "col": 24
+                              },
+                              "file": 99
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Con": {
+                                "id": "Color",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 10,
+                                "col": 32
+                              },
+                              "end": {
+                                "line": 10,
+                                "col": 35
+                              },
+                              "file": 99
+                            }
+                          }
+                        }
+                      ],
+                      "ty": {
+                        "Con": {
+                          "id": "bool",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 10,
+                          "col": 25
+                        },
+                        "end": {
+                          "line": 10,
+                          "col": 35
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "bool",
+                      "args": []
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "bool",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 10,
+                      "col": 5
+                    },
+                    "end": {
+                      "line": 10,
+                      "col": 42
+                    },
+                    "file": 99
+                  }
+                }
+              }
+            ],
+            "ty": {
+              "Con": {
+                "id": "bool",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 9,
+                "col": 11
+              },
+              "end": {
+                "line": 11,
+                "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 9,
+          "col": 1
+        },
+        "end": {
+          "line": 11,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  }
+]

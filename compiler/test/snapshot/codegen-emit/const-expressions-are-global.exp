@@ -3,7 +3,7 @@ Const expressions are global
 SOURCE:
 file: main.brg
 
-const a: int = 1;
+const a: int = 1
 
 fn main() { assert_eq(a + 5, 6) }
 

@@ -1,0 +1,57 @@
+Not operator precedence
+
+SOURCE:
+{
+    !o.bar()
+    !!false
+}
+
+OUTPUT:
+LCurly#1,1, Bang#2,5, Ident("o", 1)#2,6, Dot#2,7, Ident("bar", 3)#2,8, LParen#2,11, RParen#2,12, Semicolon#2,13, Bang#3,5, Bang#3,6, Bool#3,7, Semicolon#3,12, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Unary": {
+          "op": "Not",
+          "expr": {
+            "Call": {
+              "func": {
+                "FieldAccess": {
+                  "expr": {
+                    "Var": {
+                      "value": "o",
+                      "generics_instantiated": []
+                    }
+                  },
+                  "field": "bar"
+                }
+              },
+              "args": []
+            }
+          }
+        }
+      },
+      {
+        "Unary": {
+          "op": "Not",
+          "expr": {
+            "Unary": {
+              "op": "Not",
+              "expr": {
+                "Literal": {
+                  "lit": {
+                    "Bool": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

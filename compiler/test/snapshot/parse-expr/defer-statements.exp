@@ -1,0 +1,51 @@
+Defer statements
+
+SOURCE:
+{
+    defer db.close()
+
+    foo()
+}
+
+OUTPUT:
+LCurly#1,1, Defer#2,5, Ident("db", 2)#2,11, Dot#2,13, Ident("close", 5)#2,14, LParen#2,19, RParen#2,20, Semicolon#2,21, Ident("foo", 3)#4,5, LParen#4,8, RParen#4,9, Semicolon#4,10, RCurly#5,1, EOF#5,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Defer": {
+          "expr": {
+            "Call": {
+              "func": {
+                "FieldAccess": {
+                  "expr": {
+                    "Var": {
+                      "value": "db",
+                      "generics_instantiated": []
+                    }
+                  },
+                  "field": "close"
+                }
+              },
+              "args": []
+            }
+          }
+        }
+      },
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "foo",
+              "generics_instantiated": []
+            }
+          },
+          "args": []
+        }
+      }
+    ]
+  }
+}

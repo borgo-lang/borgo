@@ -2,8 +2,7 @@ use compiler::ast::{Expr, FileId};
 use compiler::codegen::EmittedFile;
 use compiler::global_state::Module;
 use compiler::type_::ModuleId;
-use compiler::{codegen, infer};
-use compiler::{fs, prelude};
+use compiler::{codegen, fs, infer, lexer, parser, prelude};
 
 use serde::Deserialize;
 
@@ -11,6 +10,8 @@ use serde::Deserialize;
 enum Input {
     InferExpr(String),
     InferPackage(String),
+    ParseExpr(String),
+    ParseFile(String),
 }
 
 fn build_project() {
@@ -51,6 +52,49 @@ fn emit_files(files: Vec<EmittedFile>) {
     }
 }
 
+fn parse_source(input: Input) {
+    let source = match input {
+        Input::ParseExpr(ref source) => source,
+        Input::ParseFile(ref source) => source,
+        _ => unreachable!(),
+    };
+
+    let mut lex = lexer::Lexer::new(source);
+
+    let tokens = lex.tokens();
+
+    let file = FileId(1);
+    let mut p = parser::Parser::new(tokens.clone(), file);
+
+    let parsed = match input {
+        Input::ParseExpr(_) => vec![p.parse_expr()],
+        Input::ParseFile(_) => p.parse_file(),
+        _ => unreachable!(),
+    };
+
+    let json = if parsed.len() == 1 {
+        let expr = parsed.first().unwrap();
+        serde_json::to_string_pretty(&expr)
+    } else {
+        serde_json::to_string_pretty(&parsed)
+    };
+
+    let mut err = p.errors.first().cloned().map(|e| format!("{:#?}", e));
+
+    if err.is_none() && !p.eof() {
+        err = Some(format!(
+            "Leftover input from parser:\n{}",
+            lexer::stringify_tokens(&tokens[p.current..])
+        ))
+    }
+
+    let err = err.unwrap_or_else(|| "No errors.".to_string());
+
+    let tokens_str = lexer::stringify_tokens(&tokens);
+
+    println!("{}\n---\n{}\n---\n{}", tokens_str, err, json.unwrap());
+}
+
 fn help() {
     println!(
         "
@@ -67,8 +111,6 @@ fn run_tests(input: &str) {
 
     match input {
         Input::InferExpr(source) => {
-            let mut ast = compiler::ast::Ast::new();
-
             let filesystem = Box::new(fs::NoopFS {});
             let mut instance = infer::Infer::new(filesystem);
 
@@ -79,20 +121,23 @@ fn run_tests(input: &str) {
             instance.reset_scope();
 
             let file = FileId(1);
-            ast.set_file(&file);
+            let mut lex = lexer::Lexer::new(&source);
+            let mut p = parser::Parser::new(lex.tokens(), file);
 
-            let e = Expr::from_source(&source);
-            let expr = ast.from_expr(e).unwrap();
+            let expr = p.parse_expr();
 
             // import builtin module
             instance.import_module(None, &compiler::type_::ModuleId("std".to_string()));
 
             let (new_expr, errors, typ) = instance.infer_expr_with_error(&expr);
 
-            let err = errors
-                .first()
-                .map(|e| e.stringify(Some(&source)))
-                .unwrap_or_else(|| "No errors.".to_string());
+            let mut err = p.errors.first().cloned().map(|e| format!("{:#?}", e));
+
+            if err.is_none() {
+                err = errors.first().map(|e| e.stringify(Some(&source)));
+            }
+
+            let err = err.unwrap_or_else(|| "No errors.".to_string());
 
             let json = serde_json::to_string_pretty(&new_expr).unwrap();
             println!("{}\n---\n{}\n---\n{}", typ, err, json);
@@ -133,6 +178,8 @@ fn run_tests(input: &str) {
             let json = serde_json::to_string_pretty(&decls).unwrap();
             println!("{}\n---\n{}\n---\n{}", typ, err, json);
         }
+
+        Input::ParseExpr(_) | Input::ParseFile(_) => parse_source(input),
     }
 }
 

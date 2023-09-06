@@ -1,19 +1,19 @@
 Options
 
 SOURCE:
-use os;
+use os
 
 fn foo() -> Option<int> {
   Some(3)
 }
 
 fn main() {
-  let x = foo();
-  assert_eq(x.IsSome(), true);
+  let x = foo()
+  assert_eq(x.IsSome(), true)
 
   match os.LookupEnv("HOME") {
-    Some(_) => (),
-    None => unreachable!(),
+    Some(_) => ()
+    None => @unreachable()
   }
 }
 

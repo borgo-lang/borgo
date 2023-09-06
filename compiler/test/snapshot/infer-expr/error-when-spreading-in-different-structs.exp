@@ -5,8 +5,8 @@ SOURCE:
   struct Foo { a: int, b: string }
   struct Bar { a: int, b: string }
 
-  let x = Foo { a: 1, b: "foo" };
-  let y = Bar { a: 1, b: "bar" };
+  let x = Foo { a: 1, b: "foo" }
+  let y = Bar { a: 1, b: "bar" }
   Foo { b: "bar", ..y }
 }
 

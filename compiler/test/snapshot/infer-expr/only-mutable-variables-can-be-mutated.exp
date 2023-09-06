@@ -2,12 +2,12 @@ Only mutable variables can be mutated
 
 SOURCE:
 {
-  let y = 0;
-  y = 3;
+  let y = 0
+  y = 3
 }
 
 OUTPUT:
 Variable y is not declared as mutable. Use `let mut y`.
 
-3|    y = 3;
+3|    y = 3
       ^^^^^

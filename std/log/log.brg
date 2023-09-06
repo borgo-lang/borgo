@@ -1,141 +1,78 @@
-use io;
+use io
 
-fn Default() -> &Logger {
-    EXT
+
+fn Default  () -> *Logger { EXT }
+
+fn Fatal  (v: VarArgs<any>) -> () { EXT }
+
+fn Fatalf  (format: string, v: VarArgs<any>) -> () { EXT }
+
+fn Fatalln  (v: VarArgs<any>) -> () { EXT }
+
+fn Flags  () -> int { EXT }
+
+fn New  (out: io.Writer, prefix: string, flag: int) -> *Logger { EXT }
+
+fn Output  (calldepth: int, s: string) -> error { EXT }
+
+fn Panic  (v: VarArgs<any>) -> () { EXT }
+
+fn Panicf  (format: string, v: VarArgs<any>) -> () { EXT }
+
+fn Panicln  (v: VarArgs<any>) -> () { EXT }
+
+fn Prefix  () -> string { EXT }
+
+fn Print  (v: VarArgs<any>) -> () { EXT }
+
+fn Printf  (format: string, v: VarArgs<any>) -> () { EXT }
+
+fn Println  (v: VarArgs<any>) -> () { EXT }
+
+fn SetFlags  (flag: int) -> () { EXT }
+
+fn SetOutput  (w: io.Writer) -> () { EXT }
+
+fn SetPrefix  (prefix: string) -> () { EXT }
+
+fn Writer  () -> io.Writer { EXT }
+
+impl (self: Logger) {
+
+fn Fatal  (v: VarArgs<any>) -> () { EXT }
+
+fn Fatalf  (format: string, v: VarArgs<any>) -> () { EXT }
+
+fn Fatalln  (v: VarArgs<any>) -> () { EXT }
+
+fn Flags  () -> int { EXT }
+
+fn Output  (calldepth: int, s: string) -> error { EXT }
+
+fn Panic  (v: VarArgs<any>) -> () { EXT }
+
+fn Panicf  (format: string, v: VarArgs<any>) -> () { EXT }
+
+fn Panicln  (v: VarArgs<any>) -> () { EXT }
+
+fn Prefix  () -> string { EXT }
+
+fn Print  (v: VarArgs<any>) -> () { EXT }
+
+fn Printf  (format: string, v: VarArgs<any>) -> () { EXT }
+
+fn Println  (v: VarArgs<any>) -> () { EXT }
+
+fn SetFlags  (flag: int) -> () { EXT }
+
+fn SetOutput  (w: io.Writer) -> () { EXT }
+
+fn SetPrefix  (prefix: string) -> () { EXT }
+
+fn Writer  () -> io.Writer { EXT }
+
 }
 
-fn New(out: io::Writer, prefix: string, flag: int) -> &Logger {
-    EXT
+struct Logger{
+
 }
-
-fn Fatal(v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn Fatalf(format: string, v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn Fatalln(v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn Flags() -> int {
-    EXT
-}
-
-fn Output(calldepth: int, s: string) -> error {
-    EXT
-}
-
-fn Panic(v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn Panicf(format: string, v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn Panicln(v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn Prefix() -> string {
-    EXT
-}
-
-fn Print(v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn Printf(format: string, v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn Println(v: VarArgs<any>) -> () {
-    EXT
-}
-
-fn SetFlags(flag: int) -> () {
-    EXT
-}
-
-fn SetOutput(w: io::Writer) -> () {
-    EXT
-}
-
-fn SetPrefix(prefix: string) -> () {
-    EXT
-}
-
-fn Writer() -> io::Writer {
-    EXT
-}
-
-impl Logger {
-    fn Fatal(&self, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fatalf(&self, format: string, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fatalln(&self, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Flags(&self) -> int {
-        EXT
-    }
-
-    fn Output(&self, calldepth: int, s: string) -> error {
-        EXT
-    }
-
-    fn Panic(&self, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Panicf(&self, format: string, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Panicln(&self, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Prefix(&self) -> string {
-        EXT
-    }
-
-    fn Print(&self, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Printf(&self, format: string, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Println(&self, v: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn SetFlags(&self, flag: int) -> () {
-        EXT
-    }
-
-    fn SetOutput(&self, w: io::Writer) -> () {
-        EXT
-    }
-
-    fn SetPrefix(&self, prefix: string) -> () {
-        EXT
-    }
-
-    fn Writer(&self) -> io::Writer {
-        EXT
-    }
-}
-
-struct Logger {}

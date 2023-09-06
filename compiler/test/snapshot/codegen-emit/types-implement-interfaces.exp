@@ -1,19 +1,19 @@
 Types implement interfaces
 
 SOURCE:
-use fmt;
+use fmt
 
 struct Foo {}
 
-impl Foo {
-  fn Write(&mut self, bytes: [byte]) -> Result<int> {
+impl (f: Foo) {
+  fn Write(bytes: [byte]) -> Result<int> {
     Ok(3)
   }
 }
 
 fn main() {
-    let n = fmt.Fprintf(&mut Foo{}, "%d", 1).unwrap();
-    assert_eq(n, 3);
+    let n = fmt.Fprintf(&Foo{}, "%d", 1).unwrap()
+    assert_eq(n, 3)
 }
 
 OUTPUT:
@@ -27,7 +27,7 @@ import (
 
 type Foo struct{}
 
-func (self *Foo) Write(bytes []byte) (int, error) {
+func (f Foo) Write(bytes []byte) (int, error) {
 	return 3, nil
 }
 

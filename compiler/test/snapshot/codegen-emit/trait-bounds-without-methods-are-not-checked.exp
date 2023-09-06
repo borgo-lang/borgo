@@ -6,13 +6,13 @@ fn foo<T: comparable>(x: T, y: T) -> bool {
     x == y
 }
 
-trait Foo {
-  fn check() -> int;
+interface Foo {
+  fn check() -> int
 }
 
 struct Bar {}
-impl Bar {
-  fn check(self) -> int { 3 }
+impl (b: Bar) {
+  fn check() -> int { 3 }
 }
 
 // Check that multiple constraints are correctly emitted
@@ -25,9 +25,9 @@ fn bar<T: comparable + Foo>(x: T, y: T) -> int {
 }
 
 fn main() {
-  assert_eq(foo(1.0, 2.0), false);
-  assert_eq(foo(1, 1), true);
-  assert_eq(bar(Bar{}, Bar{}), 3);
+  assert_eq(foo(1.0, 2.0), false)
+  assert_eq(foo(1, 1), true)
+  assert_eq(bar(Bar{}, Bar{}), 3)
 }
 
 OUTPUT:
@@ -44,7 +44,7 @@ type Foo interface {
 }
 type Bar struct{}
 
-func (self Bar) check() int {
+func (b Bar) check() int {
 	return 3
 }
 

@@ -3,15 +3,15 @@ Impl blocks
 SOURCE:
 struct Foo { a: int }
 
-impl Foo {
-  fn bar(self, x: int) -> int {
-    self.a + x
+impl (f: Foo) {
+  fn bar(x: int) -> int {
+    f.a + x
   }
 }
 
 fn main() {
-  let f = Foo { a: 1 };
-  assert_eq(f.bar(5), 6);
+  let f = Foo { a: 1 }
+  assert_eq(f.bar(5), 6)
 }
 
 OUTPUT:
@@ -23,8 +23,8 @@ type Foo struct {
 	a int
 }
 
-func (self Foo) bar(x int) int {
-	return self.a + x
+func (f Foo) bar(x int) int {
+	return f.a + x
 }
 
 func main() {

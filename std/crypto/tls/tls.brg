@@ -1,0 +1,239 @@
+use crypto
+// use crypto.x509
+use context
+use net
+use io
+use time
+
+
+fn CipherSuiteName  (id: uint16) -> string { EXT }
+
+fn CipherSuites  () -> [*CipherSuite] { EXT }
+
+fn Client  (conn: net.Conn, config: *Config) -> *Conn { EXT }
+
+fn Dial  (network: string, addr: string, config: *Config) -> Result<*Conn> { EXT }
+
+fn DialWithDialer  (dialer: *net.Dialer, network: string, addr: string, config: *Config) -> Result<*Conn> { EXT }
+
+fn InsecureCipherSuites  () -> [*CipherSuite] { EXT }
+
+fn Listen  (network: string, laddr: string, config: *Config) -> Result<net.Listener> { EXT }
+
+fn LoadX509KeyPair  (certFile: string, keyFile: string) -> Result<Certificate> { EXT }
+
+fn NewLRUClientSessionCache  (capacity: int) -> ClientSessionCache { EXT }
+
+fn NewListener  (inner: net.Listener, config: *Config) -> net.Listener { EXT }
+
+fn Server  (conn: net.Conn, config: *Config) -> *Conn { EXT }
+
+fn X509KeyPair  (certPEMBlock: [byte], keyPEMBlock: [byte]) -> Result<Certificate> { EXT }
+
+impl (self: CertificateRequestInfo) {
+
+fn Context  () -> context.Context { EXT }
+
+fn SupportsCertificate  (c: *Certificate) -> error { EXT }
+
+}
+
+impl (self: ClientAuthType) {
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: ClientHelloInfo) {
+
+fn Context  () -> context.Context { EXT }
+
+fn SupportsCertificate  (c: *Certificate) -> error { EXT }
+
+}
+
+impl (self: Config) {
+
+fn BuildNameToCertificate  () -> () { EXT }
+
+fn Clone  () -> *Config { EXT }
+
+fn SetSessionTicketKeys  (keys: [[byte]]) -> () { EXT }
+
+}
+
+impl (self: Conn) {
+
+fn Close  () -> error { EXT }
+
+fn CloseWrite  () -> error { EXT }
+
+fn ConnectionState  () -> ConnectionState { EXT }
+
+fn Handshake  () -> error { EXT }
+
+fn HandshakeContext  (ctx: context.Context) -> error { EXT }
+
+fn LocalAddr  () -> net.Addr { EXT }
+
+fn NetConn  () -> net.Conn { EXT }
+
+fn OCSPResponse  () -> [byte] { EXT }
+
+fn Read  (b: [byte]) -> Result<int> { EXT }
+
+fn RemoteAddr  () -> net.Addr { EXT }
+
+fn SetDeadline  (t: time.Time) -> error { EXT }
+
+fn SetReadDeadline  (t: time.Time) -> error { EXT }
+
+fn SetWriteDeadline  (t: time.Time) -> error { EXT }
+
+fn VerifyHostname  (host: string) -> error { EXT }
+
+fn Write  (b: [byte]) -> Result<int> { EXT }
+
+}
+
+impl (self: ConnectionState) {
+
+fn ExportKeyingMaterial  (label: string, context: [byte], length: int) -> Result<[byte]> { EXT }
+
+}
+
+impl (self: CurveID) {
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: Dialer) {
+
+fn Dial  (network: string, addr: string) -> Result<net.Conn> { EXT }
+
+fn DialContext  (ctx: context.Context, network: string, addr: string) -> Result<net.Conn> { EXT }
+
+}
+
+impl (self: RecordHeaderError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: SignatureScheme) {
+
+fn String  () -> string { EXT }
+
+}
+
+struct ClientAuthType(int)
+
+struct CurveID(uint16)
+
+struct RenegotiationSupport(int)
+
+struct SignatureScheme(uint16)
+
+struct Certificate{
+  Certificate: [[byte]],
+  PrivateKey: crypto.PrivateKey,
+  SupportedSignatureAlgorithms: [SignatureScheme],
+  OCSPStaple: [byte],
+  SignedCertificateTimestamps: [[byte]],
+  Leaf: *any
+}
+
+struct CertificateRequestInfo{
+  AcceptableCAs: [[byte]],
+  SignatureSchemes: [SignatureScheme],
+  Version: uint16
+}
+
+struct CipherSuite{
+  ID: uint16,
+  Name: string,
+  SupportedVersions: [uint16],
+  Insecure: bool
+}
+
+struct ClientHelloInfo{
+  CipherSuites: [uint16],
+  ServerName: string,
+  SupportedCurves: [CurveID],
+  SupportedPoints: [uint8],
+  SignatureSchemes: [SignatureScheme],
+  SupportedProtos: [string],
+  SupportedVersions: [uint16],
+  Conn: net.Conn
+}
+
+interface ClientSessionCache {
+
+  fn Get (sessionKey: string) -> Option<*ClientSessionState>
+  fn Put (sessionKey: string, cs: *ClientSessionState) -> ()
+}
+
+struct ClientSessionState{
+
+}
+
+struct Config{
+  Rand: io.Reader,
+  Time: fn () -> time.Time,
+  Certificates: [Certificate],
+  NameToCertificate: Map<string, *Certificate>,
+  GetCertificate: fn (param0: *ClientHelloInfo) -> Result<*Certificate>,
+  GetClientCertificate: fn (param0: *CertificateRequestInfo) -> Result<*Certificate>,
+  GetConfigForClient: fn (param0: *ClientHelloInfo) -> Result<*Config>,
+  VerifyPeerCertificate: fn (rawCerts: [[byte]], verifiedChains: [[*any]]) -> error,
+  VerifyConnection: fn (param0: ConnectionState) -> error,
+  RootCAs: *any,
+  NextProtos: [string],
+  ServerName: string,
+  ClientAuth: ClientAuthType,
+  ClientCAs: *any,
+  InsecureSkipVerify: bool,
+  CipherSuites: [uint16],
+  PreferServerCipherSuites: bool,
+  SessionTicketsDisabled: bool,
+  SessionTicketKey: [byte],
+  ClientSessionCache: ClientSessionCache,
+  MinVersion: uint16,
+  MaxVersion: uint16,
+  CurvePreferences: [CurveID],
+  DynamicRecordSizingDisabled: bool,
+  Renegotiation: RenegotiationSupport,
+  KeyLogWriter: io.Writer
+}
+
+struct Conn{
+
+}
+
+struct ConnectionState{
+  Version: uint16,
+  HandshakeComplete: bool,
+  DidResume: bool,
+  CipherSuite: uint16,
+  NegotiatedProtocol: string,
+  NegotiatedProtocolIsMutual: bool,
+  ServerName: string,
+  PeerCertificates: [*any],
+  VerifiedChains: [[*any]],
+  SignedCertificateTimestamps: [[byte]],
+  OCSPResponse: [byte],
+  TLSUnique: [byte]
+}
+
+struct Dialer{
+  NetDialer: *net.Dialer,
+  Config: *Config
+}
+
+struct RecordHeaderError{
+  Msg: string,
+  RecordHeader: [byte],
+  Conn: net.Conn
+}

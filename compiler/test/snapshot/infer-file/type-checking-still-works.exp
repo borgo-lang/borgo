@@ -4,7 +4,7 @@ SOURCE:
 enum Foo { A, B, Baz }
 
 fn foo(a: Foo) -> int { a + 1 }
-fn borgo_main() {}
+fn main() {}
 
 OUTPUT:
 Type mismatch

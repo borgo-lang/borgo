@@ -1,0 +1,62 @@
+Enum definition
+
+SOURCE:
+enum Foo<T> {
+    Bar,
+    Baz(int, Option<T>),
+}
+
+OUTPUT:
+Enum#1,1, Ident("Foo", 3)#1,6, LAngle#1,9, Ident("T", 1)#1,10, RAngle#1,11, LCurly#1,13, Ident("Bar", 3)#2,5, Comma#2,8, Ident("Baz", 3)#3,5, LParen#3,8, Ident("int", 3)#3,9, Comma#3,12, Ident("Option", 6)#3,14, LAngle#3,20, Ident("T", 1)#3,21, RAngle#3,22, RParen#3,23, Comma#3,24, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "EnumDef": {
+    "def": {
+      "name": "Foo",
+      "generics": [
+        {
+          "name": "T",
+          "bounds": []
+        }
+      ],
+      "cons": [
+        {
+          "name": "Bar",
+          "fields": []
+        },
+        {
+          "name": "Baz",
+          "fields": [
+            {
+              "name": "field0",
+              "ann": {
+                "Con": {
+                  "name": "int",
+                  "args": []
+                }
+              }
+            },
+            {
+              "name": "field1",
+              "ann": {
+                "Con": {
+                  "name": "Option",
+                  "args": [
+                    {
+                      "Con": {
+                        "name": "T",
+                        "args": []
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

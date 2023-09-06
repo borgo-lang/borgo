@@ -1,140 +1,113 @@
-fn NewCond(l: Locker) -> &Cond {
-    EXT
+fn NewCond  (l: Locker) -> *Cond { EXT }
+
+impl (self: Cond) {
+
+fn Broadcast  () -> () { EXT }
+
+fn Signal  () -> () { EXT }
+
+fn Wait  () -> () { EXT }
+
 }
 
-impl Pool {
-    fn Get(&self) -> any {
-        EXT
-    }
+impl (self: Map) {
 
-    fn Put(&self, x: any) -> () {
-        EXT
-    }
+fn Delete  (key: any) -> () { EXT }
+
+fn Load  (key: any) -> Option<any> { EXT }
+
+fn LoadAndDelete  (key: any) -> Option<any> { EXT }
+
+fn LoadOrStore  (key: any, value: any) -> Option<any> { EXT }
+
+fn Range  (f: fn (key: any, value: any) -> bool) -> () { EXT }
+
+fn Store  (key: any, value: any) -> () { EXT }
+
 }
 
-impl RWMutex {
-    fn Lock(&self) -> () {
-        EXT
-    }
+impl (self: Mutex) {
 
-    fn RLock(&self) -> () {
-        EXT
-    }
+fn Lock  () -> () { EXT }
 
-    fn RLocker(&self) -> Locker {
-        EXT
-    }
+fn TryLock  () -> bool { EXT }
 
-    fn RUnlock(&self) -> () {
-        EXT
-    }
+fn Unlock  () -> () { EXT }
 
-    fn TryLock(&self) -> bool {
-        EXT
-    }
-
-    fn TryRLock(&self) -> bool {
-        EXT
-    }
-
-    fn Unlock(&self) -> () {
-        EXT
-    }
 }
 
-impl WaitGroup {
-    fn Add(&self, delta: int) -> () {
-        EXT
-    }
+impl (self: Once) {
 
-    fn Done(&self) -> () {
-        EXT
-    }
+fn Do  (f: fn () -> ()) -> () { EXT }
 
-    fn Wait(&self) -> () {
-        EXT
-    }
 }
 
-impl Cond {
-    fn Broadcast(&self) -> () {
-        EXT
-    }
+impl (self: Pool) {
 
-    fn Signal(&self) -> () {
-        EXT
-    }
+fn Get  () -> any { EXT }
 
-    fn Wait(&self) -> () {
-        EXT
-    }
+fn Put  (x: any) -> () { EXT }
+
 }
 
-impl Map {
-    fn Delete(&self, key: any) -> () {
-        EXT
-    }
+impl (self: RWMutex) {
 
-    fn Load(&self, key: any) -> Option<any> {
-        EXT
-    }
+fn Lock  () -> () { EXT }
 
-    fn LoadAndDelete(&self, key: any) -> Option<any> {
-        EXT
-    }
+fn RLock  () -> () { EXT }
 
-    fn LoadOrStore(&self, key: any, value: any) -> Option<any> {
-        EXT
-    }
+fn RLocker  () -> Locker { EXT }
 
-    fn Range(&self, f: fn(key: any, value: any) -> bool) -> () {
-        EXT
-    }
+fn RUnlock  () -> () { EXT }
 
-    fn Store(&self, key: any, value: any) -> () {
-        EXT
-    }
+fn TryLock  () -> bool { EXT }
+
+fn TryRLock  () -> bool { EXT }
+
+fn Unlock  () -> () { EXT }
+
 }
 
-impl Mutex {
-    fn Lock(&self) -> () {
-        EXT
-    }
+impl (self: WaitGroup) {
 
-    fn TryLock(&self) -> bool {
-        EXT
-    }
+fn Add  (delta: int) -> () { EXT }
 
-    fn Unlock(&self) -> () {
-        EXT
-    }
+fn Done  () -> () { EXT }
+
+fn Wait  () -> () { EXT }
+
 }
 
-impl Once {
-    fn Do(&self, f: fn() -> ()) -> () {
-        EXT
-    }
+struct Cond{
+  L: Locker
 }
 
-struct Cond {
-    L: Locker,
+interface Locker {
+
+  fn Lock () -> ()
+  fn Unlock () -> ()
 }
 
-trait Locker {
-    fn Lock() -> ();
-    fn Unlock() -> ();
+struct Map{
+
 }
 
-struct Map {}
+struct Mutex{
 
-struct Mutex {}
-
-struct Once {}
-
-struct Pool {
-    New: fn() -> any,
 }
 
-struct RWMutex {}
+struct Once{
 
-struct WaitGroup {}
+}
+
+struct Pool{
+  New: fn () -> any
+}
+
+struct RWMutex{
+
+}
+
+struct WaitGroup{
+
+}

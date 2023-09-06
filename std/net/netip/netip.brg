@@ -1,0 +1,157 @@
+fn AddrFrom16  (addr: [byte]) -> Addr { EXT }
+
+fn AddrFrom4  (addr: [byte]) -> Addr { EXT }
+
+fn AddrFromSlice  (slice: [byte]) -> Option<Addr> { EXT }
+
+fn AddrPortFrom  (ip: Addr, port: uint16) -> AddrPort { EXT }
+
+fn IPv4Unspecified  () -> Addr { EXT }
+
+fn IPv6LinkLocalAllNodes  () -> Addr { EXT }
+
+fn IPv6Unspecified  () -> Addr { EXT }
+
+fn MustParseAddr  (s: string) -> Addr { EXT }
+
+fn MustParseAddrPort  (s: string) -> AddrPort { EXT }
+
+fn MustParsePrefix  (s: string) -> Prefix { EXT }
+
+fn ParseAddr  (s: string) -> Result<Addr> { EXT }
+
+fn ParseAddrPort  (s: string) -> Result<AddrPort> { EXT }
+
+fn ParsePrefix  (s: string) -> Result<Prefix> { EXT }
+
+fn PrefixFrom  (ip: Addr, bits: int) -> Prefix { EXT }
+
+impl (self: Addr) {
+
+fn AppendTo  (b: [byte]) -> [byte] { EXT }
+
+fn As16  () -> [byte] { EXT }
+
+fn As4  () -> [byte] { EXT }
+
+fn AsSlice  () -> [byte] { EXT }
+
+fn BitLen  () -> int { EXT }
+
+fn Compare  (ip2: Addr) -> int { EXT }
+
+fn Is4  () -> bool { EXT }
+
+fn Is4In6  () -> bool { EXT }
+
+fn Is6  () -> bool { EXT }
+
+fn IsGlobalUnicast  () -> bool { EXT }
+
+fn IsInterfaceLocalMulticast  () -> bool { EXT }
+
+fn IsLinkLocalMulticast  () -> bool { EXT }
+
+fn IsLinkLocalUnicast  () -> bool { EXT }
+
+fn IsLoopback  () -> bool { EXT }
+
+fn IsMulticast  () -> bool { EXT }
+
+fn IsPrivate  () -> bool { EXT }
+
+fn IsUnspecified  () -> bool { EXT }
+
+fn IsValid  () -> bool { EXT }
+
+fn Less  (ip2: Addr) -> bool { EXT }
+
+fn MarshalBinary  () -> Result<[byte]> { EXT }
+
+fn MarshalText  () -> Result<[byte]> { EXT }
+
+fn Next  () -> Addr { EXT }
+
+fn Prefix  (b: int) -> Result<Prefix> { EXT }
+
+fn Prev  () -> Addr { EXT }
+
+fn String  () -> string { EXT }
+
+fn StringExpanded  () -> string { EXT }
+
+fn Unmap  () -> Addr { EXT }
+
+fn UnmarshalBinary  (b: [byte]) -> error { EXT }
+
+fn UnmarshalText  (text: [byte]) -> error { EXT }
+
+fn WithZone  (zone: string) -> Addr { EXT }
+
+fn Zone  () -> string { EXT }
+
+}
+
+impl (self: AddrPort) {
+
+fn Addr  () -> Addr { EXT }
+
+fn AppendTo  (b: [byte]) -> [byte] { EXT }
+
+fn IsValid  () -> bool { EXT }
+
+fn MarshalBinary  () -> Result<[byte]> { EXT }
+
+fn MarshalText  () -> Result<[byte]> { EXT }
+
+fn Port  () -> uint16 { EXT }
+
+fn String  () -> string { EXT }
+
+fn UnmarshalBinary  (b: [byte]) -> error { EXT }
+
+fn UnmarshalText  (text: [byte]) -> error { EXT }
+
+}
+
+impl (self: Prefix) {
+
+fn Addr  () -> Addr { EXT }
+
+fn AppendTo  (b: [byte]) -> [byte] { EXT }
+
+fn Bits  () -> int { EXT }
+
+fn Contains  (ip: Addr) -> bool { EXT }
+
+fn IsSingleIP  () -> bool { EXT }
+
+fn IsValid  () -> bool { EXT }
+
+fn MarshalBinary  () -> Result<[byte]> { EXT }
+
+fn MarshalText  () -> Result<[byte]> { EXT }
+
+fn Masked  () -> Prefix { EXT }
+
+fn Overlaps  (o: Prefix) -> bool { EXT }
+
+fn String  () -> string { EXT }
+
+fn UnmarshalBinary  (b: [byte]) -> error { EXT }
+
+fn UnmarshalText  (text: [byte]) -> error { EXT }
+
+}
+
+struct Addr{
+
+}
+
+struct AddrPort{
+
+}
+
+struct Prefix{
+
+}

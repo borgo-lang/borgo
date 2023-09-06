@@ -1,0 +1,26 @@
+Type errors in method chains
+
+SOURCE:
+  struct Foo {}
+  struct Bar {}
+  struct Baz {}
+
+  impl (f: Foo) { fn foo() -> int { 1 } }
+  impl (b: Bar) { fn bar() -> Baz { Baz{} } }
+  impl (b: Baz) { fn baz() -> Bar { Bar{} } }
+
+fn main() {
+  Bar{}
+  .bar()
+  .baz()
+  .foo()
+}
+
+OUTPUT:
+Type:
+    Bar
+has no field or method:
+    foo
+
+13|    .foo()
+        ^^^

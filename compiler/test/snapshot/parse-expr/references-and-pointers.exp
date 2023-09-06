@@ -1,0 +1,129 @@
+References and pointers
+
+SOURCE:
+struct Foo {
+    a: *Bar,
+}
+
+fn bar(f: *Foo) {
+    Foo { a: &Bar { b: 123 } }
+}
+
+OUTPUT:
+Struct#1,1, Ident("Foo", 3)#1,8, LCurly#1,12, Ident("a", 1)#2,5, Colon#2,6, Star#2,8, Ident("Bar", 3)#2,9, Comma#2,12, RCurly#3,1, Semicolon#3,2, Fn_#5,1, Ident("bar", 3)#5,4, LParen#5,7, Ident("f", 1)#5,8, Colon#5,9, Star#5,11, Ident("Foo", 3)#5,12, RParen#5,15, LCurly#5,17, Ident("Foo", 3)#6,5, LCurly#6,9, Ident("a", 1)#6,11, Colon#6,12, Ampersand#6,14, Ident("Bar", 3)#6,15, LCurly#6,19, Ident("b", 1)#6,21, Colon#6,22, Int("123", 3)#6,24, RCurly#6,28, RCurly#6,30, Semicolon#6,31, RCurly#7,1, EOF#7,2
+---
+No errors.
+---
+[
+  {
+    "StructDef": {
+      "def": {
+        "name": "Foo",
+        "generics": [],
+        "fields": [
+          {
+            "name": "a",
+            "ann": {
+              "Con": {
+                "name": "Ref",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Bar",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "bar",
+        "generics": [],
+        "args": [
+          {
+            "pat": {
+              "Type": {
+                "ident": "f",
+                "is_mut": false,
+                "ann": "Unknown"
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Ref",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "Foo",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "ret": {
+          "Var": -1
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "StructCall": {
+                  "name": "Foo",
+                  "fields": [
+                    {
+                      "name": "a",
+                      "value": {
+                        "Reference": {
+                          "expr": {
+                            "StructCall": {
+                              "name": "Bar",
+                              "fields": [
+                                {
+                                  "name": "b",
+                                  "value": {
+                                    "Literal": {
+                                      "lit": {
+                                        "Int": 123
+                                      }
+                                    }
+                                  }
+                                }
+                              ],
+                              "rest": null
+                            }
+                          },
+                          "mutable": true
+                        }
+                      }
+                    }
+                  ],
+                  "rest": null
+                }
+              }
+            ]
+          }
+        },
+        "bounded_ty": {
+          "generics": []
+        }
+      },
+      "kind": "TopLevel"
+    }
+  }
+]

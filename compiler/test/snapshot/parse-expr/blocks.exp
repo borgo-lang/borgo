@@ -1,0 +1,41 @@
+Blocks
+
+SOURCE:
+{
+    foo()
+    bar()
+}
+
+OUTPUT:
+LCurly#1,1, Ident("foo", 3)#2,5, LParen#2,8, RParen#2,9, Semicolon#2,10, Ident("bar", 3)#3,5, LParen#3,8, RParen#3,9, Semicolon#3,10, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "foo",
+              "generics_instantiated": []
+            }
+          },
+          "args": []
+        }
+      },
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "bar",
+              "generics_instantiated": []
+            }
+          },
+          "args": []
+        }
+      }
+    ]
+  }
+}

@@ -2,8 +2,8 @@ Let bindings with annotation.
 
 SOURCE:
 {
-  let x: [int] = [1,2,3];
-  let y: [bool] = [1,2,3];
+  let x: [int] = [1,2,3]
+  let y: [bool] = [1,2,3]
 }
 
 OUTPUT:
@@ -13,5 +13,5 @@ Expected:
 Got:
     [int]
 
-3|    let y: [bool] = [1,2,3];
-                      ^^^^^^^
+3|    let y: [bool] = [1,2,3]
+                      ^^^^^^

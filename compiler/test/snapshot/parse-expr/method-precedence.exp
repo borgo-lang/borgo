@@ -1,0 +1,31 @@
+Method precedence
+
+SOURCE:
+Bar{}.foo()?
+
+OUTPUT:
+Ident("Bar", 3)#1,1, LCurly#1,4, RCurly#1,5, Dot#1,6, Ident("foo", 3)#1,7, LParen#1,10, RParen#1,11, Question#1,12, EOF#1,13
+---
+No errors.
+---
+{
+  "Try": {
+    "expr": {
+      "Call": {
+        "func": {
+          "FieldAccess": {
+            "expr": {
+              "StructCall": {
+                "name": "Bar",
+                "fields": [],
+                "rest": null
+              }
+            },
+            "field": "foo"
+          }
+        },
+        "args": []
+      }
+    }
+  }
+}

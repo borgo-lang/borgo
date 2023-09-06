@@ -1,0 +1,2 @@
+// this type is referenced in CaseRange, but it's not exported :thinking_face:
+type d = any;

@@ -2,35 +2,35 @@ Recursive types
 
 SOURCE:
 enum Expr {
-  Add(&Expr, &Expr),
+  Add(*Expr, *Expr),
   Number(int),
 }
 
-impl Expr {
-  fn sum(self) -> int {
-    match self {
-      Add(a, b) => a.sum() + b.sum(),
-      Number(n) => n,
+impl (e: Expr) {
+  fn sum() -> int {
+    match e {
+      Add(a, b) => a.sum() + b.sum()
+      Number(n) => n
     }
   }
 }
 
 struct Foo {
   n: string,
-  f: &Option<Foo>,
+  f: *Option<Foo>,
 }
 
 fn main() {
-  let one = Expr::Number(1);
-  let two = Expr::Number(2);
-  let e = Expr::Add(&one, &two);
-  assert_eq(e.sum(), 3);
+  let one = Expr.Number(1)
+  let two = Expr.Number(2)
+  let e = Expr.Add(&one, &two)
+  assert_eq(e.sum(), 3)
 
-  let f1 = None;
-  let nope = Foo { n: "a", f: &f1 };
-  let f2 = Some(nope);
-  let yep = Foo { n: "b", f: &f2 };
-  assert_eq(yep.n, "b");
+  let f1 = None
+  let nope = Foo { n: "a", f: &f1 }
+  let f2 = Some(nope)
+  let yep = Foo { n: "b", f: &f2 }
+  assert_eq(yep.n, "b")
 }
 
 OUTPUT:
@@ -60,9 +60,9 @@ type Expr struct {
 	Number int
 }
 
-func (self Expr) sum() int {
+func (e Expr) sum() int {
 	var var3 int
-	var1_subject := self
+	var1_subject := e
 	var2_matches := 0
 
 	if var2_matches != 2 {

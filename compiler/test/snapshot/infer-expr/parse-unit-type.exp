@@ -28,11 +28,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 2,
-                        "col": 9
+                        "col": 10
                       },
                       "end": {
                         "line": 2,
-                        "col": 10
+                        "col": 11
                       },
                       "file": 99
                     }
@@ -78,7 +78,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 2,
-                          "col": 18
+                          "col": 19
                         },
                         "end": {
                           "line": 2,
@@ -98,7 +98,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 16
+                    "col": 17
                   },
                   "end": {
                     "line": 2,
@@ -154,7 +154,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -187,7 +187,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 3,

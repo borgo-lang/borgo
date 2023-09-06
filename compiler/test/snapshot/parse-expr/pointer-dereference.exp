@@ -1,0 +1,45 @@
+Pointer dereference
+
+SOURCE:
+{
+    a.b.* = 123
+}
+
+OUTPUT:
+LCurly#1,1, Ident("a", 1)#2,5, Dot#2,6, Ident("b", 1)#2,7, Dot#2,8, Star#2,9, Eq#2,11, Int("123", 3)#2,13, Semicolon#2,16, RCurly#3,1, EOF#3,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "VarUpdate": {
+          "target": {
+            "Unary": {
+              "op": "Deref",
+              "expr": {
+                "FieldAccess": {
+                  "expr": {
+                    "Var": {
+                      "value": "a",
+                      "generics_instantiated": []
+                    }
+                  },
+                  "field": "b"
+                }
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 123
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -4,8 +4,8 @@ SOURCE:
 struct Foo { x: int, y: string }
 
 fn main() {
-  inspect((1, "a", true));
-  inspect(Foo { x: 1, y: "b" });
+  inspect((1, "a", true))
+  inspect(Foo { x: 1, y: "b" })
 }
 
 OUTPUT:

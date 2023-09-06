@@ -3,74 +3,74 @@ Using for loops.
 SOURCE:
 fn main() {
     {
-        let mut sum = 0;
+        let mut sum = 0
 
         // this should iterate over values
         for x in [1, 2, 3] {
-            sum = sum + x;
+            sum = sum + x
         }
 
-        assert_eq(sum, 6);
+        assert_eq(sum, 6)
     }
 
     {
-        let mut sum = 0;
+        let mut sum = 0
 
         for (i, x) in [1, 2, 3].enumerate() {
-            sum = sum + i + x;
+            sum = sum + i + x
         }
 
-        assert_eq(sum, 9);
+        assert_eq(sum, 9)
     }
 
     {
-        let str = "asdf";
-        let mut check = "";
+        let str = "asdf"
+        let mut check = ""
 
         for c in str {
           check = check + string(c)
         }
 
-        assert_eq(str, check);
-        let mut check = "";
+        assert_eq(str, check)
+        let mut check = ""
 
         for (index, c) in str.enumerate() {
-          inspect(index);
-          check = check + string(c);
+          inspect(index)
+          check = check + string(c)
         }
 
-        assert_eq(str, check);
+        assert_eq(str, check)
     }
 
-    let mut n = 20;
+    let mut n = 20
 
     match true {
         true => {
-            n = 25;
+            n = 25
         }
-        false => (),
+        false => ()
     }
 
     loop {
         if n > 27 {
-            break;
+            break
         }
-        inspect(n);
-        n = n + 1;
+        inspect(n)
+        n = n + 1
     }
 
-    n = 0;
+    n = 0
     while n < 10 {
-        n = n + 1;
+        n = n + 1
     }
-    inspect(n);
+    inspect(n)
 
-    let m = Map::new();
-    m.insert("a", 1);
+    let m = Map.new()
+    m.insert("a", 1)
 
     for (k, v) in m {
-        inspect(k);
-        inspect(v);
+        inspect(k)
+        inspect(v)
     }
 }
 

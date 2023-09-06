@@ -1,0 +1,64 @@
+Comments are skipped
+
+SOURCE:
+{
+    // leading comment
+    let first = 1
+
+    foo(
+        bar,
+        // trailing comment
+    )
+}
+
+OUTPUT:
+LCurly#1,1, Comment#2,5, Let#3,5, Ident("first", 5)#3,9, Eq#3,15, Int("1", 1)#3,17, Semicolon#3,18, Ident("foo", 3)#5,5, LParen#5,8, Ident("bar", 3)#6,9, Comma#6,12, Comment#7,9, RParen#8,5, Semicolon#8,6, RCurly#9,1, EOF#9,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "first",
+                "is_mut": false,
+                "ann": "Unknown"
+              }
+            },
+            "ann": "Unknown"
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              }
+            }
+          },
+          "mutable": false
+        }
+      },
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "foo",
+              "generics_instantiated": []
+            }
+          },
+          "args": [
+            {
+              "Var": {
+                "value": "bar",
+                "generics_instantiated": []
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

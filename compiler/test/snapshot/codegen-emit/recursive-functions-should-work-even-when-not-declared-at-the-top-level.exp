@@ -11,7 +11,7 @@ fn main() {
       acc + n
     } else {
       acc
-    };
+    }
 
     foo(n - 1, new_acc)
   }

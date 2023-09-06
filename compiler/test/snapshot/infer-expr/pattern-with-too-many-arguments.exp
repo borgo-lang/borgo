@@ -14,4 +14,4 @@ Got:
     (A, B, C)
 
 2|    fn foo((x, y, z): (bool, bool)) -> bool { x }
-             ^^^^^^^^^
+             ^^^^^^^^

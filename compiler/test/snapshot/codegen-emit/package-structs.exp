@@ -1,10 +1,10 @@
 Package structs
 
 SOURCE:
-use os;
+use os
 
 fn main() {
-  let _ = os::Process { Pid: 99 };
+  let _ = os.Process { Pid: 99 }
 }
 
 OUTPUT:

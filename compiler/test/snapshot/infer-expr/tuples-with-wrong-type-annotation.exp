@@ -1,7 +1,7 @@
 Tuples with wrong type annotation.
 
 SOURCE:
-("foo", 2) as (bool, int)
+@ensure ("foo", 2), (bool, int)
 
 OUTPUT:
 Type mismatch
@@ -10,5 +10,5 @@ Expected:
 Got:
     (bool, int)
 
-1|  ("foo", 2) as (bool, int)
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
+1|  @ensure ("foo", 2), (bool, int)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

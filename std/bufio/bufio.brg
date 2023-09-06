@@ -1,188 +1,117 @@
-use io;
+use io
 
-fn NewReadWriter(r: &Reader, w: &Writer) -> &ReadWriter {
-    EXT
+
+fn NewReadWriter  (r: *Reader, w: *Writer) -> *ReadWriter { EXT }
+
+fn NewReader  (rd: io.Reader) -> *Reader { EXT }
+
+fn NewReaderSize  (rd: io.Reader, size: int) -> *Reader { EXT }
+
+fn NewScanner  (r: io.Reader) -> *Scanner { EXT }
+
+fn NewWriter  (w: io.Writer) -> *Writer { EXT }
+
+fn NewWriterSize  (w: io.Writer, size: int) -> *Writer { EXT }
+
+fn ScanBytes  (data: [byte], atEOF: bool) -> (int, [byte], error) { EXT }
+
+fn ScanLines  (data: [byte], atEOF: bool) -> (int, [byte], error) { EXT }
+
+fn ScanRunes  (data: [byte], atEOF: bool) -> (int, [byte], error) { EXT }
+
+fn ScanWords  (data: [byte], atEOF: bool) -> (int, [byte], error) { EXT }
+
+impl (self: Reader) {
+
+fn Buffered  () -> int { EXT }
+
+fn Discard  (n: int) -> Result<int> { EXT }
+
+fn Peek  (n: int) -> Result<[byte]> { EXT }
+
+fn Read  (p: [byte]) -> Result<int> { EXT }
+
+fn ReadByte  () -> Result<byte> { EXT }
+
+fn ReadBytes  (delim: byte) -> Result<[byte]> { EXT }
+
+fn ReadLine  () -> ([byte], bool, error) { EXT }
+
+fn ReadRune  () -> (rune, int, error) { EXT }
+
+fn ReadSlice  (delim: byte) -> Result<[byte]> { EXT }
+
+fn ReadString  (delim: byte) -> Result<string> { EXT }
+
+fn Reset  (r: io.Reader) -> () { EXT }
+
+fn Size  () -> int { EXT }
+
+fn UnreadByte  () -> error { EXT }
+
+fn UnreadRune  () -> error { EXT }
+
+fn WriteTo  (w: io.Writer) -> Result<int64> { EXT }
+
 }
 
-fn NewReader(rd: io::Reader) -> &Reader {
-    EXT
+impl (self: Scanner) {
+
+fn Buffer  (buf: [byte], max: int) -> () { EXT }
+
+fn Bytes  () -> [byte] { EXT }
+
+fn Err  () -> error { EXT }
+
+fn Scan  () -> bool { EXT }
+
+fn Split  (split: SplitFunc) -> () { EXT }
+
+fn Text  () -> string { EXT }
+
 }
 
-fn NewReaderSize(rd: io::Reader, size: int) -> &Reader {
-    EXT
+impl (self: Writer) {
+
+fn Available  () -> int { EXT }
+
+fn AvailableBuffer  () -> [byte] { EXT }
+
+fn Buffered  () -> int { EXT }
+
+fn Flush  () -> error { EXT }
+
+fn ReadFrom  (r: io.Reader) -> Result<int64> { EXT }
+
+fn Reset  (w: io.Writer) -> () { EXT }
+
+fn Size  () -> int { EXT }
+
+fn Write  (p: [byte]) -> Result<int> { EXT }
+
+fn WriteByte  (c: byte) -> error { EXT }
+
+fn WriteRune  (r: rune) -> Result<int> { EXT }
+
+fn WriteString  (s: string) -> Result<int> { EXT }
+
 }
 
-fn NewScanner(r: io::Reader) -> &Scanner {
-    EXT
+type SplitFunc = fn (data: [byte], atEOF: bool) -> (int, [byte], error)
+
+struct ReadWriter{
+// skipping embedded field *Reader,
+// skipping embedded field *Writer
 }
 
-fn NewWriter(w: io::Writer) -> &Writer {
-    EXT
+struct Reader{
+
 }
 
-fn NewWriterSize(w: io::Writer, size: int) -> &Writer {
-    EXT
+struct Scanner{
+
 }
 
-fn ScanBytes(data: [byte], atEOF: bool) -> (int, [byte], error) {
-    EXT
+struct Writer{
+
 }
-
-fn ScanLines(data: [byte], atEOF: bool) -> (int, [byte], error) {
-    EXT
-}
-
-fn ScanRunes(data: [byte], atEOF: bool) -> (int, [byte], error) {
-    EXT
-}
-
-fn ScanWords(data: [byte], atEOF: bool) -> (int, [byte], error) {
-    EXT
-}
-
-impl Reader {
-    fn Buffered(&self) -> int {
-        EXT
-    }
-
-    fn Discard(&self, n: int) -> Result<int> {
-        EXT
-    }
-
-    fn Peek(&self, n: int) -> Result<[byte]> {
-        EXT
-    }
-
-    fn Read(&self, p: [byte]) -> Result<int> {
-        EXT
-    }
-
-    fn ReadByte(&self) -> Result<byte> {
-        EXT
-    }
-
-    fn ReadBytes(&self, delim: byte) -> Result<[byte]> {
-        EXT
-    }
-
-    fn ReadLine(&self) -> ([byte], bool, error) {
-        EXT
-    }
-
-    fn ReadRune(&self) -> (rune, int, error) {
-        EXT
-    }
-
-    fn ReadSlice(&self, delim: byte) -> Result<[byte]> {
-        EXT
-    }
-
-    fn ReadString(&self, delim: byte) -> Result<string> {
-        EXT
-    }
-
-    fn Reset(&self, r: io::Reader) -> () {
-        EXT
-    }
-
-    fn Size(&self) -> int {
-        EXT
-    }
-
-    fn UnreadByte(&self) -> error {
-        EXT
-    }
-
-    fn UnreadRune(&self) -> error {
-        EXT
-    }
-
-    fn WriteTo(&self, w: io::Writer) -> Result<int64> {
-        EXT
-    }
-}
-
-impl Scanner {
-    fn Buffer(&self, buf: [byte], max: int) -> () {
-        EXT
-    }
-
-    fn Bytes(&self) -> [byte] {
-        EXT
-    }
-
-    fn Err(&self) -> error {
-        EXT
-    }
-
-    fn Scan(&self) -> bool {
-        EXT
-    }
-
-    fn Split(&self, split: SplitFunc) -> () {
-        EXT
-    }
-
-    fn Text(&self) -> string {
-        EXT
-    }
-}
-
-impl Writer {
-    fn Available(&self) -> int {
-        EXT
-    }
-
-    fn AvailableBuffer(&self) -> [byte] {
-        EXT
-    }
-
-    fn Buffered(&self) -> int {
-        EXT
-    }
-
-    fn Flush(&self) -> error {
-        EXT
-    }
-
-    fn ReadFrom(&self, r: io::Reader) -> Result<int64> {
-        EXT
-    }
-
-    fn Reset(&self, w: io::Writer) -> () {
-        EXT
-    }
-
-    fn Size(&self) -> int {
-        EXT
-    }
-
-    fn Write(&self, p: [byte]) -> Result<int> {
-        EXT
-    }
-
-    fn WriteByte(&self, c: byte) -> error {
-        EXT
-    }
-
-    fn WriteRune(&self, r: rune) -> Result<int> {
-        EXT
-    }
-
-    fn WriteString(&self, s: string) -> Result<int> {
-        EXT
-    }
-}
-
-type SplitFunc = fn(data: [byte], atEOF: bool) -> (int, [byte], error);
-
-struct ReadWriter {
-    // skipping embedded field &Reader,
-    // skipping embedded field &Writer
-}
-
-struct Reader {}
-
-struct Scanner {}
-
-struct Writer {}

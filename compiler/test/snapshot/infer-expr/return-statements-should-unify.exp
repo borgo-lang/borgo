@@ -3,7 +3,7 @@ Return statements should unify.
 SOURCE:
 {
   fn foo() -> int {
-    let x = 5;
+    let x = 5
     return x
   }
 }
@@ -48,11 +48,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 3,
-                                "col": 8
+                                "col": 9
                               },
                               "end": {
                                 "line": 3,
-                                "col": 9
+                                "col": 10
                               },
                               "file": 99
                             }
@@ -80,16 +80,17 @@ No errors.
                           "span": {
                             "start": {
                               "line": 3,
-                              "col": 12
+                              "col": 13
                             },
                             "end": {
                               "line": 3,
-                              "col": 13
+                              "col": 14
                             },
                             "file": 99
                           }
                         }
                       },
+                      "mutable": false,
                       "ty": {
                         "Con": {
                           "id": "int",
@@ -99,7 +100,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 3,
-                          "col": 4
+                          "col": 5
                         },
                         "end": {
                           "line": 3,
@@ -117,11 +118,11 @@ No errors.
                           "decl": {
                             "start": {
                               "line": 3,
-                              "col": 8
+                              "col": 9
                             },
                             "end": {
                               "line": 3,
-                              "col": 9
+                              "col": 10
                             },
                             "file": 99
                           },
@@ -135,11 +136,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 4,
-                              "col": 11
+                              "col": 12
                             },
                             "end": {
                               "line": 4,
-                              "col": 12
+                              "col": 13
                             },
                             "file": 99
                           }
@@ -154,11 +155,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 4,
-                          "col": 4
+                          "col": 5
                         },
                         "end": {
                           "line": 4,
-                          "col": 12
+                          "col": 13
                         },
                         "file": 99
                       }
@@ -174,7 +175,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 18
+                    "col": 19
                   },
                   "end": {
                     "line": 5,
@@ -216,7 +217,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 5,
@@ -242,7 +243,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 6,

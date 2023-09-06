@@ -1,0 +1,30 @@
+Strings and chars
+
+SOURCE:
+("hello", 'a')
+
+OUTPUT:
+LParen#1,1, String("hello", 7)#1,2, Comma#1,9, Char("a", 3)#1,11, RParen#1,14, EOF#1,15
+---
+No errors.
+---
+{
+  "Tuple": {
+    "elems": [
+      {
+        "Literal": {
+          "lit": {
+            "String": "hello"
+          }
+        }
+      },
+      {
+        "Literal": {
+          "lit": {
+            "Char": "a"
+          }
+        }
+      }
+    ]
+  }
+}

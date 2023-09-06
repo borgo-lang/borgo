@@ -16,6 +16,7 @@ footer { font-size: 0.75em; margin-bottom: 3em; padding-top: 0.5em; border-top: 
 main { display: flex; align-items: top; justify-content: space-between; flex-wrap: wrap; margin-top: 3em; }
 
 
+img { max-width: 100%; }
 
 /* Homepage */
 .home { max-width: 60em; margin: 0 auto 1.5em; }

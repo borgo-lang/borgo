@@ -1,0 +1,41 @@
+Newtypes (tuple structs)
+
+SOURCE:
+struct Foo<T>(Bar<int>)
+
+OUTPUT:
+Struct#1,1, Ident("Foo", 3)#1,8, LAngle#1,11, Ident("T", 1)#1,12, RAngle#1,13, LParen#1,14, Ident("Bar", 3)#1,15, LAngle#1,18, Ident("int", 3)#1,19, RAngle#1,22, RParen#1,23, EOF#1,24
+---
+No errors.
+---
+{
+  "NewtypeDef": {
+    "def": {
+      "name": "Foo",
+      "generics": [
+        {
+          "name": "T",
+          "bounds": []
+        }
+      ],
+      "fields": [
+        {
+          "name": "field0",
+          "ann": {
+            "Con": {
+              "name": "Bar",
+              "args": [
+                {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

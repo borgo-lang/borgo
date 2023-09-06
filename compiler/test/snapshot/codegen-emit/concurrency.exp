@@ -1,63 +1,63 @@
 Concurrency
 
 SOURCE:
-use sync;
-use fmt;
+use sync
+use fmt
 
 fn main() {
-  let (sender, receiver) = Channel::new();
+  let (sender, receiver) = Channel.new()
 
   fn foo(x: int) {
     sender.send(x)
   }
 
-  spawn!((|| { sender.send(5) })());
+  spawn (|| { sender.send(5) })()
 
-  let val = receiver.recv();
-  assert_eq(val, 5);
+  let val = receiver.recv()
+  assert_eq(val, 5)
 
-  spawn!(foo(10));
+  spawn foo(10)
 
-  let val = receiver.recv();
-  assert_eq(val, 10);
+  let val = receiver.recv()
+  assert_eq(val, 10)
 
   {
-    let desired = 5;
+    let desired = 5
 
-    let wg: sync::WaitGroup = zero_value();
-    wg.Add(desired);
+    let wg: sync.WaitGroup = zero_value()
+    wg.Add(desired)
 
-    let (done_tx, done_rx) = Channel::new();
+    let (done_tx, done_rx) = Channel.new()
 
     // receiver goroutine
-    spawn!((|| {
-      let mut count = 0;
+    spawn (|| {
+      let mut count = 0
 
       for n in receiver {
-        count = count + n;
+        count = count + n
       }
 
-      assert_eq(count, 10);
-      fmt.Printf("count: %v", count);
+      assert_eq(count, 10)
+      fmt.Printf("count: %v", count)
 
-      done_tx.send(());
-    })());
+      done_tx.send(())
+    })()
 
-    let mut i = 0;
+    let mut i = 0
 
     // start `desired` goroutines
     while (i < desired) {
-      spawn!((|i| {
-        sender.send(i);
+      spawn (|i| {
+        sender.send(i)
         wg.Done()
-      })(i));
+      })(i)
 
-      i = i + 1;
+      i = i + 1
     }
 
-    wg.Wait();
-    sender.close();          // close(sender)
-    done_rx.recv(); // <-done
+    wg.Wait()
+    sender.close() // close(sender)
+    done_rx.recv() // <-done
   }
 }
 

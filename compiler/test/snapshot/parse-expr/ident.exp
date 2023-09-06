@@ -1,0 +1,28 @@
+Ident
+
+SOURCE:
+1 * b
+
+OUTPUT:
+Int("1", 1)#1,1, Star#1,3, Ident("b", 1)#1,5, EOF#1,6
+---
+No errors.
+---
+{
+  "Binary": {
+    "op": "Mul",
+    "left": {
+      "Literal": {
+        "lit": {
+          "Int": 1
+        }
+      }
+    },
+    "right": {
+      "Var": {
+        "value": "b",
+        "generics_instantiated": []
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@ Enums should introduce a new type in the environment.
 SOURCE:
 {
   enum Color { Red }
-  Color::Red
+  Color.Red
 }
 
 OUTPUT:
@@ -29,7 +29,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -41,11 +41,11 @@ No errors.
       },
       {
         "Var": {
-          "value": "Color::Red",
+          "value": "Color.Red",
           "decl": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -63,7 +63,7 @@ No errors.
           "span": {
             "start": {
               "line": 3,
-              "col": 2
+              "col": 9
             },
             "end": {
               "line": 3,
@@ -83,7 +83,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 4,

@@ -3,15 +3,15 @@ Let binding same name as function param
 SOURCE:
 fn foo(xs: [int]) -> int {
   // TODO asdf make sure params are put in scope so they can be rebound
-  // let xs = xs.len();
+  // let xs = xs.len()
   // xs + 10
 
-  let xxxs = xs.len();
+  let xxxs = xs.len()
   xxxs + 10
 }
 
 fn main() {
-  assert_eq(foo([1,2,3]), 13);
+  assert_eq(foo([1,2,3]), 13)
 }
 
 OUTPUT:

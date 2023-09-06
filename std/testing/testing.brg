@@ -1,466 +1,290 @@
-use time;
+use time
 
-fn Benchmark(f: fn(b: &B) -> ()) -> BenchmarkResult {
-    EXT
+
+fn AllocsPerRun  (runs: int, f: fn () -> ()) -> float64 { EXT }
+
+fn Benchmark  (f: fn (b: *B) -> ()) -> BenchmarkResult { EXT }
+
+fn CoverMode  () -> string { EXT }
+
+fn Coverage  () -> float64 { EXT }
+
+fn Init  () -> () { EXT }
+
+fn Main  (matchString: fn (pat: string, str: string) -> Result<bool>, tests: [InternalTest], benchmarks: [InternalBenchmark], examples: [InternalExample]) -> () { EXT }
+
+fn MainStart  (deps: testDeps, tests: [InternalTest], benchmarks: [InternalBenchmark], fuzzTargets: [InternalFuzzTarget], examples: [InternalExample]) -> *M { EXT }
+
+fn RegisterCover  (c: Cover) -> () { EXT }
+
+fn RunBenchmarks  (matchString: fn (pat: string, str: string) -> Result<bool>, benchmarks: [InternalBenchmark]) -> () { EXT }
+
+fn RunExamples  (matchString: fn (pat: string, str: string) -> Result<bool>, examples: [InternalExample]) -> bool { EXT }
+
+fn RunTests  (matchString: fn (pat: string, str: string) -> Result<bool>, tests: [InternalTest]) -> bool { EXT }
+
+fn Short  () -> bool { EXT }
+
+fn Verbose  () -> bool { EXT }
+
+impl (self: B) {
+
+fn Cleanup  (f: fn () -> ()) -> () { EXT }
+
+fn Error  (args: VarArgs<any>) -> () { EXT }
+
+fn Errorf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Fail  () -> () { EXT }
+
+fn FailNow  () -> () { EXT }
+
+fn Failed  () -> bool { EXT }
+
+fn Fatal  (args: VarArgs<any>) -> () { EXT }
+
+fn Fatalf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Helper  () -> () { EXT }
+
+fn Log  (args: VarArgs<any>) -> () { EXT }
+
+fn Logf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Name  () -> string { EXT }
+
+fn ReportAllocs  () -> () { EXT }
+
+fn ReportMetric  (n: float64, unit: string) -> () { EXT }
+
+fn ResetTimer  () -> () { EXT }
+
+fn Run  (name: string, f: fn (b: *B) -> ()) -> bool { EXT }
+
+fn RunParallel  (body: fn (param0: *PB) -> ()) -> () { EXT }
+
+fn SetBytes  (n: int64) -> () { EXT }
+
+fn SetParallelism  (p: int) -> () { EXT }
+
+fn Setenv  (key: string, value: string) -> () { EXT }
+
+fn Skip  (args: VarArgs<any>) -> () { EXT }
+
+fn SkipNow  () -> () { EXT }
+
+fn Skipf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Skipped  () -> bool { EXT }
+
+fn StartTimer  () -> () { EXT }
+
+fn StopTimer  () -> () { EXT }
+
+fn TempDir  () -> string { EXT }
+
 }
 
-fn MainStart(
-    deps: testDeps,
-    tests: [InternalTest],
-    benchmarks: [InternalBenchmark],
-    fuzzTargets: [InternalFuzzTarget],
-    examples: [InternalExample],
-) -> &M {
-    EXT
+impl (self: BenchmarkResult) {
+
+fn AllocedBytesPerOp  () -> int64 { EXT }
+
+fn AllocsPerOp  () -> int64 { EXT }
+
+fn MemString  () -> string { EXT }
+
+fn NsPerOp  () -> int64 { EXT }
+
+fn String  () -> string { EXT }
+
 }
 
-fn AllocsPerRun(runs: int, f: fn() -> ()) -> float64 {
-    EXT
+impl (self: F) {
+
+fn Add  (args: VarArgs<any>) -> () { EXT }
+
+fn Cleanup  (f: fn () -> ()) -> () { EXT }
+
+fn Error  (args: VarArgs<any>) -> () { EXT }
+
+fn Errorf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Fail  () -> () { EXT }
+
+fn FailNow  () -> () { EXT }
+
+fn Failed  () -> bool { EXT }
+
+fn Fatal  (args: VarArgs<any>) -> () { EXT }
+
+fn Fatalf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Fuzz  (ff: any) -> () { EXT }
+
+fn Helper  () -> () { EXT }
+
+fn Log  (args: VarArgs<any>) -> () { EXT }
+
+fn Logf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Name  () -> string { EXT }
+
+fn Setenv  (key: string, value: string) -> () { EXT }
+
+fn Skip  (args: VarArgs<any>) -> () { EXT }
+
+fn SkipNow  () -> () { EXT }
+
+fn Skipf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Skipped  () -> bool { EXT }
+
+fn TempDir  () -> string { EXT }
+
 }
 
-fn CoverMode() -> string {
-    EXT
+impl (self: M) {
+
+fn Run  () -> int { EXT }
+
 }
 
-fn Coverage() -> float64 {
-    EXT
+impl (self: PB) {
+
+fn Next  () -> bool { EXT }
+
 }
 
-fn Init() -> () {
-    EXT
+impl (self: T) {
+
+fn Cleanup  (f: fn () -> ()) -> () { EXT }
+
+fn Deadline  () -> Option<time.Time> { EXT }
+
+fn Error  (args: VarArgs<any>) -> () { EXT }
+
+fn Errorf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Fail  () -> () { EXT }
+
+fn FailNow  () -> () { EXT }
+
+fn Failed  () -> bool { EXT }
+
+fn Fatal  (args: VarArgs<any>) -> () { EXT }
+
+fn Fatalf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Helper  () -> () { EXT }
+
+fn Log  (args: VarArgs<any>) -> () { EXT }
+
+fn Logf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Name  () -> string { EXT }
+
+fn Parallel  () -> () { EXT }
+
+fn Run  (name: string, f: fn (t: *T) -> ()) -> bool { EXT }
+
+fn Setenv  (key: string, value: string) -> () { EXT }
+
+fn Skip  (args: VarArgs<any>) -> () { EXT }
+
+fn SkipNow  () -> () { EXT }
+
+fn Skipf  (format: string, args: VarArgs<any>) -> () { EXT }
+
+fn Skipped  () -> bool { EXT }
+
+fn TempDir  () -> string { EXT }
+
 }
 
-fn Main(
-    matchString: fn(pat: string, str: string) -> Result<bool>,
-    tests: [InternalTest],
-    benchmarks: [InternalBenchmark],
-    examples: [InternalExample],
-) -> () {
-    EXT
+struct B{
+  N: int
 }
 
-fn RegisterCover(c: Cover) -> () {
-    EXT
+struct BenchmarkResult{
+  N: int,
+  T: time.Duration,
+  Bytes: int64,
+  MemAllocs: uint64,
+  MemBytes: uint64,
+  Extra: Map<string, float64>
 }
 
-fn RunBenchmarks(
-    matchString: fn(pat: string, str: string) -> Result<bool>,
-    benchmarks: [InternalBenchmark],
-) -> () {
-    EXT
+struct Cover{
+  Mode: string,
+  Counters: Map<string, [uint32]>,
+  Blocks: Map<string, [CoverBlock]>,
+  CoveredPackages: string
 }
 
-fn RunExamples(
-    matchString: fn(pat: string, str: string) -> Result<bool>,
-    examples: [InternalExample],
-) -> bool {
-    EXT
+struct CoverBlock{
+  Line0: uint32,
+  Col0: uint16,
+  Line1: uint32,
+  Col1: uint16,
+  Stmts: uint16
 }
 
-fn RunTests(
-    matchString: fn(pat: string, str: string) -> Result<bool>,
-    tests: [InternalTest],
-) -> bool {
-    EXT
+struct F{
+
 }
 
-fn Short() -> bool {
-    EXT
+struct InternalBenchmark{
+  Name: string,
+  F: fn (b: *B) -> ()
 }
 
-fn Verbose() -> bool {
-    EXT
+struct InternalExample{
+  Name: string,
+  F: fn () -> (),
+  Output: string,
+  Unordered: bool
 }
 
-impl T {
-    fn Cleanup(&self, f: fn() -> ()) -> () {
-        EXT
-    }
-
-    fn Deadline(&self) -> Option<time::Time> {
-        EXT
-    }
-
-    fn Error(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Errorf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fail(&self) -> () {
-        EXT
-    }
-
-    fn FailNow(&self) -> () {
-        EXT
-    }
-
-    fn Failed(&self) -> bool {
-        EXT
-    }
-
-    fn Fatal(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fatalf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Helper(&self) -> () {
-        EXT
-    }
-
-    fn Log(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Logf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Name(&self) -> string {
-        EXT
-    }
-
-    fn Parallel(&self) -> () {
-        EXT
-    }
-
-    fn Run(&self, name: string, f: fn(t: &T) -> ()) -> bool {
-        EXT
-    }
-
-    fn Setenv(&self, key: string, value: string) -> () {
-        EXT
-    }
-
-    fn Skip(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn SkipNow(&self) -> () {
-        EXT
-    }
-
-    fn Skipf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Skipped(&self) -> bool {
-        EXT
-    }
-
-    fn TempDir(&self) -> string {
-        EXT
-    }
+struct InternalFuzzTarget{
+  Name: string,
+  Fn: fn (f: *F) -> ()
 }
 
-impl B {
-    fn Cleanup(&self, f: fn() -> ()) -> () {
-        EXT
-    }
-
-    fn Error(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Errorf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fail(&self) -> () {
-        EXT
-    }
-
-    fn FailNow(&self) -> () {
-        EXT
-    }
-
-    fn Failed(&self) -> bool {
-        EXT
-    }
-
-    fn Fatal(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fatalf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Helper(&self) -> () {
-        EXT
-    }
-
-    fn Log(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Logf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Name(&self) -> string {
-        EXT
-    }
-
-    fn ReportAllocs(&self) -> () {
-        EXT
-    }
-
-    fn ReportMetric(&self, n: float64, unit: string) -> () {
-        EXT
-    }
-
-    fn ResetTimer(&self) -> () {
-        EXT
-    }
-
-    fn Run(&self, name: string, f: fn(b: &B) -> ()) -> bool {
-        EXT
-    }
-
-    fn RunParallel(&self, body: fn(param0: &PB) -> ()) -> () {
-        EXT
-    }
-
-    fn SetBytes(&self, n: int64) -> () {
-        EXT
-    }
-
-    fn SetParallelism(&self, p: int) -> () {
-        EXT
-    }
-
-    fn Setenv(&self, key: string, value: string) -> () {
-        EXT
-    }
-
-    fn Skip(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn SkipNow(&self) -> () {
-        EXT
-    }
-
-    fn Skipf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Skipped(&self) -> bool {
-        EXT
-    }
-
-    fn StartTimer(&self) -> () {
-        EXT
-    }
-
-    fn StopTimer(&self) -> () {
-        EXT
-    }
-
-    fn TempDir(&self) -> string {
-        EXT
-    }
+struct InternalTest{
+  Name: string,
+  F: fn (param0: *T) -> ()
 }
 
-impl BenchmarkResult {
-    fn AllocedBytesPerOp(self) -> int64 {
-        EXT
-    }
+struct M{
 
-    fn AllocsPerOp(self) -> int64 {
-        EXT
-    }
-
-    fn MemString(self) -> string {
-        EXT
-    }
-
-    fn NsPerOp(self) -> int64 {
-        EXT
-    }
-
-    fn String(self) -> string {
-        EXT
-    }
 }
 
-impl F {
-    fn Add(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
+struct PB{
 
-    fn Cleanup(&self, f: fn() -> ()) -> () {
-        EXT
-    }
-
-    fn Error(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Errorf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fail(&self) -> () {
-        EXT
-    }
-
-    fn FailNow(&self) -> () {
-        EXT
-    }
-
-    fn Failed(&self) -> bool {
-        EXT
-    }
-
-    fn Fatal(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fatalf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Fuzz(&self, ff: any) -> () {
-        EXT
-    }
-
-    fn Helper(&self) -> () {
-        EXT
-    }
-
-    fn Log(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Logf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Name(&self) -> string {
-        EXT
-    }
-
-    fn Setenv(&self, key: string, value: string) -> () {
-        EXT
-    }
-
-    fn Skip(&self, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn SkipNow(&self) -> () {
-        EXT
-    }
-
-    fn Skipf(&self, format: string, args: VarArgs<any>) -> () {
-        EXT
-    }
-
-    fn Skipped(&self) -> bool {
-        EXT
-    }
-
-    fn TempDir(&self) -> string {
-        EXT
-    }
 }
 
-impl M {
-    fn Run(&self) -> int {
-        EXT
-    }
+struct T{
+
 }
 
-impl PB {
-    fn Next(&self) -> bool {
-        EXT
-    }
+interface TB {
+
+  fn Cleanup (param0: fn () -> ()) -> ()
+  fn Error (args: VarArgs<any>) -> ()
+  fn Errorf (format: string, args: VarArgs<any>) -> ()
+  fn Fail () -> ()
+  fn FailNow () -> ()
+  fn Failed () -> bool
+  fn Fatal (args: VarArgs<any>) -> ()
+  fn Fatalf (format: string, args: VarArgs<any>) -> ()
+  fn Helper () -> ()
+  fn Log (args: VarArgs<any>) -> ()
+  fn Logf (format: string, args: VarArgs<any>) -> ()
+  fn Name () -> string
+  fn Setenv (key: string, value: string) -> ()
+  fn Skip (args: VarArgs<any>) -> ()
+  fn SkipNow () -> ()
+  fn Skipf (format: string, args: VarArgs<any>) -> ()
+  fn Skipped () -> bool
+  fn TempDir () -> string
 }
-
-struct B {
-    N: int,
-}
-
-struct BenchmarkResult {
-    N: int,
-    T: time::Duration,
-    Bytes: int64,
-    MemAllocs: uint64,
-    MemBytes: uint64,
-    Extra: Map<string, float64>,
-}
-
-struct Cover {
-    Mode: string,
-    Counters: Map<string, [uint32]>,
-    Blocks: Map<string, [CoverBlock]>,
-    CoveredPackages: string,
-}
-
-struct CoverBlock {
-    Line0: uint32,
-    Col0: uint16,
-    Line1: uint32,
-    Col1: uint16,
-    Stmts: uint16,
-}
-
-struct F {}
-
-struct InternalBenchmark {
-    Name: string,
-    F: fn(b: &B) -> (),
-}
-
-struct InternalExample {
-    Name: string,
-    F: fn() -> (),
-    Output: string,
-    Unordered: bool,
-}
-
-struct InternalFuzzTarget {
-    Name: string,
-    Fn: fn(f: &F) -> (),
-}
-
-struct InternalTest {
-    Name: string,
-    F: fn(param0: &T) -> (),
-}
-
-struct M {}
-
-struct PB {}
-
-struct T {}
-
-trait TB {
-    fn Cleanup(param0: fn() -> ()) -> ();
-    fn Error(args: VarArgs<any>) -> ();
-    fn Errorf(format: string, args: VarArgs<any>) -> ();
-    fn Fail() -> ();
-    fn FailNow() -> ();
-    fn Failed() -> bool;
-    fn Fatal(args: VarArgs<any>) -> ();
-    fn Fatalf(format: string, args: VarArgs<any>) -> ();
-    fn Helper() -> ();
-    fn Log(args: VarArgs<any>) -> ();
-    fn Logf(format: string, args: VarArgs<any>) -> ();
-    fn Name() -> string;
-    fn Setenv(key: string, value: string) -> ();
-    fn Skip(args: VarArgs<any>) -> ();
-    fn SkipNow() -> ();
-    fn Skipf(format: string, args: VarArgs<any>) -> ();
-    fn Skipped() -> bool;
-    fn TempDir() -> string;
-}
-
-struct testDeps {} // TODO had to add manually...

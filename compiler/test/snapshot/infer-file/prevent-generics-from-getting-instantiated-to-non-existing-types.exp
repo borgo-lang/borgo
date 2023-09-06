@@ -1,0 +1,17 @@
+Prevent generics from getting instantiated to non existing types
+
+SOURCE:
+    enum Foo<T, Y> { Bar(T), Baz(Y) }
+
+    impl<T, Y> (f: Foo<T, Y>) {
+        fn do_stuff(y: Y) -> Y {
+            @ensure f, Foo<T, K>
+            y
+        }
+    }
+
+OUTPUT:
+Type not found: K
+
+5|              @ensure f, Foo<T, K>
+                ^^^^^^^^^^^^^^^^^^^

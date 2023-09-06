@@ -1,267 +1,133 @@
-fn Abs(x: float64) -> float64 {
-    EXT
-}
-
-fn Acos(x: float64) -> float64 {
-    EXT
-}
-
-fn Acosh(x: float64) -> float64 {
-    EXT
-}
-
-fn Asin(x: float64) -> float64 {
-    EXT
-}
-
-fn Asinh(x: float64) -> float64 {
-    EXT
-}
-
-fn Atan(x: float64) -> float64 {
-    EXT
-}
-
-fn Atan2(y: float64, x: float64) -> float64 {
-    EXT
-}
-
-fn Atanh(x: float64) -> float64 {
-    EXT
-}
-
-fn Cbrt(x: float64) -> float64 {
-    EXT
-}
-
-fn Ceil(x: float64) -> float64 {
-    EXT
-}
-
-fn Copysign(f: float64, sign: float64) -> float64 {
-    EXT
-}
-
-fn Cos(x: float64) -> float64 {
-    EXT
-}
-
-fn Cosh(x: float64) -> float64 {
-    EXT
-}
-
-fn Dim(x: float64, y: float64) -> float64 {
-    EXT
-}
-
-fn Erf(x: float64) -> float64 {
-    EXT
-}
-
-fn Erfc(x: float64) -> float64 {
-    EXT
-}
-
-fn Erfcinv(x: float64) -> float64 {
-    EXT
-}
-
-fn Erfinv(x: float64) -> float64 {
-    EXT
-}
-
-fn Exp(x: float64) -> float64 {
-    EXT
-}
-
-fn Exp2(x: float64) -> float64 {
-    EXT
-}
-
-fn Expm1(x: float64) -> float64 {
-    EXT
-}
-
-fn FMA(x: float64, y: float64, z: float64) -> float64 {
-    EXT
-}
-
-fn Float32bits(f: float32) -> uint32 {
-    EXT
-}
-
-fn Float32frombits(b: uint32) -> float32 {
-    EXT
-}
-
-fn Float64bits(f: float64) -> uint64 {
-    EXT
-}
-
-fn Float64frombits(b: uint64) -> float64 {
-    EXT
-}
-
-fn Floor(x: float64) -> float64 {
-    EXT
-}
-
-fn Frexp(f: float64) -> (float64, int) {
-    EXT
-}
-
-fn Gamma(x: float64) -> float64 {
-    EXT
-}
-
-fn Hypot(p: float64, q: float64) -> float64 {
-    EXT
-}
-
-fn Ilogb(x: float64) -> int {
-    EXT
-}
-
-fn Inf(sign: int) -> float64 {
-    EXT
-}
-
-fn IsInf(f: float64, sign: int) -> bool {
-    EXT
-}
-
-fn IsNaN(f: float64) -> bool {
-    EXT
-}
-
-fn J0(x: float64) -> float64 {
-    EXT
-}
-
-fn J1(x: float64) -> float64 {
-    EXT
-}
-
-fn Jn(n: int, x: float64) -> float64 {
-    EXT
-}
-
-fn Ldexp(frac: float64, exp: int) -> float64 {
-    EXT
-}
-
-fn Lgamma(x: float64) -> (float64, int) {
-    EXT
-}
-
-fn Log(x: float64) -> float64 {
-    EXT
-}
-
-fn Log10(x: float64) -> float64 {
-    EXT
-}
-
-fn Log1p(x: float64) -> float64 {
-    EXT
-}
-
-fn Log2(x: float64) -> float64 {
-    EXT
-}
-
-fn Logb(x: float64) -> float64 {
-    EXT
-}
-
-fn Max(x: float64, y: float64) -> float64 {
-    EXT
-}
-
-fn Min(x: float64, y: float64) -> float64 {
-    EXT
-}
-
-fn Mod(x: float64, y: float64) -> float64 {
-    EXT
-}
-
-fn Modf(f: float64) -> (float64, float64) {
-    EXT
-}
-
-fn NaN() -> float64 {
-    EXT
-}
-
-fn Nextafter(x: float64, y: float64) -> float64 {
-    EXT
-}
-
-fn Nextafter32(x: float32, y: float32) -> float32 {
-    EXT
-}
-
-fn Pow(x: float64, y: float64) -> float64 {
-    EXT
-}
-
-fn Pow10(n: int) -> float64 {
-    EXT
-}
-
-fn Remainder(x: float64, y: float64) -> float64 {
-    EXT
-}
-
-fn Round(x: float64) -> float64 {
-    EXT
-}
-
-fn RoundToEven(x: float64) -> float64 {
-    EXT
-}
-
-fn Signbit(x: float64) -> bool {
-    EXT
-}
-
-fn Sin(x: float64) -> float64 {
-    EXT
-}
-
-fn Sincos(x: float64) -> float64 {
-    EXT
-}
-
-fn Sinh(x: float64) -> float64 {
-    EXT
-}
-
-fn Sqrt(x: float64) -> float64 {
-    EXT
-}
-
-fn Tan(x: float64) -> float64 {
-    EXT
-}
-
-fn Tanh(x: float64) -> float64 {
-    EXT
-}
-
-fn Trunc(x: float64) -> float64 {
-    EXT
-}
-
-fn Y0(x: float64) -> float64 {
-    EXT
-}
-
-fn Y1(x: float64) -> float64 {
-    EXT
-}
-
-fn Yn(n: int, x: float64) -> float64 {
-    EXT
-}
+fn Abs  (x: float64) -> float64 { EXT }
+
+fn Acos  (x: float64) -> float64 { EXT }
+
+fn Acosh  (x: float64) -> float64 { EXT }
+
+fn Asin  (x: float64) -> float64 { EXT }
+
+fn Asinh  (x: float64) -> float64 { EXT }
+
+fn Atan  (x: float64) -> float64 { EXT }
+
+fn Atan2  (y: float64, x: float64) -> float64 { EXT }
+
+fn Atanh  (x: float64) -> float64 { EXT }
+
+fn Cbrt  (x: float64) -> float64 { EXT }
+
+fn Ceil  (x: float64) -> float64 { EXT }
+
+fn Copysign  (f: float64, sign: float64) -> float64 { EXT }
+
+fn Cos  (x: float64) -> float64 { EXT }
+
+fn Cosh  (x: float64) -> float64 { EXT }
+
+fn Dim  (x: float64, y: float64) -> float64 { EXT }
+
+fn Erf  (x: float64) -> float64 { EXT }
+
+fn Erfc  (x: float64) -> float64 { EXT }
+
+fn Erfcinv  (x: float64) -> float64 { EXT }
+
+fn Erfinv  (x: float64) -> float64 { EXT }
+
+fn Exp  (x: float64) -> float64 { EXT }
+
+fn Exp2  (x: float64) -> float64 { EXT }
+
+fn Expm1  (x: float64) -> float64 { EXT }
+
+fn FMA  (x: float64, y: float64, z: float64) -> float64 { EXT }
+
+fn Float32bits  (f: float32) -> uint32 { EXT }
+
+fn Float32frombits  (b: uint32) -> float32 { EXT }
+
+fn Float64bits  (f: float64) -> uint64 { EXT }
+
+fn Float64frombits  (b: uint64) -> float64 { EXT }
+
+fn Floor  (x: float64) -> float64 { EXT }
+
+fn Frexp  (f: float64) -> (float64, int) { EXT }
+
+fn Gamma  (x: float64) -> float64 { EXT }
+
+fn Hypot  (p: float64, q: float64) -> float64 { EXT }
+
+fn Ilogb  (x: float64) -> int { EXT }
+
+fn Inf  (sign: int) -> float64 { EXT }
+
+fn IsInf  (f: float64, sign: int) -> bool { EXT }
+
+fn IsNaN  (f: float64) -> bool { EXT }
+
+fn J0  (x: float64) -> float64 { EXT }
+
+fn J1  (x: float64) -> float64 { EXT }
+
+fn Jn  (n: int, x: float64) -> float64 { EXT }
+
+fn Ldexp  (frac: float64, exp: int) -> float64 { EXT }
+
+fn Lgamma  (x: float64) -> (float64, int) { EXT }
+
+fn Log  (x: float64) -> float64 { EXT }
+
+fn Log10  (x: float64) -> float64 { EXT }
+
+fn Log1p  (x: float64) -> float64 { EXT }
+
+fn Log2  (x: float64) -> float64 { EXT }
+
+fn Logb  (x: float64) -> float64 { EXT }
+
+fn Max  (x: float64, y: float64) -> float64 { EXT }
+
+fn Min  (x: float64, y: float64) -> float64 { EXT }
+
+fn Mod  (x: float64, y: float64) -> float64 { EXT }
+
+fn Modf  (f: float64) -> (float64, float64) { EXT }
+
+fn NaN  () -> float64 { EXT }
+
+fn Nextafter  (x: float64, y: float64) -> float64 { EXT }
+
+fn Nextafter32  (x: float32, y: float32) -> float32 { EXT }
+
+fn Pow  (x: float64, y: float64) -> float64 { EXT }
+
+fn Pow10  (n: int) -> float64 { EXT }
+
+fn Remainder  (x: float64, y: float64) -> float64 { EXT }
+
+fn Round  (x: float64) -> float64 { EXT }
+
+fn RoundToEven  (x: float64) -> float64 { EXT }
+
+fn Signbit  (x: float64) -> bool { EXT }
+
+fn Sin  (x: float64) -> float64 { EXT }
+
+fn Sincos  (x: float64) -> float64 { EXT }
+
+fn Sinh  (x: float64) -> float64 { EXT }
+
+fn Sqrt  (x: float64) -> float64 { EXT }
+
+fn Tan  (x: float64) -> float64 { EXT }
+
+fn Tanh  (x: float64) -> float64 { EXT }
+
+fn Trunc  (x: float64) -> float64 { EXT }
+
+fn Y0  (x: float64) -> float64 { EXT }
+
+fn Y1  (x: float64) -> float64 { EXT }
+
+fn Yn  (n: int, x: float64) -> float64 { EXT }

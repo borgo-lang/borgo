@@ -1,0 +1,139 @@
+Impl blocks
+
+SOURCE:
+impl<T, Y> (foo: Foo<T, Y>) {
+    fn bar(x: T) -> Y {
+        foo.baz()
+    }
+
+    fn baz() {}
+}
+
+OUTPUT:
+Impl#1,1, LAngle#1,5, Ident("T", 1)#1,6, Comma#1,7, Ident("Y", 1)#1,9, RAngle#1,10, LParen#1,12, Ident("foo", 3)#1,13, Colon#1,16, Ident("Foo", 3)#1,18, LAngle#1,21, Ident("T", 1)#1,22, Comma#1,23, Ident("Y", 1)#1,25, RAngle#1,26, RParen#1,27, LCurly#1,29, Fn_#2,5, Ident("bar", 3)#2,8, LParen#2,11, Ident("x", 1)#2,12, Colon#2,13, Ident("T", 1)#2,15, RParen#2,16, Arrow#2,18, Ident("Y", 1)#2,21, LCurly#2,23, Ident("foo", 3)#3,9, Dot#3,12, Ident("baz", 3)#3,13, LParen#3,16, RParen#3,17, Semicolon#3,18, RCurly#4,5, Semicolon#4,6, Fn_#6,5, Ident("baz", 3)#6,8, LParen#6,11, RParen#6,12, LCurly#6,14, RCurly#6,15, Semicolon#6,16, RCurly#7,1, EOF#7,2
+---
+No errors.
+---
+{
+  "ImplBlock": {
+    "ann": {
+      "Con": {
+        "name": "Foo",
+        "args": [
+          {
+            "Con": {
+              "name": "T",
+              "args": []
+            }
+          },
+          {
+            "Con": {
+              "name": "Y",
+              "args": []
+            }
+          }
+        ]
+      }
+    },
+    "self_name": "foo",
+    "items": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "bar",
+            "generics": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "x",
+                    "is_mut": false,
+                    "ann": "Unknown"
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "T",
+                    "args": []
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Var": -1
+            },
+            "ann": {
+              "Con": {
+                "name": "Y",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": [
+                  {
+                    "Call": {
+                      "func": {
+                        "FieldAccess": {
+                          "expr": {
+                            "Var": {
+                              "value": "foo",
+                              "generics_instantiated": []
+                            }
+                          },
+                          "field": "baz"
+                        }
+                      },
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "bounded_ty": {
+              "generics": []
+            }
+          },
+          "kind": "TopLevel"
+        }
+      },
+      {
+        "Closure": {
+          "fun": {
+            "name": "baz",
+            "generics": [],
+            "args": [],
+            "ret": {
+              "Var": -1
+            },
+            "ann": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "body": {
+              "Block": {
+                "stmts": []
+              }
+            },
+            "bounded_ty": {
+              "generics": []
+            }
+          },
+          "kind": "TopLevel"
+        }
+      }
+    ],
+    "generics": [
+      {
+        "name": "T",
+        "bounds": []
+      },
+      {
+        "name": "Y",
+        "bounds": []
+      }
+    ]
+  }
+}

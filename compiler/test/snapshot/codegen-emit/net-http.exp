@@ -1,26 +1,26 @@
 Net http
 
 SOURCE:
-use fmt;
-use net::http;
-use sync;
+use fmt
+use net.http
+use sync
 
-struct Counter { m: sync::Mutex, count: int }
+struct Counter { m: sync.Mutex, count: int }
 
-impl Counter {
-  fn ServeHTTP(&mut self, w: http::ResponseWriter, r: &http::Request) {
-    self.m.Lock();
-    self.count = self.count + 1;
-    fmt.Fprintf(w, "<h1>count %d</h1>", self.count);
-    self.m.Unlock();
+impl (c: *Counter) {
+  fn ServeHTTP(w: http.ResponseWriter, r: *http.Request) {
+    c.m.Lock()
+    c.count = c.count + 1
+    fmt.Fprintf(w, "<h1>count %d</h1>", c.count)
+    c.m.Unlock()
   }
 }
 
 fn main() {
-  let c = Counter { m: zero_value(), count: 0 };
-  http.Handle("/", &mut c);
-  // http.ListenAndServe(":3333", zero_value());
-  fmt.Println("ok");
+  let c = Counter { m: zero_value(), count: 0 }
+  http.Handle("/", &c)
+  // http.ListenAndServe(":3333", zero_value())
+  fmt.Println("ok")
 }
 
 OUTPUT:
@@ -40,13 +40,13 @@ type Counter struct {
 	count int
 }
 
-func (self *Counter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	self.m.Lock()
+func (c *Counter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	c.m.Lock()
 
-	self.count = self.count + 1
+	c.count = c.count + 1
 
-	fmt.Fprintf(w, "<h1>count %d</h1>", self.count)
-	self.m.Unlock()
+	fmt.Fprintf(w, "<h1>count %d</h1>", c.count)
+	c.m.Unlock()
 }
 
 func main() {

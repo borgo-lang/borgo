@@ -3,16 +3,16 @@ Exhaustive check
 SOURCE:
 enum Color { Blue, Red, Green }
 
-fn borgo_main() -> int {
-  let x = Color::Red;
+fn main() -> int {
+  let x = Color.Red
   match x {
-    Color::Red => 1,
-    Color::Green => 2,
+    Color.Red => 1,
+    Color.Green => 2,
   }
 }
 
 OUTPUT:
-Pattern match is not exhaustive, missing case: "Color::Blue"
+Pattern match is not exhaustive, missing case: "Color.Blue"
 
 5|    match x {
       ^--

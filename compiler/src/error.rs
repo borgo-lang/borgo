@@ -1,8 +1,25 @@
-use crate::ast::{ParseError, Span};
 use crate::exhaustive;
 use crate::type_::Type;
+use crate::{ast::Span, parser::ParseError};
 
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Error {
+    Unification(UnificationError),
+
+    // f(a,b) called with f(a)
+    WrongArity(ArityError),
+
+    VarNotFound(String, Span),
+    MethodNotFound(String, Span),
+
+    NotExhaustivePatternMatch(String, Span),
+    Generic(String, Span),
+
+    // Move this whole error type out of this module
+    Parse(ParseError),
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UnificationError {
@@ -60,23 +77,6 @@ Got:
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum Error {
-    Unification(UnificationError),
-
-    // f(a,b) called with f(a)
-    WrongArity(ArityError),
-
-    VarNotFound(String, Span),
-    MethodNotFound(String, Span),
-
-    NotExhaustivePatternMatch(String, Span),
-    Generic(String, Span),
-
-    // Move this whole error type out of this module
-    Parse(ParseError),
-}
-
 impl Error {
     pub fn from_exhaustive(errors: Vec<exhaustive::Error>, span: Span) -> Self {
         match errors.first().unwrap() {
@@ -117,10 +117,12 @@ impl Error {
 
         let line = source_file.get(start - 1).unwrap();
 
-        let padding: String = " ".repeat(span.start.col + hint.len());
+        let padding: String = " ".repeat(span.start.col + hint.len() - 1);
 
         let highlight = if span.start.line == span.end.line {
-            "^".repeat(span.end.col - span.start.col)
+            // single char idents need to repeat at least once
+            let count = std::cmp::max(span.end.col - span.start.col, 1);
+            "^".repeat(count)
         } else {
             "^--".to_string()
         };

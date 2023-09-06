@@ -1,0 +1,98 @@
+Semicolon after RAngle
+
+SOURCE:
+interface File {
+  fn Read (param0: [byte]) -> Result<int>
+  fn Close () -> error
+}
+
+OUTPUT:
+Interface#1,1, Ident("File", 4)#1,11, LCurly#1,16, Fn_#2,3, Ident("Read", 4)#2,6, LParen#2,11, Ident("param0", 6)#2,12, Colon#2,18, LBrack#2,20, Ident("byte", 4)#2,21, RBrack#2,25, RParen#2,26, Arrow#2,28, Ident("Result", 6)#2,31, LAngle#2,37, Ident("int", 3)#2,38, RAngle#2,41, Semicolon#2,42, Fn_#3,3, Ident("Close", 5)#3,6, LParen#3,12, RParen#3,13, Arrow#3,15, Ident("error", 5)#3,18, Semicolon#3,23, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "Trait": {
+    "name": "File",
+    "generics": [],
+    "supertraits": [],
+    "items": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "Read",
+            "generics": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "param0",
+                    "is_mut": false,
+                    "ann": "Unknown"
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "Slice",
+                    "args": [
+                      {
+                        "Con": {
+                          "name": "byte",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Var": -1
+            },
+            "ann": {
+              "Con": {
+                "name": "Result",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "body": "Noop",
+            "bounded_ty": {
+              "generics": []
+            }
+          },
+          "kind": "TopLevel"
+        }
+      },
+      {
+        "Closure": {
+          "fun": {
+            "name": "Close",
+            "generics": [],
+            "args": [],
+            "ret": {
+              "Var": -1
+            },
+            "ann": {
+              "Con": {
+                "name": "error",
+                "args": []
+              }
+            },
+            "body": "Noop",
+            "bounded_ty": {
+              "generics": []
+            }
+          },
+          "kind": "TopLevel"
+        }
+      }
+    ]
+  }
+}

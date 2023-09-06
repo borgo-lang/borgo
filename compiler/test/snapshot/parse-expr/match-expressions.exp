@@ -1,0 +1,99 @@
+Match expressions
+
+SOURCE:
+match x {
+    Option.Some(x) => 45 + x
+
+    Option.None => {
+        foo()
+        bar()
+    }
+}
+
+OUTPUT:
+Match#1,1, Ident("x", 1)#1,7, LCurly#1,9, Ident("Option", 6)#2,5, Dot#2,11, Ident("Some", 4)#2,12, LParen#2,16, Ident("x", 1)#2,17, RParen#2,18, FatArrow#2,20, Int("45", 2)#2,23, Plus#2,26, Ident("x", 1)#2,28, Semicolon#2,29, Ident("Option", 6)#4,5, Dot#4,11, Ident("None", 4)#4,12, FatArrow#4,17, LCurly#4,20, Ident("foo", 3)#5,9, LParen#5,12, RParen#5,13, Semicolon#5,14, Ident("bar", 3)#6,9, LParen#6,12, RParen#6,13, Semicolon#6,14, RCurly#7,5, Semicolon#7,6, RCurly#8,1, EOF#8,2
+---
+No errors.
+---
+{
+  "Match": {
+    "subject": {
+      "Var": {
+        "value": "x",
+        "generics_instantiated": []
+      }
+    },
+    "arms": [
+      {
+        "pat": {
+          "Pat": {
+            "ident": "Option.Some",
+            "elems": [
+              {
+                "Type": {
+                  "ident": "x",
+                  "is_mut": false,
+                  "ann": "Unknown"
+                }
+              }
+            ]
+          }
+        },
+        "expr": {
+          "Binary": {
+            "op": "Add",
+            "left": {
+              "Literal": {
+                "lit": {
+                  "Int": 45
+                }
+              }
+            },
+            "right": {
+              "Var": {
+                "value": "x",
+                "generics_instantiated": []
+              }
+            }
+          }
+        }
+      },
+      {
+        "pat": {
+          "Pat": {
+            "ident": "Option.None",
+            "elems": []
+          }
+        },
+        "expr": {
+          "Block": {
+            "stmts": [
+              {
+                "Call": {
+                  "func": {
+                    "Var": {
+                      "value": "foo",
+                      "generics_instantiated": []
+                    }
+                  },
+                  "args": []
+                }
+              },
+              {
+                "Call": {
+                  "func": {
+                    "Var": {
+                      "value": "bar",
+                      "generics_instantiated": []
+                    }
+                  },
+                  "args": []
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

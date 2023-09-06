@@ -1,19 +1,19 @@
 References are maintained after try call
 
 SOURCE:
-use os;
+use os
 
 fn foo() -> Result<()> {
-  let f = os.Open("file")?;
+  let f = os.Open("file")?
   Ok(bar(f))
 }
 
-fn bar(f: &mut os::File) {
+fn bar(f: *os.File) {
 
 }
 
-fn borgo_main() {
-  foo();
+fn main() {
+  foo()
 }
 
 OUTPUT:
@@ -29,7 +29,7 @@ No errors.
         "span": {
           "start": {
             "line": 1,
-            "col": 0
+            "col": 1
           },
           "end": {
             "line": 1,
@@ -41,7 +41,7 @@ No errors.
       "span": {
         "start": {
           "line": 1,
-          "col": 0
+          "col": 1
         },
         "end": {
           "line": 1,
@@ -103,11 +103,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 4,
-                            "col": 6
+                            "col": 7
                           },
                           "end": {
                             "line": 4,
-                            "col": 7
+                            "col": 8
                           },
                           "file": 99
                         }
@@ -158,11 +158,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 4,
-                                      "col": 10
+                                      "col": 11
                                     },
                                     "end": {
                                       "line": 4,
-                                      "col": 12
+                                      "col": 13
                                     },
                                     "file": 99
                                   }
@@ -211,11 +211,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 4,
-                                  "col": 13
+                                  "col": 14
                                 },
                                 "end": {
                                   "line": 4,
-                                  "col": 17
+                                  "col": 18
                                 },
                                 "file": 99
                               }
@@ -225,10 +225,7 @@ No errors.
                             {
                               "Literal": {
                                 "lit": {
-                                  "String": [
-                                    "file",
-                                    null
-                                  ]
+                                  "String": "file"
                                 },
                                 "ty": {
                                   "Con": {
@@ -239,11 +236,11 @@ No errors.
                                 "span": {
                                   "start": {
                                     "line": 4,
-                                    "col": 18
+                                    "col": 19
                                   },
                                   "end": {
                                     "line": 4,
-                                    "col": 24
+                                    "col": 25
                                   },
                                   "file": 99
                                 }
@@ -279,11 +276,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 4,
-                              "col": 13
+                              "col": 18
                             },
                             "end": {
                               "line": 4,
-                              "col": 17
+                              "col": 25
                             },
                             "file": 99
                           }
@@ -305,7 +302,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 4,
-                          "col": 10
+                          "col": 26
                         },
                         "end": {
                           "line": 4,
@@ -315,6 +312,7 @@ No errors.
                       }
                     }
                   },
+                  "mutable": false,
                   "ty": {
                     "Con": {
                       "id": "Ref",
@@ -331,11 +329,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 4,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 4,
-                      "col": 27
+                      "col": 26
                     },
                     "file": 99
                   }
@@ -345,11 +343,11 @@ No errors.
                 "Call": {
                   "func": {
                     "Var": {
-                      "value": "Result::Ok",
+                      "value": "Result.Ok",
                       "decl": {
                         "start": {
                           "line": 52,
-                          "col": 0
+                          "col": 1
                         },
                         "end": {
                           "line": 55,
@@ -406,11 +404,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 5,
-                          "col": 2
+                          "col": 3
                         },
                         "end": {
                           "line": 5,
-                          "col": 4
+                          "col": 5
                         },
                         "file": 99
                       }
@@ -425,7 +423,7 @@ No errors.
                             "decl": {
                               "start": {
                                 "line": 8,
-                                "col": 0
+                                "col": 1
                               },
                               "end": {
                                 "line": 10,
@@ -439,7 +437,7 @@ No errors.
                                 "args": [
                                   {
                                     "Con": {
-                                      "id": "RefMut",
+                                      "id": "Ref",
                                       "args": [
                                         {
                                           "Con": {
@@ -463,11 +461,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 5,
-                                "col": 5
+                                "col": 6
                               },
                               "end": {
                                 "line": 5,
-                                "col": 8
+                                "col": 9
                               },
                               "file": 99
                             }
@@ -480,11 +478,11 @@ No errors.
                               "decl": {
                                 "start": {
                                   "line": 4,
-                                  "col": 6
+                                  "col": 7
                                 },
                                 "end": {
                                   "line": 4,
-                                  "col": 7
+                                  "col": 8
                                 },
                                 "file": 99
                               },
@@ -505,11 +503,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 5,
-                                  "col": 9
+                                  "col": 10
                                 },
                                 "end": {
                                   "line": 5,
-                                  "col": 10
+                                  "col": 11
                                 },
                                 "file": 99
                               }
@@ -525,7 +523,7 @@ No errors.
                         "span": {
                           "start": {
                             "line": 5,
-                            "col": 5
+                            "col": 9
                           },
                           "end": {
                             "line": 5,
@@ -558,7 +556,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 5,
-                      "col": 2
+                      "col": 5
                     },
                     "end": {
                       "line": 5,
@@ -591,7 +589,7 @@ No errors.
             "span": {
               "start": {
                 "line": 3,
-                "col": 23
+                "col": 24
               },
               "end": {
                 "line": 6,
@@ -659,7 +657,7 @@ No errors.
       "span": {
         "start": {
           "line": 3,
-          "col": 0
+          "col": 1
         },
         "end": {
           "line": 6,
@@ -684,11 +682,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 8,
-                    "col": 7
+                    "col": 8
                   },
                   "end": {
                     "line": 8,
-                    "col": 8
+                    "col": 9
                   },
                   "file": 99
                 }
@@ -696,11 +694,11 @@ No errors.
             },
             "ann": {
               "Con": {
-                "name": "RefMut",
+                "name": "Ref",
                 "args": [
                   {
                     "Con": {
-                      "name": "os::File",
+                      "name": "os.File",
                       "args": []
                     }
                   }
@@ -709,7 +707,7 @@ No errors.
             },
             "ty": {
               "Con": {
-                "id": "RefMut",
+                "id": "Ref",
                 "args": [
                   {
                     "Con": {
@@ -746,7 +744,7 @@ No errors.
             "span": {
               "start": {
                 "line": 8,
-                "col": 25
+                "col": 21
               },
               "end": {
                 "line": 10,
@@ -763,7 +761,7 @@ No errors.
               "args": [
                 {
                   "Con": {
-                    "id": "RefMut",
+                    "id": "Ref",
                     "args": [
                       {
                         "Con": {
@@ -792,7 +790,7 @@ No errors.
           "args": [
             {
               "Con": {
-                "id": "RefMut",
+                "id": "Ref",
                 "args": [
                   {
                     "Con": {
@@ -816,7 +814,7 @@ No errors.
       "span": {
         "start": {
           "line": 8,
-          "col": 0
+          "col": 1
         },
         "end": {
           "line": 10,
@@ -829,7 +827,7 @@ No errors.
   {
     "Closure": {
       "fun": {
-        "name": "borgo_main",
+        "name": "main",
         "generics": [],
         "args": [],
         "ret": {
@@ -855,7 +853,7 @@ No errors.
                       "decl": {
                         "start": {
                           "line": 3,
-                          "col": 0
+                          "col": 1
                         },
                         "end": {
                           "line": 6,
@@ -892,11 +890,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 13,
-                          "col": 2
+                          "col": 3
                         },
                         "end": {
                           "line": 13,
-                          "col": 5
+                          "col": 6
                         },
                         "file": 99
                       }
@@ -925,7 +923,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 13,
-                      "col": 2
+                      "col": 6
                     },
                     "end": {
                       "line": 13,
@@ -958,7 +956,7 @@ No errors.
             "span": {
               "start": {
                 "line": 12,
-                "col": 16
+                "col": 11
               },
               "end": {
                 "line": 14,
@@ -1000,7 +998,7 @@ No errors.
       "span": {
         "start": {
           "line": 12,
-          "col": 0
+          "col": 1
         },
         "end": {
           "line": 14,

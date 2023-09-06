@@ -1,12 +1,12 @@
 Referenced packages are imported
 
 SOURCE:
-use fmt;
-use os;
+use fmt
+use os
 
 fn main() {
-  let dir = os.ReadDir(".").unwrap();
-  fmt.Printf("%v", dir[0]);
+  let dir = os.ReadDir(".").unwrap()
+  fmt.Printf("%v", dir[0])
 }
 
 OUTPUT:

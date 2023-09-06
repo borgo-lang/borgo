@@ -1,8 +1,8 @@
 Trait bounds checked at call site
 
 SOURCE:
-fn borgo_main() {
-  trait Foo { fn foo() -> int; }
+fn main() {
+  interface Foo { fn foo() -> int }
   fn check<T: Foo>(f: T) {}
   check(1)
 }
@@ -15,4 +15,4 @@ Got:
     Foo
 
 4|    check(1)
-      ^^^^^^^^
+           ^^

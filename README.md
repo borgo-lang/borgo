@@ -1,32 +1,105 @@
 # The Borgo Programming Language
 
-Borgo is a high-level, garbage collected language for application development.
+![Borgo sits between Go and Rust](https://raw.githubusercontent.com/borgo-lang/borgo-lang.github.io/main/borgo.jpg)
 
-It transpiles to Go and aims to be fully compatible with existing Go packages.
+I want a language for writing applications that is more expressive than Go but
+less complex than Rust.
 
-> Borgo syntax _currently_ looks like Rust.
->
-> That's only to speed up development and skip writing a parser for a custom
-> syntax. Borgo has no lifetimes nor borrow checker – it just _borrows_ Rust
-> syntax for convenience.
+Go is simple and straightforward, but I often wish it offered more type safety.
+Rust is very nice to work with (at least for single threaded code) but it's too
+broad and complex, sometimes painfully so.
 
-**Features:**
+**Borgo is a new language that transpiles to Go**. It's fully compatible with
+existing Go packages.
 
-- Union types and pattern matching
-- Error handling with `?` operator
-- `null` safe, use `Option` and `Result`
-- Compatible with Go packages
-  - functions that return `T,bool` become `Option<T>`
-  - functions that return `T,error` become `Result<T, error>`
+Borgo syntax is similar to Rust, with optional semi-colons.
+
+## Features
+
+**Algebraic data types and pattern matching**
+
+```rust
+use fmt
+
+enum NetworkState {
+    Loading,
+    Failed(int),
+    Success(string),
+}
+
+let msg = match state {
+    NetworkState.Loading => "still loading",
+    NetworkState.Failed(code) => fmt.Sprintf("Got error code: %d", code),
+    NetworkState.Success(res) => res,
+}
+```
+
+**`Option<T>` instad of `nil`**
+
+```rust
+// import packages from Go stdlib
+use fmt
+use os
+
+let key = os.LookupEnv("HOME")
+
+match key {
+    Some(s) => fmt.Println("home dir:", s),
+    None => fmt.Println("Not found in env"),
+}
+```
+
+**`Result<T, E>` instad of multiple return values**
+
+```rust
+use fmt
+use net.http
+
+fn makeRequest() -> Result<int, error> {
+    let request = http.Get("http://example.com")
+
+    match request {
+        Ok(resp) => Ok(resp.StatusCode),
+        Err(err) => Err(fmt.Errorf("failed http request %w", err))
+    }
+}
+```
+
+**Error handling with `?` operator**
+
+```rust
+use fmt
+use io
+use os
+
+fn copyFile(src: string, dst: string) -> Result<(), error> {
+    let stat = os.Stat(src)?
+
+    if !stat.Mode().IsRegular() {
+        return Err(fmt.Errorf("%s is not a regular file", src))
+    }
+
+    let source = os.Open(src)?
+    defer source.Close()
+
+    let destination = os.Create(dst)?
+    defer destination.Close()
+
+    // ignore number of bytes copied
+    let _ = io.Copy(destination, source)?
+
+    Ok(())
+}
+```
 
 ## Tutorial
 
 Check out the **[online playground](https://borgo-lang.github.io/)** for a tour
 of the language.
 
-## Example
+## Guessing game example
 
-Guessing game example from the Rust book, implemented in Borgo.
+Small game from the Rust book, implemented in Borgo.
 
 Things to note:
 
@@ -35,40 +108,40 @@ Things to note:
 - `Reader.ReadString` returns a `Result<string, error>` (which can be unwrapped)
 
 ```rust
-use bufio;
-use fmt;
-use math::rand;
-use os;
-use strconv;
-use strings;
-use time;
+use bufio
+use fmt
+use math.rand
+use os
+use strconv
+use strings
+use time
 
 fn main() {
-    let reader = bufio.NewReader(os.Stdin);
+    let reader = bufio.NewReader(os.Stdin)
 
-    rand.Seed(time.Now().UnixNano());
-    let secret = rand.Intn(100) + 1;
+    rand.Seed(time.Now().UnixNano())
+    let secret = rand.Intn(100) + 1
 
     loop {
-        fmt.Println("Please input your guess.");
+        fmt.Println("Please input your guess.")
 
-        let text = reader.ReadString('\n').unwrap();
-        let text = strings.TrimSpace(text);
+        let text = reader.ReadString('\n').unwrap()
+        let text = strings.TrimSpace(text)
 
         let guess = match strconv.Atoi(text) {
             Ok(n) => n,
             Err(_) => continue,
-        };
+        }
 
-        fmt.Println("You guessed: ", guess);
+        fmt.Println("You guessed: ", guess)
 
         if guess < secret {
-            fmt.Println("Too small!");
+            fmt.Println("Too small!")
         } else if guess > secret {
-            fmt.Println("Too big!");
+            fmt.Println("Too big!")
         } else {
-            fmt.Println("Correct!");
-            break;
+            fmt.Println("Correct!")
+            break
         }
     }
 }
@@ -78,22 +151,16 @@ fn main() {
 
 Borgo is written in Rust, so you'll need `cargo`.
 
-If you want to set up a new project quickly, use the `init-project` script.
+To compile all `.brg` files in the current folder:
 
 ```bash
-$ just init-project some-folder
-$ cd some-folder
-$ ./borgo build && go run .
+$ cargo run -- build
 ```
 
-Or run the compiler from anywhere in the repo.
+The compiler will generate `.go` files, which you can run as normal:
 
 ```bash
-# build all *.brg files
-# needs std/ to be in cwd
-$ cargo run -- build
-
-# run as usual
-# needs `go mod init`
+# generate a go.mod file if needed
+# $ go mod init foo
 $ go run .
 ```

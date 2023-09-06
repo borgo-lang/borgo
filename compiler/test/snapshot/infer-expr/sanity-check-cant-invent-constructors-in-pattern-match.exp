@@ -4,7 +4,7 @@ SOURCE:
 {
   enum Color { Red, Blue }
 
-  match Color::Red {
+  match Color.Red {
     Red => 1,
     Green => 2,
   }

@@ -17,6 +17,9 @@ run-examples: build build-examples
 run-importer +args="-folder testpkg":
   cd importer/ && go run importer.go {{args}}
 
+update-packages:
+  deno run -A importer/update-packages.ts
+
 serve-playground:
   python3 -m http.server 8888 --directory playground/static
 

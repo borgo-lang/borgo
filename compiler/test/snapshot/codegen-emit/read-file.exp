@@ -1,17 +1,17 @@
 Read file
 
 SOURCE:
-use os;
-use fmt;
+use os
+use fmt
 
 fn read() -> Result<()> {
-  let f = os.ReadFile("go.mod")?;
-  fmt.Println(string(f));
+  let f = os.ReadFile("go.mod")?
+  fmt.Println(string(f))
   Ok(())
 }
 
 fn main() {
-  read().unwrap();
+  read().unwrap()
 }
 
 OUTPUT:

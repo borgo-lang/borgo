@@ -1,13 +1,13 @@
 Variadic function calls
 
 SOURCE:
-use fmt;
+use fmt
 
 fn foo(a: bool, x: VarArgs<int>) {}
 
 fn main() {
-  fmt.Printf("yep %s, %d", "hi", 3);
-  foo(false, 1, 2);
+  fmt.Printf("yep %s, %d", "hi", 3)
+  foo(false, 1, 2)
 }
 
 OUTPUT:

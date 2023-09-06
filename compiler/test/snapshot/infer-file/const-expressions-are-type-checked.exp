@@ -1,7 +1,7 @@
 Const expressions are type checked
 
 SOURCE:
-const a: string = 1;
+const a: string = 1
 
 OUTPUT:
 Type mismatch
@@ -10,5 +10,5 @@ Expected:
 Got:
     int
 
-1|  const a: string = 1;
-    ^^^^^^^^^^^^^^^^^^^^
+1|  const a: string = 1
+    ^^^^^^^^^^^^^^^^^^^

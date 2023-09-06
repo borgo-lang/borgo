@@ -2,7 +2,7 @@ Tuple fields
 
 SOURCE:
 {
-  let a = (1, "a");
+  let a = (1, "a")
   a.0
 }
 
@@ -25,11 +25,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 2,
-                    "col": 7
+                    "col": 8
                   },
                   "file": 99
                 }
@@ -76,11 +76,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 2,
-                          "col": 11
+                          "col": 12
                         },
                         "end": {
                           "line": 2,
-                          "col": 12
+                          "col": 13
                         },
                         "file": 99
                       }
@@ -92,10 +92,7 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": [
-                          "a",
-                          null
-                        ]
+                        "String": "a"
                       },
                       "ty": {
                         "Con": {
@@ -106,11 +103,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 2,
-                          "col": 14
+                          "col": 15
                         },
                         "end": {
                           "line": 2,
-                          "col": 17
+                          "col": 18
                         },
                         "file": 99
                       }
@@ -141,7 +138,7 @@ No errors.
               "span": {
                 "start": {
                   "line": 2,
-                  "col": 10
+                  "col": 11
                 },
                 "end": {
                   "line": 2,
@@ -151,6 +148,7 @@ No errors.
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "id": "Tuple2",
@@ -173,11 +171,11 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
-              "col": 19
+              "col": 18
             },
             "file": 99
           }
@@ -191,11 +189,11 @@ No errors.
               "decl": {
                 "start": {
                   "line": 2,
-                  "col": 6
+                  "col": 7
                 },
                 "end": {
                   "line": 2,
-                  "col": 7
+                  "col": 8
                 },
                 "file": 99
               },
@@ -222,11 +220,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 3,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 3,
-                  "col": 3
+                  "col": 4
                 },
                 "file": 99
               }
@@ -242,11 +240,11 @@ No errors.
           "span": {
             "start": {
               "line": 3,
-              "col": 2
+              "col": 5
             },
             "end": {
               "line": 3,
-              "col": 5
+              "col": 6
             },
             "file": 99
           }
@@ -262,7 +260,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 4,

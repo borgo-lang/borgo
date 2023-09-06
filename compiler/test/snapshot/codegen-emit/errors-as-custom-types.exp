@@ -7,20 +7,20 @@ fn foo() -> Result<(), FooErr> {
 
 struct FooErr {}
 
-impl FooErr {
-  fn Error(self) -> string { "b" }
+impl (f: FooErr) {
+  fn Error() -> string { "b" }
 }
 
 fn bar() -> Result<(), error> {
-  let x = foo()?;
-  Ok(x);
+  let x = foo()?
+  Ok(x)
 }
 
 fn main() {
-  let x = foo();
-  let y = bar();
-  assert_eq(x, Ok(()));
-  assert_eq(y, Ok(()));
+  let x = foo()
+  let y = bar()
+  assert_eq(x, Ok(()))
+  assert_eq(y, Ok(()))
 }
 
 OUTPUT:
@@ -34,7 +34,7 @@ func foo() Result[struct{}, FooErr] {
 
 type FooErr struct{}
 
-func (self FooErr) Error() string {
+func (f FooErr) Error() string {
 	return "b"
 }
 

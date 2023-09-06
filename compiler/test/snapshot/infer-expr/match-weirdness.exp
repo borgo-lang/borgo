@@ -4,7 +4,7 @@ SOURCE:
 {
     match false {
         true => print("asdf"),
-    };
+    }
 
     match 1 {
         1 => false,
@@ -35,11 +35,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 2,
-                  "col": 10
+                  "col": 11
                 },
                 "end": {
                   "line": 2,
-                  "col": 15
+                  "col": 16
                 },
                 "file": 99
               }
@@ -61,11 +61,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 3,
-                      "col": 8
+                      "col": 9
                     },
                     "end": {
                       "line": 3,
-                      "col": 12
+                      "col": 13
                     },
                     "file": 99
                   }
@@ -79,13 +79,13 @@ No errors.
                       "decl": {
                         "start": {
                           "line": 49,
-                          "col": 0
+                          "col": 1
                         },
                         "end": {
                           "line": 51,
                           "col": 1
                         },
-                        "file": -1
+                        "file": 99
                       },
                       "generics_instantiated": [],
                       "ty": {
@@ -110,11 +110,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 3,
-                          "col": 16
+                          "col": 17
                         },
                         "end": {
                           "line": 3,
-                          "col": 21
+                          "col": 22
                         },
                         "file": 99
                       }
@@ -124,10 +124,7 @@ No errors.
                     {
                       "Literal": {
                         "lit": {
-                          "String": [
-                            "asdf",
-                            null
-                          ]
+                          "String": "asdf"
                         },
                         "ty": {
                           "Con": {
@@ -138,11 +135,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 3,
-                            "col": 22
+                            "col": 23
                           },
                           "end": {
                             "line": 3,
-                            "col": 28
+                            "col": 29
                           },
                           "file": 99
                         }
@@ -158,7 +155,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 3,
-                      "col": 16
+                      "col": 22
                     },
                     "end": {
                       "line": 3,
@@ -179,7 +176,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 4
+              "col": 5
             },
             "end": {
               "line": 4,
@@ -205,11 +202,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 6,
-                  "col": 10
+                  "col": 11
                 },
                 "end": {
                   "line": 6,
-                  "col": 11
+                  "col": 12
                 },
                 "file": 99
               }
@@ -231,11 +228,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 7,
-                      "col": 8
+                      "col": 9
                     },
                     "end": {
                       "line": 7,
-                      "col": 9
+                      "col": 10
                     },
                     "file": 99
                   }
@@ -255,11 +252,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 7,
-                      "col": 13
+                      "col": 14
                     },
                     "end": {
                       "line": 7,
-                      "col": 18
+                      "col": 19
                     },
                     "file": 99
                   }
@@ -276,7 +273,7 @@ No errors.
           "span": {
             "start": {
               "line": 6,
-              "col": 4
+              "col": 5
             },
             "end": {
               "line": 8,
@@ -296,7 +293,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 9,

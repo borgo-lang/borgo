@@ -1,9 +1,9 @@
 Index must be K for maps
 
 SOURCE:
-fn borgo_main() {
-    let xs = Map::new();
-    xs.insert("a", 1);
+fn main() {
+    let xs = Map.new()
+    xs.insert("a", 1)
     xs[false]
 }
 
@@ -15,4 +15,4 @@ Got:
     bool
 
 4|      xs[false]
-        ^^^^^^^^^
+          ^^^^^^

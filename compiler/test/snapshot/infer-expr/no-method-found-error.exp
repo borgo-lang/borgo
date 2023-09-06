@@ -3,7 +3,7 @@ No method found error
 SOURCE:
 {
   struct Foo {}
-  let f = Foo {};
+  let f = Foo {}
 
   f.bar()
 }

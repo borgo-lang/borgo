@@ -1,0 +1,39 @@
+Try operator
+
+SOURCE:
+a.b?.foo()?
+
+OUTPUT:
+Ident("a", 1)#1,1, Dot#1,2, Ident("b", 1)#1,3, Question#1,4, Dot#1,5, Ident("foo", 3)#1,6, LParen#1,9, RParen#1,10, Question#1,11, EOF#1,12
+---
+No errors.
+---
+{
+  "Try": {
+    "expr": {
+      "Call": {
+        "func": {
+          "FieldAccess": {
+            "expr": {
+              "Try": {
+                "expr": {
+                  "FieldAccess": {
+                    "expr": {
+                      "Var": {
+                        "value": "a",
+                        "generics_instantiated": []
+                      }
+                    },
+                    "field": "b"
+                  }
+                }
+              }
+            },
+            "field": "foo"
+          }
+        },
+        "args": []
+      }
+    }
+  }
+}

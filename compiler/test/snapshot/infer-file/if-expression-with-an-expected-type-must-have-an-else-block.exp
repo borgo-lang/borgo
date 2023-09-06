@@ -1,16 +1,16 @@
 If expression with an expected type must have an else block
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   if true {
-    let x = "hello";
+    let x = "hello"
     1
   }
 
   let a = if false {
-    let y = "yo";
+    let y = "yo"
     2
-  };
+  }
 
   ()
 }

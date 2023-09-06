@@ -1,0 +1,131 @@
+fn JoinPath  (base: string, elem: VarArgs<string>) -> Result<string> { EXT }
+
+fn Parse  (rawURL: string) -> Result<*URL> { EXT }
+
+fn ParseQuery  (query: string) -> Result<Values> { EXT }
+
+fn ParseRequestURI  (rawURL: string) -> Result<*URL> { EXT }
+
+fn PathEscape  (s: string) -> string { EXT }
+
+fn PathUnescape  (s: string) -> Result<string> { EXT }
+
+fn QueryEscape  (s: string) -> string { EXT }
+
+fn QueryUnescape  (s: string) -> Result<string> { EXT }
+
+fn User  (username: string) -> *Userinfo { EXT }
+
+fn UserPassword  (username: string, password: string) -> *Userinfo { EXT }
+
+impl (self: Error) {
+
+fn Error  () -> string { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+fn Unwrap  () -> error { EXT }
+
+}
+
+impl (self: EscapeError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: InvalidHostError) {
+
+fn Error  () -> string { EXT }
+
+}
+
+impl (self: URL) {
+
+fn EscapedFragment  () -> string { EXT }
+
+fn EscapedPath  () -> string { EXT }
+
+fn Hostname  () -> string { EXT }
+
+fn IsAbs  () -> bool { EXT }
+
+fn JoinPath  (elem: VarArgs<string>) -> *URL { EXT }
+
+fn MarshalBinary  () -> Result<[byte]> { EXT }
+
+fn Parse  (ref: string) -> Result<*URL> { EXT }
+
+fn Port  () -> string { EXT }
+
+fn Query  () -> Values { EXT }
+
+fn Redacted  () -> string { EXT }
+
+fn RequestURI  () -> string { EXT }
+
+fn ResolveReference  (ref: *URL) -> *URL { EXT }
+
+fn String  () -> string { EXT }
+
+fn UnmarshalBinary  (text: [byte]) -> error { EXT }
+
+}
+
+impl (self: Userinfo) {
+
+fn Password  () -> Option<string> { EXT }
+
+fn String  () -> string { EXT }
+
+fn Username  () -> string { EXT }
+
+}
+
+impl (self: Values) {
+
+fn Add  (key: string, value: string) -> () { EXT }
+
+fn Del  (key: string) -> () { EXT }
+
+fn Encode  () -> string { EXT }
+
+fn Get  (key: string) -> string { EXT }
+
+fn Has  (key: string) -> bool { EXT }
+
+fn Set  (key: string, value: string) -> () { EXT }
+
+}
+
+type Values = Map<string, [string]>
+
+struct EscapeError(string)
+
+struct InvalidHostError(string)
+
+struct Error{
+  Op: string,
+  URL: string,
+  Err: error
+}
+
+struct URL{
+  Scheme: string,
+  Opaque: string,
+  User: *Userinfo,
+  Host: string,
+  Path: string,
+  RawPath: string,
+  OmitHost: bool,
+  ForceQuery: bool,
+  RawQuery: string,
+  Fragment: string,
+  RawFragment: string
+}
+
+struct Userinfo{
+
+}

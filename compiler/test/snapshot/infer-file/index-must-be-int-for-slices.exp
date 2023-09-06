@@ -1,8 +1,8 @@
 Index must be int for slices
 
 SOURCE:
-fn borgo_main() {
-    let xs = ["a"];
+fn main() {
+    let xs = ["a"]
     xs[false]
 }
 
@@ -14,4 +14,4 @@ Got:
     bool
 
 3|      xs[false]
-        ^^^^^^^^^
+          ^^^^^^

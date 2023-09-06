@@ -1,0 +1,61 @@
+Methods can span multiple lines
+
+SOURCE:
+foo()
+    .bar[4]
+    .baz(
+        // trailing commas are required when function
+        // calls span multiple lines.
+        "hi",
+    )
+
+OUTPUT:
+Ident("foo", 3)#1,1, LParen#1,4, RParen#1,5, Dot#2,5, Ident("bar", 3)#2,6, LBrack#2,9, Int("4", 1)#2,10, RBrack#2,11, Dot#3,5, Ident("baz", 3)#3,6, LParen#3,9, Comment#4,9, Comment#5,9, String("hi", 4)#6,9, Comma#6,13, RParen#7,5, EOF#7,6
+---
+No errors.
+---
+{
+  "Call": {
+    "func": {
+      "FieldAccess": {
+        "expr": {
+          "Index": {
+            "expr": {
+              "FieldAccess": {
+                "expr": {
+                  "Call": {
+                    "func": {
+                      "Var": {
+                        "value": "foo",
+                        "generics_instantiated": []
+                      }
+                    },
+                    "args": []
+                  }
+                },
+                "field": "bar"
+              }
+            },
+            "index": {
+              "Literal": {
+                "lit": {
+                  "Int": 4
+                }
+              }
+            }
+          }
+        },
+        "field": "baz"
+      }
+    },
+    "args": [
+      {
+        "Literal": {
+          "lit": {
+            "String": "hi"
+          }
+        }
+      }
+    ]
+  }
+}

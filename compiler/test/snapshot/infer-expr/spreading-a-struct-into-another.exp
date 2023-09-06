@@ -4,7 +4,7 @@ SOURCE:
 {
   struct Foo { a: int, b: string }
 
-  let x = Foo { a: 1, b: "foo" };
+  let x = Foo { a: 1, b: "foo" }
   Foo { b: "bar", ..x }
 }
 
@@ -63,7 +63,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -84,11 +84,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 4,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 4,
-                    "col": 7
+                    "col": 8
                   },
                   "file": 99
                 }
@@ -122,11 +122,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 4,
-                          "col": 19
+                          "col": 20
                         },
                         "end": {
                           "line": 4,
-                          "col": 20
+                          "col": 21
                         },
                         "file": 99
                       }
@@ -138,10 +138,7 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": [
-                          "foo",
-                          null
-                        ]
+                        "String": "foo"
                       },
                       "ty": {
                         "Con": {
@@ -152,11 +149,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 4,
-                          "col": 25
+                          "col": 26
                         },
                         "end": {
                           "line": 4,
-                          "col": 30
+                          "col": 31
                         },
                         "file": 99
                       }
@@ -174,7 +171,7 @@ No errors.
               "span": {
                 "start": {
                   "line": 4,
-                  "col": 10
+                  "col": 15
                 },
                 "end": {
                   "line": 4,
@@ -184,6 +181,7 @@ No errors.
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "id": "Foo",
@@ -193,11 +191,11 @@ No errors.
           "span": {
             "start": {
               "line": 4,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 4,
-              "col": 33
+              "col": 32
             },
             "file": 99
           }
@@ -212,10 +210,7 @@ No errors.
               "value": {
                 "Literal": {
                   "lit": {
-                    "String": [
-                      "bar",
-                      null
-                    ]
+                    "String": "bar"
                   },
                   "ty": {
                     "Con": {
@@ -226,11 +221,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 5,
-                      "col": 11
+                      "col": 12
                     },
                     "end": {
                       "line": 5,
-                      "col": 16
+                      "col": 17
                     },
                     "file": 99
                   }
@@ -244,11 +239,11 @@ No errors.
               "decl": {
                 "start": {
                   "line": 4,
-                  "col": 6
+                  "col": 7
                 },
                 "end": {
                   "line": 4,
-                  "col": 7
+                  "col": 8
                 },
                 "file": 99
               },
@@ -262,11 +257,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 5,
-                  "col": 20
+                  "col": 21
                 },
                 "end": {
                   "line": 5,
-                  "col": 21
+                  "col": 22
                 },
                 "file": 99
               }
@@ -281,7 +276,7 @@ No errors.
           "span": {
             "start": {
               "line": 5,
-              "col": 2
+              "col": 7
             },
             "end": {
               "line": 5,
@@ -301,7 +296,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 6,

@@ -4,10 +4,10 @@ SOURCE:
 {
   fn foo() -> Result<(), ErrFoo> {
     if true {
-      return Err(ErrFoo::A);
+      return Err(ErrFoo.A)
     }
 
-    Err(ErrBar::X)
+    Err(ErrBar.X)
   }
 }
 
@@ -18,5 +18,5 @@ Expected:
 Got:
     Result<(), ErrBar>
 
-7|      Err(ErrBar::X)
-        ^^^^^^^^^^^^^^
+7|      Err(ErrBar.X)
+           ^^^^^^^^^

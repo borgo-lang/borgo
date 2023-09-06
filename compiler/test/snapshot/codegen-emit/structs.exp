@@ -8,8 +8,8 @@ struct Bar<T> {
 }
 
 fn main() {
-  let x = Bar { name: "yo", age: 99, v: false };
-  inspect(x);
+  let x = Bar { name: "yo", age: 99, v: false }
+  inspect(x)
 }
 
 OUTPUT:

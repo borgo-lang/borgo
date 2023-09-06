@@ -1,21 +1,21 @@
 Check if type implements trait
 
 SOURCE:
-fn borgo_main() -> int {
-  trait Foo {
-    fn bar(x: string) -> int;
+struct Baz { x: int }
+
+impl (b: Baz) {
+    fn bar(_: string) -> int {
+      b.x
+    }
+}
+
+fn main() -> int {
+  interface Foo {
+    fn bar(x: string) -> int
   }
 
   fn check(f: Foo) -> int {
     f.bar("yo")
-  }
-
-  struct Baz { x: int }
-
-  impl Baz {
-    fn bar(self, _: string) -> int {
-      self.x
-    }
   }
 
   check(Baz { x: 1 })
@@ -28,9 +28,262 @@ No errors.
 ---
 [
   {
+    "StructDef": {
+      "def": {
+        "name": "Baz",
+        "generics": [],
+        "fields": [
+          {
+            "name": "x",
+            "ann": {
+              "Con": {
+                "name": "int",
+                "args": []
+              }
+            },
+            "ty": {
+              "generics": [],
+              "ty": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
+              }
+            }
+          }
+        ]
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 1
+        },
+        "end": {
+          "line": 1,
+          "col": 21
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "ImplBlock": {
+      "ann": {
+        "Con": {
+          "name": "Baz",
+          "args": []
+        }
+      },
+      "self_name": "b",
+      "ty": {
+        "Con": {
+          "id": "Baz",
+          "args": []
+        }
+      },
+      "items": [
+        {
+          "Closure": {
+            "fun": {
+              "name": "bar",
+              "generics": [],
+              "args": [
+                {
+                  "pat": {
+                    "Wild": {
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 12
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 13
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "string",
+                      "args": []
+                    }
+                  }
+                }
+              ],
+              "ret": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
+              },
+              "ann": {
+                "Con": {
+                  "name": "int",
+                  "args": []
+                }
+              },
+              "body": {
+                "Block": {
+                  "stmts": [
+                    {
+                      "FieldAccess": {
+                        "expr": {
+                          "Var": {
+                            "value": "b",
+                            "decl": {
+                              "start": {
+                                "line": 3,
+                                "col": 1
+                              },
+                              "end": {
+                                "line": 7,
+                                "col": 1
+                              },
+                              "file": 99
+                            },
+                            "generics_instantiated": [],
+                            "ty": {
+                              "Con": {
+                                "id": "Baz",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 5,
+                                "col": 7
+                              },
+                              "end": {
+                                "line": 5,
+                                "col": 8
+                              },
+                              "file": 99
+                            }
+                          }
+                        },
+                        "field": "x",
+                        "ty": {
+                          "Con": {
+                            "id": "int",
+                            "args": []
+                          }
+                        },
+                        "span": {
+                          "start": {
+                            "line": 5,
+                            "col": 9
+                          },
+                          "end": {
+                            "line": 5,
+                            "col": 10
+                          },
+                          "file": 99
+                        }
+                      }
+                    }
+                  ],
+                  "ty": {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 30
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 5
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              "bounded_ty": {
+                "generics": [],
+                "ty": {
+                  "Fun": {
+                    "args": [
+                      {
+                        "Con": {
+                          "id": "string",
+                          "args": []
+                        }
+                      }
+                    ],
+                    "bounds": [],
+                    "ret": {
+                      "Con": {
+                        "id": "int",
+                        "args": []
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "TopLevel",
+            "ty": {
+              "Fun": {
+                "args": [
+                  {
+                    "Con": {
+                      "id": "string",
+                      "args": []
+                    }
+                  }
+                ],
+                "bounds": [],
+                "ret": {
+                  "Con": {
+                    "id": "int",
+                    "args": []
+                  }
+                }
+              }
+            },
+            "span": {
+              "start": {
+                "line": 4,
+                "col": 5
+              },
+              "end": {
+                "line": 6,
+                "col": 5
+              },
+              "file": 99
+            }
+          }
+        }
+      ],
+      "generics": [],
+      "span": {
+        "start": {
+          "line": 3,
+          "col": 1
+        },
+        "end": {
+          "line": 7,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
     "Closure": {
       "fun": {
-        "name": "borgo_main",
+        "name": "main",
         "generics": [],
         "args": [],
         "ret": {
@@ -51,6 +304,7 @@ No errors.
               {
                 "Trait": {
                   "name": "Foo",
+                  "generics": [],
                   "supertraits": [],
                   "items": [
                     {
@@ -67,12 +321,12 @@ No errors.
                                   "ann": "Unknown",
                                   "span": {
                                     "start": {
-                                      "line": 3,
-                                      "col": 11
+                                      "line": 11,
+                                      "col": 12
                                     },
                                     "end": {
-                                      "line": 3,
-                                      "col": 12
+                                      "line": 11,
+                                      "col": 13
                                     },
                                     "file": 99
                                   }
@@ -128,7 +382,7 @@ No errors.
                             }
                           }
                         },
-                        "kind": "Inline",
+                        "kind": "TopLevel",
                         "ty": {
                           "Fun": {
                             "args": [
@@ -150,11 +404,11 @@ No errors.
                         },
                         "span": {
                           "start": {
-                            "line": 3,
-                            "col": 4
+                            "line": 11,
+                            "col": 8
                           },
                           "end": {
-                            "line": 3,
+                            "line": 11,
                             "col": 29
                           },
                           "file": 99
@@ -162,14 +416,13 @@ No errors.
                       }
                     }
                   ],
-                  "types": [],
                   "span": {
                     "start": {
-                      "line": 2,
-                      "col": 2
+                      "line": 10,
+                      "col": 3
                     },
                     "end": {
-                      "line": 4,
+                      "line": 12,
                       "col": 3
                     },
                     "file": 99
@@ -190,12 +443,12 @@ No errors.
                             "ann": "Unknown",
                             "span": {
                               "start": {
-                                "line": 6,
-                                "col": 11
+                                "line": 14,
+                                "col": 12
                               },
                               "end": {
-                                "line": 6,
-                                "col": 12
+                                "line": 14,
+                                "col": 13
                               },
                               "file": 99
                             }
@@ -239,12 +492,12 @@ No errors.
                                       "value": "f",
                                       "decl": {
                                         "start": {
-                                          "line": 6,
-                                          "col": 11
+                                          "line": 14,
+                                          "col": 12
                                         },
                                         "end": {
-                                          "line": 6,
-                                          "col": 12
+                                          "line": 14,
+                                          "col": 13
                                         },
                                         "file": 99
                                       },
@@ -257,12 +510,12 @@ No errors.
                                       },
                                       "span": {
                                         "start": {
-                                          "line": 7,
-                                          "col": 4
+                                          "line": 15,
+                                          "col": 5
                                         },
                                         "end": {
-                                          "line": 7,
-                                          "col": 5
+                                          "line": 15,
+                                          "col": 6
                                         },
                                         "file": 99
                                       }
@@ -290,12 +543,12 @@ No errors.
                                   },
                                   "span": {
                                     "start": {
-                                      "line": 7,
-                                      "col": 6
+                                      "line": 15,
+                                      "col": 7
                                     },
                                     "end": {
-                                      "line": 7,
-                                      "col": 9
+                                      "line": 15,
+                                      "col": 10
                                     },
                                     "file": 99
                                   }
@@ -305,10 +558,7 @@ No errors.
                                 {
                                   "Literal": {
                                     "lit": {
-                                      "String": [
-                                        "yo",
-                                        null
-                                      ]
+                                      "String": "yo"
                                     },
                                     "ty": {
                                       "Con": {
@@ -318,12 +568,12 @@ No errors.
                                     },
                                     "span": {
                                       "start": {
-                                        "line": 7,
-                                        "col": 10
+                                        "line": 15,
+                                        "col": 11
                                       },
                                       "end": {
-                                        "line": 7,
-                                        "col": 14
+                                        "line": 15,
+                                        "col": 15
                                       },
                                       "file": 99
                                     }
@@ -338,12 +588,12 @@ No errors.
                               },
                               "span": {
                                 "start": {
-                                  "line": 7,
-                                  "col": 6
+                                  "line": 15,
+                                  "col": 10
                                 },
                                 "end": {
-                                  "line": 7,
-                                  "col": 9
+                                  "line": 15,
+                                  "col": 15
                                 },
                                 "file": 99
                               }
@@ -358,11 +608,11 @@ No errors.
                         },
                         "span": {
                           "start": {
-                            "line": 6,
-                            "col": 26
+                            "line": 14,
+                            "col": 27
                           },
                           "end": {
-                            "line": 8,
+                            "line": 16,
                             "col": 3
                           },
                           "file": 99
@@ -414,313 +664,12 @@ No errors.
                   },
                   "span": {
                     "start": {
-                      "line": 6,
-                      "col": 2
-                    },
-                    "end": {
-                      "line": 8,
+                      "line": 14,
                       "col": 3
                     },
-                    "file": 99
-                  }
-                }
-              },
-              {
-                "StructDef": {
-                  "def": {
-                    "name": "Baz",
-                    "generics": [],
-                    "fields": [
-                      {
-                        "name": "x",
-                        "ann": {
-                          "Con": {
-                            "name": "int",
-                            "args": []
-                          }
-                        },
-                        "ty": {
-                          "generics": [],
-                          "ty": {
-                            "Con": {
-                              "id": "int",
-                              "args": []
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "span": {
-                    "start": {
-                      "line": 10,
-                      "col": 2
-                    },
                     "end": {
-                      "line": 10,
-                      "col": 23
-                    },
-                    "file": 99
-                  }
-                }
-              },
-              {
-                "ImplBlock": {
-                  "ann": {
-                    "Con": {
-                      "name": "Baz",
-                      "args": []
-                    }
-                  },
-                  "ty": {
-                    "Con": {
-                      "id": "Baz",
-                      "args": []
-                    }
-                  },
-                  "items": [
-                    {
-                      "Closure": {
-                        "fun": {
-                          "name": "bar",
-                          "generics": [],
-                          "args": [
-                            {
-                              "pat": {
-                                "Type": {
-                                  "ident": "self",
-                                  "is_mut": false,
-                                  "ann": {
-                                    "Con": {
-                                      "name": "Baz",
-                                      "args": []
-                                    }
-                                  },
-                                  "span": {
-                                    "start": {
-                                      "line": 12,
-                                      "col": 2
-                                    },
-                                    "end": {
-                                      "line": 16,
-                                      "col": 3
-                                    },
-                                    "file": 99
-                                  }
-                                }
-                              },
-                              "ann": {
-                                "Con": {
-                                  "name": "Baz",
-                                  "args": []
-                                }
-                              },
-                              "ty": {
-                                "Con": {
-                                  "id": "Baz",
-                                  "args": []
-                                }
-                              }
-                            },
-                            {
-                              "pat": {
-                                "Wild": {
-                                  "span": {
-                                    "start": {
-                                      "line": 13,
-                                      "col": 17
-                                    },
-                                    "end": {
-                                      "line": 13,
-                                      "col": 18
-                                    },
-                                    "file": 99
-                                  }
-                                }
-                              },
-                              "ann": {
-                                "Con": {
-                                  "name": "string",
-                                  "args": []
-                                }
-                              },
-                              "ty": {
-                                "Con": {
-                                  "id": "string",
-                                  "args": []
-                                }
-                              }
-                            }
-                          ],
-                          "ret": {
-                            "Con": {
-                              "id": "int",
-                              "args": []
-                            }
-                          },
-                          "ann": {
-                            "Con": {
-                              "name": "int",
-                              "args": []
-                            }
-                          },
-                          "body": {
-                            "Block": {
-                              "stmts": [
-                                {
-                                  "FieldAccess": {
-                                    "expr": {
-                                      "Var": {
-                                        "value": "self",
-                                        "decl": {
-                                          "start": {
-                                            "line": 12,
-                                            "col": 2
-                                          },
-                                          "end": {
-                                            "line": 16,
-                                            "col": 3
-                                          },
-                                          "file": 99
-                                        },
-                                        "generics_instantiated": [],
-                                        "ty": {
-                                          "Con": {
-                                            "id": "Baz",
-                                            "args": []
-                                          }
-                                        },
-                                        "span": {
-                                          "start": {
-                                            "line": 14,
-                                            "col": 6
-                                          },
-                                          "end": {
-                                            "line": 14,
-                                            "col": 10
-                                          },
-                                          "file": 99
-                                        }
-                                      }
-                                    },
-                                    "field": "x",
-                                    "ty": {
-                                      "Con": {
-                                        "id": "int",
-                                        "args": []
-                                      }
-                                    },
-                                    "span": {
-                                      "start": {
-                                        "line": 14,
-                                        "col": 6
-                                      },
-                                      "end": {
-                                        "line": 14,
-                                        "col": 12
-                                      },
-                                      "file": 99
-                                    }
-                                  }
-                                }
-                              ],
-                              "ty": {
-                                "Con": {
-                                  "id": "int",
-                                  "args": []
-                                }
-                              },
-                              "span": {
-                                "start": {
-                                  "line": 13,
-                                  "col": 35
-                                },
-                                "end": {
-                                  "line": 15,
-                                  "col": 5
-                                },
-                                "file": 99
-                              }
-                            }
-                          },
-                          "bounded_ty": {
-                            "generics": [],
-                            "ty": {
-                              "Fun": {
-                                "args": [
-                                  {
-                                    "Con": {
-                                      "id": "Baz",
-                                      "args": []
-                                    }
-                                  },
-                                  {
-                                    "Con": {
-                                      "id": "string",
-                                      "args": []
-                                    }
-                                  }
-                                ],
-                                "bounds": [],
-                                "ret": {
-                                  "Con": {
-                                    "id": "int",
-                                    "args": []
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        "kind": "TopLevel",
-                        "ty": {
-                          "Fun": {
-                            "args": [
-                              {
-                                "Con": {
-                                  "id": "Baz",
-                                  "args": []
-                                }
-                              },
-                              {
-                                "Con": {
-                                  "id": "string",
-                                  "args": []
-                                }
-                              }
-                            ],
-                            "bounds": [],
-                            "ret": {
-                              "Con": {
-                                "id": "int",
-                                "args": []
-                              }
-                            }
-                          }
-                        },
-                        "span": {
-                          "start": {
-                            "line": 13,
-                            "col": 4
-                          },
-                          "end": {
-                            "line": 15,
-                            "col": 5
-                          },
-                          "file": 99
-                        }
-                      }
-                    }
-                  ],
-                  "generics": [],
-                  "span": {
-                    "start": {
-                      "line": 12,
-                      "col": 7
-                    },
-                    "end": {
-                      "line": 12,
-                      "col": 10
+                      "line": 16,
+                      "col": 3
                     },
                     "file": 99
                   }
@@ -733,11 +682,11 @@ No errors.
                       "value": "check",
                       "decl": {
                         "start": {
-                          "line": 6,
-                          "col": 2
+                          "line": 14,
+                          "col": 3
                         },
                         "end": {
-                          "line": 8,
+                          "line": 16,
                           "col": 3
                         },
                         "file": 99
@@ -765,11 +714,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 18,
-                          "col": 2
+                          "col": 3
                         },
                         "end": {
                           "line": 18,
-                          "col": 7
+                          "col": 8
                         },
                         "file": 99
                       }
@@ -796,11 +745,11 @@ No errors.
                                 "span": {
                                   "start": {
                                     "line": 18,
-                                    "col": 17
+                                    "col": 18
                                   },
                                   "end": {
                                     "line": 18,
-                                    "col": 18
+                                    "col": 19
                                   },
                                   "file": 99
                                 }
@@ -818,7 +767,7 @@ No errors.
                         "span": {
                           "start": {
                             "line": 18,
-                            "col": 8
+                            "col": 13
                           },
                           "end": {
                             "line": 18,
@@ -838,7 +787,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 18,
-                      "col": 2
+                      "col": 8
                     },
                     "end": {
                       "line": 18,
@@ -857,8 +806,8 @@ No errors.
             },
             "span": {
               "start": {
-                "line": 1,
-                "col": 23
+                "line": 9,
+                "col": 18
               },
               "end": {
                 "line": 19,
@@ -899,8 +848,8 @@ No errors.
       },
       "span": {
         "start": {
-          "line": 1,
-          "col": 0
+          "line": 9,
+          "col": 1
         },
         "end": {
           "line": 19,

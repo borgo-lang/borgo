@@ -1,14 +1,14 @@
 // TODO asdf move this to builtin.brg
-trait ComplexType {}
-trait FloatType {}
-trait IntegerType {}
-trait any {}
+interface ComplexType {}
+interface FloatType {}
+interface IntegerType {}
+interface any {}
 type bool = EXT;
 type byte = EXT;
-trait comparable {}
+interface comparable {}
 type complex128 = EXT;
 type complex64 = EXT;
-trait error {
+interface error {
     fn Error() -> string;
 }
 type float32 = EXT;
@@ -54,24 +54,21 @@ enum Result<T, E> {
     Err(E),
 }
 
-impl<T, E> Result<T, E> {
-    fn IsOk(self) -> bool {
-        match self {
+impl<T, E> (r: Result<T, E>) {
+    fn IsOk() -> bool {
+        match r {
             Ok(_) => true,
             Err(_) => false,
         }
     }
 
-    fn unwrap(self) -> T {
-        rawgo!(
-            "
-      if self.tag == Result_Err {
-        inspect(self.Err)
-        panic(\"Unwrapped Err value\")
-      }
-
-      return self.Ok
-    "
+    fn unwrap() -> T {
+        @rawgo(
+          \\ if r.tag == Result_Err {
+          \\   inspect(r.Err)
+          \\   panic("Unwrapped Err value")
+          \\ }
+          \\ return r.Ok
         )
     }
 }
@@ -81,50 +78,47 @@ enum Option<T> {
     None,
 }
 
-impl<T> Option<T> {
-    fn IsSome(self) -> bool {
-        match self {
+impl<T> (o: Option<T>) {
+    fn IsSome() -> bool {
+        match o {
             Some(_) => true,
             None => false,
         }
     }
 
-    fn IsNone(self) -> bool {
-        !self.IsSome()
+    fn IsNone() -> bool {
+        !o.IsSome()
     }
 
-    fn unwrap_or(self, def: T) -> T {
-        match self {
+    fn unwrap_or(def: T) -> T {
+        match o {
             Some(x) => x,
             None => def,
         }
     }
 
-    fn unwrap_or_else(self, f: fn() -> T) -> T {
-        match self {
+    fn unwrap_or_else(f: fn() -> T) -> T {
+        match o {
             Some(x) => x,
             None => f(),
         }
     }
 
-    fn unwrap(self) -> T {
-        rawgo!(
-            "
-        if self.tag == Option_None {
-          panic(\"Unwrapped None value\")
-        }
-
-        return self.Some
-      "
+    fn unwrap() -> T {
+        @rawgo(
+          \\ if o.tag == Option_None {
+          \\  panic("Unwrapped None value")
+          \\ }
+          \\ return o.Some
         )
     }
+}
 
-    fn ToOption(value: T, check: bool) -> Option<T> {
-        if check {
-            Some(value)
-        } else {
-            None
-        }
+fn ToOption<T>(value: T, check: bool) -> Option<T> {
+    if check {
+        Some(value)
+    } else {
+        None
     }
 }
 
@@ -147,120 +141,126 @@ struct Tuple4<T, X, Y, Z> {
 }
 
 fn zero_value<T>() -> T {
-    rawgo!(
-        "
-    var m T
-    return m
-  "
+    @rawgo(
+      \\ var m T
+      \\ return m
     )
 }
 
 fn assert_eq<T>(a: T, b: T) {
-    rawgo!(
-        "
-    if !reflect.DeepEqual(a, b) {
-        inspect(a);
-        inspect(b);
-        panic(\"something wrong\")
-    }
-    "
+    @rawgo(
+    \\ if !reflect.DeepEqual(a, b) {
+        \\ inspect(a);
+        \\ inspect(b);
+        \\ panic("something wrong")
+    \\ }
     )
 }
 
 fn inspect<T>(a: T) -> T {
-    rawgo!(
-        "
-    fmt.Printf(\"%+v\\n\", a);
-    return a
-  "
+    @rawgo(
+      \\ fmt.Printf("%+v\n", a);
+      \\ return a
     )
 }
 
 fn Debug_unreachable<T>() -> T {
-    rawgo!("panic(\"unreachable code\")")
-}
-
-fn to_result(e: error) -> Result<()> {
-    rawgo!(
-        "if e != nil {
-    return struct{}{}, e
-  }
-  return struct{}{}, nil
-  "
+    @rawgo( 
+      \\panic("unreachable code")
     )
 }
 
-impl<T> [T] {
-    fn len(self) -> int {
-        rawgo!("return len(self)")
+fn to_result(e: error) -> Result<()> {
+    @rawgo(
+      \\ if e != nil {
+      \\   return struct{}{}, e
+      \\ }
+      \\ return struct{}{}, nil
+    )
+}
+
+impl<T> (xs: [T]) {
+    fn len() -> int {
+        @rawgo(
+          \\return len(xs)
+        )
     }
 
-    fn enumerate(self) -> EnumerateSlice<T> {
-        rawgo!("return self")
+    fn enumerate() -> EnumerateSlice<T> {
+        @rawgo(
+          \\return xs
+        )
     }
 
-    fn set(&mut self, index: int, item: T) {
-        rawgo!("self[index] = item")
+    fn set(index: int, item: T) {
+        @rawgo(
+          \\ xs[index] = item
+        )
     }
 
-    fn append(&mut self, item: T) -> [T] {
-        rawgo!("return append(self, item)")
+    fn append(item: T) -> [T] {
+        @rawgo(
+          \\ return append(xs, item)
+        )
     }
 
-    fn get(self, i: int) -> Option<T> {
-        rawgo!(
-            "
-            if i < 0 || i >= len(self) {
-              return *new(T), false
-            }
-
-      return self[i], true
-    "
+    fn get(i: int) -> Option<T> {
+        @rawgo(
+          \\ if i < 0 || i >= len(xs) {
+          \\   return *new(T), false
+          \\ }
+          \\ return xs[i], true
         )
     }
 }
 
-impl<K: comparable, V> Map<K, V> {
-    fn new() -> Map<K, V> {
-        rawgo!("return map[K]V{}")
+
+fn Map.new<K: comparable, V>() -> Map<K, V> {
+    @rawgo(
+      \\ return map[K]V{}
+    )
+}
+
+
+impl<K: comparable, V> (m: Map<K, V>) {
+    fn len() -> int {
+        @rawgo(
+          \\ return len(m)
+        )
     }
 
-    fn len(self) -> int {
-        rawgo!("return len(self)")
+    fn insert(k: K, v: V) {
+        @rawgo(
+          \\ m[k] = v
+        )
     }
 
-    fn insert(self, k: K, v: V) {
-        rawgo!("self[k] = v")
-    }
-
-    fn get(self, k: K) -> Option<V> {
-        rawgo!(
-            "
-        v, ok := self[k]
-        return v, ok
-        "
+    fn get(k: K) -> Option<V> {
+        @rawgo(
+          \\ v, ok := m[k]
+          \\ return v, ok
         )
     }
 }
 
-impl<T> Channel<T> {
-    fn new() -> (Sender<T>, Receiver<T>) {
-        rawgo!(
-            "
-    ch := make(chan T)
-    return Tuple2[chan<- T, <-chan T]{ first: ch, second: ch }
-    "
-        )
-    }
+fn Channel.new<T>() -> (Sender<T>, Receiver<T>) {
+    @rawgo(
+      \\ ch := make(chan T)
+      \\ return Tuple2[chan<- T, <-chan T]{ first: ch, second: ch }
+    )
 }
 
-impl<T> Sender<T> {
-    fn send(&mut self, value: T) {
-        rawgo!("self <- value")
+impl<T> (ch: Sender<T>) {
+    fn send(value: T) {
+        @rawgo(
+          \\ ch <- value
+        )
     }
 
-    fn close(&mut self) {
-        rawgo!("close(self)")
+    fn close() {
+        @rawgo(
+          \\ close(ch)
+        )
     }
 }
 
@@ -269,14 +269,18 @@ enum ChannelOp<T> {
     Send(Sender<T>, T),
 }
 
-impl<T> Receiver<T> {
-    fn recv(&self) -> T {
-        rawgo!("return <- self")
+impl<T> (ch: Receiver<T>) {
+    fn recv() -> T {
+        @rawgo(
+          \\ return <- ch
+        )
     }
 }
 
-impl string {
-    fn enumerate(self) -> EnumerateSlice<rune> {
-        rawgo!("return []rune(self)")
+impl (s: string) {
+    fn enumerate() -> EnumerateSlice<rune> {
+        @rawgo(
+          \\ return []rune(s)
+        )
     }
 }

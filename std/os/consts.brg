@@ -1,12 +1,12 @@
-use io::fs;
+use io.fs;
 
 const O_RDONLY: int = EXT;
 const SEEK_SET: int = EXT;
 const PathSeparator: string = EXT;
-const ModeDir: fs::FileMode = EXT;
+const ModeDir: fs.FileMode = EXT;
 const DevNull: string = EXT;
 
 const ErrInvalid: error = EXT;
-const Stdin: &File = EXT;
+const Stdin: *File = EXT;
 const Args: [string] = EXT;
 const ErrProcessDone: error = EXT;

@@ -1,13 +1,13 @@
 Unwrapped call in loop
 
 SOURCE:
-use fmt;
-use os;
+use fmt
+use os
 
 fn foo() -> Result<()> {
     for f in os.ReadDir(".")? {
         if f.Name() == "go.mod" {
-            fmt.Println("ok");
+            fmt.Println("ok")
         }
     }
 
@@ -15,7 +15,7 @@ fn foo() -> Result<()> {
 }
 
 fn main() {
-    foo().unwrap();
+    foo().unwrap()
 }
 
 OUTPUT:

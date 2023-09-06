@@ -44,6 +44,14 @@ if (runAll || mode === "emit") {
   });
 }
 
+if (runAll || mode === "parse") {
+  await runTestFile("parse-expr", async (block, snapshotFolder) => {
+    const out = await callParser(block);
+    const exp = runExpectations(out, block);
+    await writeExpectation(snapshotFolder, exp, block);
+  });
+}
+
 async function runTestFile(
   file: string,
   blockCb: (
@@ -116,12 +124,25 @@ But compiler inferred:
     }
   }
 
+  function parse(_mode: string) {
+    if (has_errors) {
+      exit(`
+Was not expecting parser to fail:
+  ${error}
+`);
+    }
+  }
+
   eval(block.expected);
   return ret;
 }
 
 async function writeExpectation(folder: string, out: string, block: CodeBlock) {
   const filename = slugify(block.description);
+  if (!filename) {
+    console.log(out);
+    exit(`Test has no description`);
+  }
 
   const exp = folder + filename;
   if (SEEN_EXPECTATIONS.has(exp)) {
@@ -162,7 +183,7 @@ async function callCompiler(input: any): Promise<string> {
   return output;
 }
 
-async function runShell(
+export async function runShell(
   cmd: any,
 ): Promise<{ code: number; output: string; err: string }> {
   const p = Deno.run({
@@ -178,6 +199,53 @@ async function runShell(
   const { code } = await p.status();
   const [err, output] = streams;
   return { code, output, err };
+}
+
+async function callParser(block: CodeBlock) {
+  let mode = "expr";
+
+  function parse(what: string) {
+    mode = what;
+  }
+
+  // changes mode to 'expr' | 'file'
+  eval(block.expected);
+
+  let cmd;
+
+  if (mode === "expr") {
+    cmd = { ParseExpr: block.code };
+  } else if (mode === "file") {
+    cmd = { ParseFile: block.code };
+  } else {
+    exit(`Unhandled parsing mode: ${mode}`);
+  }
+
+  // The parser might get into an infinite loop,
+  // wait a bit and then fail the test if things aren't looking right.
+  let finished = false;
+  return await Promise.race([run(), timeout()]);
+
+  async function run() {
+    const out = await callCompiler(cmd);
+    finished = true;
+    return stripTypesAndVars(out);
+  }
+
+  function timeout() {
+    return new Promise(() => {
+      setTimeout(() => {
+        if (finished) return;
+
+        runShell(["killall", "compiler"]);
+
+        exit(`
+ !! KILLED TEST !!
+ Test is taking too long.
+`);
+      }, 2000);
+    });
+  }
 }
 
 export function markdownToCodeblocks(content: string): Array<CodeBlock> {
@@ -348,6 +416,31 @@ function replaceSpans(output: string) {
   return output.replaceAll(/"file": (\d+)/gm, () => {
     return `"file": 99`;
   });
+}
+
+function stripTypesAndVars(output: string) {
+  const parts = output.split("---\n");
+  const source = parts.pop();
+
+  const json = JSON.parse(source);
+  strip(json);
+
+  parts.push(JSON.stringify(json, null, 2));
+  return parts.join("---\n");
+
+  function strip(obj: any) {
+    if (!obj || typeof obj !== "object") {
+      return;
+    }
+
+    delete obj.ty;
+    delete obj.decl;
+    delete obj.span;
+
+    for (const key of Object.keys(obj)) {
+      strip(obj[key]);
+    }
+  }
 }
 
 export function decode(s: any) {

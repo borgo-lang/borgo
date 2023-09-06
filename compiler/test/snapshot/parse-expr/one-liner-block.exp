@@ -1,0 +1,23 @@
+One liner block
+
+SOURCE:
+{ 1 }
+
+OUTPUT:
+LCurly#1,1, Int("1", 1)#1,3, RCurly#1,5, EOF#1,6
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Literal": {
+          "lit": {
+            "Int": 1
+          }
+        }
+      }
+    ]
+  }
+}

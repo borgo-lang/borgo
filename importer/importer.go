@@ -10,6 +10,7 @@ import (
 	"go/token"
 	"log"
 	"reflect"
+	"sort"
 	"strings"
 )
 
@@ -24,13 +25,28 @@ func SKIP(what any) Type {
 
 var RESERVED_WORDS = map[string]bool{
 	"match": true,
-	"where": true,
 	"use":   true,
-	"len":   true,
-	"ref":   true,
-	"as":    true,
 	"in":    true,
 	"fn":    true,
+}
+
+// TODO find a better way to get the right module path
+// instead of hardcoding it
+var REWRITE_MODULES = map[string]string{
+	"fs":        "io.fs",
+	"url":       "net.url",
+	"netip":     "net.netip",
+	"textproto": "net.textproto",
+	"multipart": "mime.multipart",
+	"tls":       "crypto.tls",
+	"x509":      "crypto.x509",
+}
+
+// Packages that won't be imported, either because they're big or because they have a lot of dependencies.
+// If a type is exported from a denied package, it will be converted to `any`
+var DENY_LIST = map[string]bool{
+	"syscall": true,
+	"x509":    true,
 }
 
 type Type interface {
@@ -55,11 +71,21 @@ func (t TyCon) String() string {
 	}
 
 	if t.name == "Ref" {
-		return "&" + t.args[0].String()
+		return "*" + t.args[0].String()
 	}
 
 	if t.name == "Slice" {
 		return "[" + t.args[0].String() + "]"
+	}
+
+	// Big nasty hack
+	// TODO
+	// if the arg references `syscall`, then turn it into `any`.
+	// syscall package is huge and I'm skipping it for now
+	for denied := range DENY_LIST {
+		if strings.Contains(t.name, denied) {
+			return "any"
+		}
 	}
 
 	if len(t.args) == 0 {
@@ -70,7 +96,7 @@ func (t TyCon) String() string {
 }
 
 func (t TyCon) AddSelector(field string) TyCon {
-	name := t.name + "::" + field
+	name := t.name + "." + field
 	return TyCon{name: name, args: t.args}
 }
 
@@ -233,12 +259,38 @@ func (p *Package) String() string {
 	var w bytes.Buffer
 
 	for _, pkg := range p.Imports {
-		fmt.Fprintf(&w, "use %s;\n", pkg)
+		name := pkg
+
+		if rewrite, found := REWRITE_MODULES[pkg]; found {
+			name = rewrite
+		}
+
+		// Big nasty hack
+		// TODO
+		// Don't import syscall because it's huge
+		if DENY_LIST[pkg] {
+			fmt.Fprintf(&w, "// ")
+		}
+
+		fmt.Fprintf(&w, "use %s\n", name)
 	}
 
 	fmt.Fprintf(&w, "\n\n")
 
+	// collect functions into a map
+	// sort functions by name to maintain stable ordering
+	sortedFns := []string{}
+	functions := map[string]Function{}
+
 	for _, f := range p.Funcs {
+		sortedFns = append(sortedFns, f.Name)
+		functions[f.Name] = f
+	}
+
+	sort.Strings(sortedFns)
+
+	for _, fnName := range sortedFns {
+		f := functions[fnName]
 		bounds := boundsToString(f.Type.bounds)
 		args := functionArgsToString(f.Type.args)
 		ret := toReturnType(f.Type.ret)
@@ -247,15 +299,18 @@ func (p *Package) String() string {
 	}
 
 	grouped := p.GroupMethodsByGenerics()
+	// Sort by type name to maintain stable ordering
 	sortedTypes := []string{}
 
 	for t := range grouped {
 		sortedTypes = append(sortedTypes, t)
 	}
 
+	sort.Strings(sortedTypes)
+
 	for _, ty := range sortedTypes {
 		// TODO ty is just a Go string for the type, not exactly what we need.
-		fmt.Fprintf(&w, "impl %s {\n\n", ty)
+		fmt.Fprintf(&w, "impl (self: %s) {\n\n", ty)
 
 		methods := grouped[ty]
 
@@ -264,20 +319,20 @@ func (p *Package) String() string {
 			bounds := boundsToString(f.Type.bounds)
 			args := functionArgsToString(f.Type.args)
 			ret := toReturnType(f.Type.ret)
-			self := selfTypeToString(m.SelfType)
+			// self := selfTypeToString(m.SelfType)
 
-			fmt.Fprintf(&w, "fn %s %s (%s, %s) -> %s { EXT }\n\n", f.Name, bounds, self, args, ret)
+			fmt.Fprintf(&w, "fn %s %s (%s) -> %s { EXT }\n\n", f.Name, bounds, args, ret)
 		}
 
 		fmt.Fprintf(&w, "}\n\n")
 	}
 
 	for _, a := range p.Aliases {
-		fmt.Fprintf(&w, "type %s = %s;\n\n", a.Name, a.Type.String())
+		fmt.Fprintf(&w, "type %s = %s\n\n", a.Name, a.Type.String())
 	}
 
 	for _, a := range p.Newtypes {
-		fmt.Fprintf(&w, "struct %s(%s);\n\n", a.Name, a.Type.String())
+		fmt.Fprintf(&w, "struct %s(%s)\n\n", a.Name, a.Type.String())
 	}
 
 	for _, s := range p.Types {
@@ -292,14 +347,12 @@ func (p *Package) String() string {
 		case TypeInterface:
 			bounds, fields := splitBoundsAndFieldsForInterface(s.Fields)
 
-			newBounds := strings.Join(bounds, " + ")
+			generics := "" // TODO asdf add generics
+
+			newBounds := interfaceBoundsToString(bounds)
 			newFields := interfaceFieldsToString(fields)
 
-			if len(bounds) > 0 {
-				newBounds = ": " + newBounds + " "
-			}
-
-			def := "trait " + s.Name + newBounds + "{\n" + newFields + "\n}\n\n"
+			def := "interface " + s.Name + generics + " {\n" + newBounds + "\n" + newFields + "\n}\n\n"
 			fmt.Fprint(&w, def)
 		}
 
@@ -418,7 +471,7 @@ func (p *Package) parseTypeExpr(expr ast.Expr) Type {
 		case TyCon:
 			// TODO asdf this is not sufficient, need to get the full package path
 			p.ensureImport(con.name)
-			name := con.name + "::" + ty.Sel.Name
+			name := con.name + "." + ty.Sel.Name
 			return TyCon{name: name, args: []Type{}}
 		default:
 			log.Fatalf("expected TyCon in selector, got %T", con)
@@ -506,6 +559,7 @@ func functionArgsToString(fargs []FuncArg) string {
 	}
 
 	return strings.Join(args, ", ")
+
 }
 
 func structFieldsToString(list []StructField) string {
@@ -518,10 +572,21 @@ func structFieldsToString(list []StructField) string {
 			continue
 		}
 
-		fields = append(fields, f.Name+": "+f.Type.String())
+		fields = append(fields, "  "+f.Name+": "+f.Type.String())
 	}
 
 	return strings.Join(fields, ",\n")
+}
+
+func interfaceBoundsToString(list []string) string {
+	supertraits := []string{}
+
+	for _, b := range list {
+		// TODO asdf supertraits should contain Type not string
+		supertraits = append(supertraits, fmt.Sprintf("impl %s", b))
+	}
+
+	return strings.Join(supertraits, "\n")
 }
 
 func interfaceFieldsToString(list []StructField) string {
@@ -532,7 +597,7 @@ func interfaceFieldsToString(list []StructField) string {
 		// hack hack
 		rendered = strings.TrimPrefix(rendered, "fn ")
 
-		fields = append(fields, "fn "+f.Name+" "+rendered+";")
+		fields = append(fields, "  fn "+f.Name+" "+rendered)
 	}
 
 	return strings.Join(fields, "\n")

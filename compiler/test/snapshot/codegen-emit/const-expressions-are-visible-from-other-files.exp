@@ -9,7 +9,7 @@ fn check() -> bool {
 
 file: main.brg
 
-const foo: int = 1 + 1;
+const foo: int = 1 + 1
 fn main() { assert_eq(check(), true) }
 
 OUTPUT:

@@ -1,0 +1,71 @@
+Tuple type
+
+SOURCE:
+fn foo() -> (int, string) { (3, "bar") }
+
+OUTPUT:
+Fn_#1,1, Ident("foo", 3)#1,4, LParen#1,7, RParen#1,8, Arrow#1,10, LParen#1,13, Ident("int", 3)#1,14, Comma#1,17, Ident("string", 6)#1,19, RParen#1,25, LCurly#1,27, LParen#1,29, Int("3", 1)#1,30, Comma#1,31, String("bar", 5)#1,33, RParen#1,38, RCurly#1,40, EOF#1,41
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "foo",
+      "generics": [],
+      "args": [],
+      "ret": {
+        "Var": -1
+      },
+      "ann": {
+        "Con": {
+          "name": "Tuple2",
+          "args": [
+            {
+              "Con": {
+                "name": "int",
+                "args": []
+              }
+            },
+            {
+              "Con": {
+                "name": "string",
+                "args": []
+              }
+            }
+          ]
+        }
+      },
+      "body": {
+        "Block": {
+          "stmts": [
+            {
+              "Tuple": {
+                "elems": [
+                  {
+                    "Literal": {
+                      "lit": {
+                        "Int": 3
+                      }
+                    }
+                  },
+                  {
+                    "Literal": {
+                      "lit": {
+                        "String": "bar"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "Inline"
+  }
+}

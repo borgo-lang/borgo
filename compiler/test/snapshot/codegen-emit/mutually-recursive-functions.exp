@@ -25,7 +25,7 @@ fn odd(n: int) -> bool {
 }
 
 fn main() {
-  assert_eq(even(10), true);
+  assert_eq(even(10), true)
 }
 
 OUTPUT:

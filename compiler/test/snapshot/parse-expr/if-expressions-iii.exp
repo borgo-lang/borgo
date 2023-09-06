@@ -1,0 +1,75 @@
+If expressions III
+
+SOURCE:
+if u {
+    4
+} else if z {
+    5
+} else {
+    6
+}
+
+OUTPUT:
+If#1,1, Ident("u", 1)#1,4, LCurly#1,6, Int("4", 1)#2,5, Semicolon#2,6, RCurly#3,1, Else#3,3, If#3,8, Ident("z", 1)#3,11, LCurly#3,13, Int("5", 1)#4,5, Semicolon#4,6, RCurly#5,1, Else#5,3, LCurly#5,8, Int("6", 1)#6,5, Semicolon#6,6, RCurly#7,1, EOF#7,2
+---
+No errors.
+---
+{
+  "If": {
+    "cond": {
+      "Var": {
+        "value": "u",
+        "generics_instantiated": []
+      }
+    },
+    "then": {
+      "Block": {
+        "stmts": [
+          {
+            "Literal": {
+              "lit": {
+                "Int": 4
+              }
+            }
+          }
+        ]
+      }
+    },
+    "els": {
+      "If": {
+        "cond": {
+          "Var": {
+            "value": "z",
+            "generics_instantiated": []
+          }
+        },
+        "then": {
+          "Block": {
+            "stmts": [
+              {
+                "Literal": {
+                  "lit": {
+                    "Int": 5
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "els": {
+          "Block": {
+            "stmts": [
+              {
+                "Literal": {
+                  "lit": {
+                    "Int": 6
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

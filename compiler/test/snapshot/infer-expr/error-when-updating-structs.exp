@@ -4,7 +4,7 @@ SOURCE:
 {
   struct Foo { a: int }
 
-  let mut x = Foo { a: 1 };
+  let mut x = Foo { a: 1 }
   x.a = "foo"
 }
 

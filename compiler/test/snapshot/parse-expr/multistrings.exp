@@ -1,0 +1,53 @@
+Multistrings
+
+SOURCE:
+{
+    foo(
+        \\hello
+        \\  this is a
+        \\multiline \\ string
+    , 123
+    )
+}
+
+OUTPUT:
+LCurly#1,1, Ident("foo", 3)#2,5, LParen#2,8, MultiString("hello", 7)#3,9, MultiString("  this is a", 13)#4,9, MultiString("multiline \\ string", 21)#5,9, Semicolon#5,30, Comma#6,5, Int("123", 3)#6,7, Semicolon#6,10, RParen#7,5, Semicolon#7,6, RCurly#8,1, EOF#8,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Call": {
+          "func": {
+            "Var": {
+              "value": "foo",
+              "generics_instantiated": []
+            }
+          },
+          "args": [
+            {
+              "Literal": {
+                "lit": {
+                  "MultiString": [
+                    "hello",
+                    "  this is a",
+                    "multiline \\\\ string"
+                  ]
+                }
+              }
+            },
+            {
+              "Literal": {
+                "lit": {
+                  "Int": 123
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

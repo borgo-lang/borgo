@@ -2,33 +2,33 @@ Control flow in loops
 
 SOURCE:
 fn main() {
-  let mut n = 0;
-  let mut check = false;
+  let mut n = 0
+  let mut check = false
 
   loop {
     if n <= 5 {
-      n = n + 1;
-      assert_eq(check, false);
-      continue;
+      n = n + 1
+      assert_eq(check, false)
+      continue
     }
 
-    check = true;
-    break;
+    check = true
+    break
   }
 
-  assert_eq(check, true);
-  assert_eq(n, 6);
+  assert_eq(check, true)
+  assert_eq(n, 6)
 
-  n = 0;
+  n = 0
 
   for x in [1,2,3] {
     if x == 2 {
-      continue;
+      continue
     }
-    n = n + 1;
+    n = n + 1
   }
 
-  assert_eq(n, 2);
+  assert_eq(n, 2)
 }
 
 OUTPUT:

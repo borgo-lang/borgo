@@ -1,0 +1,40 @@
+Let mut statement
+
+SOURCE:
+{
+    let mut a = 1
+}
+
+OUTPUT:
+LCurly#1,1, Let#2,5, Mut#2,9, Ident("a", 1)#2,13, Eq#2,15, Int("1", 1)#2,17, Semicolon#2,18, RCurly#3,1, EOF#3,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "a",
+                "is_mut": false,
+                "ann": "Unknown"
+              }
+            },
+            "ann": "Unknown"
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              }
+            }
+          },
+          "mutable": true
+        }
+      }
+    ]
+  }
+}

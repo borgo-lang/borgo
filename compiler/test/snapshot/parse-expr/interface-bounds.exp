@@ -1,0 +1,55 @@
+Interface bounds
+
+SOURCE:
+fn bar<T: Reader + Writer>() { }
+
+OUTPUT:
+Fn_#1,1, Ident("bar", 3)#1,4, LAngle#1,7, Ident("T", 1)#1,8, Colon#1,9, Ident("Reader", 6)#1,11, Plus#1,18, Ident("Writer", 6)#1,20, RAngle#1,26, LParen#1,27, RParen#1,28, LCurly#1,30, RCurly#1,32, EOF#1,33
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "bar",
+      "generics": [
+        {
+          "name": "T",
+          "bounds": [
+            {
+              "Con": {
+                "name": "Reader",
+                "args": []
+              }
+            },
+            {
+              "Con": {
+                "name": "Writer",
+                "args": []
+              }
+            }
+          ]
+        }
+      ],
+      "args": [],
+      "ret": {
+        "Var": -1
+      },
+      "ann": {
+        "Con": {
+          "name": "Unit",
+          "args": []
+        }
+      },
+      "body": {
+        "Block": {
+          "stmts": []
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "Inline"
+  }
+}

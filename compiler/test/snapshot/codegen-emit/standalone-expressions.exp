@@ -1,10 +1,10 @@
 Standalone expressions
 
 SOURCE:
-use fmt;
+use fmt
 
 fn main() {
-  fmt.Printf("hello %v", 4);
+  fmt.Printf("hello %v", 4)
 }
 
 OUTPUT:

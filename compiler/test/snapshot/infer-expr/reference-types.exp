@@ -4,7 +4,7 @@ SOURCE:
 {
   struct Bar { x: int }
 
-  fn foo(a: &Bar) -> int {
+  fn foo(a: *Bar) -> int {
     a.x
   }
 
@@ -48,7 +48,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -73,11 +73,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 4,
-                        "col": 9
+                        "col": 10
                       },
                       "end": {
                         "line": 4,
-                        "col": 10
+                        "col": 11
                       },
                       "file": 99
                     }
@@ -134,11 +134,11 @@ No errors.
                           "decl": {
                             "start": {
                               "line": 4,
-                              "col": 9
+                              "col": 10
                             },
                             "end": {
                               "line": 4,
-                              "col": 10
+                              "col": 11
                             },
                             "file": 99
                           },
@@ -159,11 +159,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 5,
-                              "col": 4
+                              "col": 5
                             },
                             "end": {
                               "line": 5,
-                              "col": 5
+                              "col": 6
                             },
                             "file": 99
                           }
@@ -179,11 +179,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 5,
-                          "col": 4
+                          "col": 7
                         },
                         "end": {
                           "line": 5,
-                          "col": 7
+                          "col": 8
                         },
                         "file": 99
                       }
@@ -199,7 +199,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 4,
-                    "col": 25
+                    "col": 26
                   },
                   "end": {
                     "line": 6,
@@ -269,7 +269,7 @@ No errors.
           "span": {
             "start": {
               "line": 4,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 6,
@@ -287,7 +287,7 @@ No errors.
               "decl": {
                 "start": {
                   "line": 4,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 6,
@@ -325,11 +325,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 8,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 8,
-                  "col": 5
+                  "col": 6
                 },
                 "file": 99
               }
@@ -358,11 +358,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 8,
-                                "col": 15
+                                "col": 16
                               },
                               "end": {
                                 "line": 8,
-                                "col": 16
+                                "col": 17
                               },
                               "file": 99
                             }
@@ -380,7 +380,7 @@ No errors.
                     "span": {
                       "start": {
                         "line": 8,
-                        "col": 7
+                        "col": 11
                       },
                       "end": {
                         "line": 8,
@@ -390,7 +390,7 @@ No errors.
                     }
                   }
                 },
-                "mutable": false,
+                "mutable": true,
                 "ty": {
                   "Con": {
                     "id": "Ref",
@@ -407,7 +407,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 8,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 8,
@@ -427,7 +427,7 @@ No errors.
           "span": {
             "start": {
               "line": 8,
-              "col": 2
+              "col": 6
             },
             "end": {
               "line": 8,
@@ -447,7 +447,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 9,

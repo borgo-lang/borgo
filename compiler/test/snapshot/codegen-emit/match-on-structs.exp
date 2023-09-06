@@ -4,14 +4,14 @@ SOURCE:
 struct Foo { a: int }
 
 fn main() {
-    let x = Foo { a: 1 };
+    let x = Foo { a: 1 }
     let res = match x {
-        Foo { a: 2 } => false,
-        Foo { a: 1 } => true,
-        Foo { a: _ } => false,
-    };
+        Foo { a: 2 } => false
+        Foo { a: 1 } => true
+        Foo { a: _ } => false
+    }
 
-    assert_eq(res, true);
+    assert_eq(res, true)
 }
 
 OUTPUT:

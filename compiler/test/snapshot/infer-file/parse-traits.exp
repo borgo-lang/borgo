@@ -1,9 +1,9 @@
 Parse traits
 
 SOURCE:
-fn borgo_main() {
-  trait Foo {
-    fn bar(x: string) -> int;
+fn main() {
+  interface Foo {
+    fn bar(x: string) -> int
   }
 
   fn check(f: Foo) -> int {
@@ -22,7 +22,7 @@ No errors.
   {
     "Closure": {
       "fun": {
-        "name": "borgo_main",
+        "name": "main",
         "generics": [],
         "args": [],
         "ret": {
@@ -43,6 +43,7 @@ No errors.
               {
                 "Trait": {
                   "name": "Foo",
+                  "generics": [],
                   "supertraits": [],
                   "items": [
                     {
@@ -60,11 +61,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 3,
-                                      "col": 11
+                                      "col": 12
                                     },
                                     "end": {
                                       "line": 3,
-                                      "col": 12
+                                      "col": 13
                                     },
                                     "file": 99
                                   }
@@ -120,7 +121,7 @@ No errors.
                             }
                           }
                         },
-                        "kind": "Inline",
+                        "kind": "TopLevel",
                         "ty": {
                           "Fun": {
                             "args": [
@@ -143,7 +144,7 @@ No errors.
                         "span": {
                           "start": {
                             "line": 3,
-                            "col": 4
+                            "col": 8
                           },
                           "end": {
                             "line": 3,
@@ -154,11 +155,10 @@ No errors.
                       }
                     }
                   ],
-                  "types": [],
                   "span": {
                     "start": {
                       "line": 2,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 4,
@@ -183,11 +183,11 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 6,
-                                "col": 11
+                                "col": 12
                               },
                               "end": {
                                 "line": 6,
-                                "col": 12
+                                "col": 13
                               },
                               "file": 99
                             }
@@ -232,11 +232,11 @@ No errors.
                                       "decl": {
                                         "start": {
                                           "line": 6,
-                                          "col": 11
+                                          "col": 12
                                         },
                                         "end": {
                                           "line": 6,
-                                          "col": 12
+                                          "col": 13
                                         },
                                         "file": 99
                                       },
@@ -250,11 +250,11 @@ No errors.
                                       "span": {
                                         "start": {
                                           "line": 7,
-                                          "col": 4
+                                          "col": 5
                                         },
                                         "end": {
                                           "line": 7,
-                                          "col": 5
+                                          "col": 6
                                         },
                                         "file": 99
                                       }
@@ -283,11 +283,11 @@ No errors.
                                   "span": {
                                     "start": {
                                       "line": 7,
-                                      "col": 6
+                                      "col": 7
                                     },
                                     "end": {
                                       "line": 7,
-                                      "col": 9
+                                      "col": 10
                                     },
                                     "file": 99
                                   }
@@ -297,10 +297,7 @@ No errors.
                                 {
                                   "Literal": {
                                     "lit": {
-                                      "String": [
-                                        "yo",
-                                        null
-                                      ]
+                                      "String": "yo"
                                     },
                                     "ty": {
                                       "Con": {
@@ -311,11 +308,11 @@ No errors.
                                     "span": {
                                       "start": {
                                         "line": 7,
-                                        "col": 10
+                                        "col": 11
                                       },
                                       "end": {
                                         "line": 7,
-                                        "col": 14
+                                        "col": 15
                                       },
                                       "file": 99
                                     }
@@ -331,11 +328,11 @@ No errors.
                               "span": {
                                 "start": {
                                   "line": 7,
-                                  "col": 6
+                                  "col": 10
                                 },
                                 "end": {
                                   "line": 7,
-                                  "col": 9
+                                  "col": 15
                                 },
                                 "file": 99
                               }
@@ -351,7 +348,7 @@ No errors.
                         "span": {
                           "start": {
                             "line": 6,
-                            "col": 26
+                            "col": 27
                           },
                           "end": {
                             "line": 8,
@@ -407,7 +404,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 6,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 8,
@@ -428,7 +425,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 10,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 10,
@@ -448,7 +445,7 @@ No errors.
             "span": {
               "start": {
                 "line": 1,
-                "col": 16
+                "col": 11
               },
               "end": {
                 "line": 11,
@@ -490,7 +487,7 @@ No errors.
       "span": {
         "start": {
           "line": 1,
-          "col": 0
+          "col": 1
         },
         "end": {
           "line": 11,

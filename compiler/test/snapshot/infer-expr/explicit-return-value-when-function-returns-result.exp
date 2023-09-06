@@ -1,0 +1,16 @@
+Explicit return value when function returns Result<()>
+
+SOURCE:
+fn foo() -> Result<(), string> {
+    let a = 1
+}
+
+OUTPUT:
+Type mismatch
+Expected:
+    Result<(), string>
+Got:
+    ()
+
+2|      let a = 1
+        ^^^^^^^^^

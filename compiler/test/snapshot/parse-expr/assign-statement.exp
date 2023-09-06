@@ -1,0 +1,69 @@
+Assign statement
+
+SOURCE:
+{
+    let a = 1
+    a[10] = 5
+}
+
+OUTPUT:
+LCurly#1,1, Let#2,5, Ident("a", 1)#2,9, Eq#2,11, Int("1", 1)#2,13, Semicolon#2,14, Ident("a", 1)#3,5, LBrack#3,6, Int("10", 2)#3,7, RBrack#3,9, Eq#3,11, Int("5", 1)#3,13, Semicolon#3,14, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "a",
+                "is_mut": false,
+                "ann": "Unknown"
+              }
+            },
+            "ann": "Unknown"
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              }
+            }
+          },
+          "mutable": false
+        }
+      },
+      {
+        "VarUpdate": {
+          "target": {
+            "Index": {
+              "expr": {
+                "Var": {
+                  "value": "a",
+                  "generics_instantiated": []
+                }
+              },
+              "index": {
+                "Literal": {
+                  "lit": {
+                    "Int": 10
+                  }
+                }
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 5
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

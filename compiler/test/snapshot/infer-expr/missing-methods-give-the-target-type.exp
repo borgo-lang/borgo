@@ -3,8 +3,8 @@ Missing methods give the target type.
 SOURCE:
 {
   struct Foo<T> { x: T }
-  let f = Foo{ x: 34 };
-  f.bar();
+  let f = Foo{ x: 34 }
+  f.bar()
 }
 
 OUTPUT:
@@ -13,5 +13,5 @@ Type:
 has no field or method:
     bar
 
-4|    f.bar();
+4|    f.bar()
         ^^^

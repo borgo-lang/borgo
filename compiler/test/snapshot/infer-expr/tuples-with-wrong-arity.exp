@@ -1,7 +1,7 @@
 Tuples with wrong arity.
 
 SOURCE:
-(1, 2, 3) as (int, int)
+@ensure (1, 2, 3), (int, int)
 
 OUTPUT:
 Type mismatch
@@ -10,5 +10,5 @@ Expected:
 Got:
     (int, int)
 
-1|  (1, 2, 3) as (int, int)
-    ^^^^^^^^^^^^^^^^^^^^^^^
+1|  @ensure (1, 2, 3), (int, int)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

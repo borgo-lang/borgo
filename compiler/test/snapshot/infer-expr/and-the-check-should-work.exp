@@ -2,8 +2,8 @@ And the check should work!
 
 SOURCE:
 {
-  let x = [1,2,3];
-  x as bool;
+  let x = [1,2,3]
+  @ensure x, bool
   1
 }
 
@@ -14,5 +14,5 @@ Expected:
 Got:
     bool
 
-3|    x as bool;
-      ^^^^^^^^^
+3|    @ensure x, bool
+      ^^^^^^^^^^^^^^^

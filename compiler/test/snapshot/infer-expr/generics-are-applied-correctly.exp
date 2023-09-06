@@ -2,7 +2,7 @@ Generics are applied correctly.
 
 SOURCE:
 {
-  let x = ["hello"];
+  let x = ["hello"]
   list_map(x, inc)
 }
 

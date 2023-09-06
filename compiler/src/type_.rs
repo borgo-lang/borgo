@@ -95,7 +95,7 @@ impl Type {
 
                 // Special case Ref
                 if name == "Ref" {
-                    return format!("&{}", args_formatted);
+                    return format!("*{}", args_formatted);
                 }
 
                 // Special case RefMut

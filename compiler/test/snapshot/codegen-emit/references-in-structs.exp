@@ -1,25 +1,25 @@
 References in structs
 
 SOURCE:
-use fmt;
+use fmt
 
 struct Foo {
-  x: int
+  x: int,
 }
 
 struct Bar {
-  f: &Foo
+  f: *Foo,
 }
 
-fn update(mut b: &Bar) {
-  b.f.x = 99;
+fn update(b: *Bar) {
+  b.f.x = 99
 }
 
 fn main() {
-  let f = Foo { x: 1 };
-  let mut b = Bar { f: &f };
-  update(&b);
-  assert_eq(b.f.x, 99);
+  let f = Foo { x: 1 }
+  let mut b = Bar { f: &f }
+  update(&b)
+  assert_eq(b.f.x, 99)
   fmt.Printf("%+v", b.f)
 }
 

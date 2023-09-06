@@ -4,12 +4,12 @@ SOURCE:
 {
   enum Maybe<T> { Just(T), None }
 
-  Maybe::Just(1) as Maybe<int>;
-  Maybe::Just("foo") as Maybe<string>;
-  Maybe::None as Maybe<bool>;
-  Maybe::Just(Maybe::Just(1)) as Maybe<Maybe<int>>;
+  @ensure Maybe.Just(1), Maybe<int>
+  @ensure Maybe.Just("foo"), Maybe<string>
+  @ensure Maybe.None, Maybe<bool>
+  @ensure Maybe.Just(Maybe.Just(1)), Maybe<Maybe<int>>
 
-  Maybe::None
+  Maybe.None
 }
 
 OUTPUT:
@@ -31,11 +31,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 13
+                    "col": 14
                   },
                   "end": {
                     "line": 2,
-                    "col": 14
+                    "col": 15
                   },
                   "file": 99
                 }
@@ -71,7 +71,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -87,11 +87,11 @@ No errors.
             "Call": {
               "func": {
                 "Var": {
-                  "value": "Maybe::Just",
+                  "value": "Maybe.Just",
                   "decl": {
                     "start": {
                       "line": 2,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 2,
@@ -136,11 +136,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 4,
-                      "col": 2
+                      "col": 17
                     },
                     "end": {
                       "line": 4,
-                      "col": 13
+                      "col": 21
                     },
                     "file": 99
                   }
@@ -161,11 +161,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 4,
-                        "col": 14
+                        "col": 22
                       },
                       "end": {
                         "line": 4,
-                        "col": 15
+                        "col": 23
                       },
                       "file": 99
                     }
@@ -188,11 +188,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 4,
-                  "col": 2
+                  "col": 21
                 },
                 "end": {
                   "line": 4,
-                  "col": 16
+                  "col": 23
                 },
                 "file": 99
               }
@@ -227,11 +227,11 @@ No errors.
           "span": {
             "start": {
               "line": 4,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 4,
-              "col": 30
+              "col": 35
             },
             "file": 99
           }
@@ -243,11 +243,11 @@ No errors.
             "Call": {
               "func": {
                 "Var": {
-                  "value": "Maybe::Just",
+                  "value": "Maybe.Just",
                   "decl": {
                     "start": {
                       "line": 2,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 2,
@@ -292,11 +292,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 5,
-                      "col": 2
+                      "col": 17
                     },
                     "end": {
                       "line": 5,
-                      "col": 13
+                      "col": 21
                     },
                     "file": 99
                   }
@@ -306,10 +306,7 @@ No errors.
                 {
                   "Literal": {
                     "lit": {
-                      "String": [
-                        "foo",
-                        null
-                      ]
+                      "String": "foo"
                     },
                     "ty": {
                       "Con": {
@@ -320,11 +317,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 5,
-                        "col": 14
+                        "col": 22
                       },
                       "end": {
                         "line": 5,
-                        "col": 19
+                        "col": 27
                       },
                       "file": 99
                     }
@@ -347,11 +344,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 5,
-                  "col": 2
+                  "col": 21
                 },
                 "end": {
                   "line": 5,
-                  "col": 20
+                  "col": 27
                 },
                 "file": 99
               }
@@ -386,11 +383,11 @@ No errors.
           "span": {
             "start": {
               "line": 5,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 5,
-              "col": 37
+              "col": 42
             },
             "file": 99
           }
@@ -400,11 +397,11 @@ No errors.
         "CheckType": {
           "expr": {
             "Var": {
-              "value": "Maybe::None",
+              "value": "Maybe.None",
               "decl": {
                 "start": {
                   "line": 2,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 2,
@@ -436,11 +433,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 6,
-                  "col": 2
+                  "col": 17
                 },
                 "end": {
                   "line": 6,
-                  "col": 13
+                  "col": 21
                 },
                 "file": 99
               }
@@ -475,11 +472,11 @@ No errors.
           "span": {
             "start": {
               "line": 6,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 6,
-              "col": 28
+              "col": 33
             },
             "file": 99
           }
@@ -491,11 +488,11 @@ No errors.
             "Call": {
               "func": {
                 "Var": {
-                  "value": "Maybe::Just",
+                  "value": "Maybe.Just",
                   "decl": {
                     "start": {
                       "line": 2,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 2,
@@ -561,11 +558,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 7,
-                      "col": 2
+                      "col": 17
                     },
                     "end": {
                       "line": 7,
-                      "col": 13
+                      "col": 21
                     },
                     "file": 99
                   }
@@ -576,11 +573,11 @@ No errors.
                   "Call": {
                     "func": {
                       "Var": {
-                        "value": "Maybe::Just",
+                        "value": "Maybe.Just",
                         "decl": {
                           "start": {
                             "line": 2,
-                            "col": 2
+                            "col": 3
                           },
                           "end": {
                             "line": 2,
@@ -625,11 +622,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 7,
-                            "col": 14
+                            "col": 28
                           },
                           "end": {
                             "line": 7,
-                            "col": 25
+                            "col": 32
                           },
                           "file": 99
                         }
@@ -650,11 +647,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 7,
-                              "col": 26
+                              "col": 33
                             },
                             "end": {
                               "line": 7,
-                              "col": 27
+                              "col": 34
                             },
                             "file": 99
                           }
@@ -677,11 +674,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 7,
-                        "col": 14
+                        "col": 32
                       },
                       "end": {
                         "line": 7,
-                        "col": 28
+                        "col": 34
                       },
                       "file": 99
                     }
@@ -711,11 +708,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 7,
-                  "col": 2
+                  "col": 21
                 },
                 "end": {
                   "line": 7,
-                  "col": 29
+                  "col": 35
                 },
                 "file": 99
               }
@@ -764,11 +761,11 @@ No errors.
           "span": {
             "start": {
               "line": 7,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 7,
-              "col": 50
+              "col": 54
             },
             "file": 99
           }
@@ -776,11 +773,11 @@ No errors.
       },
       {
         "Var": {
-          "value": "Maybe::None",
+          "value": "Maybe.None",
           "decl": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -806,7 +803,7 @@ No errors.
           "span": {
             "start": {
               "line": 9,
-              "col": 2
+              "col": 9
             },
             "end": {
               "line": 9,
@@ -830,7 +827,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 10,

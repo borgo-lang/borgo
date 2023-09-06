@@ -1,13 +1,13 @@
 Catch exhaustiveness errors.
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   enum Color { Red, Blue }
 
-  match Color::Red {
+  match Color.Red {
     Red => 1,
     Green => 2,
-  };
+  }
   ()
 }
 

@@ -1,0 +1,36 @@
+If expressions
+
+SOURCE:
+if x {
+    1
+}
+
+OUTPUT:
+If#1,1, Ident("x", 1)#1,4, LCurly#1,6, Int("1", 1)#2,5, Semicolon#2,6, RCurly#3,1, EOF#3,2
+---
+No errors.
+---
+{
+  "If": {
+    "cond": {
+      "Var": {
+        "value": "x",
+        "generics_instantiated": []
+      }
+    },
+    "then": {
+      "Block": {
+        "stmts": [
+          {
+            "Literal": {
+              "lit": {
+                "Int": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    "els": "Noop"
+  }
+}

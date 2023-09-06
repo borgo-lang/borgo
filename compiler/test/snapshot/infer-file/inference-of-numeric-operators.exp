@@ -1,13 +1,13 @@
 Inference of numeric operators
 
 SOURCE:
-fn borgo_main() -> int {
-  false > true;
+fn main() -> int {
+  false > true
   1
 }
 
 OUTPUT:
 Expected numeric type
 
-2|    false > true;
+2|    false > true
       ^^^^^^^^^^^^

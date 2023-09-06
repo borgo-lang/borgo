@@ -1,0 +1,11 @@
+Unknown type in impl with generics
+
+SOURCE:
+struct Foo<T> {}
+impl (f: Foo<T>) {}
+
+OUTPUT:
+Type not found: T
+
+2|  impl (f: Foo<T>) {}
+    ^^^^^^^^^^^^^^^^^^

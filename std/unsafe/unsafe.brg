@@ -1,0 +1,15 @@
+fn Add  (ptr: Pointer, len: IntegerType) -> Pointer { EXT }
+
+fn Alignof  (x: ArbitraryType) -> uintptr { EXT }
+
+fn Offsetof  (x: ArbitraryType) -> uintptr { EXT }
+
+fn Sizeof  (x: ArbitraryType) -> uintptr { EXT }
+
+fn Slice  (ptr: *ArbitraryType, len: IntegerType) -> [ArbitraryType] { EXT }
+
+type Pointer = *ArbitraryType
+
+struct ArbitraryType(int)
+
+struct IntegerType(int)

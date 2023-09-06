@@ -1,0 +1,76 @@
+Inline functions
+
+SOURCE:
+fn foo() {
+    fn bar() {
+        baz
+    }
+}
+
+OUTPUT:
+Fn_#1,1, Ident("foo", 3)#1,4, LParen#1,7, RParen#1,8, LCurly#1,10, Fn_#2,5, Ident("bar", 3)#2,8, LParen#2,11, RParen#2,12, LCurly#2,14, Ident("baz", 3)#3,9, Semicolon#3,12, RCurly#4,5, Semicolon#4,6, RCurly#5,1, EOF#5,2
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "foo",
+      "generics": [],
+      "args": [],
+      "ret": {
+        "Var": -1
+      },
+      "ann": {
+        "Con": {
+          "name": "Unit",
+          "args": []
+        }
+      },
+      "body": {
+        "Block": {
+          "stmts": [
+            {
+              "Closure": {
+                "fun": {
+                  "name": "bar",
+                  "generics": [],
+                  "args": [],
+                  "ret": {
+                    "Var": -1
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "Unit",
+                      "args": []
+                    }
+                  },
+                  "body": {
+                    "Block": {
+                      "stmts": [
+                        {
+                          "Var": {
+                            "value": "baz",
+                            "generics_instantiated": []
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "bounded_ty": {
+                    "generics": []
+                  }
+                },
+                "kind": "Inline"
+              }
+            }
+          ]
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "TopLevel"
+  }
+}

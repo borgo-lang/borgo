@@ -1,13 +1,13 @@
 Native call to result
 
 SOURCE:
-use os;
-use fmt;
+use os
+use fmt
 
 fn main() {
   match os.ReadFile("go.mod") {
-    Ok(s) => fmt.Println(string(s)),
-    Err(_) => unreachable!(),
+    Ok(s) => fmt.Println(string(s))
+    Err(_) => @unreachable()
   }
 }
 

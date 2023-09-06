@@ -2,10 +2,10 @@ If statements skip unification
 
 SOURCE:
 {
-  let n = 0;
+  let n = 0
 
   if true {
-    n + 1;
+    n + 1
   }
 
   if false {
@@ -33,11 +33,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 2,
-                    "col": 7
+                    "col": 8
                   },
                   "file": 99
                 }
@@ -65,16 +65,17 @@ No errors.
               "span": {
                 "start": {
                   "line": 2,
-                  "col": 10
+                  "col": 11
                 },
                 "end": {
                   "line": 2,
-                  "col": 11
+                  "col": 12
                 },
                 "file": 99
               }
             }
           },
+          "mutable": false,
           "ty": {
             "Con": {
               "id": "int",
@@ -84,7 +85,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -110,11 +111,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 4,
-                  "col": 5
+                  "col": 6
                 },
                 "end": {
                   "line": 4,
-                  "col": 9
+                  "col": 10
                 },
                 "file": 99
               }
@@ -132,11 +133,11 @@ No errors.
                         "decl": {
                           "start": {
                             "line": 2,
-                            "col": 6
+                            "col": 7
                           },
                           "end": {
                             "line": 2,
-                            "col": 7
+                            "col": 8
                           },
                           "file": 99
                         },
@@ -150,11 +151,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 5,
-                            "col": 4
+                            "col": 5
                           },
                           "end": {
                             "line": 5,
-                            "col": 5
+                            "col": 6
                           },
                           "file": 99
                         }
@@ -174,11 +175,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 5,
-                            "col": 8
+                            "col": 9
                           },
                           "end": {
                             "line": 5,
-                            "col": 9
+                            "col": 10
                           },
                           "file": 99
                         }
@@ -193,11 +194,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 5,
-                        "col": 4
+                        "col": 5
                       },
                       "end": {
                         "line": 5,
-                        "col": 9
+                        "col": 10
                       },
                       "file": 99
                     }
@@ -213,7 +214,7 @@ No errors.
               "span": {
                 "start": {
                   "line": 4,
-                  "col": 10
+                  "col": 11
                 },
                 "end": {
                   "line": 6,
@@ -223,28 +224,7 @@ No errors.
               }
             }
           },
-          "els": {
-            "Block": {
-              "stmts": [],
-              "ty": {
-                "Con": {
-                  "id": "Unit",
-                  "args": []
-                }
-              },
-              "span": {
-                "start": {
-                  "line": 4,
-                  "col": 2
-                },
-                "end": {
-                  "line": 6,
-                  "col": 3
-                },
-                "file": 99
-              }
-            }
-          },
+          "els": "Noop",
           "ty": {
             "Con": {
               "id": "int",
@@ -254,7 +234,7 @@ No errors.
           "span": {
             "start": {
               "line": 4,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 6,
@@ -280,11 +260,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 8,
-                  "col": 5
+                  "col": 6
                 },
                 "end": {
                   "line": 8,
-                  "col": 10
+                  "col": 11
                 },
                 "file": 99
               }
@@ -302,7 +282,7 @@ No errors.
               "span": {
                 "start": {
                   "line": 8,
-                  "col": 11
+                  "col": 12
                 },
                 "end": {
                   "line": 9,
@@ -312,28 +292,7 @@ No errors.
               }
             }
           },
-          "els": {
-            "Block": {
-              "stmts": [],
-              "ty": {
-                "Con": {
-                  "id": "Unit",
-                  "args": []
-                }
-              },
-              "span": {
-                "start": {
-                  "line": 8,
-                  "col": 2
-                },
-                "end": {
-                  "line": 9,
-                  "col": 3
-                },
-                "file": 99
-              }
-            }
-          },
+          "els": "Noop",
           "ty": {
             "Con": {
               "id": "Unit",
@@ -343,7 +302,7 @@ No errors.
           "span": {
             "start": {
               "line": 8,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 9,
@@ -367,11 +326,11 @@ No errors.
           "span": {
             "start": {
               "line": 11,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 11,
-              "col": 3
+              "col": 4
             },
             "file": 99
           }
@@ -387,7 +346,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 12,

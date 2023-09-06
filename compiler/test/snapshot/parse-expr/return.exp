@@ -1,0 +1,73 @@
+Return
+
+SOURCE:
+fn foo() {
+    let x = 1
+    return x
+}
+
+OUTPUT:
+Fn_#1,1, Ident("foo", 3)#1,4, LParen#1,7, RParen#1,8, LCurly#1,10, Let#2,5, Ident("x", 1)#2,9, Eq#2,11, Int("1", 1)#2,13, Semicolon#2,14, Return#3,5, Ident("x", 1)#3,12, Semicolon#3,13, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "foo",
+      "generics": [],
+      "args": [],
+      "ret": {
+        "Var": -1
+      },
+      "ann": {
+        "Con": {
+          "name": "Unit",
+          "args": []
+        }
+      },
+      "body": {
+        "Block": {
+          "stmts": [
+            {
+              "Let": {
+                "binding": {
+                  "pat": {
+                    "Type": {
+                      "ident": "x",
+                      "is_mut": false,
+                      "ann": "Unknown"
+                    }
+                  },
+                  "ann": "Unknown"
+                },
+                "value": {
+                  "Literal": {
+                    "lit": {
+                      "Int": 1
+                    }
+                  }
+                },
+                "mutable": false
+              }
+            },
+            {
+              "Return": {
+                "expr": {
+                  "Var": {
+                    "value": "x",
+                    "generics_instantiated": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "Inline"
+  }
+}

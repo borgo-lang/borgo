@@ -3,11 +3,11 @@ Can use different generic name than declaration.
 SOURCE:
 struct Foo<T> {}
 
-impl<Y> Foo<Y> {
+impl<Y> (f: Foo<Y>) {
     fn bar(x: int, y: Y) {}
 }
 
-fn borgo_main() {}
+fn main() {}
 
 OUTPUT:
 fn () -> ()
@@ -26,11 +26,11 @@ No errors.
             "span": {
               "start": {
                 "line": 1,
-                "col": 11
+                "col": 12
               },
               "end": {
                 "line": 1,
-                "col": 12
+                "col": 13
               },
               "file": 99
             }
@@ -41,7 +41,7 @@ No errors.
       "span": {
         "start": {
           "line": 1,
-          "col": 0
+          "col": 1
         },
         "end": {
           "line": 1,
@@ -66,6 +66,7 @@ No errors.
           ]
         }
       },
+      "self_name": "f",
       "ty": {
         "Con": {
           "id": "Foo",
@@ -83,24 +84,8 @@ No errors.
         {
           "Closure": {
             "fun": {
-              "name": "Foo::bar",
-              "generics": [
-                {
-                  "name": "Y",
-                  "bounds": [],
-                  "span": {
-                    "start": {
-                      "line": 3,
-                      "col": 5
-                    },
-                    "end": {
-                      "line": 3,
-                      "col": 6
-                    },
-                    "file": 99
-                  }
-                }
-              ],
+              "name": "bar",
+              "generics": [],
               "args": [
                 {
                   "pat": {
@@ -111,11 +96,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 4,
-                          "col": 11
+                          "col": 12
                         },
                         "end": {
                           "line": 4,
-                          "col": 12
+                          "col": 13
                         },
                         "file": 99
                       }
@@ -143,11 +128,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 4,
-                          "col": 19
+                          "col": 20
                         },
                         "end": {
                           "line": 4,
-                          "col": 20
+                          "col": 21
                         },
                         "file": 99
                       }
@@ -191,7 +176,7 @@ No errors.
                   "span": {
                     "start": {
                       "line": 4,
-                      "col": 25
+                      "col": 26
                     },
                     "end": {
                       "line": 4,
@@ -202,9 +187,7 @@ No errors.
                 }
               },
               "bounded_ty": {
-                "generics": [
-                  "Y"
-                ],
+                "generics": [],
                 "ty": {
                   "Fun": {
                     "args": [
@@ -243,7 +226,10 @@ No errors.
                     }
                   },
                   {
-                    "Var": 99
+                    "Con": {
+                      "id": "Y",
+                      "args": []
+                    }
                   }
                 ],
                 "bounds": [],
@@ -258,7 +244,7 @@ No errors.
             "span": {
               "start": {
                 "line": 4,
-                "col": 4
+                "col": 5
               },
               "end": {
                 "line": 4,
@@ -276,11 +262,11 @@ No errors.
           "span": {
             "start": {
               "line": 3,
-              "col": 5
+              "col": 6
             },
             "end": {
               "line": 3,
-              "col": 6
+              "col": 7
             },
             "file": 99
           }
@@ -289,11 +275,11 @@ No errors.
       "span": {
         "start": {
           "line": 3,
-          "col": 8
+          "col": 1
         },
         "end": {
-          "line": 3,
-          "col": 14
+          "line": 5,
+          "col": 1
         },
         "file": 99
       }
@@ -302,7 +288,7 @@ No errors.
   {
     "Closure": {
       "fun": {
-        "name": "borgo_main",
+        "name": "main",
         "generics": [],
         "args": [],
         "ret": {
@@ -329,11 +315,11 @@ No errors.
             "span": {
               "start": {
                 "line": 7,
-                "col": 16
+                "col": 11
               },
               "end": {
                 "line": 7,
-                "col": 18
+                "col": 12
               },
               "file": 99
             }
@@ -371,11 +357,11 @@ No errors.
       "span": {
         "start": {
           "line": 7,
-          "col": 0
+          "col": 1
         },
         "end": {
           "line": 7,
-          "col": 18
+          "col": 12
         },
         "file": 99
       }

@@ -1,10 +1,10 @@
 Bools missing arm
 
 SOURCE:
-fn borgo_main() {
+fn main() {
   match false {
     false => (),
-  };
+  }
 }
 
 OUTPUT:

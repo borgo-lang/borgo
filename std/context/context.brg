@@ -1,0 +1,24 @@
+use time
+
+
+fn Background  () -> Context { EXT }
+
+fn TODO  () -> Context { EXT }
+
+fn WithCancel  (parent: Context) -> (Context, CancelFunc) { EXT }
+
+fn WithDeadline  (parent: Context, d: time.Time) -> (Context, CancelFunc) { EXT }
+
+fn WithTimeout  (parent: Context, timeout: time.Duration) -> (Context, CancelFunc) { EXT }
+
+fn WithValue  (parent: Context, key: any, val: any) -> Context { EXT }
+
+type CancelFunc = fn () -> ()
+
+interface Context {
+
+  fn Deadline () -> Option<time.Time>
+  fn Done () -> Receiver<()>
+  fn Err () -> error
+  fn Value (key: any) -> any
+}

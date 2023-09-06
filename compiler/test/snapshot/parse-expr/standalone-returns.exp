@@ -1,0 +1,23 @@
+Standalone returns
+
+SOURCE:
+{
+    return
+}
+
+OUTPUT:
+LCurly#1,1, Return#2,5, Semicolon#2,11, RCurly#3,1, EOF#3,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Return": {
+          "expr": "Noop"
+        }
+      }
+    ]
+  }
+}

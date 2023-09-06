@@ -1,0 +1,60 @@
+Match on structs
+
+SOURCE:
+match x {
+    Foo { a: 1, b } => 5
+}
+
+OUTPUT:
+Match#1,1, Ident("x", 1)#1,7, LCurly#1,9, Ident("Foo", 3)#2,5, LCurly#2,9, Ident("a", 1)#2,11, Colon#2,12, Int("1", 1)#2,14, Comma#2,15, Ident("b", 1)#2,17, RCurly#2,19, FatArrow#2,21, Int("5", 1)#2,24, Semicolon#2,25, RCurly#3,1, EOF#3,2
+---
+No errors.
+---
+{
+  "Match": {
+    "subject": {
+      "Var": {
+        "value": "x",
+        "generics_instantiated": []
+      }
+    },
+    "arms": [
+      {
+        "pat": {
+          "Struct": {
+            "ident": "Foo",
+            "fields": [
+              {
+                "name": "a",
+                "value": {
+                  "Lit": {
+                    "lit": {
+                      "Int": 1
+                    }
+                  }
+                }
+              },
+              {
+                "name": "b",
+                "value": {
+                  "Type": {
+                    "ident": "b",
+                    "is_mut": false,
+                    "ann": "Unknown"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "expr": {
+          "Literal": {
+            "lit": {
+              "Int": 5
+            }
+          }
+        }
+      }
+    ]
+  }
+}

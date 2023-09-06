@@ -1,0 +1,481 @@
+Access struct fields from package
+
+SOURCE:
+use net.http
+
+fn main() {
+    let code = http.Get("foo").unwrap().StatusCode
+    @ensure code, int
+}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+[
+  {
+    "UsePackage": {
+      "import": {
+        "name": "net.http",
+        "span": {
+          "start": {
+            "line": 1,
+            "col": 1
+          },
+          "end": {
+            "line": 1,
+            "col": 13
+          },
+          "file": 99
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 1
+        },
+        "end": {
+          "line": 1,
+          "col": 13
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Let": {
+                  "binding": {
+                    "pat": {
+                      "Type": {
+                        "ident": "code",
+                        "is_mut": false,
+                        "ann": "Unknown",
+                        "span": {
+                          "start": {
+                            "line": 4,
+                            "col": 9
+                          },
+                          "end": {
+                            "line": 4,
+                            "col": 13
+                          },
+                          "file": 99
+                        }
+                      }
+                    },
+                    "ann": "Unknown",
+                    "ty": {
+                      "Con": {
+                        "id": "int",
+                        "args": []
+                      }
+                    }
+                  },
+                  "value": {
+                    "FieldAccess": {
+                      "expr": {
+                        "Call": {
+                          "func": {
+                            "FieldAccess": {
+                              "expr": {
+                                "Call": {
+                                  "func": {
+                                    "FieldAccess": {
+                                      "expr": {
+                                        "Var": {
+                                          "value": "http",
+                                          "decl": {
+                                            "start": {
+                                              "line": 0,
+                                              "col": 0
+                                            },
+                                            "end": {
+                                              "line": 0,
+                                              "col": 0
+                                            },
+                                            "file": -1
+                                          },
+                                          "generics_instantiated": [],
+                                          "ty": {
+                                            "Con": {
+                                              "id": "http",
+                                              "args": []
+                                            }
+                                          },
+                                          "span": {
+                                            "start": {
+                                              "line": 4,
+                                              "col": 16
+                                            },
+                                            "end": {
+                                              "line": 4,
+                                              "col": 20
+                                            },
+                                            "file": 99
+                                          }
+                                        }
+                                      },
+                                      "field": "Get",
+                                      "ty": {
+                                        "Fun": {
+                                          "args": [
+                                            {
+                                              "Con": {
+                                                "id": "string",
+                                                "args": []
+                                              }
+                                            }
+                                          ],
+                                          "bounds": [],
+                                          "ret": {
+                                            "Con": {
+                                              "id": "Result",
+                                              "args": [
+                                                {
+                                                  "Con": {
+                                                    "id": "Ref",
+                                                    "args": [
+                                                      {
+                                                        "Con": {
+                                                          "id": "Response",
+                                                          "args": []
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "Con": {
+                                                    "id": "error",
+                                                    "args": []
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 4,
+                                          "col": 21
+                                        },
+                                        "end": {
+                                          "line": 4,
+                                          "col": 24
+                                        },
+                                        "file": 99
+                                      }
+                                    }
+                                  },
+                                  "args": [
+                                    {
+                                      "Literal": {
+                                        "lit": {
+                                          "String": "foo"
+                                        },
+                                        "ty": {
+                                          "Con": {
+                                            "id": "string",
+                                            "args": []
+                                          }
+                                        },
+                                        "span": {
+                                          "start": {
+                                            "line": 4,
+                                            "col": 25
+                                          },
+                                          "end": {
+                                            "line": 4,
+                                            "col": 30
+                                          },
+                                          "file": 99
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "ty": {
+                                    "Con": {
+                                      "id": "Result",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "id": "Ref",
+                                            "args": [
+                                              {
+                                                "Con": {
+                                                  "id": "Response",
+                                                  "args": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "Con": {
+                                            "id": "error",
+                                            "args": []
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 4,
+                                      "col": 24
+                                    },
+                                    "end": {
+                                      "line": 4,
+                                      "col": 30
+                                    },
+                                    "file": 99
+                                  }
+                                }
+                              },
+                              "field": "unwrap",
+                              "ty": {
+                                "Fun": {
+                                  "args": [],
+                                  "bounds": [],
+                                  "ret": {
+                                    "Con": {
+                                      "id": "Ref",
+                                      "args": [
+                                        {
+                                          "Con": {
+                                            "id": "Response",
+                                            "args": []
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 4,
+                                  "col": 32
+                                },
+                                "end": {
+                                  "line": 4,
+                                  "col": 38
+                                },
+                                "file": 99
+                              }
+                            }
+                          },
+                          "args": [],
+                          "ty": {
+                            "Con": {
+                              "id": "Ref",
+                              "args": [
+                                {
+                                  "Con": {
+                                    "id": "Response",
+                                    "args": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 4,
+                              "col": 38
+                            },
+                            "end": {
+                              "line": 4,
+                              "col": 39
+                            },
+                            "file": 99
+                          }
+                        }
+                      },
+                      "field": "StatusCode",
+                      "ty": {
+                        "Con": {
+                          "id": "int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 4,
+                          "col": 41
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 51
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "mutable": false,
+                  "ty": {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 4,
+                      "col": 5
+                    },
+                    "end": {
+                      "line": 4,
+                      "col": 51
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              {
+                "CheckType": {
+                  "expr": {
+                    "Var": {
+                      "value": "code",
+                      "decl": {
+                        "start": {
+                          "line": 4,
+                          "col": 9
+                        },
+                        "end": {
+                          "line": 4,
+                          "col": 13
+                        },
+                        "file": 99
+                      },
+                      "generics_instantiated": [],
+                      "ty": {
+                        "Con": {
+                          "id": "int",
+                          "args": []
+                        }
+                      },
+                      "span": {
+                        "start": {
+                          "line": 5,
+                          "col": 13
+                        },
+                        "end": {
+                          "line": 5,
+                          "col": 17
+                        },
+                        "file": 99
+                      }
+                    }
+                  },
+                  "ann": {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 5,
+                      "col": 5
+                    },
+                    "end": {
+                      "line": 5,
+                      "col": 22
+                    },
+                    "file": 99
+                  }
+                }
+              }
+            ],
+            "ty": {
+              "Con": {
+                "id": "int",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 3,
+                "col": 11
+              },
+              "end": {
+                "line": 6,
+                "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 3,
+          "col": 1
+        },
+        "end": {
+          "line": 6,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  }
+]

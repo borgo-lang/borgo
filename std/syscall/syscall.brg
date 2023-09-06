@@ -1,0 +1,2488 @@
+fn Accept  (fd: Handle) -> (Handle, Sockaddr, error) { EXT }
+
+fn Accept  (fd: Handle) -> (Handle, Sockaddr, error) { EXT }
+
+fn Accept4  (fd: int, flags: int) -> (int, Sockaddr, error) { EXT }
+
+fn AcceptEx  (ls: Handle, as: Handle, buf: *byte, rxdatalen: uint32, laddrlen: uint32, raddrlen: uint32, recvd: *uint32, overlapped: *Overlapped) -> error { EXT }
+
+fn Access  (path: string, mode: uint32) -> error { EXT }
+
+fn Acct  (path: string) -> error { EXT }
+
+fn Adjtime  (delta: *Timeval, olddelta: *Timeval) -> error { EXT }
+
+fn Adjtimex  (buf: *Timex) -> Result<int> { EXT }
+
+fn AllThreadsSyscall  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr) -> (uintptr, Errno) { EXT }
+
+fn AllThreadsSyscall6  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr) -> (uintptr, Errno) { EXT }
+
+fn AttachLsf  (fd: int, i: [SockFilter]) -> error { EXT }
+
+fn Await  (w: *Waitmsg) -> error { EXT }
+
+fn Bind  (fd: int, sa: Sockaddr) -> error { EXT }
+
+fn BindToDevice  (fd: int, device: string) -> error { EXT }
+
+fn BpfBuflen  (fd: int) -> Result<int> { EXT }
+
+fn BpfDatalink  (fd: int) -> Result<int> { EXT }
+
+fn BpfHeadercmpl  (fd: int) -> Result<int> { EXT }
+
+fn BpfInterface  (fd: int, name: string) -> Result<string> { EXT }
+
+fn BpfJump  (code: int, k: int, jt: int, jf: int) -> *BpfInsn { EXT }
+
+fn BpfStats  (fd: int) -> Result<*BpfStat> { EXT }
+
+fn BpfStmt  (code: int, k: int) -> *BpfInsn { EXT }
+
+fn BpfTimeout  (fd: int) -> Result<*Timeval> { EXT }
+
+fn BytePtrFromString  (s: string) -> Result<*byte> { EXT }
+
+fn ByteSliceFromString  (s: string) -> Result<[byte]> { EXT }
+
+fn CancelIo  (s: Handle) -> error { EXT }
+
+fn CancelIoEx  (s: Handle, o: *Overlapped) -> error { EXT }
+
+fn CertAddCertificateContextToStore  (store: Handle, certContext: *CertContext, addDisposition: uint32, storeContext: **CertContext) -> error { EXT }
+
+fn CertCloseStore  (store: Handle, flags: uint32) -> error { EXT }
+
+fn CertCreateCertificateContext  (certEncodingType: uint32, certEncoded: *byte, encodedLen: uint32) -> Result<*CertContext> { EXT }
+
+fn CertEnumCertificatesInStore  (store: Handle, prevContext: *CertContext) -> Result<*CertContext> { EXT }
+
+fn CertFreeCertificateChain  (ctx: *CertChainContext) -> () { EXT }
+
+fn CertFreeCertificateContext  (ctx: *CertContext) -> error { EXT }
+
+fn CertGetCertificateChain  (engine: Handle, leaf: *CertContext, time: *Filetime, additionalStore: Handle, para: *CertChainPara, flags: uint32, reserved: uintptr, chainCtx: **CertChainContext) -> error { EXT }
+
+fn CertOpenStore  (storeProvider: uintptr, msgAndCertEncodingType: uint32, cryptProv: uintptr, flags: uint32, para: uintptr) -> Result<Handle> { EXT }
+
+fn CertOpenSystemStore  (hprov: Handle, name: *uint16) -> Result<Handle> { EXT }
+
+fn CertVerifyCertificateChainPolicy  (policyOID: uintptr, chain: *CertChainContext, para: *CertChainPolicyPara, status: *CertChainPolicyStatus) -> error { EXT }
+
+fn Chdir  (path: string) -> error { EXT }
+
+fn CheckBpfVersion  (fd: int) -> error { EXT }
+
+fn Chflags  (path: string, flags: int) -> error { EXT }
+
+fn Chmod  (path: string, mode: uint32) -> error { EXT }
+
+fn Chown  (path: string, uid: int, gid: int) -> error { EXT }
+
+fn Chroot  (path: string) -> error { EXT }
+
+fn Clearenv  () -> () { EXT }
+
+fn Close  (fd: int) -> error { EXT }
+
+fn CloseHandle  (handle: Handle) -> error { EXT }
+
+fn CloseOnExec  (fd: int) -> () { EXT }
+
+fn Closesocket  (s: Handle) -> error { EXT }
+
+fn CmsgLen  (datalen: int) -> int { EXT }
+
+fn CmsgSpace  (datalen: int) -> int { EXT }
+
+fn CommandLineToArgv  (cmd: *uint16, argc: *int32) -> Result<*[*[uint16]]> { EXT }
+
+fn ComputerName  () -> Result<string> { EXT }
+
+fn Connect  (fd: int, sa: Sockaddr) -> error { EXT }
+
+fn ConnectEx  (fd: Handle, sa: Sockaddr, sendBuf: *byte, sendDataLen: uint32, bytesSent: *uint32, overlapped: *Overlapped) -> error { EXT }
+
+fn ConvertSidToStringSid  (sid: *SID, stringSid: **uint16) -> error { EXT }
+
+fn ConvertStringSidToSid  (stringSid: *uint16, sid: **SID) -> error { EXT }
+
+fn CopySid  (destSidLen: uint32, destSid: *SID, srcSid: *SID) -> error { EXT }
+
+fn Creat  (path: string, mode: uint32) -> Result<int> { EXT }
+
+fn Create  (path: string, mode: int, perm: uint32) -> Result<int> { EXT }
+
+fn CreateDirectory  (path: *uint16, sa: *SecurityAttributes) -> error { EXT }
+
+fn CreateFile  (name: *uint16, access: uint32, mode: uint32, sa: *SecurityAttributes, createmode: uint32, attrs: uint32, templatefile: int32) -> Result<Handle> { EXT }
+
+fn CreateFileMapping  (fhandle: Handle, sa: *SecurityAttributes, prot: uint32, maxSizeHigh: uint32, maxSizeLow: uint32, name: *uint16) -> Result<Handle> { EXT }
+
+fn CreateHardLink  (filename: *uint16, existingfilename: *uint16, reserved: uintptr) -> error { EXT }
+
+fn CreateIoCompletionPort  (filehandle: Handle, cphandle: Handle, key: uint32, threadcnt: uint32) -> Result<Handle> { EXT }
+
+fn CreatePipe  (readhandle: *Handle, writehandle: *Handle, sa: *SecurityAttributes, size: uint32) -> error { EXT }
+
+fn CreateProcess  (appName: *uint16, commandLine: *uint16, procSecurity: *SecurityAttributes, threadSecurity: *SecurityAttributes, inheritHandles: bool, creationFlags: uint32, env: *uint16, currentDir: *uint16, startupInfo: *StartupInfo, outProcInfo: *ProcessInformation) -> error { EXT }
+
+fn CreateProcessAsUser  (token: Token, appName: *uint16, commandLine: *uint16, procSecurity: *SecurityAttributes, threadSecurity: *SecurityAttributes, inheritHandles: bool, creationFlags: uint32, env: *uint16, currentDir: *uint16, startupInfo: *StartupInfo, outProcInfo: *ProcessInformation) -> error { EXT }
+
+fn CreateSymbolicLink  (symlinkfilename: *uint16, targetfilename: *uint16, flags: uint32) -> error { EXT }
+
+fn CreateToolhelp32Snapshot  (flags: uint32, processId: uint32) -> Result<Handle> { EXT }
+
+fn CryptAcquireContext  (provhandle: *Handle, container: *uint16, provider: *uint16, provtype: uint32, flags: uint32) -> error { EXT }
+
+fn CryptGenRandom  (provhandle: Handle, buflen: uint32, buf: *byte) -> error { EXT }
+
+fn CryptReleaseContext  (provhandle: Handle, flags: uint32) -> error { EXT }
+
+fn DeleteFile  (path: *uint16) -> error { EXT }
+
+fn DetachLsf  (fd: int) -> error { EXT }
+
+fn DeviceIoControl  (handle: Handle, ioControlCode: uint32, inBuffer: *byte, inBufferSize: uint32, outBuffer: *byte, outBufferSize: uint32, bytesReturned: *uint32, overlapped: *Overlapped) -> error { EXT }
+
+fn DnsNameCompare  (name1: *uint16, name2: *uint16) -> bool { EXT }
+
+fn DnsQuery  (name: string, qtype: uint16, options: uint32, extra: *byte, qrs: **DNSRecord, pr: *byte) -> error { EXT }
+
+fn DnsRecordListFree  (rl: *DNSRecord, freetype: uint32) -> () { EXT }
+
+fn Dup  (fd: int) -> Result<int> { EXT }
+
+fn Dup2  (from: int, to: int) -> error { EXT }
+
+fn Dup3  (oldfd: int, newfd: int, flags: int) -> error { EXT }
+
+fn DuplicateHandle  (hSourceProcessHandle: Handle, hSourceHandle: Handle, hTargetProcessHandle: Handle, lpTargetHandle: *Handle, dwDesiredAccess: uint32, bInheritHandle: bool, dwOptions: uint32) -> error { EXT }
+
+fn Environ  () -> [string] { EXT }
+
+fn EpollCreate  (size: int) -> Result<int> { EXT }
+
+fn EpollCreate1  (flag: int) -> Result<int> { EXT }
+
+fn EpollCtl  (epfd: int, op: int, fd: int, event: *EpollEvent) -> error { EXT }
+
+fn EpollWait  (epfd: int, events: [EpollEvent], msec: int) -> Result<int> { EXT }
+
+fn EscapeArg  (s: string) -> string { EXT }
+
+fn Exchangedata  (path1: string, path2: string, options: int) -> error { EXT }
+
+fn Exec  (argv0: string, argv: [string], envv: [string]) -> error { EXT }
+
+fn Exit  (code: int) -> () { EXT }
+
+fn ExitProcess  (exitcode: uint32) -> () { EXT }
+
+fn Faccessat  (dirfd: int, path: string, mode: uint32, flags: int) -> error { EXT }
+
+fn Fallocate  (fd: int, mode: uint32, off: int64, len: int64) -> error { EXT }
+
+fn Fchdir  (fd: Handle) -> error { EXT }
+
+fn Fchflags  (fd: int, flags: int) -> error { EXT }
+
+fn Fchmod  (fd: int, mode: uint32) -> error { EXT }
+
+fn Fchmodat  (dirfd: int, path: string, mode: uint32, flags: int) -> error { EXT }
+
+fn Fchown  (fd: int, uid: int, gid: int) -> error { EXT }
+
+fn Fchownat  (dirfd: int, path: string, uid: int, gid: int, flags: int) -> error { EXT }
+
+fn FcntlFlock  (fd: uintptr, cmd: int, lk: *Flock_t) -> error { EXT }
+
+fn Fd2path  (fd: int) -> Result<string> { EXT }
+
+fn Fdatasync  (fd: int) -> error { EXT }
+
+fn FindClose  (handle: Handle) -> error { EXT }
+
+fn FindFirstFile  (name: *uint16, data: *Win32finddata) -> Result<Handle> { EXT }
+
+fn FindNextFile  (handle: Handle, data: *Win32finddata) -> error { EXT }
+
+fn Fixwd  () -> () { EXT }
+
+fn Flock  (fd: int, how: int) -> error { EXT }
+
+fn FlushBpf  (fd: int) -> error { EXT }
+
+fn FlushFileBuffers  (handle: Handle) -> error { EXT }
+
+fn FlushViewOfFile  (addr: uintptr, length: uintptr) -> error { EXT }
+
+fn ForkExec  (argv0: string, argv: [string], attr: *ProcAttr) -> Result<int> { EXT }
+
+fn FormatMessage  (flags: uint32, msgsrc: uint32, msgid: uint32, langid: uint32, buf: [uint16], args: *byte) -> Result<uint32> { EXT }
+
+fn Fpathconf  (fd: int, name: int) -> Result<int> { EXT }
+
+fn FreeAddrInfoW  (addrinfo: *AddrinfoW) -> () { EXT }
+
+fn FreeEnvironmentStrings  (envs: *uint16) -> error { EXT }
+
+fn FreeLibrary  (handle: Handle) -> error { EXT }
+
+fn Fstat  (fd: int, stat: *Stat_t) -> error { EXT }
+
+fn Fstatat  (fd: int, path: string, stat: *Stat_t, flags: int) -> error { EXT }
+
+fn Fstatfs  (fd: int, stat: *Statfs_t) -> error { EXT }
+
+fn Fsync  (fd: int) -> error { EXT }
+
+fn Ftruncate  (fd: int, length: int64) -> error { EXT }
+
+fn FullPath  (name: string) -> Result<string> { EXT }
+
+fn Futimes  (fd: int, tv: [Timeval]) -> error { EXT }
+
+fn Futimesat  (dirfd: int, path: string, tv: [Timeval]) -> error { EXT }
+
+fn Fwstat  (fd: int, edir: [byte]) -> error { EXT }
+
+fn GetAcceptExSockaddrs  (buf: *byte, rxdatalen: uint32, laddrlen: uint32, raddrlen: uint32, lrsa: **RawSockaddrAny, lrsalen: *int32, rrsa: **RawSockaddrAny, rrsalen: *int32) -> () { EXT }
+
+fn GetAdaptersInfo  (ai: *IpAdapterInfo, ol: *uint32) -> error { EXT }
+
+fn GetAddrInfoW  (nodename: *uint16, servicename: *uint16, hints: *AddrinfoW, result: **AddrinfoW) -> error { EXT }
+
+fn GetCommandLine  () -> *uint16 { EXT }
+
+fn GetComputerName  (buf: *uint16, n: *uint32) -> error { EXT }
+
+fn GetConsoleMode  (console: Handle, mode: *uint32) -> error { EXT }
+
+fn GetCurrentDirectory  (buflen: uint32, buf: *uint16) -> Result<uint32> { EXT }
+
+fn GetCurrentProcess  () -> Result<Handle> { EXT }
+
+fn GetEnvironmentStrings  () -> Result<*uint16> { EXT }
+
+fn GetEnvironmentVariable  (name: *uint16, buffer: *uint16, size: uint32) -> Result<uint32> { EXT }
+
+fn GetExitCodeProcess  (handle: Handle, exitcode: *uint32) -> error { EXT }
+
+fn GetFileAttributes  (name: *uint16) -> Result<uint32> { EXT }
+
+fn GetFileAttributesEx  (name: *uint16, level: uint32, info: *byte) -> error { EXT }
+
+fn GetFileInformationByHandle  (handle: Handle, data: *ByHandleFileInformation) -> error { EXT }
+
+fn GetFileType  (filehandle: Handle) -> Result<uint32> { EXT }
+
+fn GetFullPathName  (path: *uint16, buflen: uint32, buf: *uint16, fname: **uint16) -> Result<uint32> { EXT }
+
+fn GetHostByName  (name: string) -> Result<*Hostent> { EXT }
+
+fn GetIfEntry  (pIfRow: *MibIfRow) -> error { EXT }
+
+fn GetLastError  () -> error { EXT }
+
+fn GetLengthSid  (sid: *SID) -> uint32 { EXT }
+
+fn GetLongPathName  (path: *uint16, buf: *uint16, buflen: uint32) -> Result<uint32> { EXT }
+
+fn GetProcAddress  (module: Handle, procname: string) -> Result<uintptr> { EXT }
+
+fn GetProcessTimes  (handle: Handle, creationTime: *Filetime, exitTime: *Filetime, kernelTime: *Filetime, userTime: *Filetime) -> error { EXT }
+
+fn GetProtoByName  (name: string) -> Result<*Protoent> { EXT }
+
+fn GetQueuedCompletionStatus  (cphandle: Handle, qty: *uint32, key: *uint32, overlapped: **Overlapped, timeout: uint32) -> error { EXT }
+
+fn GetServByName  (name: string, proto: string) -> Result<*Servent> { EXT }
+
+fn GetShortPathName  (longpath: *uint16, shortpath: *uint16, buflen: uint32) -> Result<uint32> { EXT }
+
+fn GetStartupInfo  (startupInfo: *StartupInfo) -> error { EXT }
+
+fn GetStdHandle  (stdhandle: int) -> Result<Handle> { EXT }
+
+fn GetSystemTimeAsFileTime  (time: *Filetime) -> () { EXT }
+
+fn GetTempPath  (buflen: uint32, buf: *uint16) -> Result<uint32> { EXT }
+
+fn GetTimeZoneInformation  (tzi: *Timezoneinformation) -> Result<uint32> { EXT }
+
+fn GetTokenInformation  (t: Token, infoClass: uint32, info: *byte, infoLen: uint32, returnedLen: *uint32) -> error { EXT }
+
+fn GetUserNameEx  (nameFormat: uint32, nameBuffre: *uint16, nSize: *uint32) -> error { EXT }
+
+fn GetUserProfileDirectory  (t: Token, dir: *uint16, dirLen: *uint32) -> error { EXT }
+
+fn GetVersion  () -> Result<uint32> { EXT }
+
+fn Getcwd  (buf: [byte]) -> Result<int> { EXT }
+
+fn Getdents  (fd: int, buf: [byte]) -> Result<int> { EXT }
+
+fn Getdirentries  (fd: int, buf: [byte], basep: *uintptr) -> Result<int> { EXT }
+
+fn Getdtablesize  () -> int { EXT }
+
+fn Getegid  () -> int { EXT }
+
+fn Getenv  (key: string) -> Option<string> { EXT }
+
+fn Geteuid  () -> int { EXT }
+
+fn Getexecname  () -> Result<string> { EXT }
+
+fn Getfsstat  (buf: [Statfs_t], flags: int) -> Result<int> { EXT }
+
+fn Getgid  () -> int { EXT }
+
+fn Getgroups  () -> Result<[int]> { EXT }
+
+fn Gethostname  () -> Result<string> { EXT }
+
+fn Getkerninfo  (op: int32, where: uintptr, size: uintptr, arg: int64) -> Result<int32> { EXT }
+
+fn Getpagesize  () -> int { EXT }
+
+fn Getpeername  (fd: int) -> Result<Sockaddr> { EXT }
+
+fn Getpgid  (pid: int) -> Result<int> { EXT }
+
+fn Getpgrp  () -> int { EXT }
+
+fn Getpid  () -> int { EXT }
+
+fn Getppid  () -> int { EXT }
+
+fn Getpriority  (which: int, who: int) -> Result<int> { EXT }
+
+fn Getrlimit  (resource: int, rlim: *Rlimit) -> error { EXT }
+
+fn Getrusage  (who: int, rusage: *Rusage) -> error { EXT }
+
+fn Getsid  (pid: int) -> Result<int> { EXT }
+
+fn Getsockname  (fd: Handle) -> Result<Sockaddr> { EXT }
+
+fn Getsockopt  (s: Handle, level: int32, optname: int32, optval: *byte, optlen: *int32) -> error { EXT }
+
+fn GetsockoptByte  (fd: int, level: int, opt: int) -> Result<byte> { EXT }
+
+fn GetsockoptICMPv6Filter  (fd: int, level: int, opt: int) -> Result<*ICMPv6Filter> { EXT }
+
+fn GetsockoptIPMreq  (fd: int, level: int, opt: int) -> Result<*IPMreq> { EXT }
+
+fn GetsockoptIPMreqn  (fd: int, level: int, opt: int) -> Result<*IPMreqn> { EXT }
+
+fn GetsockoptIPv6MTUInfo  (fd: int, level: int, opt: int) -> Result<*IPv6MTUInfo> { EXT }
+
+fn GetsockoptIPv6Mreq  (fd: int, level: int, opt: int) -> Result<*IPv6Mreq> { EXT }
+
+fn GetsockoptInet4Addr  (fd: int, level: int, opt: int) -> Result<[byte]> { EXT }
+
+fn GetsockoptInt  (fd: int, level: int, opt: int) -> Result<int> { EXT }
+
+fn GetsockoptUcred  (fd: int, level: int, opt: int) -> Result<*Ucred> { EXT }
+
+fn Gettid  () -> int { EXT }
+
+fn Gettimeofday  (tp: *Timeval) -> error { EXT }
+
+fn Getuid  () -> int { EXT }
+
+fn Getwd  () -> Result<string> { EXT }
+
+fn Getxattr  (path: string, attr: string, dest: [byte]) -> Result<int> { EXT }
+
+fn InotifyAddWatch  (fd: int, pathname: string, mask: uint32) -> Result<int> { EXT }
+
+fn InotifyInit  () -> Result<int> { EXT }
+
+fn InotifyInit1  (flags: int) -> Result<int> { EXT }
+
+fn InotifyRmWatch  (fd: int, watchdesc: uint32) -> Result<int> { EXT }
+
+fn Ioperm  (from: int, num: int, on: int) -> error { EXT }
+
+fn Iopl  (level: int) -> error { EXT }
+
+fn Issetugid  () -> bool { EXT }
+
+fn Kevent  (kq: int, changes: [Kevent_t], events: [Kevent_t], timeout: *Timespec) -> Result<int> { EXT }
+
+fn Kill  (pid: int, sig: Signal) -> error { EXT }
+
+fn Klogctl  (typ: int, buf: [byte]) -> Result<int> { EXT }
+
+fn Kqueue  () -> Result<int> { EXT }
+
+fn Lchown  (path: string, uid: int, gid: int) -> error { EXT }
+
+fn Link  (path: string, link: string) -> error { EXT }
+
+fn Listen  (s: int, backlog: int) -> error { EXT }
+
+fn Listxattr  (path: string, dest: [byte]) -> Result<int> { EXT }
+
+fn LoadCancelIoEx  () -> error { EXT }
+
+fn LoadConnectEx  () -> error { EXT }
+
+fn LoadCreateSymbolicLink  () -> error { EXT }
+
+fn LoadDLL  (name: string) -> Result<*DLL> { EXT }
+
+fn LoadGetAddrInfo  () -> error { EXT }
+
+fn LoadLibrary  (libname: string) -> Result<Handle> { EXT }
+
+fn LoadSetFileCompletionNotificationModes  () -> error { EXT }
+
+fn LocalFree  (hmem: Handle) -> Result<Handle> { EXT }
+
+fn LookupAccountName  (systemName: *uint16, accountName: *uint16, sid: *SID, sidLen: *uint32, refdDomainName: *uint16, refdDomainNameLen: *uint32, use_: *uint32) -> error { EXT }
+
+fn LookupAccountSid  (systemName: *uint16, sid: *SID, name: *uint16, nameLen: *uint32, refdDomainName: *uint16, refdDomainNameLen: *uint32, use_: *uint32) -> error { EXT }
+
+fn LookupSID  (system: string, account: string) -> (*SID, string, uint32, error) { EXT }
+
+fn LsfJump  (code: int, k: int, jt: int, jf: int) -> *SockFilter { EXT }
+
+fn LsfSocket  (ifindex: int, proto: int) -> Result<int> { EXT }
+
+fn LsfStmt  (code: int, k: int) -> *SockFilter { EXT }
+
+fn Lstat  (path: string, stat: *Stat_t) -> error { EXT }
+
+fn Madvise  (b: [byte], advice: int) -> error { EXT }
+
+fn MapViewOfFile  (handle: Handle, access: uint32, offsetHigh: uint32, offsetLow: uint32, length: uintptr) -> Result<uintptr> { EXT }
+
+fn Mkdir  (path: string, mode: uint32) -> error { EXT }
+
+fn Mkdirat  (dirfd: int, path: string, mode: uint32) -> error { EXT }
+
+fn Mkfifo  (path: string, mode: uint32) -> error { EXT }
+
+fn Mknod  (path: string, mode: uint32, dev: int) -> error { EXT }
+
+fn Mknodat  (dirfd: int, path: string, mode: uint32, dev: int) -> error { EXT }
+
+fn Mlock  (b: [byte]) -> error { EXT }
+
+fn Mlockall  (flags: int) -> error { EXT }
+
+fn Mmap  (fd: int, offset: int64, length: int, prot: int, flags: int) -> Result<[byte]> { EXT }
+
+fn Mount  (source: string, target: string, fstype: string, flags: uintptr, data: string) -> error { EXT }
+
+fn MoveFile  (from: *uint16, to: *uint16) -> error { EXT }
+
+fn Mprotect  (b: [byte], prot: int) -> error { EXT }
+
+fn Munlock  (b: [byte]) -> error { EXT }
+
+fn Munlockall  () -> error { EXT }
+
+fn Munmap  (b: [byte]) -> error { EXT }
+
+fn MustLoadDLL  (name: string) -> *DLL { EXT }
+
+fn Nanosleep  (time: *Timespec, leftover: *Timespec) -> error { EXT }
+
+fn NetApiBufferFree  (buf: *byte) -> error { EXT }
+
+fn NetGetJoinInformation  (server: *uint16, name: **uint16, bufType: *uint32) -> error { EXT }
+
+fn NetUserGetInfo  (serverName: *uint16, userName: *uint16, level: uint32, buf: **byte) -> error { EXT }
+
+fn NetlinkRIB  (proto: int, family: int) -> Result<[byte]> { EXT }
+
+fn NewCallback  (fn_: any) -> uintptr { EXT }
+
+fn NewCallbackCDecl  (fn_: any) -> uintptr { EXT }
+
+fn NewError  (s: string) -> error { EXT }
+
+fn NewLazyDLL  (name: string) -> *LazyDLL { EXT }
+
+fn NsecToFiletime  (nsec: int64) -> Filetime { EXT }
+
+fn NsecToTimespec  (nsec: int64) -> Timespec { EXT }
+
+fn NsecToTimeval  (nsec: int64) -> Timeval { EXT }
+
+fn Ntohs  (netshort: uint16) -> uint16 { EXT }
+
+fn Open  (path: string, mode: int, perm: uint32) -> Result<int> { EXT }
+
+fn Open  (path: string, mode: int, perm: uint32) -> Result<int> { EXT }
+
+fn OpenCurrentProcessToken  () -> Result<Token> { EXT }
+
+fn OpenProcess  (da: uint32, inheritHandle: bool, pid: uint32) -> Result<Handle> { EXT }
+
+fn OpenProcessToken  (h: Handle, access: uint32, token: *Token) -> error { EXT }
+
+fn Openat  (dirfd: int, path: string, flags: int, mode: uint32) -> Result<int> { EXT }
+
+fn ParseDirent  (buf: [byte], max: int, names: [string]) -> (int, int, [string]) { EXT }
+
+fn ParseNetlinkMessage  (b: [byte]) -> Result<[NetlinkMessage]> { EXT }
+
+fn ParseNetlinkRouteAttr  (m: *NetlinkMessage) -> Result<[NetlinkRouteAttr]> { EXT }
+
+fn ParseRoutingMessage  (b: [byte]) -> Result<[RoutingMessage]> { EXT }
+
+fn ParseRoutingSockaddr  (msg: RoutingMessage) -> Result<[Sockaddr]> { EXT }
+
+fn ParseSocketControlMessage  (b: [byte]) -> Result<[SocketControlMessage]> { EXT }
+
+fn ParseUnixCredentials  (m: *SocketControlMessage) -> Result<*Ucred> { EXT }
+
+fn ParseUnixRights  (m: *SocketControlMessage) -> Result<[int]> { EXT }
+
+fn Pathconf  (path: string, name: int) -> Result<int> { EXT }
+
+fn Pause  () -> error { EXT }
+
+fn Pipe  (p: [int]) -> error { EXT }
+
+fn Pipe2  (p: [int], flags: int) -> error { EXT }
+
+fn PivotRoot  (newroot: string, putold: string) -> error { EXT }
+
+fn PostQueuedCompletionStatus  (cphandle: Handle, qty: uint32, key: uint32, overlapped: *Overlapped) -> error { EXT }
+
+fn Pread  (fd: int, p: [byte], offset: int64) -> Result<int> { EXT }
+
+fn Process32First  (snapshot: Handle, procEntry: *ProcessEntry32) -> error { EXT }
+
+fn Process32Next  (snapshot: Handle, procEntry: *ProcessEntry32) -> error { EXT }
+
+fn PtraceAttach  (pid: int) -> error { EXT }
+
+fn PtraceCont  (pid: int, signal: int) -> error { EXT }
+
+fn PtraceDetach  (pid: int) -> error { EXT }
+
+fn PtraceGetEventMsg  (pid: int) -> Result<uint> { EXT }
+
+fn PtraceGetRegs  (pid: int, regsout: *PtraceRegs) -> error { EXT }
+
+fn PtracePeekData  (pid: int, addr: uintptr, out: [byte]) -> Result<int> { EXT }
+
+fn PtracePeekText  (pid: int, addr: uintptr, out: [byte]) -> Result<int> { EXT }
+
+fn PtracePokeData  (pid: int, addr: uintptr, data: [byte]) -> Result<int> { EXT }
+
+fn PtracePokeText  (pid: int, addr: uintptr, data: [byte]) -> Result<int> { EXT }
+
+fn PtraceSetOptions  (pid: int, options: int) -> error { EXT }
+
+fn PtraceSetRegs  (pid: int, regs: *PtraceRegs) -> error { EXT }
+
+fn PtraceSingleStep  (pid: int) -> error { EXT }
+
+fn PtraceSyscall  (pid: int, signal: int) -> error { EXT }
+
+fn Pwrite  (fd: int, p: [byte], offset: int64) -> Result<int> { EXT }
+
+fn RawSyscall  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr) -> uintptr { EXT }
+
+fn RawSyscall  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr) -> uintptr { EXT }
+
+fn RawSyscall6  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr) -> uintptr { EXT }
+
+fn RawSyscall6  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr) -> uintptr { EXT }
+
+fn Read  (fd: int, p: [byte]) -> Result<int> { EXT }
+
+fn ReadConsole  (console: Handle, buf: *uint16, toread: uint32, read: *uint32, inputControl: *byte) -> error { EXT }
+
+fn ReadDirectoryChanges  (handle: Handle, buf: *byte, buflen: uint32, watchSubTree: bool, mask: uint32, retlen: *uint32, overlapped: *Overlapped, completionRoutine: uintptr) -> error { EXT }
+
+fn ReadDirent  (fd: int, buf: [byte]) -> Result<int> { EXT }
+
+fn ReadFile  (fd: Handle, p: [byte], done: *uint32, overlapped: *Overlapped) -> error { EXT }
+
+fn Readlink  (path: string, buf: [byte]) -> Result<int> { EXT }
+
+fn Reboot  (cmd: int) -> error { EXT }
+
+fn Recvfrom  (fd: int, p: [byte], flags: int) -> (int, Sockaddr, error) { EXT }
+
+fn Recvmsg  (fd: int, p: [byte], oob: [byte], flags: int) -> (int, int, Sockaddr, error) { EXT }
+
+fn RegCloseKey  (key: Handle) -> error { EXT }
+
+fn RegEnumKeyEx  (key: Handle, index: uint32, name: *uint16, nameLen: *uint32, reserved: *uint32, class: *uint16, classLen: *uint32, lastWriteTime: *Filetime) -> error { EXT }
+
+fn RegOpenKeyEx  (key: Handle, subkey: *uint16, options: uint32, desiredAccess: uint32, result: *Handle) -> error { EXT }
+
+fn RegQueryInfoKey  (key: Handle, class: *uint16, classLen: *uint32, reserved: *uint32, subkeysLen: *uint32, maxSubkeyLen: *uint32, maxClassLen: *uint32, valuesLen: *uint32, maxValueNameLen: *uint32, maxValueLen: *uint32, saLen: *uint32, lastWriteTime: *Filetime) -> error { EXT }
+
+fn RegQueryValueEx  (key: Handle, name: *uint16, reserved: *uint32, valtype: *uint32, buf: *byte, buflen: *uint32) -> error { EXT }
+
+fn Remove  (path: string) -> error { EXT }
+
+fn RemoveDirectory  (path: *uint16) -> error { EXT }
+
+fn Removexattr  (path: string, attr: string) -> error { EXT }
+
+fn Rename  (from: string, to: string) -> error { EXT }
+
+fn Renameat  (olddirfd: int, oldpath: string, newdirfd: int, newpath: string) -> error { EXT }
+
+fn Revoke  (path: string) -> error { EXT }
+
+fn Rmdir  (path: string) -> error { EXT }
+
+fn RouteRIB  (facility: int, param: int) -> Result<[byte]> { EXT }
+
+fn Seek  (fd: int, offset: int64, whence: int) -> Result<int64> { EXT }
+
+fn Select  (n: int, r: *FdSet, w: *FdSet, e: *FdSet, timeout: *Timeval) -> error { EXT }
+
+fn Sendfile  (outfd: int, infd: int, offset: *int64, count: int) -> Result<int> { EXT }
+
+fn Sendmsg  (fd: int, p: [byte], oob: [byte], to: Sockaddr, flags: int) -> error { EXT }
+
+fn SendmsgN  (fd: int, p: [byte], oob: [byte], to: Sockaddr, flags: int) -> Result<int> { EXT }
+
+fn Sendto  (fd: int, p: [byte], flags: int, to: Sockaddr) -> error { EXT }
+
+fn SetBpf  (fd: int, i: [BpfInsn]) -> error { EXT }
+
+fn SetBpfBuflen  (fd: int, l: int) -> Result<int> { EXT }
+
+fn SetBpfDatalink  (fd: int, t: int) -> Result<int> { EXT }
+
+fn SetBpfHeadercmpl  (fd: int, f: int) -> error { EXT }
+
+fn SetBpfImmediate  (fd: int, m: int) -> error { EXT }
+
+fn SetBpfInterface  (fd: int, name: string) -> error { EXT }
+
+fn SetBpfPromisc  (fd: int, m: int) -> error { EXT }
+
+fn SetBpfTimeout  (fd: int, tv: *Timeval) -> error { EXT }
+
+fn SetCurrentDirectory  (path: *uint16) -> error { EXT }
+
+fn SetEndOfFile  (handle: Handle) -> error { EXT }
+
+fn SetEnvironmentVariable  (name: *uint16, value: *uint16) -> error { EXT }
+
+fn SetFileAttributes  (name: *uint16, attrs: uint32) -> error { EXT }
+
+fn SetFileCompletionNotificationModes  (handle: Handle, flags: uint8) -> error { EXT }
+
+fn SetFilePointer  (handle: Handle, lowoffset: int32, highoffsetptr: *int32, whence: uint32) -> Result<uint32> { EXT }
+
+fn SetFileTime  (handle: Handle, ctime: *Filetime, atime: *Filetime, wtime: *Filetime) -> error { EXT }
+
+fn SetHandleInformation  (handle: Handle, mask: uint32, flags: uint32) -> error { EXT }
+
+fn SetKevent  (k: *Kevent_t, fd: int, mode: int, flags: int) -> () { EXT }
+
+fn SetLsfPromisc  (name: string, m: bool) -> error { EXT }
+
+fn SetNonblock  (fd: int, nonblocking: bool) -> error { EXT }
+
+fn SetReadDeadline  (fd: int, t: int64) -> error { EXT }
+
+fn SetWriteDeadline  (fd: int, t: int64) -> error { EXT }
+
+fn Setdomainname  (p: [byte]) -> error { EXT }
+
+fn Setegid  (egid: int) -> error { EXT }
+
+fn Setenv  (key: string, value: string) -> error { EXT }
+
+fn Seteuid  (euid: int) -> error { EXT }
+
+fn Setfsgid  (gid: int) -> error { EXT }
+
+fn Setfsuid  (uid: int) -> error { EXT }
+
+fn Setgid  (gid: int) -> error { EXT }
+
+fn Setgroups  (gids: [int]) -> error { EXT }
+
+fn Sethostname  (p: [byte]) -> error { EXT }
+
+fn Setlogin  (name: string) -> error { EXT }
+
+fn Setpgid  (pid: int, pgid: int) -> error { EXT }
+
+fn Setpriority  (which: int, who: int, prio: int) -> error { EXT }
+
+fn Setprivexec  (flag: int) -> error { EXT }
+
+fn Setregid  (rgid: int, egid: int) -> error { EXT }
+
+fn Setresgid  (rgid: int, egid: int, sgid: int) -> error { EXT }
+
+fn Setresuid  (ruid: int, euid: int, suid: int) -> error { EXT }
+
+fn Setreuid  (ruid: int, euid: int) -> error { EXT }
+
+fn Setrlimit  (resource: int, rlim: *Rlimit) -> error { EXT }
+
+fn Setsid  () -> Result<int> { EXT }
+
+fn Setsockopt  (s: Handle, level: int32, optname: int32, optval: *byte, optlen: int32) -> error { EXT }
+
+fn SetsockoptByte  (fd: int, level: int, opt: int, value: byte) -> error { EXT }
+
+fn SetsockoptICMPv6Filter  (fd: int, level: int, opt: int, filter: *ICMPv6Filter) -> error { EXT }
+
+fn SetsockoptIPMreq  (fd: int, level: int, opt: int, mreq: *IPMreq) -> error { EXT }
+
+fn SetsockoptIPMreqn  (fd: int, level: int, opt: int, mreq: *IPMreqn) -> error { EXT }
+
+fn SetsockoptIPv6Mreq  (fd: int, level: int, opt: int, mreq: *IPv6Mreq) -> error { EXT }
+
+fn SetsockoptInet4Addr  (fd: int, level: int, opt: int, value: [byte]) -> error { EXT }
+
+fn SetsockoptInt  (fd: int, level: int, opt: int, value: int) -> error { EXT }
+
+fn SetsockoptLinger  (fd: int, level: int, opt: int, l: *Linger) -> error { EXT }
+
+fn SetsockoptString  (fd: int, level: int, opt: int, s: string) -> error { EXT }
+
+fn SetsockoptTimeval  (fd: int, level: int, opt: int, tv: *Timeval) -> error { EXT }
+
+fn Settimeofday  (tp: *Timeval) -> error { EXT }
+
+fn Setuid  (uid: int) -> error { EXT }
+
+fn Setxattr  (path: string, attr: string, data: [byte], flags: int) -> error { EXT }
+
+fn Shutdown  (s: int, how: int) -> error { EXT }
+
+fn SlicePtrFromStrings  (ss: [string]) -> Result<[*byte]> { EXT }
+
+fn Socket  (domain: int, typ: int, proto: int) -> Result<int> { EXT }
+
+fn Socket  (domain: int, typ: int, proto: int) -> Result<int> { EXT }
+
+fn Socketpair  (domain: int, typ: int, proto: int) -> Result<[int]> { EXT }
+
+fn Splice  (rfd: int, roff: *int64, wfd: int, woff: *int64, len: int, flags: int) -> Result<int64> { EXT }
+
+fn StartProcess  (argv0: string, argv: [string], attr: *ProcAttr) -> (int, uintptr, error) { EXT }
+
+fn Stat  (path: string, stat: *Stat_t) -> error { EXT }
+
+fn Statfs  (path: string, stat: *Statfs_t) -> error { EXT }
+
+fn StopIO  (fd: int) -> error { EXT }
+
+fn StringBytePtr  (s: string) -> *byte { EXT }
+
+fn StringByteSlice  (s: string) -> [byte] { EXT }
+
+fn StringSlicePtr  (ss: [string]) -> [*byte] { EXT }
+
+fn StringToSid  (s: string) -> Result<*SID> { EXT }
+
+fn StringToUTF16  (s: string) -> [uint16] { EXT }
+
+fn StringToUTF16Ptr  (s: string) -> *uint16 { EXT }
+
+fn Symlink  (path: string, link: string) -> error { EXT }
+
+fn Sync  () -> error { EXT }
+
+fn SyncFileRange  (fd: int, off: int64, n: int64, flags: int) -> error { EXT }
+
+fn Syscall  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr) -> (uintptr, ErrorString) { EXT }
+
+fn Syscall  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr) -> (uintptr, ErrorString) { EXT }
+
+fn Syscall12  (trap: uintptr, nargs: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr, a7: uintptr, a8: uintptr, a9: uintptr, a10: uintptr, a11: uintptr, a12: uintptr) -> (uintptr, Errno) { EXT }
+
+fn Syscall15  (trap: uintptr, nargs: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr, a7: uintptr, a8: uintptr, a9: uintptr, a10: uintptr, a11: uintptr, a12: uintptr, a13: uintptr, a14: uintptr, a15: uintptr) -> (uintptr, Errno) { EXT }
+
+fn Syscall18  (trap: uintptr, nargs: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr, a7: uintptr, a8: uintptr, a9: uintptr, a10: uintptr, a11: uintptr, a12: uintptr, a13: uintptr, a14: uintptr, a15: uintptr, a16: uintptr, a17: uintptr, a18: uintptr) -> (uintptr, Errno) { EXT }
+
+fn Syscall6  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr) -> (uintptr, ErrorString) { EXT }
+
+fn Syscall6  (trap: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr) -> (uintptr, ErrorString) { EXT }
+
+fn Syscall9  (trap: uintptr, nargs: uintptr, a1: uintptr, a2: uintptr, a3: uintptr, a4: uintptr, a5: uintptr, a6: uintptr, a7: uintptr, a8: uintptr, a9: uintptr) -> (uintptr, Errno) { EXT }
+
+fn SyscallN  (trap: uintptr, args: VarArgs<uintptr>) -> (uintptr, Errno) { EXT }
+
+fn Sysctl  (key: string) -> Result<string> { EXT }
+
+fn SysctlUint32  (name: string) -> Result<uint32> { EXT }
+
+fn Sysinfo  (info: *Sysinfo_t) -> error { EXT }
+
+fn Tee  (rfd: int, wfd: int, len: int, flags: int) -> Result<int64> { EXT }
+
+fn TerminateProcess  (handle: Handle, exitcode: uint32) -> error { EXT }
+
+fn Tgkill  (tgid: int, tid: int, sig: Signal) -> error { EXT }
+
+fn Time  (t: *Time_t) -> Result<Time_t> { EXT }
+
+fn Times  (tms: *Tms) -> Result<uintptr> { EXT }
+
+fn TimespecToNsec  (ts: Timespec) -> int64 { EXT }
+
+fn TimevalToNsec  (tv: Timeval) -> int64 { EXT }
+
+fn TranslateAccountName  (username: string, from: uint32, to: uint32, initSize: int) -> Result<string> { EXT }
+
+fn TranslateName  (accName: *uint16, accNameFormat: uint32, desiredNameFormat: uint32, translatedName: *uint16, nSize: *uint32) -> error { EXT }
+
+fn TransmitFile  (s: Handle, handle: Handle, bytesToWrite: uint32, bytsPerSend: uint32, overlapped: *Overlapped, transmitFileBuf: *TransmitFileBuffers, flags: uint32) -> error { EXT }
+
+fn Truncate  (path: string, length: int64) -> error { EXT }
+
+fn UTF16FromString  (s: string) -> Result<[uint16]> { EXT }
+
+fn UTF16PtrFromString  (s: string) -> Result<*uint16> { EXT }
+
+fn UTF16ToString  (s: [uint16]) -> string { EXT }
+
+fn Umask  (newmask: int) -> int { EXT }
+
+fn Uname  (buf: *Utsname) -> error { EXT }
+
+fn Undelete  (path: string) -> error { EXT }
+
+fn UnixCredentials  (ucred: *Ucred) -> [byte] { EXT }
+
+fn UnixRights  (fds: VarArgs<int>) -> [byte] { EXT }
+
+fn Unlink  (path: string) -> error { EXT }
+
+fn Unlinkat  (dirfd: int, path: string) -> error { EXT }
+
+fn UnmapViewOfFile  (addr: uintptr) -> error { EXT }
+
+fn UnmarshalDir  (b: [byte]) -> Result<*Dir> { EXT }
+
+fn Unmount  (path: string, flags: int) -> error { EXT }
+
+fn Unsetenv  (key: string) -> error { EXT }
+
+fn Unshare  (flags: int) -> error { EXT }
+
+fn Ustat  (dev: int, ubuf: *Ustat_t) -> error { EXT }
+
+fn Utime  (path: string, buf: *Utimbuf) -> error { EXT }
+
+fn Utimes  (path: string, tv: [Timeval]) -> error { EXT }
+
+fn UtimesNano  (path: string, ts: [Timespec]) -> error { EXT }
+
+fn VirtualLock  (addr: uintptr, length: uintptr) -> error { EXT }
+
+fn VirtualUnlock  (addr: uintptr, length: uintptr) -> error { EXT }
+
+fn WSACleanup  () -> error { EXT }
+
+fn WSAEnumProtocols  (protocols: *int32, protocolBuffer: *WSAProtocolInfo, bufferLength: *uint32) -> Result<int32> { EXT }
+
+fn WSAIoctl  (s: Handle, iocc: uint32, inbuf: *byte, cbif: uint32, outbuf: *byte, cbob: uint32, cbbr: *uint32, overlapped: *Overlapped, completionRoutine: uintptr) -> error { EXT }
+
+fn WSARecv  (s: Handle, bufs: *WSABuf, bufcnt: uint32, recvd: *uint32, flags: *uint32, overlapped: *Overlapped, croutine: *byte) -> error { EXT }
+
+fn WSARecvFrom  (s: Handle, bufs: *WSABuf, bufcnt: uint32, recvd: *uint32, flags: *uint32, from: *RawSockaddrAny, fromlen: *int32, overlapped: *Overlapped, croutine: *byte) -> error { EXT }
+
+fn WSASend  (s: Handle, bufs: *WSABuf, bufcnt: uint32, sent: *uint32, flags: uint32, overlapped: *Overlapped, croutine: *byte) -> error { EXT }
+
+fn WSASendTo  (s: Handle, bufs: *WSABuf, bufcnt: uint32, sent: *uint32, flags: uint32, to: *RawSockaddrAny, tolen: int32, overlapped: *Overlapped, croutine: *byte) -> error { EXT }
+
+fn WSASendto  (s: Handle, bufs: *WSABuf, bufcnt: uint32, sent: *uint32, flags: uint32, to: Sockaddr, overlapped: *Overlapped, croutine: *byte) -> error { EXT }
+
+fn WSAStartup  (verreq: uint32, data: *WSAData) -> error { EXT }
+
+fn Wait4  (pid: int, wstatus: *WaitStatus, options: int, rusage: *Rusage) -> Result<int> { EXT }
+
+fn WaitForSingleObject  (handle: Handle, waitMilliseconds: uint32) -> Result<uint32> { EXT }
+
+fn WaitProcess  (pid: int, w: *Waitmsg) -> error { EXT }
+
+fn Write  (fd: int, p: [byte]) -> Result<int> { EXT }
+
+fn WriteConsole  (console: Handle, buf: *uint16, towrite: uint32, written: *uint32, reserved: *byte) -> error { EXT }
+
+fn WriteFile  (fd: Handle, p: [byte], done: *uint32, overlapped: *Overlapped) -> error { EXT }
+
+fn Wstat  (path: string, edir: [byte]) -> error { EXT }
+
+impl (self: Cmsghdr) {
+
+fn SetLen  (length: int) -> () { EXT }
+
+}
+
+impl (self: DLL) {
+
+fn FindProc  (name: string) -> Result<*Proc> { EXT }
+
+fn MustFindProc  (name: string) -> *Proc { EXT }
+
+fn Release  () -> error { EXT }
+
+}
+
+impl (self: DLLError) {
+
+fn Error  () -> string { EXT }
+
+fn Unwrap  () -> error { EXT }
+
+}
+
+impl (self: Dir) {
+
+fn Marshal  (b: [byte]) -> Result<int> { EXT }
+
+fn Null  () -> () { EXT }
+
+}
+
+impl (self: Errno) {
+
+fn Error  () -> string { EXT }
+
+fn Is  (target: error) -> bool { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+}
+
+impl (self: ErrorString) {
+
+fn Error  () -> string { EXT }
+
+fn Is  (target: error) -> bool { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+}
+
+impl (self: Filetime) {
+
+fn Nanoseconds  () -> int64 { EXT }
+
+}
+
+impl (self: Iovec) {
+
+fn SetLen  (length: int) -> () { EXT }
+
+}
+
+impl (self: LazyDLL) {
+
+fn Handle  () -> uintptr { EXT }
+
+fn Load  () -> error { EXT }
+
+fn NewProc  (name: string) -> *LazyProc { EXT }
+
+}
+
+impl (self: LazyProc) {
+
+fn Addr  () -> uintptr { EXT }
+
+fn Call  (a: VarArgs<uintptr>) -> Result<uintptr> { EXT }
+
+fn Find  () -> error { EXT }
+
+}
+
+impl (self: Msghdr) {
+
+fn SetControllen  (length: int) -> () { EXT }
+
+}
+
+impl (self: Note) {
+
+fn Signal  () -> () { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: Proc) {
+
+fn Addr  () -> uintptr { EXT }
+
+fn Call  (a: VarArgs<uintptr>) -> (uintptr, uintptr, error) { EXT }
+
+}
+
+impl (self: PtraceRegs) {
+
+fn GetEra  () -> uint64 { EXT }
+
+fn PC  () -> uint64 { EXT }
+
+fn SetEra  (era: uint64) -> () { EXT }
+
+fn SetPC  (pc: uint64) -> () { EXT }
+
+}
+
+impl (self: RawSockaddrAny) {
+
+fn Sockaddr  () -> Result<Sockaddr> { EXT }
+
+}
+
+impl (self: SID) {
+
+fn Copy  () -> Result<*SID> { EXT }
+
+fn Len  () -> int { EXT }
+
+fn LookupAccount  (system: string) -> (string, uint32, error) { EXT }
+
+fn String  () -> Result<string> { EXT }
+
+}
+
+impl (self: Signal) {
+
+fn Signal  () -> () { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: StTimespec_t) {
+
+fn Nano  () -> int64 { EXT }
+
+fn Unix  () -> (int64, int64) { EXT }
+
+}
+
+impl (self: Timespec) {
+
+fn Nano  () -> int64 { EXT }
+
+fn Unix  () -> (int64, int64) { EXT }
+
+}
+
+impl (self: Timeval) {
+
+fn Nano  () -> int64 { EXT }
+
+fn Nanoseconds  () -> int64 { EXT }
+
+fn Unix  () -> (int64, int64) { EXT }
+
+}
+
+impl (self: Token) {
+
+fn Close  () -> error { EXT }
+
+fn GetTokenPrimaryGroup  () -> Result<*Tokenprimarygroup> { EXT }
+
+fn GetTokenUser  () -> Result<*Tokenuser> { EXT }
+
+fn GetUserProfileDirectory  () -> Result<string> { EXT }
+
+}
+
+impl (self: WaitStatus) {
+
+fn Continued  () -> bool { EXT }
+
+fn CoreDump  () -> bool { EXT }
+
+fn ExitStatus  () -> int { EXT }
+
+fn Exited  () -> bool { EXT }
+
+fn Signal  () -> Signal { EXT }
+
+fn Signaled  () -> bool { EXT }
+
+fn StopSignal  () -> Signal { EXT }
+
+fn Stopped  () -> bool { EXT }
+
+fn TrapCause  () -> int { EXT }
+
+}
+
+impl (self: Waitmsg) {
+
+fn ExitStatus  () -> int { EXT }
+
+fn Exited  () -> bool { EXT }
+
+fn Signaled  () -> bool { EXT }
+
+}
+
+type Pointer = *()
+
+type SockaddrGen = [byte]
+
+struct Errno(uintptr)
+
+struct ErrorString(string)
+
+struct Handle(uintptr)
+
+struct IpMaskString(IpAddressString)
+
+struct Note(string)
+
+struct Signal(int)
+
+struct Time_t(int64)
+
+struct Token(Handle)
+
+struct AddrinfoW{
+  Flags: int32,
+  Family: int32,
+  Socktype: int32,
+  Protocol: int32,
+  Addrlen: uintptr,
+  Canonname: *uint16,
+  Addr: Pointer,
+  Next: *AddrinfoW
+}
+
+struct BpfHdr{
+  Tstamp: BpfTimeval,
+  Caplen: uint32,
+  Datalen: uint32,
+  Hdrlen: uint16,
+  Pad_cgo_0: [byte]
+}
+
+struct BpfInsn{
+  Code: uint16,
+  Jt: uint8,
+  Jf: uint8,
+  K: uint32
+}
+
+struct BpfProgram{
+  Len: uint32,
+  Pad_cgo_0: [byte],
+  Insns: *BpfInsn
+}
+
+struct BpfStat{
+  Recv: uint64,
+  Drop: uint64,
+  Capt: uint64,
+  Padding: [uint64]
+}
+
+struct BpfTimeval{
+  Sec: int32,
+  Usec: int32
+}
+
+struct BpfVersion{
+  Major: uint16,
+  Minor: uint16
+}
+
+struct BpfZbuf{
+  Bufa: *byte,
+  Bufb: *byte,
+  Buflen: uint64
+}
+
+struct BpfZbufHeader{
+  Kernel_gen: uint32,
+  Kernel_len: uint32,
+  User_gen: uint32,
+  X_bzh_pad: [uint32]
+}
+
+struct ByHandleFileInformation{
+  FileAttributes: uint32,
+  CreationTime: Filetime,
+  LastAccessTime: Filetime,
+  LastWriteTime: Filetime,
+  VolumeSerialNumber: uint32,
+  FileSizeHigh: uint32,
+  FileSizeLow: uint32,
+  NumberOfLinks: uint32,
+  FileIndexHigh: uint32,
+  FileIndexLow: uint32
+}
+
+struct CertChainContext{
+  Size: uint32,
+  TrustStatus: CertTrustStatus,
+  ChainCount: uint32,
+  Chains: **CertSimpleChain,
+  LowerQualityChainCount: uint32,
+  LowerQualityChains: **CertChainContext,
+  HasRevocationFreshnessTime: uint32,
+  RevocationFreshnessTime: uint32
+}
+
+struct CertChainElement{
+  Size: uint32,
+  CertContext: *CertContext,
+  TrustStatus: CertTrustStatus,
+  RevocationInfo: *CertRevocationInfo,
+  IssuanceUsage: *CertEnhKeyUsage,
+  ApplicationUsage: *CertEnhKeyUsage,
+  ExtendedErrorInfo: *uint16
+}
+
+struct CertChainPara{
+  Size: uint32,
+  RequestedUsage: CertUsageMatch,
+  RequstedIssuancePolicy: CertUsageMatch,
+  URLRetrievalTimeout: uint32,
+  CheckRevocationFreshnessTime: uint32,
+  RevocationFreshnessTime: uint32,
+  CacheResync: *Filetime
+}
+
+struct CertChainPolicyPara{
+  Size: uint32,
+  Flags: uint32,
+  ExtraPolicyPara: Pointer
+}
+
+struct CertChainPolicyStatus{
+  Size: uint32,
+  Error: uint32,
+  ChainIndex: uint32,
+  ElementIndex: uint32,
+  ExtraPolicyStatus: Pointer
+}
+
+struct CertContext{
+  EncodingType: uint32,
+  EncodedCert: *byte,
+  Length: uint32,
+  CertInfo: *CertInfo,
+  Store: Handle
+}
+
+struct CertEnhKeyUsage{
+  Length: uint32,
+  UsageIdentifiers: **byte
+}
+
+struct CertInfo{
+
+}
+
+struct CertRevocationCrlInfo{
+
+}
+
+struct CertRevocationInfo{
+  Size: uint32,
+  RevocationResult: uint32,
+  RevocationOid: *byte,
+  OidSpecificInfo: Pointer,
+  HasFreshnessTime: uint32,
+  FreshnessTime: uint32,
+  CrlInfo: *CertRevocationCrlInfo
+}
+
+struct CertSimpleChain{
+  Size: uint32,
+  TrustStatus: CertTrustStatus,
+  NumElements: uint32,
+  Elements: **CertChainElement,
+  TrustListInfo: *CertTrustListInfo,
+  HasRevocationFreshnessTime: uint32,
+  RevocationFreshnessTime: uint32
+}
+
+struct CertTrustListInfo{
+
+}
+
+struct CertTrustStatus{
+  ErrorStatus: uint32,
+  InfoStatus: uint32
+}
+
+struct CertUsageMatch{
+  Type: uint32,
+  Usage: CertEnhKeyUsage
+}
+
+struct Cmsghdr{
+  Len: uint32,
+  Level: int32,
+  Type: int32
+}
+
+interface Conn {
+
+  fn SyscallConn () -> Result<RawConn>
+}
+
+struct Credential{
+  Uid: uint32,
+  Gid: uint32,
+  Groups: [uint32],
+  NoSetGroups: bool
+}
+
+struct DLL{
+  Name: string,
+  Handle: Handle
+}
+
+struct DLLError{
+  Err: error,
+  ObjName: string,
+  Msg: string
+}
+
+struct DNSMXData{
+  NameExchange: *uint16,
+  Preference: uint16,
+  Pad: uint16
+}
+
+struct DNSPTRData{
+  Host: *uint16
+}
+
+struct DNSRecord{
+  Next: *DNSRecord,
+  Name: *uint16,
+  Type: uint16,
+  Length: uint16,
+  Dw: uint32,
+  Ttl: uint32,
+  Reserved: uint32,
+  Data: [byte]
+}
+
+struct DNSSRVData{
+  Target: *uint16,
+  Priority: uint16,
+  Weight: uint16,
+  Port: uint16,
+  Pad: uint16
+}
+
+struct DNSTXTData{
+  StringCount: uint16,
+  StringArray: [*uint16]
+}
+
+struct Dir{
+  Type: uint16,
+  Dev: uint32,
+  Qid: Qid,
+  Mode: uint32,
+  Atime: uint32,
+  Mtime: uint32,
+  Length: int64,
+  Name: string,
+  Uid: string,
+  Gid: string,
+  Muid: string
+}
+
+struct Dirent{
+  Ino: uint64,
+  Off: int64,
+  Reclen: uint16,
+  Name: [int8],
+  Pad_cgo_0: [byte]
+}
+
+struct EpollEvent{
+  Events: uint32,
+  Fd: int32,
+  Pad: int32
+}
+
+struct Fbootstraptransfer_t{
+  Offset: int64,
+  Length: uint64,
+  Buffer: *byte
+}
+
+struct FdSet{
+  Bits: [int64]
+}
+
+struct FileNotifyInformation{
+  NextEntryOffset: uint32,
+  Action: uint32,
+  FileNameLength: uint32,
+  FileName: uint16
+}
+
+struct Filetime{
+  LowDateTime: uint32,
+  HighDateTime: uint32
+}
+
+struct Flock_t{
+  Type: int16,
+  Whence: int16,
+  Pad_cgo_0: [byte],
+  Start: int64,
+  Len: int64,
+  Sysid: int32,
+  Pid: int32,
+  Pad: [int64]
+}
+
+struct Fsid{
+  Val: [int32]
+}
+
+struct Fsid64_t{
+  Val: [uint64]
+}
+
+struct Fstore_t{
+  Flags: uint32,
+  Posmode: int32,
+  Offset: int64,
+  Length: int64,
+  Bytesalloc: int64
+}
+
+struct GUID{
+  Data1: uint32,
+  Data2: uint16,
+  Data3: uint16,
+  Data4: [byte]
+}
+
+struct Hostent{
+  Name: *byte,
+  Aliases: **byte,
+  AddrType: uint16,
+  Length: uint16,
+  AddrList: **byte
+}
+
+struct ICMPv6Filter{
+  X__icmp6_filt: [uint32]
+}
+
+struct IPMreq{
+  Multiaddr: [byte],
+  Interface: [byte]
+}
+
+struct IPMreqn{
+  Multiaddr: [byte],
+  Address: [byte],
+  Ifindex: int32
+}
+
+struct IPv6MTUInfo{
+  Addr: RawSockaddrInet6,
+  Mtu: uint32
+}
+
+struct IPv6Mreq{
+  Multiaddr: [byte],
+  Interface: uint32
+}
+
+struct IfAddrmsg{
+  Family: uint8,
+  Prefixlen: uint8,
+  Flags: uint8,
+  Scope: uint8,
+  Index: uint32
+}
+
+struct IfAnnounceMsghdr{
+  Msglen: uint16,
+  Version: uint8,
+  Type: uint8,
+  Hdrlen: uint16,
+  Index: uint16,
+  What: uint16,
+  Name: [int8]
+}
+
+struct IfData{
+  Type: uint8,
+  Addrlen: uint8,
+  Hdrlen: uint8,
+  Pad_cgo_0: [byte],
+  Mtu: uint32,
+  Metric: uint32,
+  Baudrate: uint32,
+  Ipackets: uint32,
+  Ierrors: uint32,
+  Opackets: uint32,
+  Oerrors: uint32,
+  Collisions: uint32,
+  Ibytes: uint32,
+  Obytes: uint32,
+  Imcasts: uint32,
+  Omcasts: uint32,
+  Iqdrops: uint32,
+  Noproto: uint32,
+  Lastchange: Timeval32
+}
+
+struct IfInfomsg{
+  Family: uint8,
+  Type: uint16,
+  Index: int32,
+  Flags: uint32,
+  Change: uint32
+}
+
+struct IfMsgHdr{
+  Msglen: uint16,
+  Version: uint8,
+  Type: uint8,
+  Addrs: int32,
+  Flags: int32,
+  Index: uint16,
+  Addrlen: uint8,
+  Pad_cgo_0: [byte]
+}
+
+struct IfMsghdr{
+  Msglen: uint16,
+  Version: uint8,
+  Type: uint8,
+  Addrs: int32,
+  Flags: int32,
+  Index: uint16,
+  Pad_cgo_0: [byte],
+  Data: IfData
+}
+
+struct IfaMsghdr{
+  Msglen: uint16,
+  Version: uint8,
+  Type: uint8,
+  Addrs: int32,
+  Flags: int32,
+  Index: uint16,
+  Pad_cgo_0: [byte],
+  Metric: int32
+}
+
+struct IfmaMsghdr{
+  Msglen: uint16,
+  Version: uint8,
+  Type: uint8,
+  Addrs: int32,
+  Flags: int32,
+  Index: uint16,
+  Pad_cgo_0: [byte]
+}
+
+struct IfmaMsghdr2{
+  Msglen: uint16,
+  Version: uint8,
+  Type: uint8,
+  Addrs: int32,
+  Flags: int32,
+  Index: uint16,
+  Pad_cgo_0: [byte],
+  Refcount: int32
+}
+
+struct Inet4Pktinfo{
+  Ifindex: int32,
+  Spec_dst: [byte],
+  Addr: [byte]
+}
+
+struct Inet6Pktinfo{
+  Addr: [byte],
+  Ifindex: uint32
+}
+
+struct InotifyEvent{
+  Wd: int32,
+  Mask: uint32,
+  Cookie: uint32,
+  Len: uint32
+}
+
+struct InterfaceAddrMessage{
+  Header: IfaMsghdr,
+  Data: [byte]
+}
+
+struct InterfaceAnnounceMessage{
+  Header: IfAnnounceMsghdr
+}
+
+struct InterfaceInfo{
+  Flags: uint32,
+  Address: SockaddrGen,
+  BroadcastAddress: SockaddrGen,
+  Netmask: SockaddrGen
+}
+
+struct InterfaceMessage{
+  Header: IfMsghdr,
+  Data: [byte]
+}
+
+struct InterfaceMulticastAddrMessage{
+  Header: IfmaMsghdr,
+  Data: [byte]
+}
+
+struct Iovec{
+  Base: *int8,
+  Len: uint64
+}
+
+struct IpAdapterInfo{
+  Next: *IpAdapterInfo,
+  ComboIndex: uint32,
+  AdapterName: [byte],
+  Description: [byte],
+  AddressLength: uint32,
+  Address: [byte],
+  Index: uint32,
+  Type: uint32,
+  DhcpEnabled: uint32,
+  CurrentIpAddress: *IpAddrString,
+  IpAddressList: IpAddrString,
+  GatewayList: IpAddrString,
+  DhcpServer: IpAddrString,
+  HaveWins: bool,
+  PrimaryWinsServer: IpAddrString,
+  SecondaryWinsServer: IpAddrString,
+  LeaseObtained: int64,
+  LeaseExpires: int64
+}
+
+struct IpAddrString{
+  Next: *IpAddrString,
+  IpAddress: IpAddressString,
+  IpMask: IpMaskString,
+  Context: uint32
+}
+
+struct IpAddressString{
+  String: [byte]
+}
+
+struct Kevent_t{
+  Ident: uint64,
+  Filter: int16,
+  Flags: uint16,
+  Fflags: uint32,
+  Data: int64,
+  Udata: *byte
+}
+
+struct LazyDLL{
+  Name: string
+}
+
+struct LazyProc{
+  Name: string
+}
+
+struct Linger{
+  Onoff: int32,
+  Linger: int32
+}
+
+struct Log2phys_t{
+  Flags: uint32,
+  Contigbytes: int64,
+  Devoffset: int64
+}
+
+struct Mclpool{
+
+}
+
+struct MibIfRow{
+  Name: [uint16],
+  Index: uint32,
+  Type: uint32,
+  Mtu: uint32,
+  Speed: uint32,
+  PhysAddrLen: uint32,
+  PhysAddr: [byte],
+  AdminStatus: uint32,
+  OperStatus: uint32,
+  LastChange: uint32,
+  InOctets: uint32,
+  InUcastPkts: uint32,
+  InNUcastPkts: uint32,
+  InDiscards: uint32,
+  InErrors: uint32,
+  InUnknownProtos: uint32,
+  OutOctets: uint32,
+  OutUcastPkts: uint32,
+  OutNUcastPkts: uint32,
+  OutDiscards: uint32,
+  OutErrors: uint32,
+  OutQLen: uint32,
+  DescrLen: uint32,
+  Descr: [byte]
+}
+
+struct Msghdr{
+  Name: *byte,
+  Namelen: uint32,
+  Pad_cgo_0: [byte],
+  Iov: *Iovec,
+  Iovlen: int32,
+  Pad_cgo_1: [byte],
+  Accrights: *int8,
+  Accrightslen: int32,
+  Pad_cgo_2: [byte]
+}
+
+struct NetlinkMessage{
+  Header: NlMsghdr,
+  Data: [byte]
+}
+
+struct NetlinkRouteAttr{
+  Attr: RtAttr,
+  Value: [byte]
+}
+
+struct NetlinkRouteRequest{
+  Header: NlMsghdr,
+  Data: RtGenmsg
+}
+
+struct NlAttr{
+  Len: uint16,
+  Type: uint16
+}
+
+struct NlMsgerr{
+  Error: int32,
+  Msg: NlMsghdr
+}
+
+struct NlMsghdr{
+  Len: uint32,
+  Type: uint16,
+  Flags: uint16,
+  Seq: uint32,
+  Pid: uint32
+}
+
+struct Overlapped{
+  Internal: uintptr,
+  InternalHigh: uintptr,
+  Offset: uint32,
+  OffsetHigh: uint32,
+  HEvent: Handle
+}
+
+struct Proc{
+  Dll: *DLL,
+  Name: string
+}
+
+struct ProcAttr{
+  Dir: string,
+  Env: [string],
+  Files: [uintptr],
+  Sys: *SysProcAttr
+}
+
+struct ProcessEntry32{
+  Size: uint32,
+  Usage: uint32,
+  ProcessID: uint32,
+  DefaultHeapID: uintptr,
+  ModuleID: uint32,
+  Threads: uint32,
+  ParentProcessID: uint32,
+  PriClassBase: int32,
+  Flags: uint32,
+  ExeFile: [uint16]
+}
+
+struct ProcessInformation{
+  Process: Handle,
+  Thread: Handle,
+  ProcessId: uint32,
+  ThreadId: uint32
+}
+
+struct Protoent{
+  Name: *byte,
+  Aliases: **byte,
+  Proto: uint16
+}
+
+struct PtraceFpregs{
+  Fpc: uint32,
+  Fprs: [float64]
+}
+
+struct PtracePer{
+  Control_regs: [uint64],
+  Starting_addr: uint64,
+  Ending_addr: uint64,
+  Perc_atmid: uint16,
+  Address: uint64,
+  Access_id: uint8
+}
+
+struct PtracePsw{
+  Mask: uint64,
+  Addr: uint64
+}
+
+struct PtraceRegs{
+  Psw: PtracePsw,
+  Gprs: [uint64],
+  Acrs: [uint32],
+  Orig_gpr2: uint64,
+  Fp_regs: PtraceFpregs,
+  Per_info: PtracePer,
+  Ieee_instruction_pointer: uint64
+}
+
+struct Qid{
+  Path: uint64,
+  Vers: uint32,
+  Type: uint8
+}
+
+struct Radvisory_t{
+  Offset: int64,
+  Count: int32,
+  Pad_cgo_0: [byte]
+}
+
+interface RawConn {
+
+  fn Control (f: fn (fd: uintptr) -> ()) -> error
+  fn Read (f: fn (fd: uintptr) -> bool) -> error
+  fn Write (f: fn (fd: uintptr) -> bool) -> error
+}
+
+struct RawSockaddr{
+  Family: uint16,
+  Data: [int8]
+}
+
+struct RawSockaddrAny{
+  Addr: RawSockaddr,
+  Pad: [int8]
+}
+
+struct RawSockaddrDatalink{
+  Family: uint16,
+  Index: uint16,
+  Type: uint8,
+  Nlen: uint8,
+  Alen: uint8,
+  Slen: uint8,
+  Data: [int8]
+}
+
+struct RawSockaddrInet4{
+  Family: uint16,
+  Port: uint16,
+  Addr: [byte],
+  Zero: [int8]
+}
+
+struct RawSockaddrInet6{
+  Family: uint16,
+  Port: uint16,
+  Flowinfo: uint32,
+  Addr: [byte],
+  Scope_id: uint32,
+  X__sin6_src_id: uint32
+}
+
+struct RawSockaddrLinklayer{
+  Family: uint16,
+  Protocol: uint16,
+  Ifindex: int32,
+  Hatype: uint16,
+  Pkttype: uint8,
+  Halen: uint8,
+  Addr: [uint8]
+}
+
+struct RawSockaddrNetlink{
+  Family: uint16,
+  Pad: uint16,
+  Pid: uint32,
+  Groups: uint32
+}
+
+struct RawSockaddrUnix{
+  Family: uint16,
+  Path: [int8]
+}
+
+struct Rlimit{
+  Cur: uint64,
+  Max: uint64
+}
+
+struct RouteMessage{
+  Header: RtMsghdr,
+  Data: [byte]
+}
+
+interface RoutingMessage {
+
+
+}
+
+struct RtAttr{
+  Len: uint16,
+  Type: uint16
+}
+
+struct RtGenmsg{
+  Family: uint8
+}
+
+struct RtMetrics{
+  Locks: uint32,
+  Mtu: uint32,
+  Hopcount: uint32,
+  Expire: uint32,
+  Recvpipe: uint32,
+  Sendpipe: uint32,
+  Ssthresh: uint32,
+  Rtt: uint32,
+  Rttvar: uint32,
+  Pksent: uint32
+}
+
+struct RtMsg{
+  Family: uint8,
+  Dst_len: uint8,
+  Src_len: uint8,
+  Tos: uint8,
+  Table: uint8,
+  Protocol: uint8,
+  Scope: uint8,
+  Type: uint8,
+  Flags: uint32
+}
+
+struct RtMsghdr{
+  Msglen: uint16,
+  Version: uint8,
+  Type: uint8,
+  Index: uint16,
+  Pad_cgo_0: [byte],
+  Flags: int32,
+  Addrs: int32,
+  Pid: int32,
+  Seq: int32,
+  Errno: int32,
+  Use: int32,
+  Inits: uint32,
+  Rmx: RtMetrics
+}
+
+struct RtNexthop{
+  Len: uint16,
+  Flags: uint8,
+  Hops: uint8,
+  Ifindex: int32
+}
+
+struct Rusage{
+  Utime: Timeval,
+  Stime: Timeval,
+  Maxrss: int64,
+  Ixrss: int64,
+  Idrss: int64,
+  Isrss: int64,
+  Minflt: int64,
+  Majflt: int64,
+  Nswap: int64,
+  Inblock: int64,
+  Oublock: int64,
+  Msgsnd: int64,
+  Msgrcv: int64,
+  Nsignals: int64,
+  Nvcsw: int64,
+  Nivcsw: int64
+}
+
+struct SID{
+
+}
+
+struct SIDAndAttributes{
+  Sid: *SID,
+  Attributes: uint32
+}
+
+struct SSLExtraCertChainPolicyPara{
+  Size: uint32,
+  AuthType: uint32,
+  Checks: uint32,
+  ServerName: *uint16
+}
+
+struct SecurityAttributes{
+  Length: uint32,
+  SecurityDescriptor: uintptr,
+  InheritHandle: uint32
+}
+
+struct Servent{
+  Name: *byte,
+  Aliases: **byte,
+  Proto: *byte,
+  Port: uint16
+}
+
+struct SockFilter{
+  Code: uint16,
+  Jt: uint8,
+  Jf: uint8,
+  K: uint32
+}
+
+struct SockFprog{
+  Len: uint16,
+  Filter: *SockFilter
+}
+
+interface Sockaddr {
+
+
+}
+
+struct SockaddrDatalink{
+  Family: uint16,
+  Index: uint16,
+  Type: uint8,
+  Nlen: uint8,
+  Alen: uint8,
+  Slen: uint8,
+  Data: [int8]
+}
+
+struct SockaddrInet4{
+  Port: int,
+  Addr: [byte]
+}
+
+struct SockaddrInet6{
+  Port: int,
+  ZoneId: uint32,
+  Addr: [byte]
+}
+
+struct SockaddrLinklayer{
+  Protocol: uint16,
+  Ifindex: int,
+  Hatype: uint16,
+  Pkttype: uint8,
+  Halen: uint8,
+  Addr: [byte]
+}
+
+struct SockaddrNetlink{
+  Family: uint16,
+  Pad: uint16,
+  Pid: uint32,
+  Groups: uint32
+}
+
+struct SockaddrUnix{
+  Name: string
+}
+
+struct SocketControlMessage{
+  Header: Cmsghdr,
+  Data: [byte]
+}
+
+struct StTimespec_t{
+  Sec: int64,
+  Nsec: int32,
+  Pad_cgo_0: [byte]
+}
+
+struct StartupInfo{
+  Cb: uint32,
+  Desktop: *uint16,
+  Title: *uint16,
+  X: uint32,
+  Y: uint32,
+  XSize: uint32,
+  YSize: uint32,
+  XCountChars: uint32,
+  YCountChars: uint32,
+  FillAttribute: uint32,
+  Flags: uint32,
+  ShowWindow: uint16,
+  StdInput: Handle,
+  StdOutput: Handle,
+  StdErr: Handle
+}
+
+struct Stat_t{
+  Dev: uint64,
+  Ino: uint64,
+  Mode: uint32,
+  Nlink: uint32,
+  Uid: uint32,
+  Gid: uint32,
+  Rdev: uint64,
+  Size: int64,
+  Atim: Timespec,
+  Mtim: Timespec,
+  Ctim: Timespec,
+  Blksize: int32,
+  Pad_cgo_0: [byte],
+  Blocks: int64,
+  Fstype: [int8]
+}
+
+struct Statfs_t{
+  F_flags: uint32,
+  F_bsize: uint32,
+  F_iosize: uint32,
+  F_blocks: uint64,
+  F_bfree: uint64,
+  F_bavail: int64,
+  F_files: uint64,
+  F_ffree: uint64,
+  F_favail: int64,
+  F_syncwrites: uint64,
+  F_syncreads: uint64,
+  F_asyncwrites: uint64,
+  F_asyncreads: uint64,
+  F_fsid: Fsid,
+  F_namemax: uint32,
+  F_owner: uint32,
+  F_ctime: uint64,
+  F_fstypename: [int8],
+  F_mntonname: [int8],
+  F_mntfromname: [int8],
+  F_mntfromspec: [int8],
+  Pad_cgo_0: [byte],
+  Mount_info: [byte]
+}
+
+struct SysProcAttr{
+
+}
+
+struct SysProcIDMap{
+  ContainerID: int,
+  HostID: int,
+  Size: int
+}
+
+struct Sysctlnode{
+  Flags: uint32,
+  Num: int32,
+  Name: [int8],
+  Ver: uint32,
+  X__rsvd: uint32,
+  Un: [byte],
+  X_sysctl_size: [byte],
+  X_sysctl_func: [byte],
+  X_sysctl_parent: [byte],
+  X_sysctl_desc: [byte]
+}
+
+struct Sysinfo_t{
+  Uptime: int64,
+  Loads: [uint64],
+  Totalram: uint64,
+  Freeram: uint64,
+  Sharedram: uint64,
+  Bufferram: uint64,
+  Totalswap: uint64,
+  Freeswap: uint64,
+  Procs: uint16,
+  Pad: uint16,
+  Totalhigh: uint64,
+  Freehigh: uint64,
+  Unit: uint32
+}
+
+struct Systemtime{
+  Year: uint16,
+  Month: uint16,
+  DayOfWeek: uint16,
+  Day: uint16,
+  Hour: uint16,
+  Minute: uint16,
+  Second: uint16,
+  Milliseconds: uint16
+}
+
+struct TCPInfo{
+  State: uint8,
+  Ca_state: uint8,
+  Retransmits: uint8,
+  Probes: uint8,
+  Backoff: uint8,
+  Options: uint8,
+  Rto: uint32,
+  Ato: uint32,
+  Snd_mss: uint32,
+  Rcv_mss: uint32,
+  Unacked: uint32,
+  Sacked: uint32,
+  Lost: uint32,
+  Retrans: uint32,
+  Fackets: uint32,
+  Last_data_sent: uint32,
+  Last_ack_sent: uint32,
+  Last_data_recv: uint32,
+  Last_ack_recv: uint32,
+  Pmtu: uint32,
+  Rcv_ssthresh: uint32,
+  Rtt: uint32,
+  Rttvar: uint32,
+  Snd_ssthresh: uint32,
+  Snd_cwnd: uint32,
+  Advmss: uint32,
+  Reordering: uint32,
+  Rcv_rtt: uint32,
+  Rcv_space: uint32,
+  Total_retrans: uint32
+}
+
+struct TCPKeepalive{
+  OnOff: uint32,
+  Time: uint32,
+  Interval: uint32
+}
+
+struct Termios{
+  Iflag: uint32,
+  Oflag: uint32,
+  Cflag: uint32,
+  Lflag: uint32,
+  Cc: [uint8],
+  Pad_cgo_0: [byte]
+}
+
+struct Timespec{
+  Sec: int64,
+  Nsec: int64
+}
+
+struct Timeval{
+  Sec: int64,
+  Usec: int64
+}
+
+struct Timeval32{
+  Sec: int32,
+  Usec: int32
+}
+
+struct Timex{
+  Modes: uint32,
+  Offset: int64,
+  Freq: int64,
+  Maxerror: int64,
+  Esterror: int64,
+  Status: int32,
+  Constant: int64,
+  Precision: int64,
+  Tolerance: int64,
+  Time: Timeval,
+  Tick: int64,
+  Ppsfreq: int64,
+  Jitter: int64,
+  Shift: int32,
+  Stabil: int64,
+  Jitcnt: int64,
+  Calcnt: int64,
+  Errcnt: int64,
+  Stbcnt: int64,
+  Tai: int32
+}
+
+struct Timezone{
+  Minuteswest: int32,
+  Dsttime: int32
+}
+
+struct Timezoneinformation{
+  Bias: int32,
+  StandardName: [uint16],
+  StandardDate: Systemtime,
+  StandardBias: int32,
+  DaylightName: [uint16],
+  DaylightDate: Systemtime,
+  DaylightBias: int32
+}
+
+struct Tms{
+  Utime: int64,
+  Stime: int64,
+  Cutime: int64,
+  Cstime: int64
+}
+
+struct Tokenprimarygroup{
+  PrimaryGroup: *SID
+}
+
+struct Tokenuser{
+  User: SIDAndAttributes
+}
+
+struct TransmitFileBuffers{
+  Head: uintptr,
+  HeadLength: uint32,
+  Tail: uintptr,
+  TailLength: uint32
+}
+
+struct Ucred{
+  Pid: int32,
+  Uid: uint32,
+  Gid: uint32
+}
+
+struct UserInfo10{
+  Name: *uint16,
+  Comment: *uint16,
+  UsrComment: *uint16,
+  FullName: *uint16
+}
+
+struct Ustat_t{
+  Tfree: int32,
+  Tinode: uint64,
+  Fname: [uint8],
+  Fpack: [uint8]
+}
+
+struct Utimbuf{
+  Actime: int64,
+  Modtime: int64
+}
+
+struct Utsname{
+  Sysname: [uint8],
+  Nodename: [uint8],
+  Release: [uint8],
+  Version: [uint8],
+  Machine: [uint8],
+  Domainname: [uint8]
+}
+
+struct WSABuf{
+  Len: uint32,
+  Buf: *byte
+}
+
+struct WSAData{
+  Version: uint16,
+  HighVersion: uint16,
+  MaxSockets: uint16,
+  MaxUdpDg: uint16,
+  VendorInfo: *byte,
+  Description: [byte],
+  SystemStatus: [byte]
+}
+
+struct WSAProtocolChain{
+  ChainLen: int32,
+  ChainEntries: [uint32]
+}
+
+struct WSAProtocolInfo{
+  ServiceFlags1: uint32,
+  ServiceFlags2: uint32,
+  ServiceFlags3: uint32,
+  ServiceFlags4: uint32,
+  ProviderFlags: uint32,
+  ProviderId: GUID,
+  CatalogEntryId: uint32,
+  ProtocolChain: WSAProtocolChain,
+  Version: int32,
+  AddressFamily: int32,
+  MaxSockAddr: int32,
+  MinSockAddr: int32,
+  SocketType: int32,
+  Protocol: int32,
+  ProtocolMaxOffset: int32,
+  NetworkByteOrder: int32,
+  SecurityScheme: int32,
+  MessageSize: uint32,
+  ProviderReserved: uint32,
+  ProtocolName: [uint16]
+}
+
+struct WaitStatus{
+  ExitCode: uint32
+}
+
+struct Waitmsg{
+  Pid: int,
+  Time: [uint32],
+  Msg: string
+}
+
+struct Win32FileAttributeData{
+  FileAttributes: uint32,
+  CreationTime: Filetime,
+  LastAccessTime: Filetime,
+  LastWriteTime: Filetime,
+  FileSizeHigh: uint32,
+  FileSizeLow: uint32
+}
+
+struct Win32finddata{
+  FileAttributes: uint32,
+  CreationTime: Filetime,
+  LastAccessTime: Filetime,
+  LastWriteTime: Filetime,
+  FileSizeHigh: uint32,
+  FileSizeLow: uint32,
+  Reserved0: uint32,
+  Reserved1: uint32,
+  FileName: [uint16],
+  AlternateFileName: [uint16]
+}

@@ -5,12 +5,12 @@ enum Foo { Bar, Baz }
 
 fn main() {
     let res = match (Bar, Baz) {
-        (Bar, Bar) => 0,
-        (Bar, Baz) => 2,
-        _ => unreachable!(),
-    };
+        (Bar, Bar) => 0
+        (Bar, Baz) => 2
+        _ => @unreachable()
+    }
 
-    assert_eq(res, 2);
+    assert_eq(res, 2)
 }
 
 OUTPUT:

@@ -1,0 +1,50 @@
+Nested field access
+
+SOURCE:
+1 * a.b.c + 3
+
+OUTPUT:
+Int("1", 1)#1,1, Star#1,3, Ident("a", 1)#1,5, Dot#1,6, Ident("b", 1)#1,7, Dot#1,8, Ident("c", 1)#1,9, Plus#1,11, Int("3", 1)#1,13, EOF#1,14
+---
+No errors.
+---
+{
+  "Binary": {
+    "op": "Add",
+    "left": {
+      "Binary": {
+        "op": "Mul",
+        "left": {
+          "Literal": {
+            "lit": {
+              "Int": 1
+            }
+          }
+        },
+        "right": {
+          "FieldAccess": {
+            "expr": {
+              "FieldAccess": {
+                "expr": {
+                  "Var": {
+                    "value": "a",
+                    "generics_instantiated": []
+                  }
+                },
+                "field": "b"
+              }
+            },
+            "field": "c"
+          }
+        }
+      }
+    },
+    "right": {
+      "Literal": {
+        "lit": {
+          "Int": 3
+        }
+      }
+    }
+  }
+}

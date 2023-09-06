@@ -1,0 +1,123 @@
+Interface
+
+SOURCE:
+interface Foo<T: Comparable> {
+    impl Bar
+    impl Baz<T>
+
+    fn A()
+    fn B(a: int) -> string
+}
+
+OUTPUT:
+Interface#1,1, Ident("Foo", 3)#1,11, LAngle#1,14, Ident("T", 1)#1,15, Colon#1,16, Ident("Comparable", 10)#1,18, RAngle#1,28, LCurly#1,30, Impl#2,5, Ident("Bar", 3)#2,10, Semicolon#2,13, Impl#3,5, Ident("Baz", 3)#3,10, LAngle#3,13, Ident("T", 1)#3,14, RAngle#3,15, Semicolon#3,16, Fn_#5,5, Ident("A", 1)#5,8, LParen#5,9, RParen#5,10, Semicolon#5,11, Fn_#6,5, Ident("B", 1)#6,8, LParen#6,9, Ident("a", 1)#6,10, Colon#6,11, Ident("int", 3)#6,13, RParen#6,16, Arrow#6,18, Ident("string", 6)#6,21, Semicolon#6,27, RCurly#7,1, EOF#7,2
+---
+No errors.
+---
+{
+  "Trait": {
+    "name": "Foo",
+    "generics": [
+      {
+        "name": "T",
+        "bounds": [
+          {
+            "Con": {
+              "name": "Comparable",
+              "args": []
+            }
+          }
+        ]
+      }
+    ],
+    "supertraits": [
+      {
+        "ann": {
+          "Con": {
+            "name": "Bar",
+            "args": []
+          }
+        }
+      },
+      {
+        "ann": {
+          "Con": {
+            "name": "Baz",
+            "args": [
+              {
+                "Con": {
+                  "name": "T",
+                  "args": []
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "Closure": {
+          "fun": {
+            "name": "A",
+            "generics": [],
+            "args": [],
+            "ret": {
+              "Var": -1
+            },
+            "ann": {
+              "Con": {
+                "name": "Unit",
+                "args": []
+              }
+            },
+            "body": "Noop",
+            "bounded_ty": {
+              "generics": []
+            }
+          },
+          "kind": "TopLevel"
+        }
+      },
+      {
+        "Closure": {
+          "fun": {
+            "name": "B",
+            "generics": [],
+            "args": [
+              {
+                "pat": {
+                  "Type": {
+                    "ident": "a",
+                    "is_mut": false,
+                    "ann": "Unknown"
+                  }
+                },
+                "ann": {
+                  "Con": {
+                    "name": "int",
+                    "args": []
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "Var": -1
+            },
+            "ann": {
+              "Con": {
+                "name": "string",
+                "args": []
+              }
+            },
+            "body": "Noop",
+            "bounded_ty": {
+              "generics": []
+            }
+          },
+          "kind": "TopLevel"
+        }
+      }
+    ]
+  }
+}

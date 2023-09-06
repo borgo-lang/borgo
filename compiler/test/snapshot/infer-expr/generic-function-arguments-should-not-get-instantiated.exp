@@ -3,7 +3,7 @@ Generic function arguments should not get instantiated
 SOURCE:
 {
   fn foo<T>(x: T) -> int {
-    x as T;
+    @ensure x, T
     match x {
       1 => 1
     }

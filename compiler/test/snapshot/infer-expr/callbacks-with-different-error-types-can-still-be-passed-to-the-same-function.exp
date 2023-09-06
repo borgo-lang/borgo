@@ -2,17 +2,17 @@ Callbacks with different error types can still be passed to the same function.
 
 SOURCE:
 {
-  fn foo() -> Result<int, ErrFoo> { Err(ErrFoo::A) }
-  fn bar() -> Result<int, ErrBar> { Err(ErrBar::X) }
+  fn foo() -> Result<int, ErrFoo> { Err(ErrFoo.A) }
+  fn bar() -> Result<int, ErrBar> { Err(ErrBar.X) }
 
   fn baz(f: fn () -> Result<int, ErrFoo>, g: fn() -> Result<int, ErrBar>) {
     ()
   }
 
-  foo as fn () -> Result<int, ErrFoo>;
-  bar as fn () -> Result<int, ErrBar>;
+  @ensure foo, fn () -> Result<int, ErrFoo>
+  @ensure bar, fn () -> Result<int, ErrBar>
 
-  baz(foo, bar);
+  baz(foo, bar)
   true
 }
 
@@ -75,17 +75,17 @@ No errors.
                     "Call": {
                       "func": {
                         "Var": {
-                          "value": "Result::Err",
+                          "value": "Result.Err",
                           "decl": {
                             "start": {
                               "line": 14,
-                              "col": 0
+                              "col": 1
                             },
                             "end": {
                               "line": 17,
                               "col": 1
                             },
-                            "file": -1
+                            "file": 99
                           },
                           "generics_instantiated": [
                             {
@@ -136,11 +136,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 2,
-                              "col": 36
+                              "col": 37
                             },
                             "end": {
                               "line": 2,
-                              "col": 39
+                              "col": 40
                             },
                             "file": 99
                           }
@@ -149,17 +149,17 @@ No errors.
                       "args": [
                         {
                           "Var": {
-                            "value": "ErrFoo::A",
+                            "value": "ErrFoo.A",
                             "decl": {
                               "start": {
                                 "line": 65,
-                                "col": 0
+                                "col": 1
                               },
                               "end": {
                                 "line": 68,
                                 "col": 1
                               },
-                              "file": -1
+                              "file": 99
                             },
                             "generics_instantiated": [],
                             "ty": {
@@ -171,7 +171,7 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 2,
-                                "col": 40
+                                "col": 48
                               },
                               "end": {
                                 "line": 2,
@@ -204,11 +204,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 2,
-                          "col": 36
+                          "col": 40
                         },
                         "end": {
                           "line": 2,
-                          "col": 50
+                          "col": 49
                         },
                         "file": 99
                       }
@@ -237,11 +237,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 34
+                    "col": 35
                   },
                   "end": {
                     "line": 2,
-                    "col": 52
+                    "col": 51
                   },
                   "file": 99
                 }
@@ -305,11 +305,11 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
-              "col": 52
+              "col": 51
             },
             "file": 99
           }
@@ -366,17 +366,17 @@ No errors.
                     "Call": {
                       "func": {
                         "Var": {
-                          "value": "Result::Err",
+                          "value": "Result.Err",
                           "decl": {
                             "start": {
                               "line": 14,
-                              "col": 0
+                              "col": 1
                             },
                             "end": {
                               "line": 17,
                               "col": 1
                             },
-                            "file": -1
+                            "file": 99
                           },
                           "generics_instantiated": [
                             {
@@ -427,11 +427,11 @@ No errors.
                           "span": {
                             "start": {
                               "line": 3,
-                              "col": 36
+                              "col": 37
                             },
                             "end": {
                               "line": 3,
-                              "col": 39
+                              "col": 40
                             },
                             "file": 99
                           }
@@ -440,17 +440,17 @@ No errors.
                       "args": [
                         {
                           "Var": {
-                            "value": "ErrBar::X",
+                            "value": "ErrBar.X",
                             "decl": {
                               "start": {
                                 "line": 70,
-                                "col": 0
+                                "col": 1
                               },
                               "end": {
                                 "line": 73,
                                 "col": 1
                               },
-                              "file": -1
+                              "file": 99
                             },
                             "generics_instantiated": [],
                             "ty": {
@@ -462,7 +462,7 @@ No errors.
                             "span": {
                               "start": {
                                 "line": 3,
-                                "col": 40
+                                "col": 48
                               },
                               "end": {
                                 "line": 3,
@@ -495,11 +495,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 3,
-                          "col": 36
+                          "col": 40
                         },
                         "end": {
                           "line": 3,
-                          "col": 50
+                          "col": 49
                         },
                         "file": 99
                       }
@@ -528,11 +528,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 3,
-                    "col": 34
+                    "col": 35
                   },
                   "end": {
                     "line": 3,
-                    "col": 52
+                    "col": 51
                   },
                   "file": 99
                 }
@@ -596,11 +596,11 @@ No errors.
           "span": {
             "start": {
               "line": 3,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 3,
-              "col": 52
+              "col": 51
             },
             "file": 99
           }
@@ -621,11 +621,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 5,
-                        "col": 9
+                        "col": 10
                       },
                       "end": {
                         "line": 5,
-                        "col": 10
+                        "col": 11
                       },
                       "file": 99
                     }
@@ -690,11 +690,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 5,
-                        "col": 42
+                        "col": 43
                       },
                       "end": {
                         "line": 5,
-                        "col": 43
+                        "col": 44
                       },
                       "file": 99
                     }
@@ -777,7 +777,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 6,
-                          "col": 4
+                          "col": 5
                         },
                         "end": {
                           "line": 6,
@@ -797,7 +797,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 5,
-                    "col": 74
+                    "col": 75
                   },
                   "end": {
                     "line": 7,
@@ -941,7 +941,7 @@ No errors.
           "span": {
             "start": {
               "line": 5,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 7,
@@ -959,11 +959,11 @@ No errors.
               "decl": {
                 "start": {
                   "line": 2,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 2,
-                  "col": 52
+                  "col": 51
                 },
                 "file": 99
               },
@@ -996,11 +996,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 9,
-                  "col": 2
+                  "col": 11
                 },
                 "end": {
                   "line": 9,
-                  "col": 5
+                  "col": 14
                 },
                 "file": 99
               }
@@ -1058,11 +1058,11 @@ No errors.
           "span": {
             "start": {
               "line": 9,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 9,
-              "col": 37
+              "col": 43
             },
             "file": 99
           }
@@ -1076,11 +1076,11 @@ No errors.
               "decl": {
                 "start": {
                   "line": 3,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 3,
-                  "col": 52
+                  "col": 51
                 },
                 "file": 99
               },
@@ -1113,11 +1113,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 10,
-                  "col": 2
+                  "col": 11
                 },
                 "end": {
                   "line": 10,
-                  "col": 5
+                  "col": 14
                 },
                 "file": 99
               }
@@ -1175,11 +1175,11 @@ No errors.
           "span": {
             "start": {
               "line": 10,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 10,
-              "col": 37
+              "col": 43
             },
             "file": 99
           }
@@ -1193,7 +1193,7 @@ No errors.
               "decl": {
                 "start": {
                   "line": 5,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 7,
@@ -1268,11 +1268,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 12,
-                  "col": 2
+                  "col": 3
                 },
                 "end": {
                   "line": 12,
-                  "col": 5
+                  "col": 6
                 },
                 "file": 99
               }
@@ -1285,11 +1285,11 @@ No errors.
                 "decl": {
                   "start": {
                     "line": 2,
-                    "col": 2
+                    "col": 3
                   },
                   "end": {
                     "line": 2,
-                    "col": 52
+                    "col": 51
                   },
                   "file": 99
                 },
@@ -1322,11 +1322,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 12,
-                    "col": 6
+                    "col": 7
                   },
                   "end": {
                     "line": 12,
-                    "col": 9
+                    "col": 10
                   },
                   "file": 99
                 }
@@ -1338,11 +1338,11 @@ No errors.
                 "decl": {
                   "start": {
                     "line": 3,
-                    "col": 2
+                    "col": 3
                   },
                   "end": {
                     "line": 3,
-                    "col": 52
+                    "col": 51
                   },
                   "file": 99
                 },
@@ -1375,11 +1375,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 12,
-                    "col": 11
+                    "col": 12
                   },
                   "end": {
                     "line": 12,
-                    "col": 14
+                    "col": 15
                   },
                   "file": 99
                 }
@@ -1395,7 +1395,7 @@ No errors.
           "span": {
             "start": {
               "line": 12,
-              "col": 2
+              "col": 6
             },
             "end": {
               "line": 12,
@@ -1419,11 +1419,11 @@ No errors.
           "span": {
             "start": {
               "line": 13,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 13,
-              "col": 6
+              "col": 7
             },
             "file": 99
           }
@@ -1439,7 +1439,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 14,

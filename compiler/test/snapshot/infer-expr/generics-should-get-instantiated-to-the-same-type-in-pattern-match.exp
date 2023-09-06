@@ -7,9 +7,9 @@ SOURCE:
     Baz(T),
   }
 
-  match Foo::Bar(12) {
+  match Foo.Bar(12) {
     Bar(x) => {
-      let a = x + 1;
+      let a = x + 1
       int_to_string(a)
     },
 

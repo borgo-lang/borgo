@@ -1,456 +1,272 @@
-use io;
-use time;
-// use syscall; TODO too slow
-use io::fs;
-
-fn ReadDir(name: string) -> Result<[DirEntry]> {
-    EXT
-}
+use io
+use time
+// use syscall
+use io.fs
 
-fn Create(name: string) -> Result<&File> {
-    EXT
-}
 
-fn CreateTemp(dir: string, pattern: string) -> Result<&File> {
-    EXT
-}
+fn Chdir  (dir: string) -> error { EXT }
 
-fn NewFile(fd: uintptr, name: string) -> &File {
-    EXT
-}
+fn Chmod  (name: string, mode: FileMode) -> error { EXT }
 
-fn Open(name: string) -> Result<&File> {
-    EXT
-}
+fn Chown  (name: string, uid: int, gid: int) -> error { EXT }
 
-fn OpenFile(name: string, flag: int, perm: FileMode) -> Result<&File> {
-    EXT
-}
+fn Chtimes  (name: string, atime: time.Time, mtime: time.Time) -> error { EXT }
 
-fn Lstat(name: string) -> Result<FileInfo> {
-    EXT
-}
+fn Clearenv  () -> () { EXT }
 
-fn Stat(name: string) -> Result<FileInfo> {
-    EXT
-}
+fn Create  (name: string) -> Result<*File> { EXT }
 
-fn FindProcess(pid: int) -> Result<&Process> {
-    EXT
-}
+fn CreateTemp  (dir: string, pattern: string) -> Result<*File> { EXT }
 
-fn StartProcess(name: string, argv: [string], attr: &ProcAttr) -> Result<&Process> {
-    EXT
-}
+fn DirFS  (dir: string) -> fs.FS { EXT }
 
-fn Chdir(dir: string) -> error {
-    EXT
-}
+fn Environ  () -> [string] { EXT }
 
-fn Chmod(name: string, mode: FileMode) -> error {
-    EXT
-}
+fn Executable  () -> Result<string> { EXT }
 
-fn Chown(name: string, uid: int, gid: int) -> error {
-    EXT
-}
+fn Exit  (code: int) -> () { EXT }
 
-fn Chtimes(name: string, atime: time::Time, mtime: time::Time) -> error {
-    EXT
-}
+fn Expand  (s: string, mapping: fn (param0: string) -> string) -> string { EXT }
 
-fn Clearenv() -> () {
-    EXT
-}
+fn ExpandEnv  (s: string) -> string { EXT }
 
-fn DirFS(dir: string) -> fs::FS {
-    EXT
-}
+fn FindProcess  (pid: int) -> Result<*Process> { EXT }
 
-fn Environ() -> [string] {
-    EXT
-}
+fn Getegid  () -> int { EXT }
 
-fn Executable() -> Result<string> {
-    EXT
-}
+fn Getenv  (key: string) -> string { EXT }
 
-fn Exit(code: int) -> () {
-    EXT
-}
+fn Geteuid  () -> int { EXT }
 
-fn Expand(s: string, mapping: fn(param0: string) -> string) -> string {
-    EXT
-}
+fn Getgid  () -> int { EXT }
 
-fn ExpandEnv(s: string) -> string {
-    EXT
-}
+fn Getgroups  () -> Result<[int]> { EXT }
 
-fn Getegid() -> int {
-    EXT
-}
+fn Getpagesize  () -> int { EXT }
 
-fn Getenv(key: string) -> string {
-    EXT
-}
+fn Getpid  () -> int { EXT }
 
-fn Geteuid() -> int {
-    EXT
-}
+fn Getppid  () -> int { EXT }
 
-fn Getgid() -> int {
-    EXT
-}
+fn Getuid  () -> int { EXT }
 
-fn Getgroups() -> Result<[int]> {
-    EXT
-}
+fn Getwd  () -> Result<string> { EXT }
 
-fn Getpagesize() -> int {
-    EXT
-}
+fn Hostname  () -> Result<string> { EXT }
 
-fn Getpid() -> int {
-    EXT
-}
+fn IsExist  (err: error) -> bool { EXT }
 
-fn Getppid() -> int {
-    EXT
-}
+fn IsNotExist  (err: error) -> bool { EXT }
 
-fn Getuid() -> int {
-    EXT
-}
+fn IsPathSeparator  (c: uint8) -> bool { EXT }
 
-fn Getwd() -> Result<string> {
-    EXT
-}
+fn IsPermission  (err: error) -> bool { EXT }
 
-fn Hostname() -> Result<string> {
-    EXT
-}
+fn IsTimeout  (err: error) -> bool { EXT }
 
-fn IsExist(err: error) -> bool {
-    EXT
-}
+fn Lchown  (name: string, uid: int, gid: int) -> error { EXT }
 
-fn IsNotExist(err: error) -> bool {
-    EXT
-}
+fn Link  (oldname: string, newname: string) -> error { EXT }
 
-fn IsPathSeparator(c: uint8) -> bool {
-    EXT
-}
+fn LookupEnv  (key: string) -> Option<string> { EXT }
 
-fn IsPermission(err: error) -> bool {
-    EXT
-}
+fn Lstat  (name: string) -> Result<FileInfo> { EXT }
 
-fn IsTimeout(err: error) -> bool {
-    EXT
-}
+fn Mkdir  (name: string, perm: FileMode) -> error { EXT }
 
-fn Lchown(name: string, uid: int, gid: int) -> error {
-    EXT
-}
+fn MkdirAll  (path: string, perm: FileMode) -> error { EXT }
 
-fn Link(oldname: string, newname: string) -> error {
-    EXT
-}
+fn MkdirTemp  (dir: string, pattern: string) -> Result<string> { EXT }
 
-fn LookupEnv(key: string) -> Option<string> {
-    EXT
-}
+fn NewFile  (fd: uintptr, name: string) -> *File { EXT }
 
-fn Mkdir(name: string, perm: FileMode) -> error {
-    EXT
-}
+fn NewSyscallError  (syscall: string, err: error) -> error { EXT }
 
-fn MkdirAll(path: string, perm: FileMode) -> error {
-    EXT
-}
+fn Open  (name: string) -> Result<*File> { EXT }
 
-fn MkdirTemp(dir: string, pattern: string) -> Result<string> {
-    EXT
-}
+fn OpenFile  (name: string, flag: int, perm: FileMode) -> Result<*File> { EXT }
 
-fn NewSyscallError(syscall: string, err: error) -> error {
-    EXT
-}
+fn Pipe  () -> (*File, *File, error) { EXT }
 
-fn Pipe() -> (&File, &File, error) {
-    EXT
-}
+fn ReadDir  (name: string) -> Result<[DirEntry]> { EXT }
 
-fn ReadFile(name: string) -> Result<[byte]> {
-    EXT
-}
+fn ReadFile  (name: string) -> Result<[byte]> { EXT }
 
-fn Readlink(name: string) -> Result<string> {
-    EXT
-}
+fn Readlink  (name: string) -> Result<string> { EXT }
 
-fn Remove(name: string) -> error {
-    EXT
-}
+fn Remove  (name: string) -> error { EXT }
 
-fn RemoveAll(path: string) -> error {
-    EXT
-}
+fn RemoveAll  (path: string) -> error { EXT }
 
-fn Rename(oldpath: string, newpath: string) -> error {
-    EXT
-}
+fn Rename  (oldpath: string, newpath: string) -> error { EXT }
 
-fn SameFile(fi1: FileInfo, fi2: FileInfo) -> bool {
-    EXT
-}
+fn SameFile  (fi1: FileInfo, fi2: FileInfo) -> bool { EXT }
 
-fn Setenv(key: string, value: string) -> error {
-    EXT
-}
+fn Setenv  (key: string, value: string) -> error { EXT }
 
-fn Symlink(oldname: string, newname: string) -> error {
-    EXT
-}
+fn StartProcess  (name: string, argv: [string], attr: *ProcAttr) -> Result<*Process> { EXT }
 
-fn TempDir() -> string {
-    EXT
-}
+fn Stat  (name: string) -> Result<FileInfo> { EXT }
 
-fn Truncate(name: string, size: int64) -> error {
-    EXT
-}
+fn Symlink  (oldname: string, newname: string) -> error { EXT }
 
-fn Unsetenv(key: string) -> error {
-    EXT
-}
+fn TempDir  () -> string { EXT }
 
-fn UserCacheDir() -> Result<string> {
-    EXT
-}
+fn Truncate  (name: string, size: int64) -> error { EXT }
 
-fn UserConfigDir() -> Result<string> {
-    EXT
-}
+fn Unsetenv  (key: string) -> error { EXT }
 
-fn UserHomeDir() -> Result<string> {
-    EXT
-}
+fn UserCacheDir  () -> Result<string> { EXT }
 
-fn WriteFile(name: string, data: [byte], perm: FileMode) -> error {
-    EXT
-}
+fn UserConfigDir  () -> Result<string> { EXT }
 
-impl Process {
-    fn Kill(&self) -> error {
-        EXT
-    }
-
-    fn Release(&self) -> error {
-        EXT
-    }
-
-    fn Signal(&self, sig: Signal) -> error {
-        EXT
-    }
-
-    fn Wait(&self) -> Result<&ProcessState> {
-        EXT
-    }
-}
+fn UserHomeDir  () -> Result<string> { EXT }
 
-impl ProcessState {
-    fn ExitCode(&self) -> int {
-        EXT
-    }
-
-    fn Exited(&self) -> bool {
-        EXT
-    }
-
-    fn Pid(&self) -> int {
-        EXT
-    }
-
-    fn String(&self) -> string {
-        EXT
-    }
-
-    fn Success(&self) -> bool {
-        EXT
-    }
-
-    fn Sys(&self) -> any {
-        EXT
-    }
-
-    fn SysUsage(&self) -> any {
-        EXT
-    }
-
-    fn SystemTime(&self) -> time::Duration {
-        EXT
-    }
-
-    fn UserTime(&self) -> time::Duration {
-        EXT
-    }
-}
+fn WriteFile  (name: string, data: [byte], perm: FileMode) -> error { EXT }
 
-impl SyscallError {
-    fn Error(&self) -> string {
-        EXT
-    }
-
-    fn Timeout(&self) -> bool {
-        EXT
-    }
-
-    fn Unwrap(&self) -> error {
-        EXT
-    }
-}
+impl (self: File) {
+
+fn Chdir  () -> error { EXT }
+
+fn Chmod  (mode: FileMode) -> error { EXT }
+
+fn Chown  (uid: int, gid: int) -> error { EXT }
+
+fn Close  () -> error { EXT }
+
+fn Fd  () -> uintptr { EXT }
+
+fn Name  () -> string { EXT }
+
+fn Read  (b: [byte]) -> Result<int> { EXT }
+
+fn ReadAt  (b: [byte], off: int64) -> Result<int> { EXT }
+
+fn ReadDir  (n: int) -> Result<[DirEntry]> { EXT }
 
-impl File {
-    fn Chdir(&self) -> error {
-        EXT
-    }
+fn ReadFrom  (r: io.Reader) -> Result<int64> { EXT }
 
-    fn Chmod(&self, mode: FileMode) -> error {
-        EXT
-    }
+fn Readdir  (n: int) -> Result<[FileInfo]> { EXT }
 
-    fn Chown(&self, uid: int, gid: int) -> error {
-        EXT
-    }
+fn Readdirnames  (n: int) -> Result<[string]> { EXT }
 
-    fn Close(&self) -> error {
-        EXT
-    }
+fn Seek  (offset: int64, whence: int) -> Result<int64> { EXT }
 
-    fn Fd(&self) -> uintptr {
-        EXT
-    }
+fn SetDeadline  (t: time.Time) -> error { EXT }
 
-    fn Name(&self) -> string {
-        EXT
-    }
+fn SetReadDeadline  (t: time.Time) -> error { EXT }
 
-    fn Read(&self, b: [byte]) -> Result<int> {
-        EXT
-    }
+fn SetWriteDeadline  (t: time.Time) -> error { EXT }
 
-    fn ReadAt(&self, b: [byte], off: int64) -> Result<int> {
-        EXT
-    }
+fn Stat  () -> Result<FileInfo> { EXT }
 
-    fn ReadDir(&self, n: int) -> Result<[DirEntry]> {
-        EXT
-    }
+fn Sync  () -> error { EXT }
 
-    fn ReadFrom(&self, r: io::Reader) -> Result<int64> {
-        EXT
-    }
+fn SyscallConn  () -> Result<any> { EXT }
 
-    fn Readdir(&self, n: int) -> Result<[FileInfo]> {
-        EXT
-    }
+fn Truncate  (size: int64) -> error { EXT }
 
-    fn Readdirnames(&self, n: int) -> Result<[string]> {
-        EXT
-    }
+fn Write  (b: [byte]) -> Result<int> { EXT }
 
-    fn Seek(&self, offset: int64, whence: int) -> Result<int64> {
-        EXT
-    }
+fn WriteAt  (b: [byte], off: int64) -> Result<int> { EXT }
 
-    fn SetDeadline(&self, t: time::Time) -> error {
-        EXT
-    }
+fn WriteString  (s: string) -> Result<int> { EXT }
 
-    fn SetReadDeadline(&self, t: time::Time) -> error {
-        EXT
-    }
+}
+
+impl (self: LinkError) {
+
+fn Error  () -> string { EXT }
+
+fn Unwrap  () -> error { EXT }
+
+}
+
+impl (self: Process) {
+
+fn Kill  () -> error { EXT }
+
+fn Release  () -> error { EXT }
+
+fn Signal  (sig: Signal) -> error { EXT }
+
+fn Wait  () -> Result<*ProcessState> { EXT }
+
+}
+
+impl (self: ProcessState) {
+
+fn ExitCode  () -> int { EXT }
 
-    fn SetWriteDeadline(&self, t: time::Time) -> error {
-        EXT
-    }
+fn Exited  () -> bool { EXT }
 
-    fn Stat(&self) -> Result<FileInfo> {
-        EXT
-    }
+fn Pid  () -> int { EXT }
 
-    fn Sync(&self) -> error {
-        EXT
-    }
+fn String  () -> string { EXT }
 
-    // fn SyscallConn  (&self, ) -> Result<syscall::RawConn> { EXT }
+fn Success  () -> bool { EXT }
 
-    fn Truncate(&self, size: int64) -> error {
-        EXT
-    }
+fn Sys  () -> any { EXT }
 
-    fn Write(&self, b: [byte]) -> Result<int> {
-        EXT
-    }
+fn SysUsage  () -> any { EXT }
 
-    fn WriteAt(&self, b: [byte], off: int64) -> Result<int> {
-        EXT
-    }
+fn SystemTime  () -> time.Duration { EXT }
 
-    fn WriteString(&self, s: string) -> Result<int> {
-        EXT
-    }
+fn UserTime  () -> time.Duration { EXT }
+
 }
+
+impl (self: SyscallError) {
+
+fn Error  () -> string { EXT }
 
-impl LinkError {
-    fn Error(&self) -> string {
-        EXT
-    }
-
-    fn Unwrap(&self) -> error {
-        EXT
-    }
+fn Timeout  () -> bool { EXT }
+
+fn Unwrap  () -> error { EXT }
+
 }
+
+type DirEntry = fs.DirEntry
 
-type DirEntry = fs::DirEntry;
+type FileInfo = fs.FileInfo
 
-type FileInfo = fs::FileInfo;
+type FileMode = fs.FileMode
 
-type FileMode = fs::FileMode;
+type PathError = fs.PathError
 
-type PathError = fs::PathError;
+struct File{
 
-struct File {}
+}
+
+struct LinkError{
+  Op: string,
+  Old: string,
+  New: string,
+  Err: error
+}
 
-struct LinkError {
-    Op: string,
-    Old: string,
-    New: string,
-    Err: error,
+struct ProcAttr{
+  Dir: string,
+  Env: [string],
+  Files: [*File],
+  Sys: *any
 }
 
-struct ProcAttr {
-    Dir: string,
-    Env: [string],
-    Files: [&File],
-    // Sys: &syscall::SysProcAttr
+struct Process{
+  Pid: int
 }
+
+struct ProcessState{
 
-struct Process {
-    Pid: int,
 }
 
-struct ProcessState {}
+interface Signal {
 
-trait Signal {
-    fn String() -> string;
-    fn Signal() -> ();
+  fn String () -> string
+  fn Signal () -> ()
 }
 
-struct SyscallError {
-    Syscall: string,
-    Err: error,
+struct SyscallError{
+  Syscall: string,
+  Err: error
 }

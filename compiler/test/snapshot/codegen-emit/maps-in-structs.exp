@@ -6,19 +6,19 @@ struct Foo {
 }
 
 fn main() {
-  let mut bar = Map::new();
-  let foo = Foo { bar };
-  assert_eq(foo.bar.len(), 0);
+  let mut bar = Map.new()
+  let foo = Foo { bar }
+  assert_eq(foo.bar.len(), 0)
 
-  bar.insert("yo", 1);
-  assert_eq(foo.bar.len(), 1);
+  bar.insert("yo", 1)
+  assert_eq(foo.bar.len(), 1)
 
-  assert_eq(bar.get("yo"), Some(1));
-  assert_eq(bar.get("nope"), None);
-  assert_eq(bar["yo"], 1);
+  assert_eq(bar.get("yo"), Some(1))
+  assert_eq(bar.get("nope"), None)
+  assert_eq(bar["yo"], 1)
 
-  bar["yo"] = 3;
-  assert_eq(bar["yo"], 3);
+  bar["yo"] = 3
+  assert_eq(bar["yo"], 3)
 }
 
 OUTPUT:

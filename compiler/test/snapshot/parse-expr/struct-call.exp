@@ -1,0 +1,49 @@
+Struct call
+
+SOURCE:
+Foo { bar: 1 + 1, baz }
+
+OUTPUT:
+Ident("Foo", 3)#1,1, LCurly#1,5, Ident("bar", 3)#1,7, Colon#1,10, Int("1", 1)#1,12, Plus#1,14, Int("1", 1)#1,16, Comma#1,17, Ident("baz", 3)#1,19, RCurly#1,23, EOF#1,24
+---
+No errors.
+---
+{
+  "StructCall": {
+    "name": "Foo",
+    "fields": [
+      {
+        "name": "bar",
+        "value": {
+          "Binary": {
+            "op": "Add",
+            "left": {
+              "Literal": {
+                "lit": {
+                  "Int": 1
+                }
+              }
+            },
+            "right": {
+              "Literal": {
+                "lit": {
+                  "Int": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "baz",
+        "value": {
+          "Var": {
+            "value": "baz",
+            "generics_instantiated": []
+          }
+        }
+      }
+    ],
+    "rest": null
+  }
+}

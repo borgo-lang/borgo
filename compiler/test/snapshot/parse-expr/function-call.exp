@@ -1,0 +1,33 @@
+Function call
+
+SOURCE:
+foo() + 7
+
+OUTPUT:
+Ident("foo", 3)#1,1, LParen#1,4, RParen#1,5, Plus#1,7, Int("7", 1)#1,9, EOF#1,10
+---
+No errors.
+---
+{
+  "Binary": {
+    "op": "Add",
+    "left": {
+      "Call": {
+        "func": {
+          "Var": {
+            "value": "foo",
+            "generics_instantiated": []
+          }
+        },
+        "args": []
+      }
+    },
+    "right": {
+      "Literal": {
+        "lit": {
+          "Int": 7
+        }
+      }
+    }
+  }
+}

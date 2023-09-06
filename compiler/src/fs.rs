@@ -10,12 +10,15 @@ pub trait FileSystem {
 // Used by compiler, reads from files on filesystem
 pub struct LocalFS {
     base_path: PathBuf,
+    std_path: PathBuf,
 }
 
 impl LocalFS {
     pub fn new(base_path: &str) -> Self {
+        let std_path = find_std_path(&base_path);
         Self {
             base_path: Path::new(base_path).to_path_buf(),
+            std_path,
         }
     }
 }
@@ -26,7 +29,7 @@ impl FileSystem for LocalFS {
         let path = if folder == "*current*" {
             self.base_path.clone()
         } else {
-            self.base_path.join("std").join(folder)
+            self.std_path.join(folder)
         };
 
         let files = std::fs::read_dir(path).unwrap();
@@ -59,6 +62,21 @@ impl FileSystem for LocalFS {
 
         ret
     }
+}
+
+fn find_std_path(base: &str) -> PathBuf {
+    // Look for `std/` folder in current path
+    // Or in compiler base path
+    let path = Path::new(base).join("std");
+
+    if path.is_dir() {
+        return path;
+    }
+
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .join("std")
 }
 
 // Used by wasm lib, reads from sources passed in from js as json

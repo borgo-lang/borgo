@@ -2,17 +2,17 @@ Lists
 
 SOURCE:
 fn main() {
-  let mut x = [1, 2, 5 + 5];
+  let mut x = [1, 2, 5 + 5]
 
-  inspect(x);
-  assert_eq(x.len(), 3);
-  assert_eq(x[1], 2);
+  inspect(x)
+  assert_eq(x.len(), 3)
+  assert_eq(x[1], 2)
 
-  x[1] = 8;
-  assert_eq(x[1], 8);
+  x[1] = 8
+  assert_eq(x[1], 8)
 
-  x = x.append(9);
-  assert_eq(x[3], 9);
+  x = x.append(9)
+  assert_eq(x[3], 9)
 }
 
 OUTPUT:

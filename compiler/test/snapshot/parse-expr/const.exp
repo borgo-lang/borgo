@@ -1,0 +1,23 @@
+Const
+
+SOURCE:
+const foo = 120
+
+OUTPUT:
+Const#1,1, Ident("foo", 3)#1,7, Eq#1,11, Int("120", 3)#1,13, EOF#1,16
+---
+No errors.
+---
+{
+  "Const": {
+    "ident": "foo",
+    "expr": {
+      "Literal": {
+        "lit": {
+          "Int": 120
+        }
+      }
+    },
+    "ann": "Unknown"
+  }
+}

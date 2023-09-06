@@ -1,0 +1,31 @@
+Inline comments
+
+SOURCE:
+{
+    foo // one
+    bar // two
+}
+
+OUTPUT:
+LCurly#1,1, Ident("foo", 3)#2,5, Comment#2,9, Semicolon#2,15, Ident("bar", 3)#3,5, Comment#3,9, Semicolon#3,15, RCurly#4,1, EOF#4,2
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Var": {
+          "value": "foo",
+          "generics_instantiated": []
+        }
+      },
+      {
+        "Var": {
+          "value": "bar",
+          "generics_instantiated": []
+        }
+      }
+    ]
+  }
+}

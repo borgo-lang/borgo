@@ -1,0 +1,92 @@
+use io
+use net.textproto
+
+
+fn NewReader  (r: io.Reader, boundary: string) -> *Reader { EXT }
+
+fn NewWriter  (w: io.Writer) -> *Writer { EXT }
+
+impl (self: FileHeader) {
+
+fn Open  () -> Result<File> { EXT }
+
+}
+
+impl (self: Form) {
+
+fn RemoveAll  () -> error { EXT }
+
+}
+
+impl (self: Part) {
+
+fn Close  () -> error { EXT }
+
+fn FileName  () -> string { EXT }
+
+fn FormName  () -> string { EXT }
+
+fn Read  (d: [byte]) -> Result<int> { EXT }
+
+}
+
+impl (self: Reader) {
+
+fn NextPart  () -> Result<*Part> { EXT }
+
+fn NextRawPart  () -> Result<*Part> { EXT }
+
+fn ReadForm  (maxMemory: int64) -> Result<*Form> { EXT }
+
+}
+
+impl (self: Writer) {
+
+fn Boundary  () -> string { EXT }
+
+fn Close  () -> error { EXT }
+
+fn CreateFormField  (fieldname: string) -> Result<io.Writer> { EXT }
+
+fn CreateFormFile  (fieldname: string, filename: string) -> Result<io.Writer> { EXT }
+
+fn CreatePart  (header: textproto.MIMEHeader) -> Result<io.Writer> { EXT }
+
+fn FormDataContentType  () -> string { EXT }
+
+fn SetBoundary  (boundary: string) -> error { EXT }
+
+fn WriteField  (fieldname: string, value: string) -> error { EXT }
+
+}
+
+interface File {
+impl io.Reader
+impl io.ReaderAt
+impl io.Seeker
+impl io.Closer
+
+}
+
+struct FileHeader{
+  Filename: string,
+  Header: textproto.MIMEHeader,
+  Size: int64
+}
+
+struct Form{
+  Value: Map<string, [string]>,
+  File: Map<string, [*FileHeader]>
+}
+
+struct Part{
+  Header: textproto.MIMEHeader
+}
+
+struct Reader{
+
+}
+
+struct Writer{
+
+}

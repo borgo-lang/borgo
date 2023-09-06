@@ -1,0 +1,728 @@
+use io
+use time
+use os
+use context
+// use syscall
+use net.netip
+
+
+fn CIDRMask  (ones: int, bits: int) -> IPMask { EXT }
+
+fn Dial  (network: string, address: string) -> Result<Conn> { EXT }
+
+fn DialIP  (network: string, laddr: *IPAddr, raddr: *IPAddr) -> Result<*IPConn> { EXT }
+
+fn DialTCP  (network: string, laddr: *TCPAddr, raddr: *TCPAddr) -> Result<*TCPConn> { EXT }
+
+fn DialTimeout  (network: string, address: string, timeout: time.Duration) -> Result<Conn> { EXT }
+
+fn DialUDP  (network: string, laddr: *UDPAddr, raddr: *UDPAddr) -> Result<*UDPConn> { EXT }
+
+fn DialUnix  (network: string, laddr: *UnixAddr, raddr: *UnixAddr) -> Result<*UnixConn> { EXT }
+
+fn FileConn  (f: *os.File) -> Result<Conn> { EXT }
+
+fn FileListener  (f: *os.File) -> Result<Listener> { EXT }
+
+fn FilePacketConn  (f: *os.File) -> Result<PacketConn> { EXT }
+
+fn IPv4  (a: byte, b: byte, c: byte, d: byte) -> IP { EXT }
+
+fn IPv4Mask  (a: byte, b: byte, c: byte, d: byte) -> IPMask { EXT }
+
+fn InterfaceAddrs  () -> Result<[Addr]> { EXT }
+
+fn InterfaceByIndex  (index: int) -> Result<*Interface> { EXT }
+
+fn InterfaceByName  (name: string) -> Result<*Interface> { EXT }
+
+fn Interfaces  () -> Result<[Interface]> { EXT }
+
+fn JoinHostPort  (host: string, port: string) -> string { EXT }
+
+fn Listen  (network: string, address: string) -> Result<Listener> { EXT }
+
+fn ListenIP  (network: string, laddr: *IPAddr) -> Result<*IPConn> { EXT }
+
+fn ListenMulticastUDP  (network: string, ifi: *Interface, gaddr: *UDPAddr) -> Result<*UDPConn> { EXT }
+
+fn ListenPacket  (network: string, address: string) -> Result<PacketConn> { EXT }
+
+fn ListenTCP  (network: string, laddr: *TCPAddr) -> Result<*TCPListener> { EXT }
+
+fn ListenUDP  (network: string, laddr: *UDPAddr) -> Result<*UDPConn> { EXT }
+
+fn ListenUnix  (network: string, laddr: *UnixAddr) -> Result<*UnixListener> { EXT }
+
+fn ListenUnixgram  (network: string, laddr: *UnixAddr) -> Result<*UnixConn> { EXT }
+
+fn LookupAddr  (addr: string) -> Result<[string]> { EXT }
+
+fn LookupCNAME  (host: string) -> Result<string> { EXT }
+
+fn LookupHost  (host: string) -> Result<[string]> { EXT }
+
+fn LookupIP  (host: string) -> Result<[IP]> { EXT }
+
+fn LookupMX  (name: string) -> Result<[*MX]> { EXT }
+
+fn LookupNS  (name: string) -> Result<[*NS]> { EXT }
+
+fn LookupPort  (network: string, service: string) -> Result<int> { EXT }
+
+fn LookupSRV  (service: string, proto: string, name: string) -> (string, [*SRV], error) { EXT }
+
+fn LookupTXT  (name: string) -> Result<[string]> { EXT }
+
+fn ParseCIDR  (s: string) -> (IP, *IPNet, error) { EXT }
+
+fn ParseIP  (s: string) -> IP { EXT }
+
+fn ParseMAC  (s: string) -> Result<HardwareAddr> { EXT }
+
+fn Pipe  () -> (Conn, Conn) { EXT }
+
+fn ResolveIPAddr  (network: string, address: string) -> Result<*IPAddr> { EXT }
+
+fn ResolveTCPAddr  (network: string, address: string) -> Result<*TCPAddr> { EXT }
+
+fn ResolveUDPAddr  (network: string, address: string) -> Result<*UDPAddr> { EXT }
+
+fn ResolveUnixAddr  (network: string, address: string) -> Result<*UnixAddr> { EXT }
+
+fn SplitHostPort  (hostport: string) -> Result<string> { EXT }
+
+fn TCPAddrFromAddrPort  (addr: netip.AddrPort) -> *TCPAddr { EXT }
+
+fn UDPAddrFromAddrPort  (addr: netip.AddrPort) -> *UDPAddr { EXT }
+
+impl (self: AddrError) {
+
+fn Error  () -> string { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+}
+
+impl (self: Buffers) {
+
+fn Read  (p: [byte]) -> Result<int> { EXT }
+
+fn WriteTo  (w: io.Writer) -> Result<int64> { EXT }
+
+}
+
+impl (self: DNSConfigError) {
+
+fn Error  () -> string { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+fn Unwrap  () -> error { EXT }
+
+}
+
+impl (self: DNSError) {
+
+fn Error  () -> string { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+}
+
+impl (self: Dialer) {
+
+fn Dial  (network: string, address: string) -> Result<Conn> { EXT }
+
+fn DialContext  (ctx: context.Context, network: string, address: string) -> Result<Conn> { EXT }
+
+}
+
+impl (self: Flags) {
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: HardwareAddr) {
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: IP) {
+
+fn DefaultMask  () -> IPMask { EXT }
+
+fn Equal  (x: IP) -> bool { EXT }
+
+fn IsGlobalUnicast  () -> bool { EXT }
+
+fn IsInterfaceLocalMulticast  () -> bool { EXT }
+
+fn IsLinkLocalMulticast  () -> bool { EXT }
+
+fn IsLinkLocalUnicast  () -> bool { EXT }
+
+fn IsLoopback  () -> bool { EXT }
+
+fn IsMulticast  () -> bool { EXT }
+
+fn IsPrivate  () -> bool { EXT }
+
+fn IsUnspecified  () -> bool { EXT }
+
+fn MarshalText  () -> Result<[byte]> { EXT }
+
+fn Mask  (mask: IPMask) -> IP { EXT }
+
+fn String  () -> string { EXT }
+
+fn To16  () -> IP { EXT }
+
+fn To4  () -> IP { EXT }
+
+fn UnmarshalText  (text: [byte]) -> error { EXT }
+
+}
+
+impl (self: IPAddr) {
+
+fn Network  () -> string { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: IPConn) {
+
+fn Close  () -> error { EXT }
+
+fn File  () -> Result<*os.File> { EXT }
+
+fn LocalAddr  () -> Addr { EXT }
+
+fn Read  (b: [byte]) -> Result<int> { EXT }
+
+fn ReadFrom  (b: [byte]) -> (int, Addr, error) { EXT }
+
+fn ReadFromIP  (b: [byte]) -> (int, *IPAddr, error) { EXT }
+
+fn ReadMsgIP  (b: [byte], oob: [byte]) -> (int, *IPAddr, error) { EXT }
+
+fn RemoteAddr  () -> Addr { EXT }
+
+fn SetDeadline  (t: time.Time) -> error { EXT }
+
+fn SetReadBuffer  (bytes: int) -> error { EXT }
+
+fn SetReadDeadline  (t: time.Time) -> error { EXT }
+
+fn SetWriteBuffer  (bytes: int) -> error { EXT }
+
+fn SetWriteDeadline  (t: time.Time) -> error { EXT }
+
+fn SyscallConn  () -> Result<any> { EXT }
+
+fn Write  (b: [byte]) -> Result<int> { EXT }
+
+fn WriteMsgIP  (b: [byte], oob: [byte], addr: *IPAddr) -> Result<int> { EXT }
+
+fn WriteTo  (b: [byte], addr: Addr) -> Result<int> { EXT }
+
+fn WriteToIP  (b: [byte], addr: *IPAddr) -> Result<int> { EXT }
+
+}
+
+impl (self: IPMask) {
+
+fn Size  () -> int { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: IPNet) {
+
+fn Contains  (ip: IP) -> bool { EXT }
+
+fn Network  () -> string { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: Interface) {
+
+fn Addrs  () -> Result<[Addr]> { EXT }
+
+fn MulticastAddrs  () -> Result<[Addr]> { EXT }
+
+}
+
+impl (self: InvalidAddrError) {
+
+fn Error  () -> string { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+}
+
+impl (self: ListenConfig) {
+
+fn Listen  (ctx: context.Context, network: string, address: string) -> Result<Listener> { EXT }
+
+fn ListenPacket  (ctx: context.Context, network: string, address: string) -> Result<PacketConn> { EXT }
+
+}
+
+impl (self: OpError) {
+
+fn Error  () -> string { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+fn Unwrap  () -> error { EXT }
+
+}
+
+impl (self: ParseError) {
+
+fn Error  () -> string { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+}
+
+impl (self: Resolver) {
+
+fn LookupAddr  (ctx: context.Context, addr: string) -> Result<[string]> { EXT }
+
+fn LookupCNAME  (ctx: context.Context, host: string) -> Result<string> { EXT }
+
+fn LookupHost  (ctx: context.Context, host: string) -> Result<[string]> { EXT }
+
+fn LookupIP  (ctx: context.Context, network: string, host: string) -> Result<[IP]> { EXT }
+
+fn LookupIPAddr  (ctx: context.Context, host: string) -> Result<[IPAddr]> { EXT }
+
+fn LookupMX  (ctx: context.Context, name: string) -> Result<[*MX]> { EXT }
+
+fn LookupNS  (ctx: context.Context, name: string) -> Result<[*NS]> { EXT }
+
+fn LookupNetIP  (ctx: context.Context, network: string, host: string) -> Result<[netip.Addr]> { EXT }
+
+fn LookupPort  (ctx: context.Context, network: string, service: string) -> Result<int> { EXT }
+
+fn LookupSRV  (ctx: context.Context, service: string, proto: string, name: string) -> (string, [*SRV], error) { EXT }
+
+fn LookupTXT  (ctx: context.Context, name: string) -> Result<[string]> { EXT }
+
+}
+
+impl (self: TCPAddr) {
+
+fn AddrPort  () -> netip.AddrPort { EXT }
+
+fn Network  () -> string { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: TCPConn) {
+
+fn Close  () -> error { EXT }
+
+fn CloseRead  () -> error { EXT }
+
+fn CloseWrite  () -> error { EXT }
+
+fn File  () -> Result<*os.File> { EXT }
+
+fn LocalAddr  () -> Addr { EXT }
+
+fn Read  (b: [byte]) -> Result<int> { EXT }
+
+fn ReadFrom  (r: io.Reader) -> Result<int64> { EXT }
+
+fn RemoteAddr  () -> Addr { EXT }
+
+fn SetDeadline  (t: time.Time) -> error { EXT }
+
+fn SetKeepAlive  (keepalive: bool) -> error { EXT }
+
+fn SetKeepAlivePeriod  (d: time.Duration) -> error { EXT }
+
+fn SetLinger  (sec: int) -> error { EXT }
+
+fn SetNoDelay  (noDelay: bool) -> error { EXT }
+
+fn SetReadBuffer  (bytes: int) -> error { EXT }
+
+fn SetReadDeadline  (t: time.Time) -> error { EXT }
+
+fn SetWriteBuffer  (bytes: int) -> error { EXT }
+
+fn SetWriteDeadline  (t: time.Time) -> error { EXT }
+
+fn SyscallConn  () -> Result<any> { EXT }
+
+fn Write  (b: [byte]) -> Result<int> { EXT }
+
+}
+
+impl (self: TCPListener) {
+
+fn Accept  () -> Result<Conn> { EXT }
+
+fn AcceptTCP  () -> Result<*TCPConn> { EXT }
+
+fn Addr  () -> Addr { EXT }
+
+fn Close  () -> error { EXT }
+
+fn File  () -> Result<*os.File> { EXT }
+
+fn SetDeadline  (t: time.Time) -> error { EXT }
+
+fn SyscallConn  () -> Result<any> { EXT }
+
+}
+
+impl (self: UDPAddr) {
+
+fn AddrPort  () -> netip.AddrPort { EXT }
+
+fn Network  () -> string { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: UDPConn) {
+
+fn Close  () -> error { EXT }
+
+fn File  () -> Result<*os.File> { EXT }
+
+fn LocalAddr  () -> Addr { EXT }
+
+fn Read  (b: [byte]) -> Result<int> { EXT }
+
+fn ReadFrom  (b: [byte]) -> (int, Addr, error) { EXT }
+
+fn ReadFromUDP  (b: [byte]) -> (int, *UDPAddr, error) { EXT }
+
+fn ReadFromUDPAddrPort  (b: [byte]) -> (int, netip.AddrPort, error) { EXT }
+
+fn ReadMsgUDP  (b: [byte], oob: [byte]) -> (int, *UDPAddr, error) { EXT }
+
+fn ReadMsgUDPAddrPort  (b: [byte], oob: [byte]) -> (int, netip.AddrPort, error) { EXT }
+
+fn RemoteAddr  () -> Addr { EXT }
+
+fn SetDeadline  (t: time.Time) -> error { EXT }
+
+fn SetReadBuffer  (bytes: int) -> error { EXT }
+
+fn SetReadDeadline  (t: time.Time) -> error { EXT }
+
+fn SetWriteBuffer  (bytes: int) -> error { EXT }
+
+fn SetWriteDeadline  (t: time.Time) -> error { EXT }
+
+fn SyscallConn  () -> Result<any> { EXT }
+
+fn Write  (b: [byte]) -> Result<int> { EXT }
+
+fn WriteMsgUDP  (b: [byte], oob: [byte], addr: *UDPAddr) -> Result<int> { EXT }
+
+fn WriteMsgUDPAddrPort  (b: [byte], oob: [byte], addr: netip.AddrPort) -> Result<int> { EXT }
+
+fn WriteTo  (b: [byte], addr: Addr) -> Result<int> { EXT }
+
+fn WriteToUDP  (b: [byte], addr: *UDPAddr) -> Result<int> { EXT }
+
+fn WriteToUDPAddrPort  (b: [byte], addr: netip.AddrPort) -> Result<int> { EXT }
+
+}
+
+impl (self: UnixAddr) {
+
+fn Network  () -> string { EXT }
+
+fn String  () -> string { EXT }
+
+}
+
+impl (self: UnixConn) {
+
+fn Close  () -> error { EXT }
+
+fn CloseRead  () -> error { EXT }
+
+fn CloseWrite  () -> error { EXT }
+
+fn File  () -> Result<*os.File> { EXT }
+
+fn LocalAddr  () -> Addr { EXT }
+
+fn Read  (b: [byte]) -> Result<int> { EXT }
+
+fn ReadFrom  (b: [byte]) -> (int, Addr, error) { EXT }
+
+fn ReadFromUnix  (b: [byte]) -> (int, *UnixAddr, error) { EXT }
+
+fn ReadMsgUnix  (b: [byte], oob: [byte]) -> (int, *UnixAddr, error) { EXT }
+
+fn RemoteAddr  () -> Addr { EXT }
+
+fn SetDeadline  (t: time.Time) -> error { EXT }
+
+fn SetReadBuffer  (bytes: int) -> error { EXT }
+
+fn SetReadDeadline  (t: time.Time) -> error { EXT }
+
+fn SetWriteBuffer  (bytes: int) -> error { EXT }
+
+fn SetWriteDeadline  (t: time.Time) -> error { EXT }
+
+fn SyscallConn  () -> Result<any> { EXT }
+
+fn Write  (b: [byte]) -> Result<int> { EXT }
+
+fn WriteMsgUnix  (b: [byte], oob: [byte], addr: *UnixAddr) -> Result<int> { EXT }
+
+fn WriteTo  (b: [byte], addr: Addr) -> Result<int> { EXT }
+
+fn WriteToUnix  (b: [byte], addr: *UnixAddr) -> Result<int> { EXT }
+
+}
+
+impl (self: UnixListener) {
+
+fn Accept  () -> Result<Conn> { EXT }
+
+fn AcceptUnix  () -> Result<*UnixConn> { EXT }
+
+fn Addr  () -> Addr { EXT }
+
+fn Close  () -> error { EXT }
+
+fn File  () -> Result<*os.File> { EXT }
+
+fn SetDeadline  (t: time.Time) -> error { EXT }
+
+fn SetUnlinkOnClose  (unlink: bool) -> () { EXT }
+
+fn SyscallConn  () -> Result<any> { EXT }
+
+}
+
+impl (self: UnknownNetworkError) {
+
+fn Error  () -> string { EXT }
+
+fn Temporary  () -> bool { EXT }
+
+fn Timeout  () -> bool { EXT }
+
+}
+
+type Buffers = [[byte]]
+
+type HardwareAddr = [byte]
+
+type IP = [byte]
+
+type IPMask = [byte]
+
+struct Flags(uint)
+
+struct InvalidAddrError(string)
+
+struct UnknownNetworkError(string)
+
+interface Addr {
+
+  fn Network () -> string
+  fn String () -> string
+}
+
+struct AddrError{
+  Err: string,
+  Addr: string
+}
+
+interface Conn {
+
+  fn Read (b: [byte]) -> Result<int>
+  fn Write (b: [byte]) -> Result<int>
+  fn Close () -> error
+  fn LocalAddr () -> Addr
+  fn RemoteAddr () -> Addr
+  fn SetDeadline (t: time.Time) -> error
+  fn SetReadDeadline (t: time.Time) -> error
+  fn SetWriteDeadline (t: time.Time) -> error
+}
+
+struct DNSConfigError{
+  Err: error
+}
+
+struct DNSError{
+  Err: string,
+  Name: string,
+  Server: string,
+  IsTimeout: bool,
+  IsTemporary: bool,
+  IsNotFound: bool
+}
+
+struct Dialer{
+  Timeout: time.Duration,
+  Deadline: time.Time,
+  LocalAddr: Addr,
+  DualStack: bool,
+  FallbackDelay: time.Duration,
+  KeepAlive: time.Duration,
+  Resolver: *Resolver,
+  Cancel: Receiver<()>,
+  Control: fn (network: string, address: string, c: any) -> error
+}
+
+interface Error {
+impl error
+  fn Timeout () -> bool
+  fn Temporary () -> bool
+}
+
+struct IPAddr{
+  IP: IP,
+  Zone: string
+}
+
+struct IPConn{
+
+}
+
+struct IPNet{
+  IP: IP,
+  Mask: IPMask
+}
+
+struct Interface{
+  Index: int,
+  MTU: int,
+  Name: string,
+  HardwareAddr: HardwareAddr,
+  Flags: Flags
+}
+
+struct ListenConfig{
+  Control: fn (network: string, address: string, c: any) -> error,
+  KeepAlive: time.Duration
+}
+
+interface Listener {
+
+  fn Accept () -> Result<Conn>
+  fn Close () -> error
+  fn Addr () -> Addr
+}
+
+struct MX{
+  Host: string,
+  Pref: uint16
+}
+
+struct NS{
+  Host: string
+}
+
+struct OpError{
+  Op: string,
+  Net: string,
+  Source: Addr,
+  Addr: Addr,
+  Err: error
+}
+
+interface PacketConn {
+
+  fn ReadFrom (p: [byte]) -> (int, Addr, error)
+  fn WriteTo (p: [byte], addr: Addr) -> Result<int>
+  fn Close () -> error
+  fn LocalAddr () -> Addr
+  fn SetDeadline (t: time.Time) -> error
+  fn SetReadDeadline (t: time.Time) -> error
+  fn SetWriteDeadline (t: time.Time) -> error
+}
+
+struct ParseError{
+  Type: string,
+  Text: string
+}
+
+struct Resolver{
+  PreferGo: bool,
+  StrictErrors: bool,
+  Dial: fn (ctx: context.Context, network: string, address: string) -> Result<Conn>
+}
+
+struct SRV{
+  Target: string,
+  Port: uint16,
+  Priority: uint16,
+  Weight: uint16
+}
+
+struct TCPAddr{
+  IP: IP,
+  Port: int,
+  Zone: string
+}
+
+struct TCPConn{
+
+}
+
+struct TCPListener{
+
+}
+
+struct UDPAddr{
+  IP: IP,
+  Port: int,
+  Zone: string
+}
+
+struct UDPConn{
+
+}
+
+struct UnixAddr{
+  Name: string,
+  Net: string
+}
+
+struct UnixConn{
+
+}
+
+struct UnixListener{
+
+}

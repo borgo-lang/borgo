@@ -2,13 +2,13 @@ Primitive types are casted in struct call
 
 SOURCE:
 struct Foo {
-  bar: int
+  bar: int,
 }
 
 fn main() {
-  let x = 1;
-  let y = Foo { bar: x };
-  assert_eq(y.bar, 1);
+  let x = 1
+  let y = Foo { bar: x }
+  assert_eq(y.bar, 1)
 }
 
 OUTPUT:

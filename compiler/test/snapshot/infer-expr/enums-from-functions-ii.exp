@@ -5,18 +5,18 @@ SOURCE:
   enum Maybe<T> { Just(T), None }
 
   fn foo(b: int) -> Maybe<int> {
-    Maybe::None
+    Maybe.None
   }
 
-  foo(1) as Maybe<int>;
+  @ensure foo(1), Maybe<int>
 
   fn bar(b: int) -> Maybe<int> {
-    Maybe::Just(b)
+    Maybe.Just(b)
   }
 
-  match foo(2) as Maybe<int> {
-    Maybe::Just(x) => x,
-    Maybe::None => 3,
+  match @ensure foo(2), Maybe<int> {
+    Maybe.Just(x) => x,
+    Maybe.None => 3,
   }
 }
 
@@ -39,11 +39,11 @@ No errors.
                 "span": {
                   "start": {
                     "line": 2,
-                    "col": 13
+                    "col": 14
                   },
                   "end": {
                     "line": 2,
-                    "col": 14
+                    "col": 15
                   },
                   "file": 99
                 }
@@ -79,7 +79,7 @@ No errors.
           "span": {
             "start": {
               "line": 2,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 2,
@@ -104,11 +104,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 4,
-                        "col": 9
+                        "col": 10
                       },
                       "end": {
                         "line": 4,
-                        "col": 10
+                        "col": 11
                       },
                       "file": 99
                     }
@@ -159,11 +159,11 @@ No errors.
                 "stmts": [
                   {
                     "Var": {
-                      "value": "Maybe::None",
+                      "value": "Maybe.None",
                       "decl": {
                         "start": {
                           "line": 2,
-                          "col": 2
+                          "col": 3
                         },
                         "end": {
                           "line": 2,
@@ -195,7 +195,7 @@ No errors.
                       "span": {
                         "start": {
                           "line": 5,
-                          "col": 4
+                          "col": 11
                         },
                         "end": {
                           "line": 5,
@@ -222,7 +222,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 4,
-                    "col": 31
+                    "col": 32
                   },
                   "end": {
                     "line": 6,
@@ -292,7 +292,7 @@ No errors.
           "span": {
             "start": {
               "line": 4,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 6,
@@ -312,7 +312,7 @@ No errors.
                   "decl": {
                     "start": {
                       "line": 4,
-                      "col": 2
+                      "col": 3
                     },
                     "end": {
                       "line": 6,
@@ -350,11 +350,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 8,
-                      "col": 2
+                      "col": 11
                     },
                     "end": {
                       "line": 8,
-                      "col": 5
+                      "col": 14
                     },
                     "file": 99
                   }
@@ -375,11 +375,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 8,
-                        "col": 6
+                        "col": 15
                       },
                       "end": {
                         "line": 8,
-                        "col": 7
+                        "col": 16
                       },
                       "file": 99
                     }
@@ -402,11 +402,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 8,
-                  "col": 2
+                  "col": 14
                 },
                 "end": {
                   "line": 8,
-                  "col": 8
+                  "col": 16
                 },
                 "file": 99
               }
@@ -441,11 +441,11 @@ No errors.
           "span": {
             "start": {
               "line": 8,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 8,
-              "col": 22
+              "col": 28
             },
             "file": 99
           }
@@ -466,11 +466,11 @@ No errors.
                     "span": {
                       "start": {
                         "line": 10,
-                        "col": 9
+                        "col": 10
                       },
                       "end": {
                         "line": 10,
-                        "col": 10
+                        "col": 11
                       },
                       "file": 99
                     }
@@ -523,11 +523,11 @@ No errors.
                     "Call": {
                       "func": {
                         "Var": {
-                          "value": "Maybe::Just",
+                          "value": "Maybe.Just",
                           "decl": {
                             "start": {
                               "line": 2,
-                              "col": 2
+                              "col": 3
                             },
                             "end": {
                               "line": 2,
@@ -572,7 +572,7 @@ No errors.
                           "span": {
                             "start": {
                               "line": 11,
-                              "col": 4
+                              "col": 11
                             },
                             "end": {
                               "line": 11,
@@ -589,11 +589,11 @@ No errors.
                             "decl": {
                               "start": {
                                 "line": 10,
-                                "col": 9
+                                "col": 10
                               },
                               "end": {
                                 "line": 10,
-                                "col": 10
+                                "col": 11
                               },
                               "file": 99
                             },
@@ -634,11 +634,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 11,
-                          "col": 4
+                          "col": 15
                         },
                         "end": {
                           "line": 11,
-                          "col": 18
+                          "col": 17
                         },
                         "file": 99
                       }
@@ -661,7 +661,7 @@ No errors.
                 "span": {
                   "start": {
                     "line": 10,
-                    "col": 31
+                    "col": 32
                   },
                   "end": {
                     "line": 12,
@@ -731,7 +731,7 @@ No errors.
           "span": {
             "start": {
               "line": 10,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 12,
@@ -753,7 +753,7 @@ No errors.
                       "decl": {
                         "start": {
                           "line": 4,
-                          "col": 2
+                          "col": 3
                         },
                         "end": {
                           "line": 6,
@@ -791,11 +791,11 @@ No errors.
                       "span": {
                         "start": {
                           "line": 14,
-                          "col": 8
+                          "col": 17
                         },
                         "end": {
                           "line": 14,
-                          "col": 11
+                          "col": 20
                         },
                         "file": 99
                       }
@@ -816,11 +816,11 @@ No errors.
                         "span": {
                           "start": {
                             "line": 14,
-                            "col": 12
+                            "col": 21
                           },
                           "end": {
                             "line": 14,
-                            "col": 13
+                            "col": 22
                           },
                           "file": 99
                         }
@@ -843,11 +843,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 14,
-                      "col": 8
+                      "col": 20
                     },
                     "end": {
                       "line": 14,
-                      "col": 14
+                      "col": 22
                     },
                     "file": 99
                   }
@@ -882,11 +882,11 @@ No errors.
               "span": {
                 "start": {
                   "line": 14,
-                  "col": 8
+                  "col": 9
                 },
                 "end": {
                   "line": 14,
-                  "col": 28
+                  "col": 34
                 },
                 "file": 99
               }
@@ -896,7 +896,7 @@ No errors.
             {
               "pat": {
                 "Pat": {
-                  "ident": "Maybe::Just",
+                  "ident": "Maybe.Just",
                   "elems": [
                     {
                       "Type": {
@@ -933,11 +933,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 15,
-                      "col": 4
+                      "col": 5
                     },
                     "end": {
                       "line": 15,
-                      "col": 18
+                      "col": 10
                     },
                     "file": 99
                   }
@@ -981,7 +981,7 @@ No errors.
             {
               "pat": {
                 "Pat": {
-                  "ident": "Maybe::None",
+                  "ident": "Maybe.None",
                   "elems": [],
                   "ty": {
                     "Con": {
@@ -999,11 +999,11 @@ No errors.
                   "span": {
                     "start": {
                       "line": 16,
-                      "col": 4
+                      "col": 5
                     },
                     "end": {
                       "line": 16,
-                      "col": 15
+                      "col": 10
                     },
                     "file": 99
                   }
@@ -1044,7 +1044,7 @@ No errors.
           "span": {
             "start": {
               "line": 14,
-              "col": 2
+              "col": 3
             },
             "end": {
               "line": 17,
@@ -1064,7 +1064,7 @@ No errors.
     "span": {
       "start": {
         "line": 1,
-        "col": 0
+        "col": 1
       },
       "end": {
         "line": 18,

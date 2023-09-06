@@ -1,0 +1,37 @@
+Functions with dot
+
+SOURCE:
+fn Bar.baz() {}
+
+OUTPUT:
+Fn_#1,1, Ident("Bar", 3)#1,4, Dot#1,7, Ident("baz", 3)#1,8, LParen#1,11, RParen#1,12, LCurly#1,14, RCurly#1,15, EOF#1,16
+---
+No errors.
+---
+{
+  "Closure": {
+    "fun": {
+      "name": "Bar.baz",
+      "generics": [],
+      "args": [],
+      "ret": {
+        "Var": -1
+      },
+      "ann": {
+        "Con": {
+          "name": "Unit",
+          "args": []
+        }
+      },
+      "body": {
+        "Block": {
+          "stmts": []
+        }
+      },
+      "bounded_ty": {
+        "generics": []
+      }
+    },
+    "kind": "TopLevel"
+  }
+}

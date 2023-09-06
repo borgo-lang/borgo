@@ -1,0 +1,33 @@
+Struct call II
+
+SOURCE:
+pkg.Foo { bar: 1, ..x }
+
+OUTPUT:
+Ident("pkg", 3)#1,1, Dot#1,4, Ident("Foo", 3)#1,5, LCurly#1,9, Ident("bar", 3)#1,11, Colon#1,14, Int("1", 1)#1,16, Comma#1,17, Dot#1,19, Dot#1,20, Ident("x", 1)#1,21, RCurly#1,23, EOF#1,24
+---
+No errors.
+---
+{
+  "StructCall": {
+    "name": "pkg.Foo",
+    "fields": [
+      {
+        "name": "bar",
+        "value": {
+          "Literal": {
+            "lit": {
+              "Int": 1
+            }
+          }
+        }
+      }
+    ],
+    "rest": {
+      "Var": {
+        "value": "x",
+        "generics_instantiated": []
+      }
+    }
+  }
+}
