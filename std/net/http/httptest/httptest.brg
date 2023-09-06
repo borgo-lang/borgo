@@ -1,0 +1,64 @@
+use net.http
+use bytes
+// use crypto.x509
+use net
+use crypto.tls
+use io
+
+
+fn NewRecorder  () -> *ResponseRecorder { EXT }
+
+fn NewRequest  (method: string, target: string, body: io.Reader) -> *http.Request { EXT }
+
+fn NewServer  (handler: http.Handler) -> *Server { EXT }
+
+fn NewTLSServer  (handler: http.Handler) -> *Server { EXT }
+
+fn NewUnstartedServer  (handler: http.Handler) -> *Server { EXT }
+
+impl (self: ResponseRecorder) {
+
+fn Flush  () -> () { EXT }
+
+fn Header  () -> http.Header { EXT }
+
+fn Result  () -> *http.Response { EXT }
+
+fn Write  (buf: [byte]) -> Result<int> { EXT }
+
+fn WriteHeader  (code: int) -> () { EXT }
+
+fn WriteString  (str: string) -> Result<int> { EXT }
+
+}
+
+impl (self: Server) {
+
+fn Certificate  () -> *any { EXT }
+
+fn Client  () -> *http.Client { EXT }
+
+fn Close  () -> () { EXT }
+
+fn CloseClientConnections  () -> () { EXT }
+
+fn Start  () -> () { EXT }
+
+fn StartTLS  () -> () { EXT }
+
+}
+
+struct ResponseRecorder{
+  Code: int,
+  HeaderMap: http.Header,
+  Body: *bytes.Buffer,
+  Flushed: bool
+}
+
+struct Server{
+  URL: string,
+  Listener: net.Listener,
+  EnableHTTP2: bool,
+  TLS: *tls.Config,
+  Config: *http.Server
+}

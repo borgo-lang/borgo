@@ -36,6 +36,7 @@ var REWRITE_MODULES = map[string]string{
 	"fs":        "io.fs",
 	"url":       "net.url",
 	"netip":     "net.netip",
+	"http":      "net.http",
 	"textproto": "net.textproto",
 	"multipart": "mime.multipart",
 	"tls":       "crypto.tls",

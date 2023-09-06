@@ -993,6 +993,8 @@ Net http
 ```rust
 use fmt
 use net.http
+use net.http.httptest
+use io
 use sync
 
 struct Counter { m: sync.Mutex, count: int }
@@ -1008,9 +1010,15 @@ impl (c: *Counter) {
 
 fn main() {
     let c = Counter { m: zeroValue(), count: 0 }
-    http.Handle("/", &c)
-    // http.ListenAndServe(":3333", zeroValue())
-    fmt.Println("ok")
+
+    let ts = httptest.NewServer(&c)
+    defer ts.Close()
+
+    let res = http.Get(ts.URL).Unwrap()
+    let body = io.ReadAll(res.Body).Unwrap()
+    res.Body.Close()
+
+    fmt.Println(string(body))
 }
 ```
 

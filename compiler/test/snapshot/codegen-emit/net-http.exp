@@ -3,6 +3,8 @@ Net http
 SOURCE:
 use fmt
 use net.http
+use net.http.httptest
+use io
 use sync
 
 struct Counter { m: sync.Mutex, count: int }
@@ -18,20 +20,28 @@ impl (c: *Counter) {
 
 fn main() {
     let c = Counter { m: zeroValue(), count: 0 }
-    http.Handle("/", &c)
-    // http.ListenAndServe(":3333", zeroValue())
-    fmt.Println("ok")
+
+    let ts = httptest.NewServer(&c)
+    defer ts.Close()
+
+    let res = http.Get(ts.URL).Unwrap()
+    let body = io.ReadAll(res.Body).Unwrap()
+    res.Body.Close()
+
+    fmt.Println(string(body))
 }
 
 OUTPUT:
-ok
+<h1>count 1</h1>
 
 ---
 package main
 
 import (
 	"fmt"
+	"io"
 	http "net/http"
+	httptest "net/http/httptest"
 	"sync"
 )
 
@@ -55,7 +65,31 @@ func main() {
 		count: 0,
 	}
 
-	http.Handle("/", &c)
+	ts := httptest.NewServer(&c)
 
-	fmt.Println("ok")
+	defer ts.Close()
+
+	var3_result := func() Result[*http.Response, error] {
+		var1_check, var2_err := http.Get(ts.URL)
+		if var2_err != nil {
+			return make_Result_Err[*http.Response, error](var2_err)
+		}
+		return make_Result_Ok[*http.Response, error](var1_check)
+	}()
+
+	res := var3_result.Unwrap()
+
+	var6_result := func() Result[[]byte, error] {
+		var4_check, var5_err := io.ReadAll(res.Body)
+		if var5_err != nil {
+			return make_Result_Err[[]byte, error](var5_err)
+		}
+		return make_Result_Ok[[]byte, error](var4_check)
+	}()
+
+	body := var6_result.Unwrap()
+
+	res.Body.Close()
+
+	fmt.Println(string(body))
 }
