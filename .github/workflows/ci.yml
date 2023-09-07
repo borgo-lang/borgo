@@ -38,6 +38,9 @@ jobs:
           nix develop --command \
             just test-runner
 
+          nix develop --command \
+            just run-examples
+
       - name: Check snapshots haven't updated
         run: |
           if [[ `git status --porcelain` ]]; then
