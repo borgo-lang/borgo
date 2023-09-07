@@ -1,0 +1,48 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v3
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Set up Rust cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: borgo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build compiler
+        run: |
+          nix develop --command \
+            cargo build
+
+      - name: Run Test suite
+        run: |
+          nix develop --command \
+            just test-runner
+
+      - name: Check snapshots haven't updated
+        run: |
+          if [[ `git status --porcelain` ]]; then
+            echo "Some files have changed, forgot to update snapshots?"
+            git diff
+            exit 1
+          fi
+
