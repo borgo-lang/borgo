@@ -131,7 +131,7 @@ fn main() {
     loop {
         fmt.Println("Please input your guess.")
 
-        let text = reader.ReadString('\n').unwrap()
+        let text = reader.ReadString('\n').Unwrap()
         let text = strings.TrimSpace(text)
 
         let guess = match strconv.Atoi(text) {
