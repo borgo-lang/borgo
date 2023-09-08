@@ -2,6 +2,10 @@
 
 ![Borgo sits between Go and Rust](https://raw.githubusercontent.com/borgo-lang/borgo-lang.github.io/main/borgo.jpg)
 
+---
+
+![build](https://github.com/borgo-lang/borgo/actions/workflows/ci.yml/badge.svg)
+
 I want a language for writing applications that is more expressive than Go but
 less complex than Rust.
 
@@ -14,7 +18,7 @@ existing Go packages.
 
 Borgo syntax is similar to Rust, with optional semi-colons.
 
-## Tutorial
+# Tutorial
 
 Check out the **[online playground](https://borgo-lang.github.io/)** for a tour
 of the language.
@@ -25,9 +29,9 @@ You can also take a look at test files for working Borgo code:
 - [infer-expr.md](compiler/test/infer-expr.md)
 - [infer-file.md](compiler/test/infer-file.md)
 
-## Features
+# Features
 
-**Algebraic data types and pattern matching**
+## Algebraic data types and pattern matching
 
 ```rust
 use fmt
@@ -45,7 +49,9 @@ let msg = match state {
 }
 ```
 
-**`Option<T>` instad of `nil`**
+---
+
+## `Option<T>` instad of `nil`
 
 ```rust
 // import packages from Go stdlib
@@ -60,7 +66,9 @@ match key {
 }
 ```
 
-**`Result<T, E>` instad of multiple return values**
+---
+
+## `Result<T, E>` instad of multiple return values
 
 ```rust
 use fmt
@@ -76,7 +84,9 @@ fn makeRequest() -> Result<int, error> {
 }
 ```
 
-**Error handling with `?` operator**
+---
+
+## Error handling with `?` operator
 
 ```rust
 use fmt
@@ -102,6 +112,8 @@ fn copyFile(src: string, dst: string) -> Result<(), error> {
     Ok(())
 }
 ```
+
+---
 
 ## Guessing game example
 
