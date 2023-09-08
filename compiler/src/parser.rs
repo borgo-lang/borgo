@@ -2,8 +2,8 @@ use crate::{
     ast::{
         Arm, Binding, Constructor, EnumDefinition, EnumFieldDef, Expr, FileId, Function,
         FunctionKind, Generic, InterfaceSuperTrait, LineColumn, Literal, Loop, LoopFlow,
-        NewtypeDefinition, Operator, Pat, PkgImport, Span, StructDefinition, StructField,
-        StructFieldDef, StructFieldPat, TypeAliasDef, TypeAst, UnOp,
+        NewtypeDefinition, Operator, Pat, PkgImport, SelectArm, SelectArmPat, Span,
+        StructDefinition, StructField, StructFieldDef, StructFieldPat, TypeAliasDef, TypeAst, UnOp,
     },
     lexer::{Lexer, Pos, Token, TokenKind, TokenKind::EOF},
     type_::Type,
@@ -141,8 +141,6 @@ impl Parser {
     }
 
     pub fn parse_expr(&mut self) -> Expr {
-        // self.expr_rec(
-        // EOF,
         self.expr_bp(
             0,
             Restrictions {
@@ -152,8 +150,6 @@ impl Parser {
     }
 
     pub fn parse_expr_no_struct(&mut self) -> Expr {
-        // self.expr_rec(
-        // EOF,
         self.expr_bp(
             0,
             Restrictions {
@@ -784,6 +780,7 @@ impl Parser {
             TokenKind::Fn_ => self.expr_fn(FunctionKind::Inline),
             TokenKind::For | TokenKind::While | TokenKind::Loop => self.stmt_loop(),
             TokenKind::Break | TokenKind::Continue => self.stmt_loop_flow(),
+            TokenKind::Select => self.stmt_select(),
             TokenKind::Support => self.stmt_support(),
             _ => self.stmt_assign(),
         };
@@ -984,6 +981,57 @@ impl Parser {
         };
 
         Expr::Raw { text }
+    }
+
+    fn stmt_select(&mut self) -> Expr {
+        assert!(self.tok.kind == TokenKind::Select);
+
+        // consume 'select'
+        let start = self.next();
+
+        let mut arms = vec![];
+
+        self.expect(TokenKind::LCurly);
+
+        while self.is_not(TokenKind::RCurly) {
+            let pat = match self.tok.kind {
+                TokenKind::Let => {
+                    //  'let' x = ch.Recv()
+                    let stmt = self.stmt_let();
+
+                    match stmt {
+                        Expr::Let { binding, value, .. } => SelectArmPat::Recv(binding, *value),
+                        _ => unreachable!(),
+                    }
+                }
+
+                TokenKind::Ident if self.tok.text == "_" => {
+                    //  Wildcard
+                    self.next();
+                    SelectArmPat::Wildcard
+                }
+
+                _ => {
+                    //  ch.Send()
+                    let expr = self.parse_expr_no_struct();
+                    SelectArmPat::Send(expr)
+                }
+            };
+
+            self.expect(TokenKind::FatArrow);
+
+            let expr = self.parse_expr();
+            arms.push(SelectArm { pat, expr });
+
+            self.expect_semi_lenient();
+        }
+
+        self.expect(TokenKind::RCurly);
+
+        Expr::Select {
+            arms,
+            span: self.make_span(start),
+        }
     }
 
     fn expr_debug(&mut self) -> Expr {

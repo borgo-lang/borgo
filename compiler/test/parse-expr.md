@@ -650,3 +650,22 @@ Functions with dot
 ```rust
 fn Bar.baz() {}
 ```
+
+Select statements
+
+> parse('expr')
+
+```rust
+{
+    select {
+        let x = foo.Recv() => {
+        }
+
+        bar.Send() => {
+        }
+
+        _ => {
+        }
+    }
+}
+```

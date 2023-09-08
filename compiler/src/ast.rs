@@ -543,8 +543,7 @@ pub enum Expr {
         span: Span,
     },
     Select {
-        arms: Vec<Arm>,
-        ty: Type, // TODO remove this
+        arms: Vec<SelectArm>,
         span: Span,
     },
     Defer {
@@ -773,7 +772,7 @@ impl Expr {
             Self::Const { ty, .. } => ty,
             Self::Debug { ty, .. } => ty,
             Self::Spawn { ty, .. } => ty,
-            Self::Select { ty, .. } => ty,
+            Self::Select { .. } => Type::discard(),
             Self::Defer { ty, .. } => ty,
             Self::Reference { ty, .. } => ty,
             Self::Index { ty, .. } => ty,
@@ -819,7 +818,7 @@ impl Expr {
             Self::Const { ref mut ty, .. } => *ty = new_ty,
             Self::Debug { ref mut ty, .. } => *ty = new_ty,
             Self::Spawn { ref mut ty, .. } => *ty = new_ty,
-            Self::Select { ref mut ty, .. } => *ty = new_ty,
+            Self::Select { .. } => (),
             Self::Defer { ref mut ty, .. } => *ty = new_ty,
             Self::Reference { ref mut ty, .. } => *ty = new_ty,
             Self::Index { ref mut ty, .. } => *ty = new_ty,
@@ -1028,4 +1027,17 @@ pub struct InterfaceSuperTrait {
     pub ann: TypeAst,
     pub span: Span,
     pub ty: Type,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SelectArm {
+    pub pat: SelectArmPat,
+    pub expr: Expr,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum SelectArmPat {
+    Recv(Binding, Expr),
+    Send(Expr),
+    Wildcard,
 }

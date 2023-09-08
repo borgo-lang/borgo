@@ -744,3 +744,21 @@ fn main() {
     foo(bar())
 }
 ```
+
+Well formed select
+
+> infer("fn () -> ()")
+
+```rust
+fn foo(tx: Sender<string>, rx: Receiver<int>) {
+    select {
+        let bar = rx.Recv() => {
+            @ensure bar, int
+        }
+
+        tx.Send("hi") => ()
+    }
+}
+
+fn main() {}
+```

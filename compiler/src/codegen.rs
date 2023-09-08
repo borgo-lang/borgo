@@ -4,7 +4,7 @@ use crate::{
     ast::{
         Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, File, FileId,
         Function, FunctionKind, Generic, InterfaceSuperTrait, Literal, Loop, LoopFlow, Operator,
-        Pat, Span, StructDefinition, StructField, UnOp,
+        Pat, SelectArm, SelectArmPat, Span, StructDefinition, StructField, UnOp,
     },
     global_state::Module,
     infer,
@@ -375,7 +375,7 @@ impl Codegen {
             Expr::CheckType { .. } => EmitResult::empty(),
             Expr::Paren { expr, .. } => self.emit_paren(expr),
             Expr::Spawn { expr, .. } => self.emit_spawn(expr),
-            Expr::Select { arms: _, .. } => todo!(),
+            Expr::Select { arms, .. } => self.emit_select(arms),
             Expr::Defer { expr, .. } => self.emit_defer(expr),
             Expr::Reference { expr, .. } => self.emit_reference(expr),
             Expr::Index { expr, index, .. } => self.emit_index(expr, index),
@@ -1510,6 +1510,71 @@ if {is_matching} != 2 {{
         }
     }
 
+    fn emit_select(&mut self, arms: &[SelectArm]) -> EmitResult {
+        let mut out = emitter();
+        let mut inner = emitter();
+
+        for a in arms {
+            match &a.pat {
+                SelectArmPat::Recv(binding, expr) => match binding.pat {
+                    Pat::Type { ref ident, .. } => {
+                        self.scope.add_binding(ident.clone(), ident.clone());
+
+                        let new_expr = self.emit_select_case(&expr, &mut out);
+                        inner.emit(format!("case {ident} := {new_expr}:",));
+                    }
+
+                    _ => unreachable!(),
+                },
+
+                SelectArmPat::Send(expr) => {
+                    let new_expr = self.emit_select_case(&expr, &mut out);
+                    inner.emit(format!("case {new_expr}:",));
+                }
+
+                SelectArmPat::Wildcard => {
+                    inner.emit("default:".to_string());
+                }
+            }
+
+            let body = self.emit_expr(Ctx::Discard.to_mode(), &ensure_wrapped_in_block(&a.expr));
+            inner.emit(body.output);
+        }
+
+        out.emit("select {".to_string());
+        out.emit(inner.render());
+        out.emit("}".to_string());
+
+        out.no_value()
+    }
+
+    // Unwrap ch.Recv() or ch.Send(x)
+    // and emit corresponding <- ch or ch <- x
+    fn emit_select_case(&mut self, expr: &Expr, out: &mut Emitter) -> String {
+        match expr {
+            Expr::Call { func, args, .. } => match **func {
+                Expr::FieldAccess {
+                    ref field,
+                    expr: ref method_receiver,
+                    ..
+                } => {
+                    let new_expr = self.emit_local(&method_receiver, out);
+
+                    if field == "Recv" {
+                        format!("<- {new_expr}")
+                    } else {
+                        let new_arg = self.emit_local(&args[0], out);
+                        format!("{new_expr} <- {new_arg}")
+                    }
+                }
+
+                _ => unreachable!(),
+            },
+
+            _ => unreachable!(),
+        }
+    }
+
     fn create_make_function(&mut self, def: &EnumDefinition) -> String {
         let mut out = emitter();
 
@@ -2037,7 +2102,7 @@ func {name} {generic_params} ({params}) {ret} {{
                 format!("func ({args}) {ret}")
             }
 
-            Type::Var(_) => format!("TO_TYPE_FAILED"),
+            Type::Var(_) => format!("any"),
             // Type::Var(_) => panic!("unexpected Type::Var in to_type"),
         }
     }

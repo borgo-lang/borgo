@@ -1212,3 +1212,36 @@ fn main() {
     fmt.Println(2 * time.Second)
 }
 ```
+
+Select statement
+
+```rust
+use fmt
+
+fn main() {
+    let (tx, rx) = Channel.new()
+
+    spawn (|| {
+        tx.Send(1)
+    })()
+
+    select {
+        let foo = rx.Recv() => {
+            fmt.Println("foo", foo)
+        }
+    }
+
+    spawn (|| {
+        let bar = rx.Recv()
+        fmt.Println("bar", bar)
+    })()
+
+    select {
+        tx.Send(5) => fmt.Println("sending")
+    }
+
+    select {
+        _ => fmt.Println("default")
+    }
+}
+```

@@ -138,6 +138,7 @@ pub enum TokenKind {
     Loop,
     Break,
     Continue,
+    Select,
 
     Support, // @ensure, @rawgo
     Error,
@@ -174,6 +175,7 @@ fn get_keyword(s: &str) -> Option<TokenKind> {
         "loop" => TokenKind::Loop,
         "break" => TokenKind::Break,
         "continue" => TokenKind::Continue,
+        "select" => TokenKind::Select,
         _ => TokenKind::Error,
     };
 

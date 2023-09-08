@@ -1,0 +1,698 @@
+Well formed select
+
+SOURCE:
+fn foo(tx: Sender<string>, rx: Receiver<int>) {
+    select {
+        let bar = rx.Recv() => {
+            @ensure bar, int
+        }
+
+        tx.Send("hi") => ()
+    }
+}
+
+fn main() {}
+
+OUTPUT:
+fn () -> ()
+---
+No errors.
+---
+[
+  {
+    "Closure": {
+      "fun": {
+        "name": "foo",
+        "generics": [],
+        "args": [
+          {
+            "pat": {
+              "Type": {
+                "ident": "tx",
+                "is_mut": false,
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 8
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 10
+                  },
+                  "file": 99
+                }
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Sender",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "string",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "ty": {
+              "Con": {
+                "id": "Sender",
+                "args": [
+                  {
+                    "Con": {
+                      "id": "string",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "pat": {
+              "Type": {
+                "ident": "rx",
+                "is_mut": false,
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 1,
+                    "col": 28
+                  },
+                  "end": {
+                    "line": 1,
+                    "col": 30
+                  },
+                  "file": 99
+                }
+              }
+            },
+            "ann": {
+              "Con": {
+                "name": "Receiver",
+                "args": [
+                  {
+                    "Con": {
+                      "name": "int",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            "ty": {
+              "Con": {
+                "id": "Receiver",
+                "args": [
+                  {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [
+              {
+                "Select": {
+                  "arms": [
+                    {
+                      "pat": {
+                        "Recv": [
+                          {
+                            "pat": {
+                              "Type": {
+                                "ident": "bar",
+                                "is_mut": false,
+                                "ann": "Unknown",
+                                "span": {
+                                  "start": {
+                                    "line": 3,
+                                    "col": 13
+                                  },
+                                  "end": {
+                                    "line": 3,
+                                    "col": 16
+                                  },
+                                  "file": 99
+                                }
+                              }
+                            },
+                            "ann": "Unknown",
+                            "ty": {
+                              "Var": 99
+                            }
+                          },
+                          {
+                            "Call": {
+                              "func": {
+                                "FieldAccess": {
+                                  "expr": {
+                                    "Var": {
+                                      "value": "rx",
+                                      "decl": {
+                                        "start": {
+                                          "line": 1,
+                                          "col": 28
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "col": 30
+                                        },
+                                        "file": 99
+                                      },
+                                      "generics_instantiated": [],
+                                      "ty": {
+                                        "Con": {
+                                          "id": "Receiver",
+                                          "args": [
+                                            {
+                                              "Con": {
+                                                "id": "int",
+                                                "args": []
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "span": {
+                                        "start": {
+                                          "line": 3,
+                                          "col": 19
+                                        },
+                                        "end": {
+                                          "line": 3,
+                                          "col": 21
+                                        },
+                                        "file": 99
+                                      }
+                                    }
+                                  },
+                                  "field": "Recv",
+                                  "ty": {
+                                    "Fun": {
+                                      "args": [],
+                                      "bounds": [],
+                                      "ret": {
+                                        "Con": {
+                                          "id": "int",
+                                          "args": []
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 3,
+                                      "col": 22
+                                    },
+                                    "end": {
+                                      "line": 3,
+                                      "col": 26
+                                    },
+                                    "file": 99
+                                  }
+                                }
+                              },
+                              "args": [],
+                              "ty": {
+                                "Con": {
+                                  "id": "int",
+                                  "args": []
+                                }
+                              },
+                              "span": {
+                                "start": {
+                                  "line": 3,
+                                  "col": 26
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "col": 27
+                                },
+                                "file": 99
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "expr": {
+                        "Block": {
+                          "stmts": [
+                            {
+                              "CheckType": {
+                                "expr": {
+                                  "Var": {
+                                    "value": "bar",
+                                    "decl": {
+                                      "start": {
+                                        "line": 3,
+                                        "col": 13
+                                      },
+                                      "end": {
+                                        "line": 3,
+                                        "col": 16
+                                      },
+                                      "file": 99
+                                    },
+                                    "generics_instantiated": [],
+                                    "ty": {
+                                      "Var": -333
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 4,
+                                        "col": 21
+                                      },
+                                      "end": {
+                                        "line": 4,
+                                        "col": 24
+                                      },
+                                      "file": 99
+                                    }
+                                  }
+                                },
+                                "ann": {
+                                  "Con": {
+                                    "name": "int",
+                                    "args": []
+                                  }
+                                },
+                                "ty": {
+                                  "Con": {
+                                    "id": "int",
+                                    "args": []
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 4,
+                                    "col": 13
+                                  },
+                                  "end": {
+                                    "line": 4,
+                                    "col": 29
+                                  },
+                                  "file": 99
+                                }
+                              }
+                            }
+                          ],
+                          "ty": {
+                            "Con": {
+                              "id": "int",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 3,
+                              "col": 32
+                            },
+                            "end": {
+                              "line": 5,
+                              "col": 9
+                            },
+                            "file": 99
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "pat": {
+                        "Send": {
+                          "Call": {
+                            "func": {
+                              "FieldAccess": {
+                                "expr": {
+                                  "Var": {
+                                    "value": "tx",
+                                    "decl": {
+                                      "start": {
+                                        "line": 1,
+                                        "col": 8
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "col": 10
+                                      },
+                                      "file": 99
+                                    },
+                                    "generics_instantiated": [],
+                                    "ty": {
+                                      "Con": {
+                                        "id": "Sender",
+                                        "args": [
+                                          {
+                                            "Con": {
+                                              "id": "string",
+                                              "args": []
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "span": {
+                                      "start": {
+                                        "line": 7,
+                                        "col": 9
+                                      },
+                                      "end": {
+                                        "line": 7,
+                                        "col": 11
+                                      },
+                                      "file": 99
+                                    }
+                                  }
+                                },
+                                "field": "Send",
+                                "ty": {
+                                  "Fun": {
+                                    "args": [
+                                      {
+                                        "Con": {
+                                          "id": "string",
+                                          "args": []
+                                        }
+                                      }
+                                    ],
+                                    "bounds": [],
+                                    "ret": {
+                                      "Con": {
+                                        "id": "Unit",
+                                        "args": []
+                                      }
+                                    }
+                                  }
+                                },
+                                "span": {
+                                  "start": {
+                                    "line": 7,
+                                    "col": 12
+                                  },
+                                  "end": {
+                                    "line": 7,
+                                    "col": 16
+                                  },
+                                  "file": 99
+                                }
+                              }
+                            },
+                            "args": [
+                              {
+                                "Literal": {
+                                  "lit": {
+                                    "String": "hi"
+                                  },
+                                  "ty": {
+                                    "Con": {
+                                      "id": "string",
+                                      "args": []
+                                    }
+                                  },
+                                  "span": {
+                                    "start": {
+                                      "line": 7,
+                                      "col": 17
+                                    },
+                                    "end": {
+                                      "line": 7,
+                                      "col": 21
+                                    },
+                                    "file": 99
+                                  }
+                                }
+                              }
+                            ],
+                            "ty": {
+                              "Con": {
+                                "id": "Unit",
+                                "args": []
+                              }
+                            },
+                            "span": {
+                              "start": {
+                                "line": 7,
+                                "col": 16
+                              },
+                              "end": {
+                                "line": 7,
+                                "col": 21
+                              },
+                              "file": 99
+                            }
+                          }
+                        }
+                      },
+                      "expr": {
+                        "Unit": {
+                          "ty": {
+                            "Con": {
+                              "id": "Unit",
+                              "args": []
+                            }
+                          },
+                          "span": {
+                            "start": {
+                              "line": 7,
+                              "col": 26
+                            },
+                            "end": {
+                              "line": 7,
+                              "col": 27
+                            },
+                            "file": 99
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": {
+                      "line": 2,
+                      "col": 5
+                    },
+                    "end": {
+                      "line": 8,
+                      "col": 5
+                    },
+                    "file": 99
+                  }
+                }
+              }
+            ],
+            "ty": {
+              "Var": -333
+            },
+            "span": {
+              "start": {
+                "line": 1,
+                "col": 47
+              },
+              "end": {
+                "line": 9,
+                "col": 1
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [
+                {
+                  "Con": {
+                    "id": "Sender",
+                    "args": [
+                      {
+                        "Con": {
+                          "id": "string",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Con": {
+                    "id": "Receiver",
+                    "args": [
+                      {
+                        "Con": {
+                          "id": "int",
+                          "args": []
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [
+            {
+              "Con": {
+                "id": "Sender",
+                "args": [
+                  {
+                    "Con": {
+                      "id": "string",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Con": {
+                "id": "Receiver",
+                "args": [
+                  {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 1,
+          "col": 1
+        },
+        "end": {
+          "line": 9,
+          "col": 1
+        },
+        "file": 99
+      }
+    }
+  },
+  {
+    "Closure": {
+      "fun": {
+        "name": "main",
+        "generics": [],
+        "args": [],
+        "ret": {
+          "Con": {
+            "id": "Unit",
+            "args": []
+          }
+        },
+        "ann": {
+          "Con": {
+            "name": "Unit",
+            "args": []
+          }
+        },
+        "body": {
+          "Block": {
+            "stmts": [],
+            "ty": {
+              "Con": {
+                "id": "Unit",
+                "args": []
+              }
+            },
+            "span": {
+              "start": {
+                "line": 11,
+                "col": 11
+              },
+              "end": {
+                "line": 11,
+                "col": 12
+              },
+              "file": 99
+            }
+          }
+        },
+        "bounded_ty": {
+          "generics": [],
+          "ty": {
+            "Fun": {
+              "args": [],
+              "bounds": [],
+              "ret": {
+                "Con": {
+                  "id": "Unit",
+                  "args": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "TopLevel",
+      "ty": {
+        "Fun": {
+          "args": [],
+          "bounds": [],
+          "ret": {
+            "Con": {
+              "id": "Unit",
+              "args": []
+            }
+          }
+        }
+      },
+      "span": {
+        "start": {
+          "line": 11,
+          "col": 1
+        },
+        "end": {
+          "line": 11,
+          "col": 12
+        },
+        "file": 99
+      }
+    }
+  }
+]

@@ -1,7 +1,8 @@
 use crate::ast::{
     Arm, Binding, Constructor, EnumDefinition, EnumFieldDef, Expr, File, Function, FunctionKind,
-    Generic, InterfaceSuperTrait, Literal, Loop, NewtypeDefinition, Operator, Pat, PkgImport, Span,
-    StructDefinition, StructField, StructFieldDef, StructFieldPat, TypeAliasDef, TypeAst, UnOp,
+    Generic, InterfaceSuperTrait, Literal, Loop, NewtypeDefinition, Operator, Pat, PkgImport,
+    SelectArm, SelectArmPat, Span, StructDefinition, StructField, StructFieldDef, StructFieldPat,
+    TypeAliasDef, TypeAst, UnOp,
 };
 use crate::error::{ArityError, Error, UnificationError};
 use crate::exhaustive;
@@ -231,9 +232,6 @@ impl Infer {
     }
     pub fn type_any(&self) -> Type {
         self.builtin_type("any")
-    }
-    pub fn type_channel_op(&self, typ: Type) -> Type {
-        self.builtin_type("ChannelOp").swap_arg(0, typ)
     }
 
     pub fn infer_expr(&mut self, expr: Expr, expected: &Type) -> Expr {
@@ -742,16 +740,6 @@ impl Infer {
 
                 let subject_ty = self.fresh_ty_var();
                 let new_subject = self.infer_expr(*subject, &subject_ty);
-
-                // if it's a `match select!()`, then turn it into a Select expr
-                if matches!(new_subject, Expr::Select { .. }) {
-                    let select = Expr::Select {
-                        arms,
-                        span,
-                        ty: Type::dummy(),
-                    };
-                    return self.infer_expr(select, expected);
-                }
 
                 let new_arms = arms
                     .into_iter()
@@ -1575,21 +1563,35 @@ has no field or method:
                 }
             }
 
-            Expr::Select { arms, ty: _, span } => {
+            Expr::Select { arms, span, .. } => {
                 // Each arm is inferred separately
-                // Arm pat must be of type ChannelOp
-                // Return type is unit
                 let new_arms = arms
                     .into_iter()
                     .map(|a| {
                         // NEW SCOPE
                         self.begin_scope();
 
-                        let var = self.fresh_ty_var();
-                        let channel_op = self.type_channel_op(var);
+                        let new_pat = match a.pat {
+                            SelectArmPat::Recv(binding, expr) => {
+                                let new_expr = self.ensure_channel_call("Recv", expr);
 
-                        // each arm.pat should unify with ChannelOp
-                        let new_pat = self.infer_pat(a.pat, channel_op);
+                                let ty = self.to_type(&binding.ann, &span);
+                                let new_binding = Binding {
+                                    pat: self.infer_pat(binding.pat, Type::discard()),
+                                    ty: ty.clone(),
+                                    ..binding
+                                };
+
+                                SelectArmPat::Recv(new_binding, new_expr)
+                            }
+
+                            SelectArmPat::Send(expr) => {
+                                let new_expr = self.ensure_channel_call("Send", expr);
+                                SelectArmPat::Send(new_expr)
+                            }
+
+                            SelectArmPat::Wildcard => SelectArmPat::Wildcard,
+                        };
 
                         // the resulting type from arm.expr can be discarded
                         let new_expr = self.infer_expr(a.expr, &Type::discard());
@@ -1597,19 +1599,15 @@ has no field or method:
                         // EXIT SCOPE
                         self.exit_scope();
 
-                        Arm {
+                        SelectArm {
                             pat: new_pat,
                             expr: new_expr,
                         }
                     })
                     .collect();
 
-                let ret = self.type_unit();
-                self.add_constraint(expected, &ret, &span);
-
                 Expr::Select {
                     arms: new_arms,
-                    ty: ret,
                     span,
                 }
             }
@@ -3303,6 +3301,54 @@ has no field or method:
             ty: Type::dummy(),
             span: span.clone(),
         })
+    }
+
+    // In a select {}, we're looking for:
+    //   - x.Recv()
+    //   - x.Send()
+    // anything else is invalid
+    fn ensure_channel_call(&mut self, method: &str, expr: Expr) -> Expr {
+        let new_expr = self.infer_expr(expr, &Type::discard());
+
+        match &new_expr {
+            Expr::Call { func, .. } => match **func {
+                Expr::FieldAccess {
+                    ref field,
+                    ref span,
+                    expr: ref method_receiver,
+                    ..
+                } => {
+                    if field != method {
+                        self.generic_error(
+                            format!("was expecting {method}, got {field}"),
+                            span.clone(),
+                        );
+                    }
+
+                    let expected = if method == "Recv" {
+                        self.builtin_type("Receiver")
+                    } else {
+                        self.builtin_type("Sender")
+                    }
+                    .swap_arg(0, self.type_any());
+
+                    self.add_constraint(&expected, &method_receiver.get_type(), &span);
+                }
+
+                _ => {
+                    self.generic_error("invalid call in select".to_string(), func.get_span());
+                }
+            },
+
+            _ => {
+                self.generic_error(
+                    "invalid expression in select".to_string(),
+                    new_expr.get_span(),
+                );
+            }
+        }
+
+        new_expr
     }
 }
 

@@ -1,0 +1,75 @@
+Select statement
+
+SOURCE:
+use fmt
+
+fn main() {
+    let (tx, rx) = Channel.new()
+
+    spawn (|| {
+        tx.Send(1)
+    })()
+
+    select {
+        let foo = rx.Recv() => {
+            fmt.Println("foo", foo)
+        }
+    }
+
+    spawn (|| {
+        let bar = rx.Recv()
+        fmt.Println("bar", bar)
+    })()
+
+    select {
+        tx.Send(5) => fmt.Println("sending")
+    }
+
+    select {
+        _ => fmt.Println("default")
+    }
+}
+
+OUTPUT:
+foo 1
+bar 5
+sending
+default
+
+---
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var1 := Channel_new[int]()
+	tx := var1.first
+	rx := var1.second
+	go (func() {
+		Sender_Send[int](tx, 1)
+	})()
+
+	select {
+	case foo := <-rx:
+
+		fmt.Println("foo", foo)
+	}
+	go (func() (int, error) {
+		bar := Receiver_Recv[int](rx)
+
+		return fmt.Println("bar", bar)
+	})()
+
+	select {
+	case tx <- 5:
+
+		fmt.Println("sending")
+	}
+	select {
+	default:
+
+		fmt.Println("default")
+	}
+}

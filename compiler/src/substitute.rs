@@ -1,4 +1,7 @@
-use crate::ast::{Arm, Binding, Expr, Function, Literal, Loop, Pat, StructField, StructFieldPat};
+use crate::ast::{
+    Arm, Binding, Expr, Function, Literal, Loop, Pat, SelectArm, SelectArmPat, StructField,
+    StructFieldPat,
+};
 use crate::infer;
 use crate::type_::Type;
 
@@ -321,17 +324,32 @@ pub fn substitute_expr(expr: Expr, instance: &mut infer::Infer) -> Expr {
             span,
         },
 
-        Expr::Select { arms, ty, span } => Expr::Select {
-            arms: arms
+        Expr::Select { arms, span } => {
+            let new_arms = arms
                 .iter()
-                .map(|a| Arm {
-                    pat: substitute_pat(a.pat.clone(), instance),
-                    expr: substitute_expr(a.expr.clone(), instance),
+                .map(|a| {
+                    let pat = match a.pat.clone() {
+                        SelectArmPat::Recv(b, expr) => SelectArmPat::Recv(
+                            substitute_binding(&b, instance),
+                            substitute_expr(expr, instance),
+                        ),
+                        SelectArmPat::Send(expr) => {
+                            SelectArmPat::Send(substitute_expr(expr, instance))
+                        }
+                        SelectArmPat::Wildcard => SelectArmPat::Wildcard,
+                    };
+
+                    let expr = substitute_expr(a.expr.clone(), instance);
+
+                    SelectArm { pat, expr }
                 })
-                .collect(),
-            ty: instance.substitute(ty),
-            span,
-        },
+                .collect();
+
+            Expr::Select {
+                arms: new_arms,
+                span,
+            }
+        }
 
         Expr::Defer { expr, ty, span } => Expr::Defer {
             expr: substitute_expr(*expr, instance).into(),
