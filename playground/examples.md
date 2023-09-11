@@ -827,11 +827,25 @@ fn main() {
 
 ## Select statements
 
-There's no first class support for `select {}` statements yet. still use them
-with a bit of a hacky workaround.
+`select {}` works like in Go, however the syntax is slightly different.
 
-You can get around this by using `rawgo` which lets you embed raw Go code.
-First-class support for `select` statements will be available soon.
+```
+Reading from a channel
+
+Go:    case x := <- ch
+Borgo: let x = ch.Recv() 
+
+
+Sending to a channel
+
+Go:    case ch <- x
+Borgo: ch.Send(x) 
+
+Default case
+
+Go:    default
+Borgo: _
+```
 
 ```rust
 use fmt
@@ -841,22 +855,38 @@ fn main() {
     let (tx1, rx1) = Channel.new()
     let (tx2, rx2) = Channel.new()
 
+    // dummy done channel
+    let (_, done) = Channel.new()
+
     spawn (|| {
         tx1.Send("a")
     })()
 
     spawn (|| {
-        time.Sleep(2 * time.Second)
-        tx2.Send("b")
+        loop {
+            select {
+                // in Go:
+                //   case tx2 <- "b":
+                tx2.Send("b") => {
+                    fmt.Println("sending b")
+                    time.Sleep(1 * time.Second)
+                }
+
+                let _ = done.Recv() => return
+            }
+        }
     })()
 
-    @rawgo (
-        \\ select {
-        \\   case a := <-rx1:
-        \\     fmt.Println("got", a)
-        \\   case b := <-rx2:
-        \\     fmt.Println("got", b)
-        \\ }
-    )
+    select {
+        // in Go:
+        //   case a := <- rx1:
+        let a = rx1.Recv() => {
+            fmt.Println("got", a)
+        },
+
+        let b = rx2.Recv() => {
+            fmt.Println("got", b)
+        },
+    }
 }
 ```

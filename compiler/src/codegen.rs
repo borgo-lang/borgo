@@ -1526,6 +1526,11 @@ if {is_matching} != 2 {{
                         inner.emit(format!("case {ident} := {new_expr}:",));
                     }
 
+                    Pat::Wild { .. } => {
+                        let new_expr = self.emit_select_case(&expr, &mut out);
+                        inner.emit(format!("case {new_expr}:",));
+                    }
+
                     _ => unreachable!(),
                 },
 
