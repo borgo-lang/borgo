@@ -54,7 +54,9 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "b"
+                        "String": {
+                          "Single": "b"
+                        }
                       },
                       "ty": {
                         "Con": {
@@ -242,7 +244,9 @@ No errors.
               "expr": {
                 "Literal": {
                   "lit": {
-                    "String": "c"
+                    "String": {
+                      "Single": "c"
+                    }
                   },
                   "ty": {
                     "Con": {

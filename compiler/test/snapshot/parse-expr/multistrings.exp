@@ -30,11 +30,13 @@ No errors.
             {
               "Literal": {
                 "lit": {
-                  "MultiString": [
-                    "hello",
-                    "  this is a",
-                    "multiline \\\\ string"
-                  ]
+                  "String": {
+                    "Multi": [
+                      "hello",
+                      "  this is a",
+                      "multiline \\\\ string"
+                    ]
+                  }
                 }
               }
             },

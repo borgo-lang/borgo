@@ -60,7 +60,9 @@ No errors.
           "value": {
             "Literal": {
               "lit": {
-                "String": "foo"
+                "String": {
+                  "Single": "foo"
+                }
               },
               "ty": {
                 "Con": {
@@ -171,7 +173,9 @@ No errors.
                   "pat": {
                     "Lit": {
                       "lit": {
-                        "String": "foo"
+                        "String": {
+                          "Single": "foo"
+                        }
                       },
                       "ty": {
                         "Con": {

@@ -14,7 +14,9 @@ No errors.
     "left": {
       "Literal": {
         "lit": {
-          "String": "a"
+          "String": {
+            "Single": "a"
+          }
         },
         "ty": {
           "Con": {
@@ -38,7 +40,9 @@ No errors.
     "right": {
       "Literal": {
         "lit": {
-          "String": "b"
+          "String": {
+            "Single": "b"
+          }
         },
         "ty": {
           "Con": {

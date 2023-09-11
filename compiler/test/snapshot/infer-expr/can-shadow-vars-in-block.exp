@@ -49,7 +49,9 @@ No errors.
           "value": {
             "Literal": {
               "lit": {
-                "String": "mutable"
+                "String": {
+                  "Single": "mutable"
+                }
               },
               "ty": {
                 "Con": {
@@ -125,7 +127,9 @@ No errors.
                 "value": {
                   "Literal": {
                     "lit": {
-                      "String": "block"
+                      "String": {
+                        "Single": "block"
+                      }
                     },
                     "ty": {
                       "Con": {

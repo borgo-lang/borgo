@@ -608,10 +608,15 @@ pub enum Literal {
     Int(i64),
     Float(f64),
     Bool(bool),
-    String(String),
-    MultiString(Vec<String>),
+    String(StrType),
     Char(String), // Rust char and Go rune are slightly different, just fallback to a String
     Slice(Vec<Expr>),
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum StrType {
+    Single(String),     // "quoted string"
+    Multi(Vec<String>), // multi-line string
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

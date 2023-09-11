@@ -182,7 +182,9 @@ No errors.
                           {
                             "Literal": {
                               "lit": {
-                                "String": "yo"
+                                "String": {
+                                  "Single": "yo"
+                                }
                               },
                               "ty": {
                                 "Con": {
@@ -476,7 +478,9 @@ No errors.
                       {
                         "Literal": {
                           "lit": {
-                            "String": "asdf"
+                            "String": {
+                              "Single": "asdf"
+                            }
                           },
                           "ty": {
                             "Con": {

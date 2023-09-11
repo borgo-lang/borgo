@@ -47,7 +47,9 @@ No errors.
                                 {
                                   "Literal": {
                                     "lit": {
-                                      "String": "hi"
+                                      "String": {
+                                        "Single": "hi"
+                                      }
                                     }
                                   }
                                 }

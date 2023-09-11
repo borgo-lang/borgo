@@ -277,16 +277,6 @@ impl Infer {
                     }
                 }
 
-                Literal::MultiString(s) => {
-                    self.add_constraint(expected, &self.type_string(), &span);
-
-                    Expr::Literal {
-                        lit: Literal::MultiString(s),
-                        ty: self.type_string(),
-                        span,
-                    }
-                }
-
                 Literal::Char(s) => {
                     self.add_constraint(expected, &self.type_char(), &span);
 

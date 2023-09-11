@@ -52,7 +52,9 @@ No errors.
                   {
                     "Literal": {
                       "lit": {
-                        "String": "bar"
+                        "String": {
+                          "Single": "bar"
+                        }
                       }
                     }
                   }

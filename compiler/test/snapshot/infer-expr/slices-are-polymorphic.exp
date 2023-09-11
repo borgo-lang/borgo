@@ -358,7 +358,9 @@ No errors.
               {
                 "Literal": {
                   "lit": {
-                    "String": "hello"
+                    "String": {
+                      "Single": "hello"
+                    }
                   },
                   "ty": {
                     "Con": {

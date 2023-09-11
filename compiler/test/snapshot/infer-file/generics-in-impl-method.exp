@@ -582,7 +582,9 @@ No errors.
                                 "body": {
                                   "Literal": {
                                     "lit": {
-                                      "String": "asdf"
+                                      "String": {
+                                        "Single": "asdf"
+                                      }
                                     },
                                     "ty": {
                                       "Con": {

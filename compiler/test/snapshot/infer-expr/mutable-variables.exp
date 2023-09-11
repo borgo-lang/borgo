@@ -1,0 +1,273 @@
+Mutable variables
+
+SOURCE:
+{
+  let mut x = 0
+  x = x + 1
+  x
+}
+
+OUTPUT:
+int
+---
+No errors.
+---
+{
+  "Block": {
+    "stmts": [
+      {
+        "Let": {
+          "binding": {
+            "pat": {
+              "Type": {
+                "ident": "x",
+                "is_mut": false,
+                "ann": "Unknown",
+                "span": {
+                  "start": {
+                    "line": 2,
+                    "col": 11
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 12
+                  },
+                  "file": 99
+                }
+              }
+            },
+            "ann": "Unknown",
+            "ty": {
+              "Con": {
+                "id": "int",
+                "args": []
+              }
+            }
+          },
+          "value": {
+            "Literal": {
+              "lit": {
+                "Int": 0
+              },
+              "ty": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 2,
+                  "col": 15
+                },
+                "end": {
+                  "line": 2,
+                  "col": 16
+                },
+                "file": 99
+              }
+            }
+          },
+          "mutable": true,
+          "ty": {
+            "Con": {
+              "id": "int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 2,
+              "col": 3
+            },
+            "end": {
+              "line": 2,
+              "col": 16
+            },
+            "file": 99
+          }
+        }
+      },
+      {
+        "VarUpdate": {
+          "target": {
+            "Var": {
+              "value": "x",
+              "decl": {
+                "start": {
+                  "line": 2,
+                  "col": 11
+                },
+                "end": {
+                  "line": 2,
+                  "col": 12
+                },
+                "file": 99
+              },
+              "generics_instantiated": [],
+              "ty": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 3,
+                  "col": 3
+                },
+                "end": {
+                  "line": 3,
+                  "col": 4
+                },
+                "file": 99
+              }
+            }
+          },
+          "value": {
+            "Binary": {
+              "op": "Add",
+              "left": {
+                "Var": {
+                  "value": "x",
+                  "decl": {
+                    "start": {
+                      "line": 2,
+                      "col": 11
+                    },
+                    "end": {
+                      "line": 2,
+                      "col": 12
+                    },
+                    "file": 99
+                  },
+                  "generics_instantiated": [],
+                  "ty": {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 7
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 8
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              "right": {
+                "Literal": {
+                  "lit": {
+                    "Int": 1
+                  },
+                  "ty": {
+                    "Con": {
+                      "id": "int",
+                      "args": []
+                    }
+                  },
+                  "span": {
+                    "start": {
+                      "line": 3,
+                      "col": 11
+                    },
+                    "end": {
+                      "line": 3,
+                      "col": 12
+                    },
+                    "file": 99
+                  }
+                }
+              },
+              "ty": {
+                "Con": {
+                  "id": "int",
+                  "args": []
+                }
+              },
+              "span": {
+                "start": {
+                  "line": 3,
+                  "col": 7
+                },
+                "end": {
+                  "line": 3,
+                  "col": 12
+                },
+                "file": 99
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 3,
+              "col": 3
+            },
+            "end": {
+              "line": 3,
+              "col": 12
+            },
+            "file": 99
+          }
+        }
+      },
+      {
+        "Var": {
+          "value": "x",
+          "decl": {
+            "start": {
+              "line": 2,
+              "col": 11
+            },
+            "end": {
+              "line": 2,
+              "col": 12
+            },
+            "file": 99
+          },
+          "generics_instantiated": [],
+          "ty": {
+            "Con": {
+              "id": "int",
+              "args": []
+            }
+          },
+          "span": {
+            "start": {
+              "line": 4,
+              "col": 3
+            },
+            "end": {
+              "line": 4,
+              "col": 4
+            },
+            "file": 99
+          }
+        }
+      }
+    ],
+    "ty": {
+      "Con": {
+        "id": "int",
+        "args": []
+      }
+    },
+    "span": {
+      "start": {
+        "line": 1,
+        "col": 1
+      },
+      "end": {
+        "line": 5,
+        "col": 1
+      },
+      "file": 99
+    }
+  }
+}

@@ -4,7 +4,7 @@ use crate::{
     ast::{
         Arm, Binding, Constructor, DebugKind, EnumDefinition, EnumFieldDef, Expr, File, FileId,
         Function, FunctionKind, Generic, InterfaceSuperTrait, Literal, Loop, LoopFlow, Operator,
-        Pat, SelectArm, SelectArmPat, Span, StructDefinition, StructField, UnOp,
+        Pat, SelectArm, SelectArmPat, Span, StrType, StructDefinition, StructField, UnOp,
     },
     global_state::Module,
     infer,
@@ -832,11 +832,13 @@ if {new_is_matching} != 1 {{
             Literal::Int(n) => n.to_string(),
             Literal::Float(n) => n.to_string(),
             Literal::Bool(b) => b.to_string(),
-            Literal::String(s) => format!("\"{}\"", s).replace('\n', "\\n"),
-            Literal::MultiString(lines) => {
-                let body = lines.join("\n");
-                format!("`{}`", body)
-            }
+            Literal::String(inner) => match inner {
+                StrType::Single(s) => format!("\"{}\"", s).replace('\n', "\\n"),
+                StrType::Multi(lines) => {
+                    let body = lines.join("\n");
+                    format!("`{}`", body)
+                }
+            },
             Literal::Char(s) => {
                 format!("\'{}\'", s)
             }

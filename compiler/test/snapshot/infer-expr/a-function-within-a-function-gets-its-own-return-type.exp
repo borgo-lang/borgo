@@ -103,7 +103,9 @@ No errors.
                                             "expr": {
                                               "Literal": {
                                                 "lit": {
-                                                  "String": "foo"
+                                                  "String": {
+                                                    "Single": "foo"
+                                                  }
                                                 },
                                                 "ty": {
                                                   "Con": {
@@ -186,7 +188,9 @@ No errors.
                               {
                                 "Literal": {
                                   "lit": {
-                                    "String": "bar"
+                                    "String": {
+                                      "Single": "bar"
+                                    }
                                   },
                                   "ty": {
                                     "Con": {

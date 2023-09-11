@@ -434,7 +434,9 @@ No errors.
                     {
                       "Literal": {
                         "lit": {
-                          "String": "a"
+                          "String": {
+                            "Single": "a"
+                          }
                         },
                         "ty": {
                           "Con": {
@@ -565,7 +567,9 @@ No errors.
                     {
                       "Literal": {
                         "lit": {
-                          "String": "a"
+                          "String": {
+                            "Single": "a"
+                          }
                         },
                         "ty": {
                           "Con": {
@@ -589,7 +593,9 @@ No errors.
                     {
                       "Literal": {
                         "lit": {
-                          "String": "b"
+                          "String": {
+                            "Single": "b"
+                          }
                         },
                         "ty": {
                           "Con": {
@@ -613,7 +619,9 @@ No errors.
                     {
                       "Literal": {
                         "lit": {
-                          "String": "c"
+                          "String": {
+                            "Single": "c"
+                          }
                         },
                         "ty": {
                           "Con": {

@@ -138,7 +138,9 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "a"
+                        "String": {
+                          "Single": "a"
+                        }
                       },
                       "ty": {
                         "Con": {
@@ -519,7 +521,9 @@ No errors.
                         {
                           "Literal": {
                             "lit": {
-                              "String": "!"
+                              "String": {
+                                "Single": "!"
+                              }
                             },
                             "ty": {
                               "Con": {

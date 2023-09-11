@@ -2,7 +2,7 @@ use crate::{
     ast::{
         Arm, Binding, Constructor, EnumDefinition, EnumFieldDef, Expr, FileId, Function,
         FunctionKind, Generic, InterfaceSuperTrait, LineColumn, Literal, Loop, LoopFlow,
-        NewtypeDefinition, Operator, Pat, PkgImport, SelectArm, SelectArmPat, Span,
+        NewtypeDefinition, Operator, Pat, PkgImport, SelectArm, SelectArmPat, Span, StrType,
         StructDefinition, StructField, StructFieldDef, StructFieldPat, TypeAliasDef, TypeAst, UnOp,
     },
     lexer::{Lexer, Pos, Token, TokenKind, TokenKind::EOF},
@@ -300,7 +300,7 @@ impl Parser {
 
             TokenKind::Bool => Literal::Bool(self.tok.text == "true"),
 
-            TokenKind::String => Literal::String(self.tok.text.clone()),
+            TokenKind::String => Literal::String(StrType::Single(self.tok.text.clone())),
 
             TokenKind::Char => Literal::Char(self.tok.text.clone()),
 
@@ -642,7 +642,7 @@ impl Parser {
             */
         }
 
-        let lit = Literal::MultiString(lines);
+        let lit = Literal::String(StrType::Multi(lines));
 
         Expr::Literal {
             lit,
@@ -965,14 +965,12 @@ impl Parser {
         let args = self.parse_paren(ParseParen::Paren);
         let text = match args.first() {
             Some(Expr::Literal {
-                lit: Literal::String(s),
+                lit: Literal::String(inner),
                 ..
-            }) => s.to_string(),
-
-            Some(Expr::Literal {
-                lit: Literal::MultiString(lines),
-                ..
-            }) => lines.join("\n"),
+            }) => match inner {
+                StrType::Single(s) => s.to_string(),
+                StrType::Multi(lines) => lines.join("\n"),
+            },
 
             _ => {
                 self.error("invalid call to rawgo!".to_string());

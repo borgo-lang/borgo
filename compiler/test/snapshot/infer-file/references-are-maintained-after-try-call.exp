@@ -223,7 +223,9 @@ No errors.
                             {
                               "Literal": {
                                 "lit": {
-                                  "String": "file"
+                                  "String": {
+                                    "Single": "file"
+                                  }
                                 },
                                 "ty": {
                                   "Con": {

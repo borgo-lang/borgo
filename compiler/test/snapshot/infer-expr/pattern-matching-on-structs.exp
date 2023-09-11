@@ -142,7 +142,9 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "yo"
+                        "String": {
+                          "Single": "yo"
+                        }
                       },
                       "ty": {
                         "Con": {
@@ -273,7 +275,9 @@ No errors.
                       "value": {
                         "Lit": {
                           "lit": {
-                            "String": "bar"
+                            "String": {
+                              "Single": "bar"
+                            }
                           },
                           "ty": {
                             "Con": {
@@ -377,7 +381,9 @@ No errors.
                       "value": {
                         "Lit": {
                           "lit": {
-                            "String": "bar"
+                            "String": {
+                              "Single": "bar"
+                            }
                           },
                           "ty": {
                             "Con": {

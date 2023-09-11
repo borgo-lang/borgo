@@ -140,7 +140,9 @@ No errors.
                   "value": {
                     "Literal": {
                       "lit": {
-                        "String": "a"
+                        "String": {
+                          "Single": "a"
+                        }
                       },
                       "ty": {
                         "Con": {
