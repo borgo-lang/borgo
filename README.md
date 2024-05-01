@@ -5,7 +5,7 @@
 ---
 
 ![build](https://github.com/borgo-lang/borgo/actions/workflows/ci.yml/badge.svg)
-
+i
 I want a language for writing applications that is more expressive than Go but
 less complex than Rust.
 
@@ -51,7 +51,7 @@ let msg = match state {
 
 ---
 
-## `Option<T>` instad of `nil`
+## `Option<T>` instead of `nil`
 
 ```rust
 // import packages from Go stdlib
@@ -68,7 +68,7 @@ match key {
 
 ---
 
-## `Result<T, E>` instad of multiple return values
+## `Result<T, E>` instead of multiple return values
 
 ```rust
 use fmt
