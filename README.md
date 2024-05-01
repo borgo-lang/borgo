@@ -68,7 +68,7 @@ match key {
 
 ---
 
-## `Result<T, E>` instad of multiple return values
+## `Result<T, E>` instead of multiple return values
 
 ```rust
 use fmt
