@@ -137,7 +137,6 @@ use time
 fn main() {
     let reader = bufio.NewReader(os.Stdin)
 
-    rand.Seed(time.Now().UnixNano())
     let secret = rand.Intn(100) + 1
 
     loop {
