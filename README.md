@@ -51,7 +51,7 @@ let msg = match state {
 
 ---
 
-## `Option<T>` instad of `nil`
+## `Option<T>` instead of `nil`
 
 ```rust
 // import packages from Go stdlib
