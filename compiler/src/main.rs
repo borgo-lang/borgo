@@ -1,3 +1,4 @@
+use clap::{Arg, ArgMatches, Command};
 use compiler::ast::{Expr, FileId};
 use compiler::codegen::EmittedFile;
 use compiler::global_state::Module;
@@ -5,6 +6,33 @@ use compiler::type_::ModuleId;
 use compiler::{codegen, fs, infer, lexer, parser, prelude};
 
 use serde::Deserialize;
+
+fn main() {
+    let root_cmd: Command = Command::new("borgo")
+        .arg_required_else_help(true)
+        .subcommand_required(true)
+        .subcommand(Command::new("build").about("Compile all .brg files into .go files"))
+        .subcommand(Command::new("test").arg(Arg::new("input").required(true).index(1)));
+
+    let matches = root_cmd.get_matches();
+    match matches.subcommand() {
+        Some(("build", matches)) => run_build_cmd(matches),
+        Some(("test", matches)) => run_test_cmd(matches),
+        _ => unreachable!("unmatched command"),
+    };
+}
+
+fn run_build_cmd(_matches: &ArgMatches) {
+    build_project();
+    println!("done");
+}
+
+fn run_test_cmd(matches: &ArgMatches) {
+    match matches.get_one::<String>("input") {
+        Some(file) => run_tests(file),
+        None => unreachable!("unmatched input"), // since it's a required arg we should not get here
+    }
+}
 
 #[derive(Deserialize, Debug)]
 enum Input {
@@ -95,17 +123,6 @@ fn parse_source(input: Input) {
     println!("{}\n---\n{}\n---\n{}", tokens_str, err, json.unwrap());
 }
 
-fn help() {
-    println!(
-        "
-Commands:
-
-  build         compile all .brg files into .go files
-
-"
-    );
-}
-
 fn run_tests(input: &str) {
     let input: Input = serde_json::from_str(input).unwrap();
 
@@ -181,30 +198,4 @@ fn run_tests(input: &str) {
 
         Input::ParseExpr(_) | Input::ParseFile(_) => parse_source(input),
     }
-}
-
-fn main() {
-    // TODO use a proper parsing lib
-    let cmd = std::env::args().nth(1);
-
-    if cmd.is_none() {
-        help();
-        return;
-    }
-
-    let cmd = cmd.unwrap();
-
-    if cmd == "build" {
-        build_project();
-        println!("done");
-        return;
-    }
-
-    if cmd == "test" {
-        let input = std::env::args().nth(2).unwrap();
-        run_tests(&input);
-        return;
-    }
-
-    help();
 }
