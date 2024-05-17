@@ -2526,6 +2526,7 @@ has no field or method:
                     name,
                     ann: f.ann.clone(),
                     ty: typ.to_bounded(),
+                    tags: None
                 }
             })
             .collect();
@@ -3169,6 +3170,7 @@ has no field or method:
                 name: sym.name.clone(),
                 ann: TypeAst::Unknown,
                 ty: ty.clone(),
+                tags: None
             });
         }
 
