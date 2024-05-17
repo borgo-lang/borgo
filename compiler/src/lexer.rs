@@ -527,7 +527,7 @@ impl Lexer {
         }
     }
 
-    fn scan_string(&mut self) -> Token {
+    fn scan_string(&mut self, delimiter: char) -> Token {
         let mut text = String::new();
 
         let start = self.next();
@@ -535,7 +535,7 @@ impl Lexer {
 
         // TODO validate escape \"
         loop {
-            if self.ch == '"' {
+            if self.ch == delimiter {
                 self.next();
                 seen_closing = true;
                 break;
@@ -681,7 +681,7 @@ impl Lexer {
         match self.ch {
             '0'..='9' => self.scan_number(),
             'a'..='z' | 'A'..='Z' | '_' => self.scan_ident(),
-            '"' => self.scan_string(),
+            '"' | '`' => self.scan_string(self.ch),
             '\'' => self.scan_char(),
             '/' => self.scan_slash_comment(),
             '\\' => self.scan_multi_string(),

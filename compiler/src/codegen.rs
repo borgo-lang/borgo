@@ -1189,7 +1189,11 @@ if {is_matching} != 2 {{
         def.fields.iter().for_each(|f| {
             let field = &f.name;
             let ty = self.to_type(&f.ty.ty);
-            out.emit(format!("  {field} {ty}"));
+            let tags = &f.tags;
+            match tags {
+                Some(tg) => out.emit(format!("  {field} {ty} `{tg}`")),
+                None =>  out.emit(format!("  {field} {ty}")),
+            }
         });
 
         out.emit("}".to_string());

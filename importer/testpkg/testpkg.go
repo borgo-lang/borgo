@@ -14,8 +14,8 @@ const (
 const SomeConst = 1
 
 type Person struct {
-	Name    string
-	Hobbies []Hobby
+	Name    string `json:"name"`
+	Hobbies []Hobby `json:"hobbies"`
 }
 
 type Hobby struct {
