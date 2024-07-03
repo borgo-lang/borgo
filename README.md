@@ -186,3 +186,9 @@ The compiler will generate `.go` files, which you can run as normal:
 # go mod init foo
 $ go run .
 ```
+
+Borgo generates a _valid_ go code, not necessarily _pretty_ go code. You can format it easily with gofmt:
+
+```bash
+gofmt -w .
+```
