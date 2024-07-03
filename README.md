@@ -166,18 +166,23 @@ fn main() {
 
 ## Running locally
 
-Borgo is written in Rust, so you'll need `cargo`.
+Borgo is written in Rust, so you'll need `cargo`. Install the borgo binary. It's called `compiler` and it will 
+be installed into your `.cargo/bin` folder.
+
+```bash
+cargo install --git https://github.com/borgo-lang/borgo
+```
 
 To compile all `.brg` files in the current folder:
 
 ```bash
-$ cargo run -- build
+compiler build
 ```
 
 The compiler will generate `.go` files, which you can run as normal:
 
 ```bash
 # generate a go.mod file if needed
-# $ go mod init foo
+# go mod init foo
 $ go run .
 ```
