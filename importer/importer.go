@@ -161,6 +161,7 @@ type Struct struct {
 type StructField struct {
 	Name string
 	Type Type
+	Tags string
 }
 
 type Variable struct {
@@ -232,7 +233,16 @@ func (p *Package) AddStruct(name string, bounds []Bound, list []*ast.Field, kind
 			name = f.Names[0].Name
 		}
 
-		fields = append(fields, StructField{Name: name, Type: p.parseTypeExpr(f.Type)})
+		sf := StructField{
+			Name: name,
+			Type: p.parseTypeExpr(f.Type),
+		}
+
+		if f.Tag != nil {
+			sf.Tags = f.Tag.Value
+		}
+
+		fields = append(fields, sf)
 	}
 
 	s := Struct{Name: name, Bounds: bounds, Fields: fields, Kind: kind}
@@ -337,7 +347,6 @@ func (p *Package) String() string {
 	}
 
 	for _, s := range p.Types {
-
 		switch s.Kind {
 		case TypeStruct:
 			bounds := boundsToString(s.Bounds)
@@ -356,7 +365,6 @@ func (p *Package) String() string {
 			def := "interface " + s.Name + generics + " {\n" + newBounds + "\n" + newFields + "\n}\n\n"
 			fmt.Fprint(&w, def)
 		}
-
 	}
 
 	return w.String()
@@ -560,7 +568,6 @@ func functionArgsToString(fargs []FuncArg) string {
 	}
 
 	return strings.Join(args, ", ")
-
 }
 
 func structFieldsToString(list []StructField) string {
@@ -573,7 +580,11 @@ func structFieldsToString(list []StructField) string {
 			continue
 		}
 
-		fields = append(fields, "  "+f.Name+": "+f.Type.String())
+		fieldStr := "  " + f.Name + ": " + f.Type.String()
+		if f.Tags != "" {
+			fieldStr = fieldStr + " " + f.Tags
+		}
+		fields = append(fields, fieldStr)
 	}
 
 	return strings.Join(fields, ",\n")
@@ -728,7 +739,6 @@ func main() {
 			}
 
 			for _, decl := range t.Decl.Specs {
-
 				if spec, ok := decl.(*ast.TypeSpec); ok {
 
 					bounds := p.parseBounds(spec.TypeParams)

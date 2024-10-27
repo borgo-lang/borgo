@@ -270,6 +270,7 @@ pub struct StructFieldDef {
     pub name: Ident,
     pub ann: TypeAst,
     pub ty: BoundedType,
+    pub tags: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

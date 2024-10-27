@@ -1768,11 +1768,24 @@ impl Parser {
         let name = self.parse_one_ident();
         self.expect(TokenKind::Colon);
         let ann = self.parse_type();
+        let tags = self.parse_struct_field_tags();
 
         StructFieldDef {
             name,
             ann,
             ty: Type::dummy().to_bounded(),
+            tags
+        }
+    }
+
+    fn parse_struct_field_tags(&mut self) -> Option<String> {
+        match self.tok.kind {
+            TokenKind::String => {
+                let tags = Some(self.tok.text.clone());
+                self.next();
+                tags
+            }
+            _ => None,
         }
     }
 
