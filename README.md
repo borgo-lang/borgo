@@ -132,7 +132,6 @@ use math.rand
 use os
 use strconv
 use strings
-use time
 
 fn main() {
     let reader = bufio.NewReader(os.Stdin)
